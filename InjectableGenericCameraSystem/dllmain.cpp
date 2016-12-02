@@ -7,6 +7,7 @@ DWORD WINAPI MainThread(LPVOID lpParam);
 void InitConsole();
 HMODULE GetBaseAddressOfContainingProcess();
 
+
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
 	DWORD threadID;
@@ -45,9 +46,7 @@ DWORD WINAPI MainThread(LPVOID lpParam)
 	}
 	else
 	{
-		// start system and enter input loop
-		System s;
-		s.Init();
+		MainLoop(baseAddress);
 	}
 	FreeConsole();
 	return 0;
@@ -98,4 +97,3 @@ void InitConsole()
 	std::wcin.clear();
 	std::cin.clear();
 }
-

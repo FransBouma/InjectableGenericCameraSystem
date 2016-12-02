@@ -28,9 +28,11 @@ onto the location in the game's in-memory exe image where a register contains th
 the address from the given register and write it in a C++ variable. It will then continue executing the code as normal and a `jmp` back to the instruction after 
 the one overwritten with `jmp interceptor` is 
 
-The addresses of write statements are used to switch off the in-game input / camera system and make sure our own camera matrix is used instead. Every time the camera is *enabled*
-by the user, the addresses of the write statements are replaced with `nop` statements so they do nothing, so the matrix the system calculates isn't overwritten by the game code. When the camera is *disabled*
-these instructions are restored so the game continues as normal. 
+The addresses of write statements are used to switch off the in-game input / camera system and make sure our own camera matrix is used instead.
+Every time the camera is *enabled* by the user, the addresses of the write statements are effectively replaced with `nop` statements so they do nothing, 
+so the matrix the system calculates isn't overwritten by the game code. When the camera is *disabled* these instructions are restored so the game continues as normal. 
+In practice this is done by simply intercepting the write block in an asm function in the system which compares the target address with the intercepted matrix address and if the 
+camera is enabled and the address matches, will bypass the write statements, otherwise it will execute the original statements. 
 
 ### How it works
 
@@ -57,3 +59,7 @@ is generic and can be re-used per game.
 ## Current status
 It's early days, the dll is now injectable, a console can be created and it can obtain the parent's process base address which is crucial to be able to overwrite any statements. 
 More soon :)
+
+## Useful links
+Setting up Visual C++ to use with MASM to call / use x64 assembly: http://lallouslab.net/2016/01/11/introduction-to-writing-x64-assembly-in-visual-studio/
+Asm syntax highlighting / folding etc add-in for Visual C++: https://marketplace.visualstudio.com/items?itemName=Henk-JanLebbink.AsmDude
