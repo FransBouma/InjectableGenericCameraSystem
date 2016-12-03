@@ -140,7 +140,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="DataStructures.h" />
     <ClInclude Include="Offsets.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Core.h" />

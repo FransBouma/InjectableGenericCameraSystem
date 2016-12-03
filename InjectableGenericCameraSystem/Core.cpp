@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "DataStructures.h"
 
 using namespace std;
 
@@ -24,7 +23,6 @@ extern "C" {
 __int64 _hostImageAddress = 0;
 __int64 _matrixAddressInterceptionStart = 0;
 __int64 _matrixWriteInterceptionStart = 0;
-
 
 // Local functions
 void SetMatrixAddressInterceptorHook();
