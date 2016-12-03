@@ -6,7 +6,8 @@ using namespace std;
 //--------------------------------------------------------------------------------------------------------------------------------
 // external asm functions
 extern "C" {
-	void interceptor();
+	void cameraAddressInterceptor();
+	void cameraWriteInterceptor();
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -14,9 +15,9 @@ extern "C" {
 // MASM is rather tedious. 
 extern "C" {
 	// The address of the camera matrix in memory, intercepted by the interceptor. 
-	__int64 _matrixAddress=0;
+	__int64 _cameraStructAddress=0;
 	// The continue address for continuing execution after matrix address interception. 
-	__int64 _matrixAddressInterceptionContinue = 0;
+	__int64 _cameraStructInterceptionContinue = 0;
 	// the continue address for continuing execution after interception of code which writes to the camera matrix. 
 	__int64 _matrixWriteInterceptionContinue = 0;
 	byte	_cameraEnabled = 0;
@@ -26,14 +27,15 @@ extern "C" {
 // local data 
 // The base address of the host image in its own address space. Used to calculate real addresses with using an offset.
 __int64 _hostImageAddress = 0;
-__int64 _matrixAddressInterceptionStart = 0;
+__int64 _cameraStructInterceptionStart = 0;
 __int64 _matrixWriteInterceptionStart = 0;
 InputHandler _inputHandler;
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // Local function definitions
-void SetMatrixAddressInterceptorHook();
-void WaitForMatrixAddress();
+void SetcameraStructInterceptorHook();
+void SetMatrixWriteInterceptorHook();
+void WaitForcameraStruct();
 void MainLoop();
 void HandleInput();
 
@@ -44,10 +46,11 @@ void SystemStart(HMODULE hostBaseAddress)
 	cout << "System start" << endl;
 	cout << showbase << hex;
 	_hostImageAddress = (__int64)hostBaseAddress;
-	SetMatrixAddressInterceptorHook();
-	WaitForMatrixAddress();
+	SetcameraStructInterceptorHook();
+	WaitForcameraStruct();
+	// matrix found, we can do our business.
 	_inputHandler.Initialize(hostBaseAddress, GetConsoleWindow());
-	// matrix address has been found. Go into the main loop.
+	SetMatrixWriteInterceptorHook();
 	MainLoop();
 	_inputHandler.Shutdown();
 	cout << "System end" << endl;
@@ -56,7 +59,7 @@ void SystemStart(HMODULE hostBaseAddress)
 
 void MainLoop()
 {
-	if (0 == _matrixAddress)
+	if (0 == _cameraStructAddress)
 	{
 		cout << "Matrix address not found. Can't continue with main loop" << endl;
 		return;
@@ -97,19 +100,21 @@ void HandleInput()
 }
 
 
-void WaitForMatrixAddress()
+void WaitForcameraStruct()
 {
-	while(0 == _matrixAddress)
+	while(0 == _cameraStructAddress)
 	{
 		Sleep(100);
 	}
-	cout << "Address found: " << _matrixAddress << endl;
+	cout << "Address found: " << _cameraStructAddress << endl;
 }
 
 
-void SetMatrixAddressInterceptorHook()
+#pragma message ("CLEAN UP WITH MORE GENERIC CODE")
+void SetcameraStructInterceptorHook()
 {
 	BYTE* startOfHookAddress = reinterpret_cast<BYTE*>(_hostImageAddress + (__int64)MATRIX_ADDRESS_INTERCEPT_START_OFFSET);
+	_cameraStructInterceptionContinue = _hostImageAddress + (__int64)MATRIX_ADDRESS_INTERCEPT_CONTINUE_OFFSET;
 	// now write bytes of jmp qword ptr [address], which is jmp qword ptr 0 offset.
 	startOfHookAddress[0] = 0xff;
 	startOfHookAddress[1] = 0x25;
@@ -119,11 +124,27 @@ void SetMatrixAddressInterceptorHook()
 	startOfHookAddress[5] = 0;
 	// now write the address. Do this with a recast of the pointer to an __int64 pointer to avoid endianmess.
 	__int64* interceptorAddressDestination = (__int64*)(startOfHookAddress+6);
-	void* interceptorAddress = &interceptor;
+	void* interceptorAddress = &cameraAddressInterceptor;
 	interceptorAddressDestination[0] = (__int64)interceptorAddress;
-	_matrixAddressInterceptionContinue = _hostImageAddress + (__int64)MATRIX_ADDRESS_INTERCEPT_CONTINUE_OFFSET;
 }
 
+#pragma message ("CLEAN UP WITH MORE GENERIC CODE")
+void SetMatrixWriteInterceptorHook()
+{
+	BYTE* startOfHookAddress = reinterpret_cast<BYTE*>(_hostImageAddress + (__int64)MATRIX_WRITE_INTERCEPT_START_OFFSET);
+	_matrixWriteInterceptionContinue = _hostImageAddress + (__int64)MATRIX_WRITE_INTERCEPT_CONTINUE_OFFSET;
+	// now write bytes of jmp qword ptr [address], which is jmp qword ptr 0 offset.
+	startOfHookAddress[0] = 0xff;
+	startOfHookAddress[1] = 0x25;
+	startOfHookAddress[2] = 0;
+	startOfHookAddress[3] = 0;
+	startOfHookAddress[4] = 0;
+	startOfHookAddress[5] = 0;
+	// now write the address. Do this with a recast of the pointer to an __int64 pointer to avoid endianmess.
+	__int64* interceptorAddressDestination = (__int64*)(startOfHookAddress + 6);
+	void* interceptorAddress = &cameraWriteInterceptor;
+	interceptorAddressDestination[0] = (__int64)interceptorAddress;
+}
 
 /* Camera info
 // >>>>>>>>>>> USE DirectXMath, which is the successor of D3DX. See: https://blogs.msdn.microsoft.com/chuckw/2015/08/05/where-is-the-directx-sdk-2015-edition/

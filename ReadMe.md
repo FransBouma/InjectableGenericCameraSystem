@@ -64,6 +64,8 @@ It's early days so it's not a full camera yet. Implemented:
 * it can obtain the parent's process base address which is crucial to be able to overwrite any statements
 * it currently in the test game (Hitman 2016) it can reliably intercept the camera struct address (in which the matrix we need is located)
 * reliable basic keyboard input system / handling using Direct Input in-place. 
+* it can obtain reliably intercept the write code of the game to the camera matrix. 
+* it disables writes to the camera matrix by the game code if the user enables our own camera (Camera class has to be added. Code is written)
 
 So the biggest hurdles have been taken :). 
 
@@ -73,4 +75,4 @@ More soon :)
 
 ## Useful links
 Setting up Visual C++ to use with MASM to call / use x64 assembly: http://lallouslab.net/2016/01/11/introduction-to-writing-x64-assembly-in-visual-studio/
-Asm syntax highlighting / folding etc add-in for Visual C++: https://marketplace.visualstudio.com/items?itemName=Henk-JanLebbink.AsmDude
+MASM syntax highlighting: https://marketplace.visualstudio.com/items?itemName=Trass3r.AsmHighlighter. 
