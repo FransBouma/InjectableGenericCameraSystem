@@ -1,3 +1,3 @@
 #pragma once
 
-void MainLoop(HMODULE hostBaseAddress);
+void SystemStart(HMODULE hostBaseAddress);

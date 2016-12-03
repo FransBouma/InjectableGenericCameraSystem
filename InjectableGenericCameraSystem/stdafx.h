@@ -16,6 +16,7 @@
 
 #include "Offsets.h"
 #include "Core.h"
+#include "Defaults.h"
 
 
 // TODO: reference additional headers your program requires here

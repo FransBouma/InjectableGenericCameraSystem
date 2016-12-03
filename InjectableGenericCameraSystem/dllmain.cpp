@@ -46,7 +46,7 @@ DWORD WINAPI MainThread(LPVOID lpParam)
 	}
 	else
 	{
-		MainLoop(baseAddress);
+		SystemStart(baseAddress);
 	}
 	FreeConsole();
 	return 0;

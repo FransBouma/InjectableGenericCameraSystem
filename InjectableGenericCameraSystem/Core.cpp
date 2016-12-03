@@ -1,12 +1,15 @@
 #include "stdafx.h"
+#include "InputHandler.h"
 
 using namespace std;
 
+//--------------------------------------------------------------------------------------------------------------------------------
 // external asm functions
 extern "C" {
 	void interceptor();
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------
 // data shared with asm functions. This is allocated here, 'C' style and not in some datastructure as passing that to 
 // MASM is rather tedious. 
 extern "C" {
@@ -16,29 +19,91 @@ extern "C" {
 	__int64 _matrixAddressInterceptionContinue = 0;
 	// the continue address for continuing execution after interception of code which writes to the camera matrix. 
 	__int64 _matrixWriteInterceptionContinue = 0;
+	byte	_cameraEnabled = 0;
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------
 // local data 
 // The base address of the host image in its own address space. Used to calculate real addresses with using an offset.
 __int64 _hostImageAddress = 0;
 __int64 _matrixAddressInterceptionStart = 0;
 __int64 _matrixWriteInterceptionStart = 0;
+InputHandler _inputHandler;
 
-// Local functions
+//--------------------------------------------------------------------------------------------------------------------------------
+// Local function definitions
 void SetMatrixAddressInterceptorHook();
+void WaitForMatrixAddress();
+void MainLoop();
+void HandleInput();
 
-void MainLoop(HMODULE hostBaseAddress)
+//--------------------------------------------------------------------------------------------------------------------------------
+// Implementations
+void SystemStart(HMODULE hostBaseAddress)
 {
 	cout << "System start" << endl;
 	cout << showbase << hex;
 	_hostImageAddress = (__int64)hostBaseAddress;
 	SetMatrixAddressInterceptorHook();
-	while(0==_matrixAddress)
+	WaitForMatrixAddress();
+	_inputHandler.Initialize(hostBaseAddress, GetConsoleWindow());
+	// matrix address has been found. Go into the main loop.
+	MainLoop();
+	_inputHandler.Shutdown();
+	cout << "System end" << endl;
+}
+
+
+void MainLoop()
+{
+	if (0 == _matrixAddress)
+	{
+		cout << "Matrix address not found. Can't continue with main loop" << endl;
+		return;
+	}
+	while (true)
+	{
+		Sleep(25);
+		HandleInput();
+		//WriteCameraToGameMemory();
+	}
+}
+
+
+void HandleInput()
+{
+	// first keyboard / mouse input.
+	_inputHandler.Frame();
+
+	if (_inputHandler.IsKeyPressed(IGCS_KEY_CAMERA_ENABLE))
+	{
+		_cameraEnabled = _cameraEnabled == 0 ? 1 : 0;
+		cout << "Camera enabled: " << (_cameraEnabled==0 ? "False" : "True") << endl;
+		// wait for 150ms to avoid fast keyboard hammering disabling the camera right away
+		Sleep(150);
+	}
+	if (_inputHandler.IsKeyPressed(IGCS_KEY_MOVE_FORWARD))
+	{
+		// update move forward of camera here
+		cout << "Move forward pressed" << endl;
+	}
+	if (_inputHandler.IsKeyPressed(IGCS_KEY_MOVE_BACKWARD))
+	{
+		// update move backward of camera here
+		cout << "Move backward pressed" << endl;
+	}
+
+	// XInput for controller update
+}
+
+
+void WaitForMatrixAddress()
+{
+	while(0 == _matrixAddress)
 	{
 		Sleep(100);
 	}
 	cout << "Address found: " << _matrixAddress << endl;
-	cout << "System end" << endl;
 }
 
 

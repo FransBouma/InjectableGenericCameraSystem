@@ -57,8 +57,18 @@ The system requires very little customization per game. Only the interceptor cod
 is generic and can be re-used per game. 
 
 ## Current status
-It's early days, the dll is now injectable, a console can be created, it can obtain the parent's process base address which is crucial to be able to overwrite any statements, and it
-currently in the test game (Hitman 2016) it can reliably intercept the camera struct address (in which the matrix we need is located) so the biggest hurdle has been taken :). 
+It's early days so it's not a full camera yet. Implemented:
+
+* the dll is now injectable into a hostprocess and starts the system core in a thread.
+* a console is created to which easily can be written to using stdout/err.
+* it can obtain the parent's process base address which is crucial to be able to overwrite any statements
+* it currently in the test game (Hitman 2016) it can reliably intercept the camera struct address (in which the matrix we need is located)
+* reliable basic keyboard input system / handling using Direct Input in-place. 
+
+So the biggest hurdles have been taken :). 
+
+Next up: integrating the camera class and see if we can get something interesting on the screen :)
+
 More soon :)
 
 ## Useful links
