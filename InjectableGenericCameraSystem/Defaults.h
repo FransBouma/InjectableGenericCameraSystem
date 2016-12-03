@@ -19,3 +19,5 @@
 #define IGCS_KEY_TILT_RIGHT		DIK_NUMPAD3
 #define IGCS_KEY_FOV_INCREASE	DIK_NUMPADPLUS
 #define IGCS_KEY_FOV_DECREASE	DIK_NUMPADMINUS
+
+static const byte jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]

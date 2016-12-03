@@ -116,12 +116,7 @@ void SetcameraStructInterceptorHook()
 	BYTE* startOfHookAddress = reinterpret_cast<BYTE*>(_hostImageAddress + (__int64)MATRIX_ADDRESS_INTERCEPT_START_OFFSET);
 	_cameraStructInterceptionContinue = _hostImageAddress + (__int64)MATRIX_ADDRESS_INTERCEPT_CONTINUE_OFFSET;
 	// now write bytes of jmp qword ptr [address], which is jmp qword ptr 0 offset.
-	startOfHookAddress[0] = 0xff;
-	startOfHookAddress[1] = 0x25;
-	startOfHookAddress[2] = 0;
-	startOfHookAddress[3] = 0;
-	startOfHookAddress[4] = 0;
-	startOfHookAddress[5] = 0;
+	memcpy(startOfHookAddress, jmpFarInstructionBytes, sizeof(jmpFarInstructionBytes));
 	// now write the address. Do this with a recast of the pointer to an __int64 pointer to avoid endianmess.
 	__int64* interceptorAddressDestination = (__int64*)(startOfHookAddress+6);
 	void* interceptorAddress = &cameraAddressInterceptor;
@@ -134,12 +129,7 @@ void SetMatrixWriteInterceptorHook()
 	BYTE* startOfHookAddress = reinterpret_cast<BYTE*>(_hostImageAddress + (__int64)MATRIX_WRITE_INTERCEPT_START_OFFSET);
 	_matrixWriteInterceptionContinue = _hostImageAddress + (__int64)MATRIX_WRITE_INTERCEPT_CONTINUE_OFFSET;
 	// now write bytes of jmp qword ptr [address], which is jmp qword ptr 0 offset.
-	startOfHookAddress[0] = 0xff;
-	startOfHookAddress[1] = 0x25;
-	startOfHookAddress[2] = 0;
-	startOfHookAddress[3] = 0;
-	startOfHookAddress[4] = 0;
-	startOfHookAddress[5] = 0;
+	memcpy(startOfHookAddress, jmpFarInstructionBytes, sizeof(jmpFarInstructionBytes));
 	// now write the address. Do this with a recast of the pointer to an __int64 pointer to avoid endianmess.
 	__int64* interceptorAddressDestination = (__int64*)(startOfHookAddress + 6);
 	void* interceptorAddress = &cameraWriteInterceptor;
@@ -147,24 +137,12 @@ void SetMatrixWriteInterceptorHook()
 }
 
 /* Camera info
-// >>>>>>>>>>> USE DirectXMath, which is the successor of D3DX. See: https://blogs.msdn.microsoft.com/chuckw/2015/08/05/where-is-the-directx-sdk-2015-edition/
-// >>>>>>>>>> USE Camera and files from toymaker.info.
-// >>>>>>>>>> For FOV: Use:
-
-void camera::setPerspectiveProjection(float FOV, float aspectRatio, float zNear, float zFar)
-{
-//convert FOV from degrees to radians
-FOV = FOV * (float) DEG_TO_RAD;
-
-D3DXMatrixPerspectiveFovLH( &projectionMatrix, FOV, aspectRatio, zNear, zFar );
-}
-
-where aspectRatio is the aspect ratio of the window of the main process. So obtain that ratio from a method, then feed it to this method.
-Intercept window resize messages in a message pump? Check if this is necessary. Might not be. If interception is needed, this is done through a global hook:
-https://www.codeproject.com/Articles/1037/Hooks-and-DLLs
-
-But first create the camera, then we'll add the FoV and see if AR resizing is needed.
-Also try to obtain the viewport of the d3d device, this might be a better approach than the window as the window might be 1920x1200 but the rendered view is 1920x1080
-like in AC Unity/syndicate.
-
+ >>>>>>>>>>> USE DirectXMath, which is the successor of D3DX. See: https://blogs.msdn.microsoft.com/chuckw/2015/08/05/where-is-the-directx-sdk-2015-edition/
+ >>>>>>>>>> USE Camera and files from toymaker.info.
+ >>>>>>>>>> FOV is always handled by the game, we can't embed this in the camera we'll be using as that creates a view matrix. 
+			So the system needs additional key handling and target overwriting for that. This can't be done with the viewmatrix
+            as it's done by the projection set for the window, which is done separately. this isn't a big deal though. 
+            We already need additional key handling for timestop too, as that's a nice thing to add to the camera system as well (if timestop is available). 
+ 			FOV should always be usable, with or without the camera enabled. 
+			The view matrix might have camera pos differently defined than the game wants, the code should anticipate on that. 
 */
