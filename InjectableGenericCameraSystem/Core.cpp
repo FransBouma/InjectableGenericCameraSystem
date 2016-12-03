@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "DataStructures.h"
 
 using namespace std;
 
@@ -7,21 +8,33 @@ extern "C" {
 	void interceptor();
 }
 
-// data shared with asm functions
+// data shared with asm functions. This is allocated here, 'C' style and not in some datastructure as passing that to 
+// MASM is rather tedious. 
 extern "C" {
-	__int64 _hostImageAddress = 0;
-	__int64 _matrixAddress = 0;
+	// The address of the camera matrix in memory, intercepted by the interceptor. 
+	__int64 _matrixAddress=0;
+	// The continue address for continuing execution after matrix address interception. 
+	__int64 _matrixAddressInterceptionContinue = 0;
+	// the continue address for continuing execution after interception of code which writes to the camera matrix. 
+	__int64 _matrixWriteInterceptionContinue = 0;
 }
 
-// Local functions
-void SetInterceptorHook();
+// local data 
+// The base address of the host image in its own address space. Used to calculate real addresses with using an offset.
+__int64 _hostImageAddress = 0;
+__int64 _matrixAddressInterceptionStart = 0;
+__int64 _matrixWriteInterceptionStart = 0;
 
+
+// Local functions
+void SetMatrixAddressInterceptorHook();
 
 void MainLoop(HMODULE hostBaseAddress)
 {
 	cout << "System start" << endl;
+	cout << showbase << hex;
 	_hostImageAddress = (__int64)hostBaseAddress;
-	SetInterceptorHook();
+	SetMatrixAddressInterceptorHook();
 	while(0==_matrixAddress)
 	{
 		Sleep(100);
@@ -31,9 +44,9 @@ void MainLoop(HMODULE hostBaseAddress)
 }
 
 
-void SetInterceptorHook()
+void SetMatrixAddressInterceptorHook()
 {
-	BYTE* startOfHookAddress = reinterpret_cast<BYTE*>(_hostImageAddress + (__int64)0x41C5B9A);
+	BYTE* startOfHookAddress = reinterpret_cast<BYTE*>(_hostImageAddress + (__int64)MATRIX_ADDRESS_INTERCEPT_START_OFFSET);
 	// now write bytes of jmp qword ptr [address], which is jmp qword ptr 0 offset.
 	startOfHookAddress[0] = 0xff;
 	startOfHookAddress[1] = 0x25;
@@ -45,6 +58,7 @@ void SetInterceptorHook()
 	__int64* interceptorAddressDestination = (__int64*)(startOfHookAddress+6);
 	void* interceptorAddress = &interceptor;
 	interceptorAddressDestination[0] = (__int64)interceptorAddress;
+	_matrixAddressInterceptionContinue = _hostImageAddress + (__int64)MATRIX_ADDRESS_INTERCEPT_CONTINUE_OFFSET;
 }
 
 

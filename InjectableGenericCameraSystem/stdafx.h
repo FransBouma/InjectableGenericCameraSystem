@@ -10,13 +10,11 @@
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 // Windows Header Files:
 #include <windows.h>
-#include <io.h>
-#include <ios>
 #include <iostream>
-#include <Fcntl.h>
 #include <tchar.h>
 #include <Psapi.h>
 
+#include "Offsets.h"
 #include "Core.h"
 
 
