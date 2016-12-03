@@ -57,7 +57,8 @@ The system requires very little customization per game. Only the interceptor cod
 is generic and can be re-used per game. 
 
 ## Current status
-It's early days, the dll is now injectable, a console can be created and it can obtain the parent's process base address which is crucial to be able to overwrite any statements. 
+It's early days, the dll is now injectable, a console can be created, it can obtain the parent's process base address which is crucial to be able to overwrite any statements, and it
+currently in the test game (Hitman 2016) it can reliably intercept the camera struct address (in which the matrix we need is located) so the biggest hurdle has been taken :). 
 More soon :)
 
 ## Useful links
