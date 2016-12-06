@@ -1,23 +1,23 @@
 #pragma once
 
 #include "stdafx.h"
-#include "InputHandler.h"
+#include "input.h"
 
 // Keyboard camera control
-#define IGCS_KEY_CAMERA_ENABLE	DIK_INSERT
-#define IGCS_KEY_ROTATE_RIGHT	DIK_RIGHTARROW	// pitch
-#define IGCS_KEY_ROTATE_LEFT	DIK_LEFTARROW
-#define IGCS_KEY_ROTATE_UP		DIK_UPARROW		// yaw
-#define IGCS_KEY_ROTATE_DOWN	DIK_DOWNARROW
-#define IGCS_KEY_MOVE_FORWARD	DIK_NUMPAD8
-#define IGCS_KEY_MOVE_BACKWARD	DIK_NUMPAD5
-#define IGCS_KEY_MOVE_LEFT		DIK_NUMPAD4
-#define IGCS_KEY_MOVE_RIGHT		DIK_NUMPAD6
-#define IGCS_KEY_MOVE_UP		DIK_NUMPAD7
-#define IGCS_KEY_MOVE_DOWN		DIK_NUMPAD9
-#define IGCS_KEY_TILT_LEFT		DIK_NUMPAD1		// roll
-#define IGCS_KEY_TILT_RIGHT		DIK_NUMPAD3
-#define IGCS_KEY_FOV_INCREASE	DIK_NUMPADPLUS
-#define IGCS_KEY_FOV_DECREASE	DIK_NUMPADMINUS
+#define IGCS_KEY_CAMERA_ENABLE	Keyboard::KEY_INSERT
+#define IGCS_KEY_ROTATE_RIGHT	Keyboard::KEY_RIGHT	// pitch
+#define IGCS_KEY_ROTATE_LEFT	Keyboard::KEY_LEFT
+#define IGCS_KEY_ROTATE_UP		Keyboard::KEY_UP		// yaw
+#define IGCS_KEY_ROTATE_DOWN	Keyboard::KEY_DOWN
+#define IGCS_KEY_MOVE_FORWARD	Keyboard::KEY_NUMPAD_8
+#define IGCS_KEY_MOVE_BACKWARD	Keyboard::KEY_NUMPAD_5
+#define IGCS_KEY_MOVE_LEFT		Keyboard::KEY_NUMPAD_4
+#define IGCS_KEY_MOVE_RIGHT		Keyboard::KEY_NUMPAD_6
+#define IGCS_KEY_MOVE_UP		Keyboard::KEY_NUMPAD_7
+#define IGCS_KEY_MOVE_DOWN		Keyboard::KEY_NUMPAD_9
+#define IGCS_KEY_TILT_LEFT		Keyboard::KEY_NUMPAD_1		// roll
+#define IGCS_KEY_TILT_RIGHT		Keyboard::KEY_NUMPAD_3
+#define IGCS_KEY_FOV_INCREASE	Keyboard::KEY_NUMPAD_ADD
+#define IGCS_KEY_FOV_DECREASE	Keyboard::KEY_NUMPAD_MINUS
 
 static const byte jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]

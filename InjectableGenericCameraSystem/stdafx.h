@@ -8,11 +8,17 @@
 #include "targetver.h"
 
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+#define DIRECTINPUT_VERSION 0x0800
+
 // Windows Header Files:
 #include <windows.h>
 #include <iostream>
 #include <tchar.h>
 #include <Psapi.h>
+#include <dinput.h>
+#include <utility>
+#include <vector>
+#include "DirectXMath.h"
 
 #include "Offsets.h"
 #include "Core.h"

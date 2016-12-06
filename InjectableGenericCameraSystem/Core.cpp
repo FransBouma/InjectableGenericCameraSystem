@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "InputHandler.h"
+#include "input.h"
 #include "FPCamera.h"
 
 using namespace std;
@@ -11,7 +11,6 @@ extern "C" {
 	void cameraWriteInterceptor1();		// create as much interceptors for write interception as needed. In the example game, there are 4.
 	void cameraWriteInterceptor2();
 	void cameraWriteInterceptor3();
-	void cameraWriteInterceptor4();
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -28,8 +27,6 @@ extern "C" {
 	__int64 _matrixWriteInterceptionContinue2 = 0;
 	// the continue address for continuing execution after interception of the third block of code which writes to the camera matrix. 
 	__int64 _matrixWriteInterceptionContinue3 = 0;
-	// the continue address for continuing execution after interception of the fourth block of code which writes to the camera matrix. 
-	__int64 _matrixWriteInterceptionContinue4 = 0;
 	byte	_cameraEnabled = 0;
 }
 
@@ -41,9 +38,7 @@ __int64 _cameraStructInterceptionStart = 0;
 __int64 _matrixWriteInterceptionStart1 = 0;
 __int64 _matrixWriteInterceptionStart2 = 0;
 __int64 _matrixWriteInterceptionStart3 = 0;
-__int64 _matrixWriteInterceptionStart4 = 0;
 float* _gameMatrix;
-InputHandler _inputHandler;
 CFPCamera* _camera;
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -52,7 +47,9 @@ void SetcameraStructInterceptorHook();
 void SetMatrixWriteInterceptorHooks();
 void WaitForCameraStruct();
 void MainLoop();
-void HandleInput();
+void UpdateFrame();
+void HandleUserInput();
+void InitCamera();
 void WriteCameraToGameMatrix();
 void SetHook(__int64 startOffset, __int64 continueOffset, __int64* interceptionContinue, void* asmFunction);
 
@@ -65,11 +62,13 @@ void SystemStart(HMODULE hostBaseAddress)
 	_hostImageAddress = (__int64)hostBaseAddress;
 	SetcameraStructInterceptorHook();
 	WaitForCameraStruct();
+	InitCamera();
 	// matrix found, we can do our business.
-	_inputHandler.Initialize(hostBaseAddress, GetConsoleWindow());
+	Keyboard::init(hostBaseAddress);
+	Mouse::init(hostBaseAddress);
 	SetMatrixWriteInterceptorHooks();
 	MainLoop();
-	_inputHandler.Shutdown();
+	
 	cout << "System end" << endl;
 }
 
@@ -81,12 +80,10 @@ void MainLoop()
 		cout << "Matrix address not found. Can't continue with main loop" << endl;
 		return;
 	}
-	_camera = new CFPCamera(D3DXVECTOR3(_gameMatrix[12], _gameMatrix[13], _gameMatrix[14]));
 	while (true)
 	{
 		Sleep(25);
-		HandleInput();
-		WriteCameraToGameMatrix();
+		UpdateFrame();
 	}
 }
 
@@ -97,33 +94,38 @@ void WriteCameraToGameMatrix()
 	{
 		return;
 	}
-	D3DXMATRIX viewMatrix;
-	_camera->CalculateViewMatrix(&viewMatrix);
-	_gameMatrix[0] = viewMatrix._11;
-	_gameMatrix[1] = viewMatrix._12;
-	_gameMatrix[2] = viewMatrix._13;
-	_gameMatrix[3] = viewMatrix._14;
-	_gameMatrix[4] = viewMatrix._21;
-	_gameMatrix[5] = viewMatrix._22;
-	_gameMatrix[6] = viewMatrix._23;
-	_gameMatrix[7] = viewMatrix._24;
-	_gameMatrix[8] = viewMatrix._31;
-	_gameMatrix[9] = viewMatrix._32;
-	_gameMatrix[10] = viewMatrix._33;
-	_gameMatrix[11] = viewMatrix._34;
-	_gameMatrix[12] = viewMatrix._41;
-	_gameMatrix[13] = viewMatrix._42;
-	_gameMatrix[14] = viewMatrix._43;
-	_gameMatrix[15] = viewMatrix._44;
+
+	D3DXQUATERNION q;
+	_camera->CalculateLookQuaternion(&q);
+	float* lookInMemory = reinterpret_cast<float*>(_cameraStructAddress + LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET);
+	lookInMemory[0] = q.x;
+	lookInMemory[1] = q.y;
+	lookInMemory[2] = q.z;
+	lookInMemory[3] = q.w;
+
+	// calculate new coords.
+	float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
+	D3DXVECTOR3 currentCoords = D3DXVECTOR3(coordsInMemory[0], coordsInMemory[1], coordsInMemory[2]);
+	D3DXVECTOR3 coords;
+	_camera->CalculateCameraCoords(&coords, q, currentCoords);
 }
 
 
-void HandleInput()
+void UpdateFrame()
 {
-	// first keyboard / mouse input.
-	_inputHandler.Frame();
+	Keyboard::instance().update();
+	Mouse::instance().update();
+	HandleUserInput();
+	WriteCameraToGameMatrix();
+}
 
-	if (_inputHandler.IsKeyPressed(IGCS_KEY_CAMERA_ENABLE))
+
+void HandleUserInput()
+{
+	Keyboard &keyboard = Keyboard::instance();
+	Mouse &mouse = Mouse::instance();
+
+	if(keyboard.keyPressed(IGCS_KEY_CAMERA_ENABLE))
 	{
 #pragma message ("RE INITIALIZE CAMERA WITH COORDS FROM ORIGINAL MATRIX HERE, BEFORE ENABLING IT, IF IT'S DISABLED")
 		_cameraEnabled = _cameraEnabled == 0 ? 1 : 0;
@@ -131,26 +133,73 @@ void HandleInput()
 		// wait for 150ms to avoid fast keyboard hammering disabling the camera right away
 		Sleep(150);
 	}
-	if (!_cameraEnabled)
+	if(!_cameraEnabled)
 	{
 		// camera is disabled. We simply disable all input to the camera movement. 
 		return;
 	}
-	if (_inputHandler.IsKeyPressed(IGCS_KEY_MOVE_FORWARD))
+	if(keyboard.keyDown(IGCS_KEY_MOVE_FORWARD))
 	{
 		cout << "Move forward pressed" << endl;
 		_camera->MoveForward(0.1);
 	}
-	if (_inputHandler.IsKeyPressed(IGCS_KEY_MOVE_BACKWARD))
+	if(keyboard.keyDown(IGCS_KEY_MOVE_BACKWARD))
 	{
 		cout << "Move backward pressed" << endl;
 		_camera->MoveForward(-0.1);
 	}
-	if (_inputHandler.IsKeyPressed(IGCS_KEY_MOVE_RIGHT))
+	if (keyboard.keyDown(IGCS_KEY_MOVE_RIGHT))
 	{
 		cout << "Move right pressed" << endl;
 		_camera->MoveRight(0.1);
 	}
+	if (keyboard.keyDown(IGCS_KEY_MOVE_LEFT))
+	{
+		cout << "Move left pressed" << endl;
+		_camera->MoveRight(-0.1);
+	}
+	if (keyboard.keyDown(IGCS_KEY_MOVE_UP))
+	{
+		cout << "Move up pressed" << endl;
+		_camera->MoveUp(0.1);
+	}
+	if (keyboard.keyDown(IGCS_KEY_MOVE_DOWN))
+	{
+		cout << "Move down pressed" << endl;
+		_camera->MoveUp(-0.1);
+	}
+	if (keyboard.keyDown(IGCS_KEY_ROTATE_DOWN))
+	{
+		cout << "Rotate down pressed" << endl;
+		_camera->Pitch(0.01);
+	}
+	if (keyboard.keyDown(IGCS_KEY_ROTATE_UP))
+	{
+		cout << "Rotate up pressed" << endl;
+		_camera->Pitch(-0.01);
+	}
+	if (keyboard.keyDown(IGCS_KEY_ROTATE_RIGHT))
+	{
+		cout << "Rotate right pressed" << endl;
+		_camera->Yaw(0.01);
+	}
+	if (keyboard.keyDown(IGCS_KEY_ROTATE_LEFT))
+	{
+		cout << "Rotate left pressed" << endl;
+		_camera->Yaw(-0.01);
+	}
+	if (keyboard.keyDown(IGCS_KEY_TILT_LEFT))
+	{
+		cout << "Tilt left pressed" << endl;
+		_camera->Roll(0.01);
+	}
+	if (keyboard.keyDown(IGCS_KEY_TILT_RIGHT))
+	{
+		cout << "Tilt right pressed" << endl;
+		_camera->Roll(-0.01);
+	}
+
+
 
 	// XInput for controller update
 }
@@ -158,12 +207,12 @@ void HandleInput()
 
 void WaitForCameraStruct()
 {
+	cout << "Waiting for camera struct interception..." << endl;
 	while(0 == _cameraStructAddress)
 	{
 		Sleep(100);
 	}
 	cout << "Address found: " << _cameraStructAddress << endl;
-	_gameMatrix = reinterpret_cast<float*>(_cameraStructAddress + MATRIX_START_IN_CAMERA_STRUCT_OFFSET);
 }
 
 
@@ -179,7 +228,6 @@ void SetMatrixWriteInterceptorHooks()
 	SetHook((__int64)MATRIX_WRITE_INTERCEPT1_START_OFFSET, (__int64)MATRIX_WRITE_INTERCEPT1_CONTINUE_OFFSET, &_matrixWriteInterceptionContinue1, &cameraWriteInterceptor1);
 	SetHook((__int64)MATRIX_WRITE_INTERCEPT2_START_OFFSET, (__int64)MATRIX_WRITE_INTERCEPT2_CONTINUE_OFFSET, &_matrixWriteInterceptionContinue2, &cameraWriteInterceptor2);
 	SetHook((__int64)MATRIX_WRITE_INTERCEPT3_START_OFFSET, (__int64)MATRIX_WRITE_INTERCEPT3_CONTINUE_OFFSET, &_matrixWriteInterceptionContinue3, &cameraWriteInterceptor3);
-	SetHook((__int64)MATRIX_WRITE_INTERCEPT4_START_OFFSET, (__int64)MATRIX_WRITE_INTERCEPT4_CONTINUE_OFFSET, &_matrixWriteInterceptionContinue4, &cameraWriteInterceptor4);
 }
 
 
@@ -195,13 +243,14 @@ void SetHook(__int64 startOffset, __int64 continueOffset, __int64* interceptionC
 }
 
 
+void InitCamera()
+{
+	_camera = new CFPCamera(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	// World has Z up and Y into the screen, so rotate around X (pitch) -90 degrees.
+	_camera->Pitch((-90.0f * D3DX_PI) / 180.f);
+}
+
+
 /* Camera info
  >>>>>>>>>>> USE DirectXMath, which is the successor of D3DX. See: https://blogs.msdn.microsoft.com/chuckw/2015/08/05/where-is-the-directx-sdk-2015-edition/
- >>>>>>>>>> USE Camera and files from toymaker.info.
- >>>>>>>>>> FOV is always handled by the game, we can't embed this in the camera we'll be using as that creates a view matrix. 
-			So the system needs additional key handling and target overwriting for that. This can't be done with the viewmatrix
-            as it's done by the projection set for the window, which is done separately. this isn't a big deal though. 
-            We already need additional key handling for timestop too, as that's a nice thing to add to the camera system as well (if timestop is available). 
- 			FOV should always be usable, with or without the camera enabled. 
-			The view matrix might have camera pos differently defined than the game wants, the code should anticipate on that. 
 */

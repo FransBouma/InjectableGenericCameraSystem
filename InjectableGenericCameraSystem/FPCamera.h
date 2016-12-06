@@ -1,11 +1,7 @@
 #pragma once
-
+#include "stdafx.h"
 #include <d3dx9.h>
 
-/*	A first person camera implementation
-	See acompanying notes
-	Keith Ditchburn May 2007
-*/
 class CFPCamera
 {
 private:
@@ -20,9 +16,9 @@ public:
 	CFPCamera(D3DXVECTOR3 startPos);
 	~CFPCamera(void);
 
-	void CalculateViewMatrix(D3DXMATRIX *viewMatrix);
+	void CalculateLookQuaternion(D3DXQUATERNION* toCalculate);
+	void CalculateCameraCoords(D3DXVECTOR3* toCalculate, D3DXQUATERNION lookQ, D3DXVECTOR3 currentCoords);
 
-	// Gets
 	float GetYaw() const {return m_yaw;}
 	float GetPitch() const {return m_pitch;}
 	float GetRoll() const {return m_roll;}

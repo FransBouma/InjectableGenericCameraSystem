@@ -13,7 +13,6 @@ EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _matrixWriteInterceptionContinue1: qword
 EXTERN _matrixWriteInterceptionContinue2: qword
 EXTERN _matrixWriteInterceptionContinue3: qword
-EXTERN _matrixWriteInterceptionContinue4: qword
 EXTERN _cameraEnabled: byte
 
 cameraAddressInterceptor PROC
@@ -25,8 +24,8 @@ cameraAddressInterceptor PROC
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
 	movss dword ptr [rbx+090h], xmm0					; original statement
-    movss xmm0, dword ptr [rsp+058h]					; original statement
 exit:
+    movss xmm0, dword ptr [rsp+058h]					; original statement
 	jmp qword ptr [_cameraStructInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraAddressInterceptor ENDP
 
@@ -44,15 +43,10 @@ cameraWriteInterceptor1 PROC
 	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
-	movaps dword ptr [rbx+040h],xmm2					; original statement
-	shufps xmm3,xmm8,-074h								; original statement
-	shufps xmm1,xmm3,-034h								; original statement
-	shufps xmm1,xmm1,072h								; original statement
-	movaps dword ptr [rbx+050h],xmm1					; original statement
-	shufps xmm3,xmm4,-027h								; original statement
-	movaps dword ptr [rbx+060h],xmm3					; original statement
-	movaps dword ptr [rbx+070h],xmm0					; original statement
+	movaps xmm0, dword ptr [rax]						; original statement
+	movups dword ptr [rbx+080h],xmm0					; original statement
 exit:
+	movss xmm0, dword ptr [rsp+050h]					; original statement
 	jmp qword ptr [_matrixWriteInterceptionContinue1]	; jmp back into the original game code which is the location after the original statements above.
 cameraWriteInterceptor1 ENDP
 
@@ -64,28 +58,13 @@ cameraWriteInterceptor2 PROC
 	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
-	movaps xmm0, dword ptr [rax]						; original statement
-	movups dword ptr [rbx+080h],xmm0					; original statement
+	movups dword ptr [rbx+098h], xmm0					; original statement
+	movss dword ptr [rbx+094h], xmm1					; original statement	
 exit:
-	movss xmm0, dword ptr [rsp+050h]					; original statement
 	jmp qword ptr [_matrixWriteInterceptionContinue2]	; jmp back into the original game code which is the location after the original statements above.
 cameraWriteInterceptor2 ENDP
 
 cameraWriteInterceptor3 PROC
-	; Game jmps to this location due to the hook set in C function SetMatrixWriteInterceptorHooks. 
-	; first check if this is really a call for the camera. Other logic will use this code too. Check rbx with our known cameraStruct address to be sure
-	cmp qword ptr rbx, [_cameraStructAddress]
-	jne originalCode
-	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
-	je exit												; our own camera is enabled, just skip the writes
-originalCode:
-	movups dword ptr [rbx+098h], xmm0					; original statement
-	movss dword ptr [rbx+094h], xmm1					; original statement	
-exit:
-	jmp qword ptr [_matrixWriteInterceptionContinue3]	; jmp back into the original game code which is the location after the original statements above.
-cameraWriteInterceptor3 ENDP
-
-cameraWriteInterceptor4 PROC
 	; Game jmps to this location due to the hook set in C function SetMatrixWriteInterceptorHooks. 
 	; first check if this is really a call for the camera. Other logic will use this code too. Check rbx with our known cameraStruct address to be sure
 	cmp qword ptr rbx, [_cameraStructAddress]
@@ -102,8 +81,8 @@ originalCode:
 	movss dword ptr [rbx+098h], xmm1					; original statement
 	movss dword ptr [rbx+094h], xmm0					; original statement
 exit:
-	jmp qword ptr [_matrixWriteInterceptionContinue4]	; jmp back into the original game code which is the location after the original statements above.
-cameraWriteInterceptor4 ENDP
+	jmp qword ptr [_matrixWriteInterceptionContinue3]	; jmp back into the original game code which is the location after the original statements above.
+cameraWriteInterceptor3 ENDP
 
 _TEXT ENDS
 END
