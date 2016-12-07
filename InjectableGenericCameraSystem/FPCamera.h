@@ -4,33 +4,33 @@
 
 class CFPCamera
 {
-private:
-	D3DXVECTOR3 m_position; // camera position
-	float m_yaw;  // rotation around the y axis
-	float m_pitch; // rotation around the x axis
-	float m_roll; // rotation around the z axis
-	D3DXVECTOR3 m_up,m_look,m_right; // camera axis
-
-	float RestrictAngleTo360Range(float angle) const;
 public:
-	CFPCamera(D3DXVECTOR3 startPos);
+	CFPCamera();
 	~CFPCamera(void);
 
 	void CalculateLookQuaternion(D3DXQUATERNION* toCalculate);
-	void CalculateCameraCoords(D3DXVECTOR3* toCalculate, D3DXQUATERNION lookQ, D3DXVECTOR3 currentCoords);
-
+	void ResetMovement();
+	void CalculateNewCoords(D3DXVECTOR3* newCoords, const D3DXVECTOR3 currentCoords, const D3DXQUATERNION lookQ);
 	float GetYaw() const {return m_yaw;}
 	float GetPitch() const {return m_pitch;}
 	float GetRoll() const {return m_roll;}
-	D3DXVECTOR3 GetPosition() const {return m_position;}	
 
 	// Move operations
-	void MoveForward(float amount) {m_position+=m_look*amount;}
-	void MoveRight(float amount) {m_position+=m_right*amount;}
-	void MoveUp(float amount) {m_position+=m_up*amount;}
+	void MoveForward(float amount);
+	void MoveRight(float amount);
+	void MoveUp(float amount);
 
 	// Rotations
-	void Yaw(float amount); // rotate around x axis
-	void Pitch(float amount); // rotate around x axis
-	void Roll(float amount); // rotate around z axis	
+	void Yaw(float amount);
+	void Pitch(float amount);
+	void Roll(float amount);
+
+private:
+	D3DXVECTOR3 m_direction; // camera direction, defined by move methods. Reset by ResetMovement
+	float m_yaw;
+	float m_pitch;
+	float m_roll;
+	bool m_movementOccurred;
+
+	float RestrictAngleTo360Range(float angle) const;
 };
