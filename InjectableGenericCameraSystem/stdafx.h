@@ -13,6 +13,7 @@
 // Windows Header Files:
 #include <windows.h>
 #include <iostream>
+#include <string>
 #include <tchar.h>
 #include <Psapi.h>
 #include <dinput.h>
@@ -20,6 +21,7 @@
 #include <vector>
 #include "DirectXMath.h"
 
+#include "Console.h"
 #include "Offsets.h"
 #include "Core.h"
 #include "Defaults.h"

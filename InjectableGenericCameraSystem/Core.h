@@ -1,3 +1,5 @@
 #pragma once
 
-void SystemStart(HMODULE hostBaseAddress);
+static bool g_systemActive = false;
+
+void SystemStart(HMODULE hostBaseAddress, Console c);

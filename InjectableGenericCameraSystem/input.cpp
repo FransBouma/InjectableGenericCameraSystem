@@ -202,7 +202,7 @@ bool Mouse::create()
     if (FAILED(m_pDevice->SetDataFormat(&c_dfDIMouse)))
         return false;
 
-    if (FAILED(m_pDevice->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE)))
+    if (FAILED(m_pDevice->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE)))
         return false;
 
     if (FAILED(m_pDevice->Acquire()))

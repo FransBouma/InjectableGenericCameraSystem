@@ -4,9 +4,7 @@
 using namespace std;
 
 DWORD WINAPI MainThread(LPVOID lpParam);
-void InitConsole();
 HMODULE GetBaseAddressOfContainingProcess();
-
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
@@ -24,9 +22,11 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 				&threadID
 			);
 			break;
+		case DLL_PROCESS_DETACH:
+			g_systemActive = false;
+			break;
 		case DLL_THREAD_ATTACH:
 		case DLL_THREAD_DETACH:
-		case DLL_PROCESS_DETACH:
 			break;
 	}
 	return TRUE;
@@ -36,19 +36,21 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 // lpParam gets the hModule value of the DllMain process
 DWORD WINAPI MainThread(LPVOID lpParam)
 {
-	InitConsole();
+	Console c;
+	c.Init();
+	c.WriteHeader();
 
 	HMODULE moduleHandle = (HMODULE)lpParam;
 	HMODULE baseAddress = GetBaseAddressOfContainingProcess();
 	if(NULL == baseAddress)
 	{
-		cout << "Not able to obtain parent process base address... exiting" << endl;
+		c.WriteError("Not able to obtain parent process base address... exiting");
 	}
 	else
 	{
-		SystemStart(baseAddress);
+		SystemStart(baseAddress, c);
 	}
-	FreeConsole();
+	c.Release();
 	return 0;
 }
 
@@ -65,8 +67,6 @@ HMODULE GetBaseAddressOfContainingProcess()
 		if (EnumProcessModulesEx(processHandle, &toReturn, sizeof(toReturn), &cbNeeded, LIST_MODULES_32BIT | LIST_MODULES_64BIT))
 		{
 			GetModuleBaseName(processHandle, toReturn, processName, sizeof(processName) / sizeof(TCHAR));
-			wcout << "Contained in process: " << processName << endl;
-			wcout << "Base address: " << toReturn << endl;
 		}
 		else
 		{
@@ -77,23 +77,3 @@ HMODULE GetBaseAddressOfContainingProcess()
 	return toReturn;
 }
 
-
-void InitConsole()
-{
-	AllocConsole();
-	AttachConsole(GetCurrentProcessId());
-
-	// Redirect the CRT standard input, output, and error handles to the console
-	FILE *fp;
-	freopen_s(&fp, "CONIN$", "r", stdin);
-	freopen_s(&fp, "CONOUT$", "w", stdout);
-	freopen_s(&fp, "CONOUT$", "w", stderr);
-
-	//Clear the error state for each of the C++ standard stream objects. 
-	std::wcout.clear();
-	std::cout.clear();
-	std::wcerr.clear();
-	std::cerr.clear();
-	std::wcin.clear();
-	std::cin.clear();
-}

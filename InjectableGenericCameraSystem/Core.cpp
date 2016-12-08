@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "input.h"
-#include "FPCamera.h"
+#include "Camera.h"
 
 using namespace std;
 
@@ -39,7 +39,10 @@ __int64 _matrixWriteInterceptionStart1 = 0;
 __int64 _matrixWriteInterceptionStart2 = 0;
 __int64 _matrixWriteInterceptionStart3 = 0;
 float* _gameMatrix;
-CFPCamera* _camera;
+Camera* _camera;
+float	_originalLookData[4];
+float	_originalCoordsData[3];
+Console* _consoleWrapper;
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // Local function definitions
@@ -51,25 +54,26 @@ void UpdateFrame();
 void HandleUserInput();
 void InitCamera();
 void WriteCameraToCameraStructOfGame();
+void RestoreOriginalCameraValues();
+void CacheOriginalCameraValues();
+void DisplayHelp();
 void SetHook(__int64 startOffset, __int64 continueOffset, __int64* interceptionContinue, void* asmFunction);
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // Implementations
-void SystemStart(HMODULE hostBaseAddress)
+void SystemStart(HMODULE hostBaseAddress, Console c)
 {
-	cout << "System start" << endl;
-	cout << showbase << hex;
+	g_systemActive = true;
+	_consoleWrapper = &c;
 	_hostImageAddress = (__int64)hostBaseAddress;
 	SetcameraStructInterceptorHook();
 	WaitForCameraStruct();
+	// camera struct found, we can proceed.
 	InitCamera();
-	// matrix found, we can do our business.
 	Keyboard::init(hostBaseAddress);
 	Mouse::init(hostBaseAddress);
 	SetMatrixWriteInterceptorHooks();
 	MainLoop();
-	
-	cout << "System end" << endl;
 }
 
 
@@ -77,13 +81,14 @@ void MainLoop()
 {
 	if (0 == _cameraStructAddress)
 	{
-		cout << "Matrix address not found. Can't continue with main loop" << endl;
+		cerr << "Matrix address not found. Can't continue with main loop" << endl;
 		return;
 	}
-	while (true)
+	while (g_systemActive)
 	{
-		Sleep(8);
+		Sleep(FRAME_SLEEP);
 		UpdateFrame();
+
 	}
 }
 
@@ -101,14 +106,30 @@ void HandleUserInput()
 {
 	Keyboard &keyboard = Keyboard::instance();
 	Mouse &mouse = Mouse::instance();
+	bool altPressed = keyboard.keyDown(Keyboard::KEY_LALT) || keyboard.keyDown(Keyboard::KEY_RALT);
+	bool ctrlPressed = keyboard.keyDown(Keyboard::KEY_LCONTROL) || keyboard.keyDown(Keyboard::KEY_RCONTROL);
 
 	if(keyboard.keyPressed(IGCS_KEY_CAMERA_ENABLE))
 	{
-#pragma message ("RE INITIALIZE CAMERA WITH COORDS FROM ORIGINAL MATRIX HERE, BEFORE ENABLING IT, IF IT'S DISABLED")
+		if (_cameraEnabled)
+		{
+			RestoreOriginalCameraValues();
+			_consoleWrapper->WriteLine("Camera disabled");
+		}
+		else
+		{
+			CacheOriginalCameraValues();
+			_consoleWrapper->WriteLine("Camera enabled");
+		}
 		_cameraEnabled = _cameraEnabled == 0 ? 1 : 0;
-		cout << "Camera enabled: " << (_cameraEnabled==0 ? "False" : "True") << endl;
 		// wait for 150ms to avoid fast keyboard hammering disabling the camera right away
 		Sleep(150);
+	}
+	if (keyboard.keyDown(IGCS_KEY_HELP) && altPressed)
+	{
+		DisplayHelp();
+		// wait for 250ms to avoid fast keyboard hammering displaying multiple times the help!
+		Sleep(250);
 	}
 	if(!_cameraEnabled)
 	{
@@ -117,74 +138,60 @@ void HandleUserInput()
 	}
 
 	_camera->ResetMovement();
-	bool altPressed = keyboard.keyDown(Keyboard::KEY_LALT) || keyboard.keyDown(Keyboard::KEY_RALT);
-	bool ctrlPressed = keyboard.keyDown(Keyboard::KEY_LCONTROL) || keyboard.keyDown(Keyboard::KEY_RCONTROL);
-	float multiplier = altPressed ? 3.0f : ctrlPressed ? 0.3f : 1.0f;
+	float multiplier = altPressed ? ALT_MULTIPLIER : ctrlPressed ? CTRL_MULTIPLIER : 1.0f;
 
 	if(keyboard.keyDown(IGCS_KEY_MOVE_FORWARD))
 	{
-		cout << "Move forward pressed" << endl;
-		_camera->MoveForward(0.1f * multiplier);
+		_camera->MoveForward(multiplier);
 	}
 	if(keyboard.keyDown(IGCS_KEY_MOVE_BACKWARD))
 	{
-		cout << "Move backward pressed" << endl;
-		_camera->MoveForward(-0.1f * multiplier);
+		_camera->MoveForward(-multiplier);
 	}
 	if (keyboard.keyDown(IGCS_KEY_MOVE_RIGHT))
 	{
-		cout << "Move right pressed" << endl;
-		_camera->MoveRight(0.1f * multiplier);
+		_camera->MoveRight(multiplier);
 	}
 	if (keyboard.keyDown(IGCS_KEY_MOVE_LEFT))
 	{
-		cout << "Move left pressed" << endl;
-		_camera->MoveRight(-0.1f * multiplier);
+		_camera->MoveRight(-multiplier);
 	}
 	if (keyboard.keyDown(IGCS_KEY_MOVE_UP))
 	{
-		cout << "Move up pressed" << endl;
-		_camera->MoveUp(0.1f * multiplier);
+		_camera->MoveUp(multiplier);
 	}
 	if (keyboard.keyDown(IGCS_KEY_MOVE_DOWN))
 	{
-		cout << "Move down pressed" << endl;
-		_camera->MoveUp(-0.1f * multiplier);
+		_camera->MoveUp(-multiplier);
 	}
 	if (keyboard.keyDown(IGCS_KEY_ROTATE_DOWN))
 	{
-		cout << "Rotate down pressed" << endl;
-		_camera->Pitch(0.01f * multiplier);
+		_camera->Pitch(multiplier);
 	}
 	if (keyboard.keyDown(IGCS_KEY_ROTATE_UP))
 	{
-		cout << "Rotate up pressed" << endl;
-		_camera->Pitch(-0.01f * multiplier);
+		_camera->Pitch(-multiplier);
 	}
 	if (keyboard.keyDown(IGCS_KEY_ROTATE_RIGHT))
 	{
-		cout << "Rotate right pressed" << endl;
-		_camera->Yaw(0.01f * multiplier);
+		_camera->Yaw(multiplier);
 	}
 	if (keyboard.keyDown(IGCS_KEY_ROTATE_LEFT))
 	{
-		cout << "Rotate left pressed" << endl;
-		_camera->Yaw(-0.01f * multiplier);
+		_camera->Yaw(-multiplier);
 	}
 	if (keyboard.keyDown(IGCS_KEY_TILT_LEFT))
 	{
-		cout << "Tilt left pressed" << endl;
-		_camera->Roll(0.01f * multiplier);
+		_camera->Roll(multiplier);
 	}
 	if (keyboard.keyDown(IGCS_KEY_TILT_RIGHT))
 	{
-		cout << "Tilt right pressed" << endl;
-		_camera->Roll(-0.01f * multiplier);
+		_camera->Roll(-multiplier);
 	}
 
 	// mouse 
-	_camera->Pitch(mouse.yPosRelative() * 0.001f * multiplier);
-	_camera->Yaw(mouse.xPosRelative() * 0.001f * multiplier);
+	_camera->Pitch(mouse.yPosRelative() * MOUSE_SPEED_CORRECTION * multiplier);
+	_camera->Yaw(mouse.xPosRelative() * MOUSE_SPEED_CORRECTION * multiplier);
 
 	// XInput for controller update
 }
@@ -197,6 +204,7 @@ void WriteCameraToCameraStructOfGame()
 		return;
 	}
 
+	// calculate new look quaternion
 	D3DXQUATERNION q;
 	_camera->CalculateLookQuaternion(&q);
 	float* lookInMemory = reinterpret_cast<float*>(_cameraStructAddress + LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET);
@@ -207,7 +215,7 @@ void WriteCameraToCameraStructOfGame()
 
 	// calculate new coords.
 	float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-	D3DXVECTOR3 currentCoords = D3DXVECTOR3(coordsInMemory[0], coordsInMemory[1], coordsInMemory[2]);
+	D3DXVECTOR3 currentCoords = D3DXVECTOR3(coordsInMemory);
 	D3DXVECTOR3 newCoords;
 	_camera->CalculateNewCoords(&newCoords, currentCoords, q);
 	coordsInMemory[0] = newCoords.x;
@@ -218,12 +226,12 @@ void WriteCameraToCameraStructOfGame()
 
 void WaitForCameraStruct()
 {
-	cout << "Waiting for camera struct interception..." << endl;
+	_consoleWrapper->WriteLine("Waiting for camera struct interception...");
 	while(0 == _cameraStructAddress)
 	{
 		Sleep(100);
 	}
-	cout << "Address found: " << _cameraStructAddress << endl;
+	_consoleWrapper->WriteLine("Camera found.");
 }
 
 
@@ -256,9 +264,64 @@ void SetHook(__int64 startOffset, __int64 continueOffset, __int64* interceptionC
 
 void InitCamera()
 {
-	_camera = new CFPCamera();
-	// World has Z up and Y into the screen, so rotate around X (pitch) -90 degrees.
-	_camera->Pitch((-90.0f * D3DX_PI) / 180.f);
+	_camera = new Camera();
+	// World has Z up and Y out of the screen, so rotate around X (pitch) -90 degrees.
+	_camera->SetPitch((-90.0f * D3DX_PI) / 180.f);
+}
+
+
+void RestoreOriginalCameraValues()
+{
+	float* lookInMemory = reinterpret_cast<float*>(_cameraStructAddress + LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET);
+	float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
+	for(int i=0;i<sizeof(_originalLookData);i++)
+	{
+		lookInMemory[i] = _originalLookData[i];
+	}
+	for (int i = 0; i < sizeof(_originalCoordsData); i++)
+	{
+		coordsInMemory[i] = _originalCoordsData[i];
+	}
+}
+
+
+void CacheOriginalCameraValues()
+{
+	float* lookInMemory = reinterpret_cast<float*>(_cameraStructAddress + LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET);
+	float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
+	for (int i = 0; i<sizeof(_originalLookData); i++)
+	{
+		_originalLookData[i] = lookInMemory[i];
+	}
+	for (int i = 0; i < sizeof(_originalCoordsData); i++)
+	{
+		_originalCoordsData[i] = coordsInMemory[i];
+	}
+}
+
+
+void DisplayHelp()
+{
+	_consoleWrapper->WriteLine("---[IGCS Help]------------------------------------------", CONSOLE_WHITE);
+	_consoleWrapper->WriteLine("Keyboard:", CONSOLE_WHITE);
+	_consoleWrapper->WriteLine("--------------------------------------------------------", CONSOLE_WHITE);
+	_consoleWrapper->WriteLine("INS               : Enable/Disable camera");
+	_consoleWrapper->WriteLine("ALT+rotate/move   : Faster rotate / move");
+	_consoleWrapper->WriteLine("CTLR+rotate/move  : Slower rotate / move");
+	_consoleWrapper->WriteLine("Arrow up/down     : Rotate camera up/down");
+	_consoleWrapper->WriteLine("Arrow left/right  : Rotate camera left/right");
+	_consoleWrapper->WriteLine("Numpad 8/Numpad 5 : Move camera forward/backward");
+	_consoleWrapper->WriteLine("Numpad 4/Numpad 6 : Move camera left / right");
+	_consoleWrapper->WriteLine("Numpad 7/Numpad 9 : Move camera up / down");
+	_consoleWrapper->WriteLine("Numpad 1/Numpad 3 : Tilt camera left / right");
+	_consoleWrapper->WriteLine("HOME              : Enable / disable FoV override");
+	_consoleWrapper->WriteLine("Numpad +/Numpad - : Increase / decrease FoV");
+	_consoleWrapper->WriteLine("ALT+H             : This help");
+	_consoleWrapper->WriteLine("");
+	_consoleWrapper->WriteLine("Mouse:", CONSOLE_WHITE);
+	_consoleWrapper->WriteLine("--------------------------------------------------------", CONSOLE_WHITE);
+	_consoleWrapper->WriteLine("Mouse movement    : Rotate camera up/down/left/right");
+	_consoleWrapper->WriteLine("--------------------------------------------------------", CONSOLE_WHITE);
 }
 
 
