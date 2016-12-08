@@ -36,6 +36,7 @@ Keyboard &Keyboard::instance()
 
 Keyboard::Keyboard()
 {
+	Keyboard::g_parentModuleHandle = NULL;
     m_pDirectInput = 0;
     m_pDevice = 0;
     m_pCurrKeyStates = m_keyStates[0];
@@ -161,6 +162,7 @@ Mouse &Mouse::instance()
 
 Mouse::Mouse()
 {
+	Mouse::g_parentModuleHandle = NULL;
     m_pDevice = 0;
     m_pCurrMouseState = &m_mouseStates[0];
     m_pPrevMouseState = &m_mouseStates[1];

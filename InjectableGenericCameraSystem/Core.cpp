@@ -33,16 +33,16 @@ extern "C" {
 //--------------------------------------------------------------------------------------------------------------------------------
 // local data 
 // The base address of the host image in its own address space. Used to calculate real addresses with using an offset.
-__int64 _hostImageAddress = 0;
-__int64 _cameraStructInterceptionStart = 0;
-__int64 _matrixWriteInterceptionStart1 = 0;
-__int64 _matrixWriteInterceptionStart2 = 0;
-__int64 _matrixWriteInterceptionStart3 = 0;
-float* _gameMatrix;
-Camera* _camera;
-float	_originalLookData[4];
-float	_originalCoordsData[3];
-Console* _consoleWrapper;
+static __int64 _hostImageAddress = 0;
+static __int64 _cameraStructInterceptionStart = 0;
+static __int64 _matrixWriteInterceptionStart1 = 0;
+static __int64 _matrixWriteInterceptionStart2 = 0;
+static __int64 _matrixWriteInterceptionStart3 = 0;
+static float* _gameMatrix=NULL;
+static Camera* _camera=NULL;
+static float	_originalLookData[4];
+static float	_originalCoordsData[3];
+static Console* _consoleWrapper=NULL;
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // Local function definitions
@@ -109,6 +109,12 @@ void HandleUserInput()
 	bool altPressed = keyboard.keyDown(Keyboard::KEY_LALT) || keyboard.keyDown(Keyboard::KEY_RALT);
 	bool ctrlPressed = keyboard.keyDown(Keyboard::KEY_LCONTROL) || keyboard.keyDown(Keyboard::KEY_RCONTROL);
 
+	if (keyboard.keyDown(IGCS_KEY_HELP) && altPressed)
+	{
+		DisplayHelp();
+		// wait for 250ms to avoid fast keyboard hammering displaying multiple times the help!
+		Sleep(250);
+	}
 	if(keyboard.keyPressed(IGCS_KEY_CAMERA_ENABLE))
 	{
 		if (_cameraEnabled)
@@ -121,15 +127,9 @@ void HandleUserInput()
 			CacheOriginalCameraValues();
 			_consoleWrapper->WriteLine("Camera enabled");
 		}
-		_cameraEnabled = _cameraEnabled == 0 ? 1 : 0;
+		_cameraEnabled = _cameraEnabled == 0 ? (byte)1 : (byte)0;
 		// wait for 150ms to avoid fast keyboard hammering disabling the camera right away
 		Sleep(150);
-	}
-	if (keyboard.keyDown(IGCS_KEY_HELP) && altPressed)
-	{
-		DisplayHelp();
-		// wait for 250ms to avoid fast keyboard hammering displaying multiple times the help!
-		Sleep(250);
 	}
 	if(!_cameraEnabled)
 	{
@@ -276,11 +276,11 @@ void RestoreOriginalCameraValues()
 {
 	float* lookInMemory = reinterpret_cast<float*>(_cameraStructAddress + LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET);
 	float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-	for(int i=0;i<sizeof(_originalLookData);i++)
+	for(int i=0;i<4;i++)
 	{
 		lookInMemory[i] = _originalLookData[i];
 	}
-	for (int i = 0; i < sizeof(_originalCoordsData); i++)
+	for (int i = 0; i < 3; i++)
 	{
 		coordsInMemory[i] = _originalCoordsData[i];
 	}
@@ -291,11 +291,11 @@ void CacheOriginalCameraValues()
 {
 	float* lookInMemory = reinterpret_cast<float*>(_cameraStructAddress + LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET);
 	float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-	for (int i = 0; i<sizeof(_originalLookData); i++)
+	for (int i = 0; i<4; i++)
 	{
 		_originalLookData[i] = lookInMemory[i];
 	}
-	for (int i = 0; i < sizeof(_originalCoordsData); i++)
+	for (int i = 0; i < 3; i++)
 	{
 		_originalCoordsData[i] = coordsInMemory[i];
 	}

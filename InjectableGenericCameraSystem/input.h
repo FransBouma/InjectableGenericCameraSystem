@@ -166,18 +166,18 @@ public:
 	static void init(HINSTANCE);
 
     void handleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-    void update();
+	void update();
 
     char getLastChar() const
     { return m_lastChar; }
 
-    bool keyDown(Key key) const
+	bool keyDown(Key key) const
     { return (m_pCurrKeyStates[key] & 0x80) ? true : false; }
 
-    bool keyUp(Key key) const
+	bool keyUp(Key key) const
     { return (m_pCurrKeyStates[key] & 0x80) ? false : true; }
 
-    bool keyPressed(Key key) const
+	bool keyPressed(Key key) const
     { 
         return ((m_pCurrKeyStates[key] & 0x80)
             && !(m_pPrevKeyStates[key] & 0x80)) ? true : false;
@@ -192,12 +192,13 @@ private:
     
 	static HINSTANCE g_parentModuleHandle;
 
-    IDirectInput8 *m_pDirectInput;
-    IDirectInputDevice8 *m_pDevice;
-    unsigned char *m_pCurrKeyStates;
     unsigned char *m_pPrevKeyStates;
-    unsigned char m_keyStates[2][256];
-    char m_lastChar;
+	unsigned char *m_pCurrKeyStates;
+	unsigned char m_keyStates[2][256] { { 0} };
+
+	IDirectInput8 *m_pDirectInput;
+	IDirectInputDevice8 *m_pDevice;
+	char m_lastChar;
 };
 
 
@@ -214,10 +215,10 @@ public:
     static Mouse &instance();
 	static void init(HINSTANCE);
     
-    bool buttonDown(MouseButton button) const
+	bool buttonDown(MouseButton button) const
     { return (m_pCurrMouseState->rgbButtons[button] & 0x80) ? true : false; }
 
-    bool buttonPressed(MouseButton button) const
+	bool buttonPressed(MouseButton button) const
     {
         return ((m_pCurrMouseState->rgbButtons[button] & 0x80)
             && !(m_pPrevMouseState->rgbButtons[button] & 0x80)) ? true : false;
@@ -229,10 +230,10 @@ public:
     bool isMouseSmoothing() const
     { return m_enableFiltering; }
 
-    float xPosRelative() const
+	float xPosRelative() const
     { return m_deltaMouseX; }
 
-    float yPosRelative() const
+	float yPosRelative() const
     { return m_deltaMouseY; }
 
     float weightModifier() const
@@ -243,7 +244,7 @@ public:
 
     void setWeightModifier(float weightModifier);
     void smoothMouse(bool smooth);
-    void update();
+	__declspec(noinline) void update();
 
 private:
     Mouse();

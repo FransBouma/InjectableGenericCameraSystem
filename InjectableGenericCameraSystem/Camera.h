@@ -24,7 +24,7 @@ public:
 	void SetRoll(float angle);
 
 private:
-	XMFLOAT3 m_direction; // camera direction, defined by move methods. Reset by ResetMovement
+	XMFLOAT3 m_direction = XMFLOAT3(0.0f, 0.0f, 0.0f); // camera direction, defined by move methods. Reset by ResetMovement
 	float m_yaw;
 	float m_pitch;
 	float m_roll;
