@@ -10,9 +10,9 @@ _TEXT SEGMENT
 
 EXTERN _cameraStructAddress: qword
 EXTERN _cameraStructInterceptionContinue: qword
-EXTERN _matrixWriteInterceptionContinue1: qword
-EXTERN _matrixWriteInterceptionContinue2: qword
-EXTERN _matrixWriteInterceptionContinue3: qword
+EXTERN _cameraWriteInterceptionContinue1: qword
+EXTERN _cameraWriteInterceptionContinue2: qword
+EXTERN _cameraWriteInterceptionContinue3: qword
 EXTERN _cameraEnabled: byte
 
 cameraAddressInterceptor PROC
@@ -47,7 +47,7 @@ originalCode:
 	movups dword ptr [rbx+080h],xmm0					; original statement
 exit:
 	movss xmm0, dword ptr [rsp+050h]					; original statement
-	jmp qword ptr [_matrixWriteInterceptionContinue1]	; jmp back into the original game code which is the location after the original statements above.
+	jmp qword ptr [_cameraWriteInterceptionContinue1]	; jmp back into the original game code which is the location after the original statements above.
 cameraWriteInterceptor1 ENDP
 
 cameraWriteInterceptor2 PROC
@@ -61,7 +61,7 @@ originalCode:
 	movups dword ptr [rbx+098h], xmm0					; original statement
 	movss dword ptr [rbx+094h], xmm1					; original statement	
 exit:
-	jmp qword ptr [_matrixWriteInterceptionContinue2]	; jmp back into the original game code which is the location after the original statements above.
+	jmp qword ptr [_cameraWriteInterceptionContinue2]	; jmp back into the original game code which is the location after the original statements above.
 cameraWriteInterceptor2 ENDP
 
 cameraWriteInterceptor3 PROC
@@ -81,7 +81,7 @@ originalCode:
 	movss dword ptr [rbx+098h], xmm1					; original statement
 	movss dword ptr [rbx+094h], xmm0					; original statement
 exit:
-	jmp qword ptr [_matrixWriteInterceptionContinue3]	; jmp back into the original game code which is the location after the original statements above.
+	jmp qword ptr [_cameraWriteInterceptionContinue3]	; jmp back into the original game code which is the location after the original statements above.
 cameraWriteInterceptor3 ENDP
 
 _TEXT ENDS

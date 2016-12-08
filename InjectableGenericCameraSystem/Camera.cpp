@@ -55,7 +55,7 @@ XMFLOAT3 Camera::CalculateNewCoords(const XMFLOAT3 currentCoords, const XMVECTOR
 		toReturn.x += lookAs4X4._13 * -m_direction.y;
 		toReturn.y += lookAs4X4._23 * -m_direction.y;	// movement in the camera look direction. Y+ is out of the screen in worldspace! (Z is up!)
 		toReturn.z += lookAs4X4._33 * -m_direction.y;
-		toReturn.z += -m_direction.z;						// Don't use the look matrix' second column (which is up) as we want Z to move along world Z axis always.
+		toReturn.z += m_direction.z;					// Don't use the look matrix' second column (which is up) as we want Z to move along world Z axis always.
 	}
 	return toReturn;
 }

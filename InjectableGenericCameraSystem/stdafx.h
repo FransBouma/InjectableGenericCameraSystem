@@ -21,6 +21,7 @@
 #include <vector>
 #include "DirectXMath.h"
 
+#include "Utils.h"
 #include "Console.h"
 #include "Offsets.h"
 #include "Core.h"

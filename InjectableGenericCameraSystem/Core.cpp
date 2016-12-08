@@ -22,12 +22,14 @@ extern "C" {
 	// The continue address for continuing execution after matrix address interception. 
 	__int64 _cameraStructInterceptionContinue = 0;
 	// the continue address for continuing execution after interception of the first block of code which writes to the camera matrix. 
-	__int64 _matrixWriteInterceptionContinue1 = 0;
+	__int64 _cameraWriteInterceptionContinue1 = 0;
 	// the continue address for continuing execution after interception of the second block of code which writes to the camera matrix. 
-	__int64 _matrixWriteInterceptionContinue2 = 0;
+	__int64 _cameraWriteInterceptionContinue2 = 0;
 	// the continue address for continuing execution after interception of the third block of code which writes to the camera matrix. 
-	__int64 _matrixWriteInterceptionContinue3 = 0;
+	__int64 _cameraWriteInterceptionContinue3 = 0;
+	
 	byte	_cameraEnabled = 0;
+	byte	_fovEnabled = 0;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -35,9 +37,9 @@ extern "C" {
 // The base address of the host image in its own address space. Used to calculate real addresses with using an offset.
 static __int64 _hostImageAddress = 0;
 static __int64 _cameraStructInterceptionStart = 0;
-static __int64 _matrixWriteInterceptionStart1 = 0;
-static __int64 _matrixWriteInterceptionStart2 = 0;
-static __int64 _matrixWriteInterceptionStart3 = 0;
+static __int64 _cameraWriteInterceptionStart1 = 0;
+static __int64 _cameraWriteInterceptionStart2 = 0;
+static __int64 _cameraWriteInterceptionStart3 = 0;
 static float* _gameMatrix=NULL;
 static Camera* _camera=NULL;
 static float	_originalLookData[4];
@@ -46,8 +48,9 @@ static Console* _consoleWrapper=NULL;
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // Local function definitions
-void SetcameraStructInterceptorHook();
-void SetMatrixWriteInterceptorHooks();
+void SetCameraStructInterceptorHook();
+void SetCameraWriteInterceptorHooks();
+void DisableFoVWrite();
 void WaitForCameraStruct();
 void MainLoop();
 void UpdateFrame();
@@ -57,7 +60,8 @@ void WriteCameraToCameraStructOfGame();
 void RestoreOriginalCameraValues();
 void CacheOriginalCameraValues();
 void DisplayHelp();
-void SetHook(__int64 startOffset, __int64 continueOffset, __int64* interceptionContinue, void* asmFunction);
+void ResetFoV();
+void ChangeFoV(float amount);
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // Implementations
@@ -66,13 +70,14 @@ void SystemStart(HMODULE hostBaseAddress, Console c)
 	g_systemActive = true;
 	_consoleWrapper = &c;
 	_hostImageAddress = (__int64)hostBaseAddress;
-	SetcameraStructInterceptorHook();
+	SetCameraStructInterceptorHook();
 	WaitForCameraStruct();
 	// camera struct found, we can proceed.
 	InitCamera();
 	Keyboard::init(hostBaseAddress);
 	Mouse::init(hostBaseAddress);
-	SetMatrixWriteInterceptorHooks();
+	SetCameraWriteInterceptorHooks();
+	DisableFoVWrite();
 	MainLoop();
 }
 
@@ -88,7 +93,6 @@ void MainLoop()
 	{
 		Sleep(FRAME_SLEEP);
 		UpdateFrame();
-
 	}
 }
 
@@ -104,6 +108,8 @@ void UpdateFrame()
 
 void HandleUserInput()
 {
+#pragma message(">>>>>>>>>> UPDATE: MAKE KEYBOARD HANDLING WORK WITHOUT NEEDING THE CAMERA, SO HELP IS DISPLAYED AT THE START")
+
 	Keyboard &keyboard = Keyboard::instance();
 	Mouse &mouse = Mouse::instance();
 	bool altPressed = keyboard.keyDown(Keyboard::KEY_LALT) || keyboard.keyDown(Keyboard::KEY_RALT);
@@ -126,20 +132,39 @@ void HandleUserInput()
 		{
 			CacheOriginalCameraValues();
 			_consoleWrapper->WriteLine("Camera enabled");
+#pragma message (">>>>>>>>> FIXME: RESET ANGLES IN CAMERA")
 		}
 		_cameraEnabled = _cameraEnabled == 0 ? (byte)1 : (byte)0;
 		// wait for 150ms to avoid fast keyboard hammering disabling the camera right away
 		Sleep(150);
 	}
+	//////////////////////////////////////////////////// FOV
+	if (keyboard.keyDown(IGCS_KEY_FOV_RESET))
+	{
+		ResetFoV();
+	}
+	if (keyboard.keyDown(IGCS_KEY_FOV_DECREASE))
+	{
+		ChangeFoV(-DEFAULT_FOV_SPEED);
+	}
+	if (keyboard.keyDown(IGCS_KEY_FOV_INCREASE))
+	{
+		ChangeFoV(DEFAULT_FOV_SPEED);
+	}
+
+	//////////////////////////////////////////////////// CAMERA
 	if(!_cameraEnabled)
 	{
 		// camera is disabled. We simply disable all input to the camera movement. 
 		return;
 	}
-
 	_camera->ResetMovement();
 	float multiplier = altPressed ? ALT_MULTIPLIER : ctrlPressed ? CTRL_MULTIPLIER : 1.0f;
 
+	if (keyboard.keyDown(IGCS_KEY_CAMERA_ENABLE))
+	{
+#pragma message (">>>>>>>>>>>>>>>>>IMPLEMENT CAMERA LOCK")
+	}
 	if(keyboard.keyDown(IGCS_KEY_MOVE_FORWARD))
 	{
 		_camera->MoveForward(multiplier);
@@ -226,6 +251,28 @@ void WriteCameraToCameraStructOfGame()
 }
 
 
+void ResetFoV()
+{
+	if (NULL == _cameraStructAddress)
+	{
+		return;
+	}
+	float* fovInMemory = reinterpret_cast<float*>(_cameraStructAddress + FOV_IN_CAMERA_STRUCT_OFFSET);
+	*fovInMemory = DEFAULT_FOV_RADIANS;
+}
+
+
+void ChangeFoV(float amount)
+{
+	if (NULL == _cameraStructAddress)
+	{
+		return;
+	}
+	float* fovInMemory = reinterpret_cast<float*>(_cameraStructAddress + FOV_IN_CAMERA_STRUCT_OFFSET);
+	*fovInMemory += amount;
+}
+
+
 void WaitForCameraStruct()
 {
 	_consoleWrapper->WriteLine("Waiting for camera struct interception...");
@@ -237,30 +284,28 @@ void WaitForCameraStruct()
 }
 
 
-void SetcameraStructInterceptorHook()
+void SetCameraStructInterceptorHook()
 {
-	SetHook((__int64)MATRIX_ADDRESS_INTERCEPT_START_OFFSET, (__int64)MATRIX_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_cameraStructInterceptionContinue, &cameraAddressInterceptor);
+	SetHook(_hostImageAddress, (__int64)CAMERA_ADDRESS_INTERCEPT_START_OFFSET, (__int64)CAMERA_ADDRESS_INTERCEPT_CONTINUE_OFFSET, 
+			&_cameraStructInterceptionContinue, &cameraAddressInterceptor);
 }
 
 
-void SetMatrixWriteInterceptorHooks()
+void SetCameraWriteInterceptorHooks()
 {
 	// for each block of code that writes to the camera values we're manipulating we need an interception to block it. For the example game there are 3. 
-	SetHook((__int64)MATRIX_WRITE_INTERCEPT1_START_OFFSET, (__int64)MATRIX_WRITE_INTERCEPT1_CONTINUE_OFFSET, &_matrixWriteInterceptionContinue1, &cameraWriteInterceptor1);
-	SetHook((__int64)MATRIX_WRITE_INTERCEPT2_START_OFFSET, (__int64)MATRIX_WRITE_INTERCEPT2_CONTINUE_OFFSET, &_matrixWriteInterceptionContinue2, &cameraWriteInterceptor2);
-	SetHook((__int64)MATRIX_WRITE_INTERCEPT3_START_OFFSET, (__int64)MATRIX_WRITE_INTERCEPT3_CONTINUE_OFFSET, &_matrixWriteInterceptionContinue3, &cameraWriteInterceptor3);
+	SetHook(_hostImageAddress, (__int64)CAMERA_WRITE_INTERCEPT1_START_OFFSET, (__int64)CAMERA_WRITE_INTERCEPT1_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue1, &cameraWriteInterceptor1);
+	SetHook(_hostImageAddress, (__int64)CAMERA_WRITE_INTERCEPT2_START_OFFSET, (__int64)CAMERA_WRITE_INTERCEPT2_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue2, &cameraWriteInterceptor2);
+	SetHook(_hostImageAddress, (__int64)CAMERA_WRITE_INTERCEPT3_START_OFFSET, (__int64)CAMERA_WRITE_INTERCEPT3_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue3, &cameraWriteInterceptor3);
 }
 
 
-void SetHook(__int64 startOffset, __int64 continueOffset, __int64* interceptionContinue, void* asmFunction)
+// The FoV write is disabled with NOPs, as the code block contains jumps out of the block so it's not easy to intercept with a silent method. It's OK though
+// as the FoV changes simply change a value, so instead of the game keeping it at a value we overwrite it. We reset it to a default value when the FoV is disabled by the user 
+void DisableFoVWrite()
 {
-	BYTE* startOfHookAddress = reinterpret_cast<BYTE*>(_hostImageAddress + startOffset);
-	*interceptionContinue = _hostImageAddress + (__int64)continueOffset;
-	// now write bytes of jmp qword ptr [address], which is jmp qword ptr 0 offset.
-	memcpy(startOfHookAddress, jmpFarInstructionBytes, sizeof(jmpFarInstructionBytes));
-	// now write the address. Do this with a recast of the pointer to an __int64 pointer to avoid endianmess.
-	__int64* interceptorAddressDestination = (__int64*)(startOfHookAddress + 6);
-	interceptorAddressDestination[0] = (__int64)asmFunction;
+	NopRange(_hostImageAddress + FOV_WRITE_INTERCEPT1_START_OFFSET, 2);
+	NopRange(_hostImageAddress + FOV_WRITE_INTERCEPT2_START_OFFSET, 8);
 }
 
 
@@ -308,6 +353,7 @@ void DisplayHelp()
 	_consoleWrapper->WriteLine("Keyboard:", CONSOLE_WHITE);
 	_consoleWrapper->WriteLine("--------------------------------------------------------", CONSOLE_WHITE);
 	_consoleWrapper->WriteLine("INS               : Enable/Disable camera");
+	_consoleWrapper->WriteLine("HOME              : Lock/unlock camera position");
 	_consoleWrapper->WriteLine("ALT+rotate/move   : Faster rotate / move");
 	_consoleWrapper->WriteLine("CTLR+rotate/move  : Slower rotate / move");
 	_consoleWrapper->WriteLine("Arrow up/down     : Rotate camera up/down");
@@ -316,8 +362,8 @@ void DisplayHelp()
 	_consoleWrapper->WriteLine("Numpad 4/Numpad 6 : Move camera left / right");
 	_consoleWrapper->WriteLine("Numpad 7/Numpad 9 : Move camera up / down");
 	_consoleWrapper->WriteLine("Numpad 1/Numpad 3 : Tilt camera left / right");
-	_consoleWrapper->WriteLine("HOME              : Enable / disable FoV override");
 	_consoleWrapper->WriteLine("Numpad +/Numpad - : Increase / decrease FoV");
+	_consoleWrapper->WriteLine("Numpad *          : Reset FoV");
 	_consoleWrapper->WriteLine("ALT+H             : This help");
 	_consoleWrapper->WriteLine("");
 	_consoleWrapper->WriteLine("Mouse:", CONSOLE_WHITE);
@@ -325,8 +371,3 @@ void DisplayHelp()
 	_consoleWrapper->WriteLine("Mouse movement    : Rotate camera up/down/left/right");
 	_consoleWrapper->WriteLine("--------------------------------------------------------", CONSOLE_WHITE);
 }
-
-
-/* Camera info
- >>>>>>>>>>> USE DirectXMath, which is the successor of D3DX. See: https://blogs.msdn.microsoft.com/chuckw/2015/08/05/where-is-the-directx-sdk-2015-edition/
-*/
