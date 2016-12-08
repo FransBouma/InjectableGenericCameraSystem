@@ -205,19 +205,21 @@ void WriteCameraToCameraStructOfGame()
 	}
 
 	// calculate new look quaternion
-	D3DXQUATERNION q;
-	_camera->CalculateLookQuaternion(&q);
+	XMVECTOR q = _camera->CalculateLookQuaternion();
+	XMFLOAT4 qAsFloat4;
+	XMStoreFloat4(&qAsFloat4, q);
+
 	float* lookInMemory = reinterpret_cast<float*>(_cameraStructAddress + LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET);
-	lookInMemory[0] = q.x;
-	lookInMemory[1] = q.y;
-	lookInMemory[2] = q.z;
-	lookInMemory[3] = q.w;
+
+	lookInMemory[0] = qAsFloat4.x;
+	lookInMemory[1] = qAsFloat4.y;
+	lookInMemory[2] = qAsFloat4.z;
+	lookInMemory[3] = qAsFloat4.w;
 
 	// calculate new coords.
 	float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-	D3DXVECTOR3 currentCoords = D3DXVECTOR3(coordsInMemory);
-	D3DXVECTOR3 newCoords;
-	_camera->CalculateNewCoords(&newCoords, currentCoords, q);
+	XMFLOAT3 currentCoords = XMFLOAT3(coordsInMemory);
+	XMFLOAT3 newCoords = _camera->CalculateNewCoords(currentCoords, q);
 	coordsInMemory[0] = newCoords.x;
 	coordsInMemory[1] = newCoords.y;
 	coordsInMemory[2] = newCoords.z;
@@ -266,7 +268,7 @@ void InitCamera()
 {
 	_camera = new Camera();
 	// World has Z up and Y out of the screen, so rotate around X (pitch) -90 degrees.
-	_camera->SetPitch((-90.0f * D3DX_PI) / 180.f);
+	_camera->SetPitch((-90.0f * XM_PI) / 180.f);
 }
 
 
