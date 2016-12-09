@@ -21,6 +21,7 @@ static float	_originalLookData[4];
 static float	_originalCoordsData[3];
 static Console* _consoleWrapper=NULL;
 static LPBYTE _hostImageAddress = NULL;
+static bool _cameraMovementLocked = false;
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // Local function definitions
@@ -141,9 +142,24 @@ void HandleUserInput()
 	_camera->ResetMovement();
 	float multiplier = altPressed ? ALT_MULTIPLIER : ctrlPressed ? CTRL_MULTIPLIER : 1.0f;
 
-	if (keyboard.keyDown(IGCS_KEY_CAMERA_ENABLE))
+	if (keyboard.keyDown(IGCS_KEY_CAMERA_LOCK))
 	{
-#pragma message (">>>>>>>>>>>>>>>>>IMPLEMENT CAMERA LOCK")
+		if (_cameraMovementLocked)
+		{
+			_consoleWrapper->WriteLine("Camera movement unlocked");
+		}
+		else
+		{
+			_consoleWrapper->WriteLine("Camera movement locked");
+		}
+		_cameraMovementLocked = !_cameraMovementLocked;
+		// wait 150 ms to avoid fast keyboard hammering unlocking/locking the camera movement right away
+		Sleep(150);
+	}
+	if (_cameraMovementLocked)
+	{
+		// no movement allowed, simply return
+		return;
 	}
 	if(keyboard.keyDown(IGCS_KEY_MOVE_FORWARD))
 	{
@@ -267,8 +283,9 @@ void WaitForCameraStruct()
 void InitCamera()
 {
 	_camera = new Camera();
-	// World has Z up and Y out of the screen, so rotate around X (pitch) -90 degrees.
-	_camera->SetPitch((-90.0f * XM_PI) / 180.f);
+	_camera->SetPitch(INITIAL_PITCH_RADIANS);
+	_camera->SetRoll(INITIAL_ROLL_RADIANS);
+	_camera->SetYaw(INITIAL_YAW_RADIANS);
 }
 
 

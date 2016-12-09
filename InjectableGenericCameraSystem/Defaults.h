@@ -16,8 +16,8 @@
 
 // Keyboard camera control
 #define IGCS_KEY_CAMERA_ENABLE	Keyboard::KEY_INSERT
-#define IGCS_KEY_CAMERA_LOCK	Keyboard::KEY_HOME;
-#define IGCS_KEY_ROTATE_RIGHT	Keyboard::KEY_RIGHT	// pitch
+#define IGCS_KEY_CAMERA_LOCK	Keyboard::KEY_HOME
+#define IGCS_KEY_ROTATE_RIGHT	Keyboard::KEY_RIGHT		// pitch
 #define IGCS_KEY_ROTATE_LEFT	Keyboard::KEY_LEFT
 #define IGCS_KEY_ROTATE_UP		Keyboard::KEY_UP		// yaw
 #define IGCS_KEY_ROTATE_DOWN	Keyboard::KEY_DOWN
