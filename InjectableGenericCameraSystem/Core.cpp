@@ -1,17 +1,9 @@
 #include "stdafx.h"
 #include "input.h"
 #include "Camera.h"
+#include "InterceptorHelper.h"
 
 using namespace std;
-
-//--------------------------------------------------------------------------------------------------------------------------------
-// external asm functions
-extern "C" {
-	void cameraAddressInterceptor();
-	void cameraWriteInterceptor1();		// create as much interceptors for write interception as needed. In the example game, there are 4.
-	void cameraWriteInterceptor2();
-	void cameraWriteInterceptor3();
-}
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // data shared with asm functions. This is allocated here, 'C' style and not in some datastructure as passing that to 
@@ -19,38 +11,19 @@ extern "C" {
 extern "C" {
 	// The address of the camera matrix in memory, intercepted by the interceptor. 
 	LPBYTE _cameraStructAddress=NULL;
-	// The continue address for continuing execution after matrix address interception. 
-	LPBYTE _cameraStructInterceptionContinue = 0;
-	// the continue address for continuing execution after interception of the first block of code which writes to the camera matrix. 
-	LPBYTE _cameraWriteInterceptionContinue1 = 0;
-	// the continue address for continuing execution after interception of the second block of code which writes to the camera matrix. 
-	LPBYTE _cameraWriteInterceptionContinue2 = 0;
-	// the continue address for continuing execution after interception of the third block of code which writes to the camera matrix. 
-	LPBYTE _cameraWriteInterceptionContinue3 = 0;
-	
-	byte	_cameraEnabled = 0;
-	byte	_fovEnabled = 0;
+	byte _cameraEnabled = 0;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // local data 
-// The base address of the host image in its own address space. Used to calculate real addresses with using an offset.
-static LPBYTE _hostImageAddress = 0;
-static LPBYTE _cameraStructInterceptionStart = 0;
-static LPBYTE _cameraWriteInterceptionStart1 = 0;
-static LPBYTE _cameraWriteInterceptionStart2 = 0;
-static LPBYTE _cameraWriteInterceptionStart3 = 0;
-static float* _gameMatrix=NULL;
 static Camera* _camera=NULL;
 static float	_originalLookData[4];
 static float	_originalCoordsData[3];
 static Console* _consoleWrapper=NULL;
+static LPBYTE _hostImageAddress = NULL;
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // Local function definitions
-void SetCameraStructInterceptorHook();
-void SetCameraWriteInterceptorHooks();
-void DisableFoVWrite();
 void WaitForCameraStruct();
 void MainLoop();
 void UpdateFrame();
@@ -70,18 +43,21 @@ void SystemStart(HMODULE hostBaseAddress, Console c)
 	g_systemActive = true;
 	_consoleWrapper = &c;
 	_hostImageAddress = (LPBYTE)hostBaseAddress;
-	SetCameraStructInterceptorHook();
-	WaitForCameraStruct();
-	// camera struct found, we can proceed.
-	InitCamera();
+	DisplayHelp();
+	// initialization
+	SetCameraStructInterceptorHook(_hostImageAddress);
 	Keyboard::init(hostBaseAddress);
 	Mouse::init(hostBaseAddress);
-	SetCameraWriteInterceptorHooks();
-	DisableFoVWrite();
+	WaitForCameraStruct();
+	InitCamera();
+	SetCameraWriteInterceptorHooks(_hostImageAddress);
+	DisableFoVWrite(_hostImageAddress);
+	// done initializing, start main loop of camera. We won't return from this
 	MainLoop();
 }
 
 
+// Core loop of the system
 void MainLoop()
 {
 	if (0 == _cameraStructAddress)
@@ -97,10 +73,9 @@ void MainLoop()
 }
 
 
+// updates the data and camera for a frame 
 void UpdateFrame()
 {
-	Keyboard::instance().update();
-	Mouse::instance().update();
 	HandleUserInput();
 	WriteCameraToCameraStructOfGame();
 }
@@ -108,10 +83,10 @@ void UpdateFrame()
 
 void HandleUserInput()
 {
-#pragma message(">>>>>>>>>> UPDATE: MAKE KEYBOARD HANDLING WORK WITHOUT NEEDING THE CAMERA, SO HELP IS DISPLAYED AT THE START")
-
 	Keyboard &keyboard = Keyboard::instance();
 	Mouse &mouse = Mouse::instance();
+	keyboard.update();
+	mouse.update();
 	bool altPressed = keyboard.keyDown(Keyboard::KEY_LALT) || keyboard.keyDown(Keyboard::KEY_RALT);
 	bool ctrlPressed = keyboard.keyDown(Keyboard::KEY_LCONTROL) || keyboard.keyDown(Keyboard::KEY_RCONTROL);
 
@@ -120,6 +95,11 @@ void HandleUserInput()
 		DisplayHelp();
 		// wait for 250ms to avoid fast keyboard hammering displaying multiple times the help!
 		Sleep(250);
+	}
+	if (0 == _cameraStructAddress)
+	{
+		// camera not found yet, can't proceed.
+		return;
 	}
 	if(keyboard.keyPressed(IGCS_KEY_CAMERA_ENABLE))
 	{
@@ -132,7 +112,7 @@ void HandleUserInput()
 		{
 			CacheOriginalCameraValues();
 			_consoleWrapper->WriteLine("Camera enabled");
-#pragma message (">>>>>>>>> FIXME: RESET ANGLES IN CAMERA")
+			_camera->ResetAngles();
 		}
 		_cameraEnabled = _cameraEnabled == 0 ? (byte)1 : (byte)0;
 		// wait for 150ms to avoid fast keyboard hammering disabling the camera right away
@@ -284,30 +264,6 @@ void WaitForCameraStruct()
 }
 
 
-void SetCameraStructInterceptorHook()
-{
-	SetHook(_hostImageAddress, CAMERA_ADDRESS_INTERCEPT_START_OFFSET, CAMERA_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_cameraStructInterceptionContinue, &cameraAddressInterceptor);
-}
-
-
-void SetCameraWriteInterceptorHooks()
-{
-	// for each block of code that writes to the camera values we're manipulating we need an interception to block it. For the example game there are 3. 
-	SetHook(_hostImageAddress, CAMERA_WRITE_INTERCEPT1_START_OFFSET, CAMERA_WRITE_INTERCEPT1_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue1, &cameraWriteInterceptor1);
-	SetHook(_hostImageAddress, CAMERA_WRITE_INTERCEPT2_START_OFFSET, CAMERA_WRITE_INTERCEPT2_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue2, &cameraWriteInterceptor2);
-	SetHook(_hostImageAddress, CAMERA_WRITE_INTERCEPT3_START_OFFSET, CAMERA_WRITE_INTERCEPT3_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue3, &cameraWriteInterceptor3);
-}
-
-
-// The FoV write is disabled with NOPs, as the code block contains jumps out of the block so it's not easy to intercept with a silent method. It's OK though
-// as the FoV changes simply change a value, so instead of the game keeping it at a value we overwrite it. We reset it to a default value when the FoV is disabled by the user 
-void DisableFoVWrite()
-{
-	NopRange(_hostImageAddress + FOV_WRITE_INTERCEPT1_START_OFFSET, 2);
-	NopRange(_hostImageAddress + FOV_WRITE_INTERCEPT2_START_OFFSET, 8);
-}
-
-
 void InitCamera()
 {
 	_camera = new Camera();
@@ -352,7 +308,7 @@ void DisplayHelp()
 	_consoleWrapper->WriteLine("Keyboard:", CONSOLE_WHITE);
 	_consoleWrapper->WriteLine("--------------------------------------------------------", CONSOLE_WHITE);
 	_consoleWrapper->WriteLine("INS               : Enable/Disable camera");
-	_consoleWrapper->WriteLine("HOME              : Lock/unlock camera position");
+	_consoleWrapper->WriteLine("HOME              : Lock/unlock camera movement");
 	_consoleWrapper->WriteLine("ALT+rotate/move   : Faster rotate / move");
 	_consoleWrapper->WriteLine("CTLR+rotate/move  : Slower rotate / move");
 	_consoleWrapper->WriteLine("Arrow up/down     : Rotate camera up/down");

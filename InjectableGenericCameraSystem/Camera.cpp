@@ -36,6 +36,15 @@ void Camera::ResetMovement()
 	m_direction.z = 0.0f;
 }
 
+
+void Camera::ResetAngles()
+{
+	SetPitch(INITIAL_PITCH_RADIANS);
+	SetRoll(INITIAL_ROLL_RADIANS);
+	SetYaw(INITIAL_YAW_RADIANS);
+}
+
+
 XMFLOAT3 Camera::CalculateNewCoords(const XMFLOAT3 currentCoords, const XMVECTOR lookQ)
 {
 	XMFLOAT3 toReturn;

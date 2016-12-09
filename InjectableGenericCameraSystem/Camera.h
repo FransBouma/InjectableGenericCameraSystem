@@ -10,9 +10,10 @@ public:
 	~Camera(void);
 
 	XMVECTOR CalculateLookQuaternion();
-	void ResetMovement();
 	XMFLOAT3 CalculateNewCoords(const XMFLOAT3 currentCoords, const XMVECTOR lookQ);
 
+	void ResetMovement();
+	void ResetAngles();
 	void MoveForward(float amount);
 	void MoveRight(float amount);
 	void MoveUp(float amount);

@@ -27,9 +27,6 @@
     <ClInclude Include="Core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Offsets.h">
-      <Filter>Game Specific</Filter>
-    </ClInclude>
     <ClInclude Include="Defaults.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -44,6 +41,12 @@
     </ClInclude>
     <ClInclude Include="Utils.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InterceptorHelper.h">
+      <Filter>Game Specific</Filter>
+    </ClInclude>
+    <ClInclude Include="GameConstants.h">
+      <Filter>Game Specific</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -68,10 +71,13 @@
     <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="InterceptorHelper.cpp">
+      <Filter>Game Specific</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="Interceptor.asm">
-      <Filter>Source Files</Filter>
+      <Filter>Game Specific</Filter>
     </MASM>
   </ItemGroup>
 </Project>

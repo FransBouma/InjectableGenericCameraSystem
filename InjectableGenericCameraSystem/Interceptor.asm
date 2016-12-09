@@ -1,19 +1,32 @@
+;---------------------------------------------------------------
+; Game specific asm file to intercept execution flow to obtain addresses, prevent writes etc.
+;---------------------------------------------------------------
+
+;---------------------------------------------------------------
+; Public definitions so the linker knows which names are present in this file
 PUBLIC cameraAddressInterceptor
 PUBLIC cameraWriteInterceptor1
 PUBLIC cameraWriteInterceptor2
 PUBLIC cameraWriteInterceptor3
+;---------------------------------------------------------------
 
-_DATA SEGMENT
-_DATA ENDS
-
-_TEXT SEGMENT
-
+;---------------------------------------------------------------
+; Externs defined in Core.cpp, which are used and set by the system. Read / write these
+; values in asm to communicate with the system
 EXTERN _cameraStructAddress: qword
+EXTERN _cameraEnabled: byte
+;---------------------------------------------------------------
+
+;---------------------------------------------------------------
+; Own externs, defined in InterceptorHelper.cpp
 EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _cameraWriteInterceptionContinue1: qword
 EXTERN _cameraWriteInterceptionContinue2: qword
 EXTERN _cameraWriteInterceptionContinue3: qword
-EXTERN _cameraEnabled: byte
+
+
+;---------------------------------------------------------------
+.code
 
 cameraAddressInterceptor PROC
 	; Game jmps to this location due to the hook set in C function SetCameraStructInterceptorHook
@@ -31,7 +44,7 @@ cameraAddressInterceptor ENDP
 
 
 ;-------------------------------------------------------------------
-; Camera matrix write interceptions. For each block of statements in the game's exe which write to the camera matrix, we intercept them and execute them if our
+; Camera values write interceptions. For each block of statements in the game's exe which write to the camera values, we intercept them and execute them if our
 ; own camera is disabled, otherwise we skip them. Each block checks whether the current struct pointer is the camera struct. If it's not the camera struct, it will
 ; execute the code regardless of whether our camera is enabled.
 
@@ -84,5 +97,4 @@ exit:
 	jmp qword ptr [_cameraWriteInterceptionContinue3]	; jmp back into the original game code which is the location after the original statements above.
 cameraWriteInterceptor3 ENDP
 
-_TEXT ENDS
 END

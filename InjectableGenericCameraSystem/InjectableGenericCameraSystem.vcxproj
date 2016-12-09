@@ -128,7 +128,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -151,7 +151,8 @@
     <ClInclude Include="Defaults.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="input.h" />
-    <ClInclude Include="Offsets.h" />
+    <ClInclude Include="InterceptorHelper.h" />
+    <ClInclude Include="GameConstants.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="targetver.h" />
@@ -175,6 +176,7 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="input.cpp" />
+    <ClCompile Include="InterceptorHelper.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

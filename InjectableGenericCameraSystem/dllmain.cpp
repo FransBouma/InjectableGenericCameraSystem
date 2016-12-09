@@ -40,7 +40,6 @@ DWORD WINAPI MainThread(LPVOID lpParam)
 	c.Init();
 	c.WriteHeader();
 
-	HMODULE moduleHandle = (HMODULE)lpParam;
 	HMODULE baseAddress = GetBaseAddressOfContainingProcess();
 	if(NULL == baseAddress)
 	{
@@ -59,7 +58,7 @@ HMODULE GetBaseAddressOfContainingProcess()
 {
 	TCHAR processName[MAX_PATH] = TEXT("<unknown>");
 	HANDLE processHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
-	HMODULE toReturn;
+	HMODULE toReturn=NULL;
 
 	if (NULL != processHandle)
 	{

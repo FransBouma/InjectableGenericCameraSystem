@@ -22,9 +22,10 @@ void Console::Release()
 void Console::WriteHeader()
 {
 	SetColor(CONSOLE_WHITE);
-	WriteLine("Injectable Generic Camera System by Otis / Infuse Project");
+	cout << "Injectable camera tools for " << GAME_NAME << endl;
+	WriteLine("Powered by Injectable Generic Camera System by Otis_Inf");
 	WriteLine("Get your copy at: https://github.com/FransBouma/InjectableGenericCameraSystem");
-	WriteLine("Press 'Alt-H' for help.");
+	cout << "Camera credits: " << CAMERA_CREDITS << endl;
 	SetColor(9);
 	WriteLine("-----------------------------------------------------------------------------");
 	SetColor(CONSOLE_NORMAL);

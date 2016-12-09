@@ -23,9 +23,11 @@
 
 #include "Utils.h"
 #include "Console.h"
-#include "Offsets.h"
 #include "Core.h"
+#include "InterceptorHelper.h"
 #include "Defaults.h"
+
+#include "GameConstants.h"
 
 
 // TODO: reference additional headers your program requires here
