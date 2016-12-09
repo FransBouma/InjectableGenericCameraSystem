@@ -18,15 +18,15 @@ extern "C" {
 // MASM is rather tedious. 
 extern "C" {
 	// The address of the camera matrix in memory, intercepted by the interceptor. 
-	__int64 _cameraStructAddress=0;
+	LPBYTE _cameraStructAddress=NULL;
 	// The continue address for continuing execution after matrix address interception. 
-	__int64 _cameraStructInterceptionContinue = 0;
+	LPBYTE _cameraStructInterceptionContinue = 0;
 	// the continue address for continuing execution after interception of the first block of code which writes to the camera matrix. 
-	__int64 _cameraWriteInterceptionContinue1 = 0;
+	LPBYTE _cameraWriteInterceptionContinue1 = 0;
 	// the continue address for continuing execution after interception of the second block of code which writes to the camera matrix. 
-	__int64 _cameraWriteInterceptionContinue2 = 0;
+	LPBYTE _cameraWriteInterceptionContinue2 = 0;
 	// the continue address for continuing execution after interception of the third block of code which writes to the camera matrix. 
-	__int64 _cameraWriteInterceptionContinue3 = 0;
+	LPBYTE _cameraWriteInterceptionContinue3 = 0;
 	
 	byte	_cameraEnabled = 0;
 	byte	_fovEnabled = 0;
@@ -35,11 +35,11 @@ extern "C" {
 //--------------------------------------------------------------------------------------------------------------------------------
 // local data 
 // The base address of the host image in its own address space. Used to calculate real addresses with using an offset.
-static __int64 _hostImageAddress = 0;
-static __int64 _cameraStructInterceptionStart = 0;
-static __int64 _cameraWriteInterceptionStart1 = 0;
-static __int64 _cameraWriteInterceptionStart2 = 0;
-static __int64 _cameraWriteInterceptionStart3 = 0;
+static LPBYTE _hostImageAddress = 0;
+static LPBYTE _cameraStructInterceptionStart = 0;
+static LPBYTE _cameraWriteInterceptionStart1 = 0;
+static LPBYTE _cameraWriteInterceptionStart2 = 0;
+static LPBYTE _cameraWriteInterceptionStart3 = 0;
 static float* _gameMatrix=NULL;
 static Camera* _camera=NULL;
 static float	_originalLookData[4];
@@ -69,7 +69,7 @@ void SystemStart(HMODULE hostBaseAddress, Console c)
 {
 	g_systemActive = true;
 	_consoleWrapper = &c;
-	_hostImageAddress = (__int64)hostBaseAddress;
+	_hostImageAddress = (LPBYTE)hostBaseAddress;
 	SetCameraStructInterceptorHook();
 	WaitForCameraStruct();
 	// camera struct found, we can proceed.
@@ -286,17 +286,16 @@ void WaitForCameraStruct()
 
 void SetCameraStructInterceptorHook()
 {
-	SetHook(_hostImageAddress, (__int64)CAMERA_ADDRESS_INTERCEPT_START_OFFSET, (__int64)CAMERA_ADDRESS_INTERCEPT_CONTINUE_OFFSET, 
-			&_cameraStructInterceptionContinue, &cameraAddressInterceptor);
+	SetHook(_hostImageAddress, CAMERA_ADDRESS_INTERCEPT_START_OFFSET, CAMERA_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_cameraStructInterceptionContinue, &cameraAddressInterceptor);
 }
 
 
 void SetCameraWriteInterceptorHooks()
 {
 	// for each block of code that writes to the camera values we're manipulating we need an interception to block it. For the example game there are 3. 
-	SetHook(_hostImageAddress, (__int64)CAMERA_WRITE_INTERCEPT1_START_OFFSET, (__int64)CAMERA_WRITE_INTERCEPT1_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue1, &cameraWriteInterceptor1);
-	SetHook(_hostImageAddress, (__int64)CAMERA_WRITE_INTERCEPT2_START_OFFSET, (__int64)CAMERA_WRITE_INTERCEPT2_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue2, &cameraWriteInterceptor2);
-	SetHook(_hostImageAddress, (__int64)CAMERA_WRITE_INTERCEPT3_START_OFFSET, (__int64)CAMERA_WRITE_INTERCEPT3_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue3, &cameraWriteInterceptor3);
+	SetHook(_hostImageAddress, CAMERA_WRITE_INTERCEPT1_START_OFFSET, CAMERA_WRITE_INTERCEPT1_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue1, &cameraWriteInterceptor1);
+	SetHook(_hostImageAddress, CAMERA_WRITE_INTERCEPT2_START_OFFSET, CAMERA_WRITE_INTERCEPT2_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue2, &cameraWriteInterceptor2);
+	SetHook(_hostImageAddress, CAMERA_WRITE_INTERCEPT3_START_OFFSET, CAMERA_WRITE_INTERCEPT3_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue3, &cameraWriteInterceptor3);
 }
 
 
