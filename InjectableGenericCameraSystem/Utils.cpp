@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Utils.h"
 
 // Sets a jmp qword ptr [address] statement at hostImageAddress + startOffset.
 void SetHook(LPBYTE hostImageAddress, DWORD startOffset, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction)
@@ -25,4 +26,53 @@ void NopRange(LPBYTE startAddress, int length)
 	{
 		startAddress[i] = 0x90;
 	}
+}
+
+
+int AOBCompareByteArray(LPBYTE byteArray1, PCHAR byteArray2, PCHAR mask, DWORD length)
+{
+	DWORD nextStart = 0;
+	char start = byteArray2[0];
+	for (DWORD i = 0; i < length; i++)
+	{
+		if (mask[i] == '?')
+		{
+			continue;
+		}
+		if (byteArray1[i] == start)
+		{
+			nextStart = i;
+		}
+		if (byteArray1[i] != (BYTE)byteArray2[i])
+		{
+			return nextStart;
+		}
+	}
+	return -1;
+}
+
+
+// Returns offset from baseAddress if found, otherwise null
+DWORD AOBFindSignature(LPVOID baseAddress, DWORD imageSize, PCHAR signature, PCHAR mask)
+{
+	DWORD address = NULL;
+	LPBYTE buffer = (LPBYTE)baseAddress;
+
+	DWORD length = strlen(mask);
+
+	for (DWORD i = 0; i < (imageSize - length); i++)
+	{
+		int result = AOBCompareByteArray((buffer + i), signature, mask, length);
+		if (result < 0)
+		{
+			address = i;
+			break;
+		}
+		else
+		{
+			i += result;
+		}
+	}
+
+	return address;
 }

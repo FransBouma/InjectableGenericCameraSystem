@@ -33,5 +33,6 @@
 #define IGCS_KEY_FOV_INCREASE	Keyboard::KEY_NUMPAD_ADD
 #define IGCS_KEY_FOV_DECREASE	Keyboard::KEY_NUMPAD_MINUS
 #define IGCS_KEY_HELP			Keyboard::KEY_H
+#define IGCS_KEY_TIMESTOP		Keyboard::KEY_NUMPAD_0
 
 static const byte jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]

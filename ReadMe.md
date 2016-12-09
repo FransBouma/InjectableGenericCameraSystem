@@ -17,7 +17,6 @@ windows 8 version. The VC++ installer should install this. The SDK is needed for
 It depends on DirectInput8 (which is part of every DX version) and DX11+ for the math. So using this for an x64 game using DX9/10 might not work. 
 
 ## Core design
-
 The core idea is that the generic camera system is used to _build_ injectable cameras with. This means that a camera hack for game XYZ uses the code
 in this repository as its base, to which changes are made to make it work with game XYZ (which are in the area where the camera values are located, where to inject code etc.) and then
 compiled specifically for that game XYZ. Most of the system is designed to be generic, so it doesn't need changing for a particular game, only a small part of
@@ -58,8 +57,9 @@ Things still to implement:
 More soon :)
 
 ## Useful links
-Setting up Visual C++ to use with MASM to call / use x64 assembly: http://lallouslab.net/2016/01/11/introduction-to-writing-x64-assembly-in-visual-studio/
-MASM syntax highlighting: https://marketplace.visualstudio.com/items?itemName=Trass3r.AsmHighlighter. 
+* Setting up Visual C++ to use with MASM to call / use x64 assembly: http://lallouslab.net/2016/01/11/introduction-to-writing-x64-assembly-in-visual-studio/
+* MASM syntax highlighting: https://marketplace.visualstudio.com/items?itemName=Trass3r.AsmHighlighter. 
 
 ## Acknowledgements
-Uses input class from dhpoware for Mouse / Keyboard handling.
+Uses input class from dhpoware for Mouse / Keyboard handling.  
+Uses AOB scanning code by fdsasdf

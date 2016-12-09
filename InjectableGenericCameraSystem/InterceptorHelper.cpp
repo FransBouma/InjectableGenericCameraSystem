@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "InterceptorHelper.h"
 
+using namespace std;
 //--------------------------------------------------------------------------------------------------------------------------------
 // external asm functions
 
@@ -13,6 +14,7 @@ extern "C" {
 	void cameraWriteInterceptor1();		// create as much interceptors for write interception as needed. In the example game, there are 4.
 	void cameraWriteInterceptor2();
 	void cameraWriteInterceptor3();
+	void timestopWriteInterceptor();
 }
 
 extern "C" {
@@ -24,12 +26,36 @@ extern "C" {
 	LPBYTE _cameraWriteInterceptionContinue2 = 0;
 	// the continue address for continuing execution after interception of the third block of code which writes to the camera values. 
 	LPBYTE _cameraWriteInterceptionContinue3 = 0;
+	// the continue address for the continuing execution after interception of the timestop block of code. 
+	LPBYTE _timestopWriteInterceptionContinue = 0;
 }
 
 static LPBYTE _cameraStructInterceptionStart = 0;
 static LPBYTE _cameraWriteInterceptionStart1 = 0;
 static LPBYTE _cameraWriteInterceptionStart2 = 0;
 static LPBYTE _cameraWriteInterceptionStart3 = 0;
+
+static DWORD _timestopInterceptOffset = 0;
+
+
+bool PerformAOBScans(LPBYTE hostImageAddress)
+{
+	cout << "Performing AOB scans for interception addresses..." << endl;
+	// Timestop
+	_timestopInterceptOffset = AOBFindSignature(hostImageAddress, -1, TIMESTOP_AOB_PATTERN, TIMESTOP_AOB_MASK);
+	if (NULL == _timestopInterceptOffset)
+	{
+		// not found. die
+		cerr << "Couldn't find timestop offset using AOB." << endl;
+		return false;
+	}
+#ifdef _DEBUG
+	cout << "Found AOB timestop offset: " << hex << _timestopInterceptOffset << endl;
+#endif
+	cout << "AOB scans done. All good." << endl;
+	return true;
+}
+
 
 void SetCameraStructInterceptorHook(LPBYTE hostImageAddress)
 {
@@ -52,4 +78,10 @@ void DisableFoVWrite(LPBYTE hostImageAddress)
 {
 	NopRange(hostImageAddress + FOV_WRITE_INTERCEPT1_START_OFFSET, 2);
 	NopRange(hostImageAddress + FOV_WRITE_INTERCEPT2_START_OFFSET, 8);
+}
+
+
+void SetTimestopInterceptorHooks(LPBYTE hostImageAddress)
+{
+	SetHook(hostImageAddress, _timestopInterceptOffset, _timestopInterceptOffset + TIMESTOP_INTERCEPT_ASM_LENGTH, &_timestopWriteInterceptionContinue, &timestopWriteInterceptor);
 }

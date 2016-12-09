@@ -24,3 +24,7 @@
 
 #define FOV_WRITE_INTERCEPT1_START_OFFSET			0x44E4887		// example from Hitman 2016 (v1.7)
 #define FOV_WRITE_INTERCEPT2_START_OFFSET			0x44E48A9		// example from Hitman 2016 (v1.7)
+
+#define TIMESTOP_AOB_PATTERN						"\xF3\x0F\x59\x43\x48\xF3\x0F\x59\x05"
+#define TIMESTOP_AOB_MASK							"xxxxxxxxx"		// x: use byte, ?:skip byte
+#define TIMESTOP_INTERCEPT_ASM_LENGTH				18				// decimal, in bytes. Added to AOB found address for continuation

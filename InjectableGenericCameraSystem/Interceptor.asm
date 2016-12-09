@@ -8,6 +8,7 @@ PUBLIC cameraAddressInterceptor
 PUBLIC cameraWriteInterceptor1
 PUBLIC cameraWriteInterceptor2
 PUBLIC cameraWriteInterceptor3
+PUBLIC timestopInterceptor
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -15,6 +16,8 @@ PUBLIC cameraWriteInterceptor3
 ; values in asm to communicate with the system
 EXTERN _cameraStructAddress: qword
 EXTERN _cameraEnabled: byte
+EXTERN _timeStopped: byte
+
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -23,7 +26,7 @@ EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _cameraWriteInterceptionContinue1: qword
 EXTERN _cameraWriteInterceptionContinue2: qword
 EXTERN _cameraWriteInterceptionContinue3: qword
-
+EXTERN _timestopWriteInterceptionContinue: qword
 
 ;---------------------------------------------------------------
 .code
@@ -41,6 +44,22 @@ exit:
     movss xmm0, dword ptr [rsp+058h]					; original statement
 	jmp qword ptr [_cameraStructInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraAddressInterceptor ENDP
+
+
+timestopInterceptor PROC
+	; Game jmps to this location due to the hook set in the C function SetTimestopInterceptorHooks
+	cmp byte ptr [_timeStopped], 1
+	je freezeTime
+	cvttss2si rax,xmm0									; original statement
+	jmp originalCode
+freezeTime:
+	xor rax, rax										; set rax to 0, so the resulting calculation is 0
+originalCode:
+	imul rax,rcx										; original statement
+	sar rax,14											; original statement
+	mov qword ptr [rbx+28],rax							; original statement
+	jmp qword ptr [_timestopWriteInterceptionContinue]
+timestopInterceptor ENDP
 
 
 ;-------------------------------------------------------------------

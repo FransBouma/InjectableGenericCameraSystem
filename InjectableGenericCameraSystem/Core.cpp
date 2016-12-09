@@ -9,16 +9,17 @@ using namespace std;
 // data shared with asm functions. This is allocated here, 'C' style and not in some datastructure as passing that to 
 // MASM is rather tedious. 
 extern "C" {
-	// The address of the camera matrix in memory, intercepted by the interceptor. 
 	LPBYTE _cameraStructAddress=NULL;
 	byte _cameraEnabled = 0;
+	LPBYTE _timeStopStructAddress = NULL;
+	byte _timeStopped = 0;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // local data 
 static Camera* _camera=NULL;
-static float	_originalLookData[4];
-static float	_originalCoordsData[3];
+static float _originalLookData[4];
+static float _originalCoordsData[3];
 static Console* _consoleWrapper=NULL;
 static LPBYTE _hostImageAddress = NULL;
 static bool _cameraMovementLocked = false;
@@ -45,6 +46,12 @@ void SystemStart(HMODULE hostBaseAddress, Console c)
 	_consoleWrapper = &c;
 	_hostImageAddress = (LPBYTE)hostBaseAddress;
 	DisplayHelp();
+	bool result = PerformAOBScans(_hostImageAddress);
+	if (!result)
+	{
+		// can't continue
+		return;
+	}
 	// initialization
 	SetCameraStructInterceptorHook(_hostImageAddress);
 	Keyboard::init(hostBaseAddress);
@@ -119,6 +126,19 @@ void HandleUserInput()
 		// wait for 150ms to avoid fast keyboard hammering disabling the camera right away
 		Sleep(150);
 	}
+	if (keyboard.keyDown(IGCS_KEY_TIMESTOP))
+	{
+		if (_timeStopped)
+		{
+			_consoleWrapper->WriteLine("Game unpaused");
+		}
+		else
+		{
+			_consoleWrapper->WriteLine("Game paused");
+		}
+		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
+	}
+
 	//////////////////////////////////////////////////// FOV
 	if (keyboard.keyDown(IGCS_KEY_FOV_RESET))
 	{
@@ -336,6 +356,7 @@ void DisplayHelp()
 	_consoleWrapper->WriteLine("Numpad 1/Numpad 3 : Tilt camera left / right");
 	_consoleWrapper->WriteLine("Numpad +/Numpad - : Increase / decrease FoV");
 	_consoleWrapper->WriteLine("Numpad *          : Reset FoV");
+	_consoleWrapper->WriteLine("Numpad 0          : Pause / Continue game");
 	_consoleWrapper->WriteLine("ALT+H             : This help");
 	_consoleWrapper->WriteLine("");
 	_consoleWrapper->WriteLine("Mouse:", CONSOLE_WHITE);
