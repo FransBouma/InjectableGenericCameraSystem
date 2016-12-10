@@ -26,7 +26,7 @@
 #include "Core.h"
 #include "InterceptorHelper.h"
 #include "Defaults.h"
-
+#include "CameraManipulator.h"
 #include "GameConstants.h"
 
 

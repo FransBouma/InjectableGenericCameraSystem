@@ -9,34 +9,26 @@ using namespace std;
 // data shared with asm functions. This is allocated here, 'C' style and not in some datastructure as passing that to 
 // MASM is rather tedious. 
 extern "C" {
-	LPBYTE _cameraStructAddress=NULL;
 	byte _cameraEnabled = 0;
-	LPBYTE _timeStopStructAddress = NULL;
 	byte _timeStopped = 0;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // local data 
 static Camera* _camera=NULL;
-static float _originalLookData[4];
-static float _originalCoordsData[3];
 static Console* _consoleWrapper=NULL;
 static LPBYTE _hostImageAddress = NULL;
 static bool _cameraMovementLocked = false;
+static bool _cameraStructFound = false;
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // Local function definitions
-void WaitForCameraStruct();
 void MainLoop();
 void UpdateFrame();
 void HandleUserInput();
 void InitCamera();
-void WriteCameraToCameraStructOfGame();
-void RestoreOriginalCameraValues();
-void CacheOriginalCameraValues();
+void WriteNewCameraValuesToCameraStructs();
 void DisplayHelp();
-void ResetFoV();
-void ChangeFoV(float amount);
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // Implementations
@@ -46,17 +38,11 @@ void SystemStart(HMODULE hostBaseAddress, Console c)
 	_consoleWrapper = &c;
 	_hostImageAddress = (LPBYTE)hostBaseAddress;
 	DisplayHelp();
-	bool result = PerformAOBScans(_hostImageAddress);
-	if (!result)
-	{
-		// can't continue
-		return;
-	}
 	// initialization
 	SetCameraStructInterceptorHook(_hostImageAddress);
+	SetTimestopInterceptorHook(_hostImageAddress);
 	Keyboard::init(hostBaseAddress);
 	Mouse::init(hostBaseAddress);
-	WaitForCameraStruct();
 	InitCamera();
 	SetCameraWriteInterceptorHooks(_hostImageAddress);
 	DisableFoVWrite(_hostImageAddress);
@@ -68,11 +54,6 @@ void SystemStart(HMODULE hostBaseAddress, Console c)
 // Core loop of the system
 void MainLoop()
 {
-	if (0 == _cameraStructAddress)
-	{
-		cerr << "Matrix address not found. Can't continue with main loop" << endl;
-		return;
-	}
 	while (g_systemActive)
 	{
 		Sleep(FRAME_SLEEP);
@@ -85,7 +66,7 @@ void MainLoop()
 void UpdateFrame()
 {
 	HandleUserInput();
-	WriteCameraToCameraStructOfGame();
+	WriteNewCameraValuesToCameraStructs();
 }
 
 
@@ -104,7 +85,7 @@ void HandleUserInput()
 		// wait for 250ms to avoid fast keyboard hammering displaying multiple times the help!
 		Sleep(250);
 	}
-	if (0 == _cameraStructAddress)
+	if(!_cameraStructFound)
 	{
 		// camera not found yet, can't proceed.
 		return;
@@ -123,8 +104,8 @@ void HandleUserInput()
 			_camera->ResetAngles();
 		}
 		_cameraEnabled = _cameraEnabled == 0 ? (byte)1 : (byte)0;
-		// wait for 150ms to avoid fast keyboard hammering disabling the camera right away
-		Sleep(150);
+		// wait for 250ms to avoid fast keyboard hammering disabling the camera right away
+		Sleep(250);
 	}
 	if (keyboard.keyDown(IGCS_KEY_TIMESTOP))
 	{
@@ -137,6 +118,10 @@ void HandleUserInput()
 			_consoleWrapper->WriteLine("Game paused");
 		}
 		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
+		SetTimeStopValue(_hostImageAddress, _timeStopped);
+
+		// wait 250 ms to avoid fast keyboard hammering unlocking/locking the timestop right away
+		Sleep(250);
 	}
 
 	//////////////////////////////////////////////////// FOV
@@ -238,104 +223,33 @@ void HandleUserInput()
 }
 
 
-void WriteCameraToCameraStructOfGame()
+void WriteNewCameraValuesToCameraStructs()
 {
 	if (!_cameraEnabled)
 	{
 		return;
 	}
 
-	// calculate new look quaternion
-	XMVECTOR q = _camera->CalculateLookQuaternion();
-	XMFLOAT4 qAsFloat4;
-	XMStoreFloat4(&qAsFloat4, q);
-
-	float* lookInMemory = reinterpret_cast<float*>(_cameraStructAddress + LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET);
-
-	lookInMemory[0] = qAsFloat4.x;
-	lookInMemory[1] = qAsFloat4.y;
-	lookInMemory[2] = qAsFloat4.z;
-	lookInMemory[3] = qAsFloat4.w;
-
-	// calculate new coords.
-	float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-	XMFLOAT3 currentCoords = XMFLOAT3(coordsInMemory);
-	XMFLOAT3 newCoords = _camera->CalculateNewCoords(currentCoords, q);
-	coordsInMemory[0] = newCoords.x;
-	coordsInMemory[1] = newCoords.y;
-	coordsInMemory[2] = newCoords.z;
+	// calculate new camera values
+	XMVECTOR newLookQuaternion = _camera->CalculateLookQuaternion();
+	XMFLOAT3 currentCoords = GetCurrentCameraCoords();
+	XMFLOAT3 newCoords = _camera->CalculateNewCoords(currentCoords, newLookQuaternion);
+	WriteNewCameraValuesToGameData(newLookQuaternion, newCoords);
 }
 
-
-void ResetFoV()
-{
-	if (NULL == _cameraStructAddress)
-	{
-		return;
-	}
-	float* fovInMemory = reinterpret_cast<float*>(_cameraStructAddress + FOV_IN_CAMERA_STRUCT_OFFSET);
-	*fovInMemory = DEFAULT_FOV_RADIANS;
-}
-
-
-void ChangeFoV(float amount)
-{
-	if (NULL == _cameraStructAddress)
-	{
-		return;
-	}
-	float* fovInMemory = reinterpret_cast<float*>(_cameraStructAddress + FOV_IN_CAMERA_STRUCT_OFFSET);
-	*fovInMemory += amount;
-}
-
-
-void WaitForCameraStruct()
-{
-	_consoleWrapper->WriteLine("Waiting for camera struct interception...");
-	while(0 == _cameraStructAddress)
-	{
-		Sleep(100);
-	}
-	_consoleWrapper->WriteLine("Camera found.");
-}
 
 
 void InitCamera()
 {
+	_consoleWrapper->WriteLine("Waiting for camera struct interception...");
+	WaitForCameraStructAddresses();
+	_cameraStructFound = true;
+	_consoleWrapper->WriteLine("Camera found.");
+
 	_camera = new Camera();
 	_camera->SetPitch(INITIAL_PITCH_RADIANS);
 	_camera->SetRoll(INITIAL_ROLL_RADIANS);
 	_camera->SetYaw(INITIAL_YAW_RADIANS);
-}
-
-
-void RestoreOriginalCameraValues()
-{
-	float* lookInMemory = reinterpret_cast<float*>(_cameraStructAddress + LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET);
-	float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-	for(int i=0;i<4;i++)
-	{
-		lookInMemory[i] = _originalLookData[i];
-	}
-	for (int i = 0; i < 3; i++)
-	{
-		coordsInMemory[i] = _originalCoordsData[i];
-	}
-}
-
-
-void CacheOriginalCameraValues()
-{
-	float* lookInMemory = reinterpret_cast<float*>(_cameraStructAddress + LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET);
-	float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-	for (int i = 0; i<4; i++)
-	{
-		_originalLookData[i] = lookInMemory[i];
-	}
-	for (int i = 0; i < 3; i++)
-	{
-		_originalCoordsData[i] = coordsInMemory[i];
-	}
 }
 
 

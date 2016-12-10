@@ -46,20 +46,18 @@ going to write to the camera values or not and if not, it will execute the state
 TBD.
 
 ## Current status
-It now implements a full usable camera with mouse/keyboard handling. 
-
-Things still to implement:
-* Controller support
-* FoV keys
-* Timestop key
-* Camera lock
-
-More soon :)
+Everything works. 
 
 ## Useful links
 * Setting up Visual C++ to use with MASM to call / use x64 assembly: http://lallouslab.net/2016/01/11/introduction-to-writing-x64-assembly-in-visual-studio/
 * MASM syntax highlighting: https://marketplace.visualstudio.com/items?itemName=Trass3r.AsmHighlighter. 
 
+## Useful info / notes
+* The camera doesn't do any AOB scanning, as this is very complicated. Naively I tried to simply scan through memory with a byte pointer, but not all pages of memory are allocated, 
+or can be freed on the fly while you're scanning them. It's then a problem what to do which can end up in undefined memory and become very slow. (what we're trying to find might be
+inside a DLL which is loaded at a higher address space). To rework the camera to a new version of the game it's for, try CE's assembler search in memory view. In general it's quite
+easy to find back the memory location of the blocks intercepted (as the code blocks are in the interceptor, so the original statements are known) and correct the camera. 
+
 ## Acknowledgements
 Uses input class from dhpoware for Mouse / Keyboard handling.  
-Uses AOB scanning code by fdsasdf
+

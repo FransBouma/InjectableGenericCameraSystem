@@ -11,55 +11,38 @@ using namespace std;
 
 extern "C" {
 	void cameraAddressInterceptor();
+	void cameraAddressInterceptor2();
 	void cameraWriteInterceptor1();		// create as much interceptors for write interception as needed. In the example game, there are 4.
 	void cameraWriteInterceptor2();
 	void cameraWriteInterceptor3();
-	void timestopWriteInterceptor();
+	void gamespeedAddressInterceptor();
 }
 
 extern "C" {
 	// The continue address for continuing execution after camera values address interception. 
 	LPBYTE _cameraStructInterceptionContinue = 0;
+	LPBYTE _cameraStructInterceptionContinue2 = 0;
 	// the continue address for continuing execution after interception of the first block of code which writes to the camera values. 
 	LPBYTE _cameraWriteInterceptionContinue1 = 0;
 	// the continue address for continuing execution after interception of the second block of code which writes to the camera values. 
 	LPBYTE _cameraWriteInterceptionContinue2 = 0;
 	// the continue address for continuing execution after interception of the third block of code which writes to the camera values. 
 	LPBYTE _cameraWriteInterceptionContinue3 = 0;
-	// the continue address for the continuing execution after interception of the timestop block of code. 
-	LPBYTE _timestopWriteInterceptionContinue = 0;
+	// the continue address for the continuing execution after interception of the gamespeed block of code. 
+	LPBYTE _gamespeedInterceptionContinue = 0;
 }
 
 static LPBYTE _cameraStructInterceptionStart = 0;
 static LPBYTE _cameraWriteInterceptionStart1 = 0;
 static LPBYTE _cameraWriteInterceptionStart2 = 0;
 static LPBYTE _cameraWriteInterceptionStart3 = 0;
-
-static DWORD _timestopInterceptOffset = 0;
-
-
-bool PerformAOBScans(LPBYTE hostImageAddress)
-{
-	cout << "Performing AOB scans for interception addresses..." << endl;
-	// Timestop
-	_timestopInterceptOffset = AOBFindSignature(hostImageAddress, -1, TIMESTOP_AOB_PATTERN, TIMESTOP_AOB_MASK);
-	if (NULL == _timestopInterceptOffset)
-	{
-		// not found. die
-		cerr << "Couldn't find timestop offset using AOB." << endl;
-		return false;
-	}
-#ifdef _DEBUG
-	cout << "Found AOB timestop offset: " << hex << _timestopInterceptOffset << endl;
-#endif
-	cout << "AOB scans done. All good." << endl;
-	return true;
-}
+static LPBYTE _gamespeedInterceptionStart = 0;
 
 
 void SetCameraStructInterceptorHook(LPBYTE hostImageAddress)
 {
 	SetHook(hostImageAddress, CAMERA_ADDRESS_INTERCEPT_START_OFFSET, CAMERA_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_cameraStructInterceptionContinue, &cameraAddressInterceptor);
+	SetHook(hostImageAddress, CAMERA2_ADDRESS_INTERCEPT_START_OFFSET, CAMERA2_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_cameraStructInterceptionContinue2, &cameraAddressInterceptor2);
 }
 
 
@@ -71,6 +54,11 @@ void SetCameraWriteInterceptorHooks(LPBYTE hostImageAddress)
 	SetHook(hostImageAddress, CAMERA_WRITE_INTERCEPT3_START_OFFSET, CAMERA_WRITE_INTERCEPT3_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue3, &cameraWriteInterceptor3);
 }
 
+void SetTimestopInterceptorHook(LPBYTE hostImageAddress)
+{
+	SetHook(hostImageAddress, GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET, GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_gamespeedInterceptionContinue, &gamespeedAddressInterceptor);
+}
+
 
 // The FoV write is disabled with NOPs, as the code block contains jumps out of the block so it's not easy to intercept with a silent method. It's OK though
 // as the FoV changes simply change a value, so instead of the game keeping it at a value we overwrite it. We reset it to a default value when the FoV is disabled by the user 
@@ -80,8 +68,3 @@ void DisableFoVWrite(LPBYTE hostImageAddress)
 	NopRange(hostImageAddress + FOV_WRITE_INTERCEPT2_START_OFFSET, 8);
 }
 
-
-void SetTimestopInterceptorHooks(LPBYTE hostImageAddress)
-{
-	SetHook(hostImageAddress, _timestopInterceptOffset, _timestopInterceptOffset + TIMESTOP_INTERCEPT_ASM_LENGTH, &_timestopWriteInterceptionContinue, &timestopWriteInterceptor);
-}

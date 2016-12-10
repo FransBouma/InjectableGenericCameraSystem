@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CameraManipulator.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="Defaults.h" />
     <ClInclude Include="Camera.h" />
@@ -159,6 +160,7 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CameraManipulator.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>

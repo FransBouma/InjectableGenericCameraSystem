@@ -48,6 +48,9 @@
     <ClInclude Include="GameConstants.h">
       <Filter>Game Specific</Filter>
     </ClInclude>
+    <ClInclude Include="CameraManipulator.h">
+      <Filter>Game Specific</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -72,6 +75,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InterceptorHelper.cpp">
+      <Filter>Game Specific</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraManipulator.cpp">
       <Filter>Game Specific</Filter>
     </ClCompile>
   </ItemGroup>
