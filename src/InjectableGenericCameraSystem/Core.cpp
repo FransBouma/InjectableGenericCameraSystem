@@ -179,7 +179,7 @@ void HandleUserInput()
 		return;
 	}
 	_camera->ResetMovement();
-	float multiplier = altPressed ? ALT_MULTIPLIER : ctrlPressed ? CTRL_MULTIPLIER : 1.0f;
+	float multiplier = altPressed ? FASTER_MULTIPLIER : ctrlPressed ? SLOWER_MULTIPLIER : 1.0f;
 
 	if (keyboard.keyDown(IGCS_KEY_CAMERA_LOCK))
 	{
@@ -256,7 +256,7 @@ void HandleUserInput()
 	// gamepad
 	if (_gamePad->isConnected())
 	{
-		multiplier = _gamePad->isButtonPressed(IGCS_BUTTON_FASTER) ? ALT_MULTIPLIER : _gamePad->isButtonPressed(IGCS_BUTTON_SLOWER) ? CTRL_MULTIPLIER : multiplier;
+		multiplier = _gamePad->isButtonPressed(IGCS_BUTTON_FASTER) ? FASTER_MULTIPLIER : _gamePad->isButtonPressed(IGCS_BUTTON_SLOWER) ? SLOWER_MULTIPLIER : multiplier;
 
 		vec2 rightStickPosition = _gamePad->getRStickPosition();
 		_camera->Pitch(rightStickPosition.y * multiplier);

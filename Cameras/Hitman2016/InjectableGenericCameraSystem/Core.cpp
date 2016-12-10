@@ -111,7 +111,7 @@ void HandleUserInput()
 	keyboard.update();
 	mouse.update();
 	bool altPressed = keyboard.keyDown(Keyboard::KEY_LALT) || keyboard.keyDown(Keyboard::KEY_RALT);
-	bool ctrlPressed = keyboard.keyDown(Keyboard::KEY_LCONTROL) || keyboard.keyDown(Keyboard::KEY_RCONTROL);
+	bool shiftPressed = keyboard.keyDown(Keyboard::KEY_LSHIFT) || keyboard.keyDown(Keyboard::KEY_RSHIFT);
 
 	if (keyboard.keyDown(IGCS_KEY_HELP) && altPressed)
 	{
@@ -179,7 +179,7 @@ void HandleUserInput()
 		return;
 	}
 	_camera->ResetMovement();
-	float multiplier = altPressed ? ALT_MULTIPLIER : ctrlPressed ? CTRL_MULTIPLIER : 1.0f;
+	float multiplier = altPressed ? FASTER_MULTIPLIER : shiftPressed ? SLOWER_MULTIPLIER : 1.0f;
 
 	if (keyboard.keyDown(IGCS_KEY_CAMERA_LOCK))
 	{
@@ -256,7 +256,7 @@ void HandleUserInput()
 	// gamepad
 	if (_gamePad->isConnected())
 	{
-		multiplier = _gamePad->isButtonPressed(IGCS_BUTTON_FASTER) ? ALT_MULTIPLIER : _gamePad->isButtonPressed(IGCS_BUTTON_SLOWER) ? CTRL_MULTIPLIER : multiplier;
+		multiplier = _gamePad->isButtonPressed(IGCS_BUTTON_FASTER) ? FASTER_MULTIPLIER : _gamePad->isButtonPressed(IGCS_BUTTON_SLOWER) ? SLOWER_MULTIPLIER : multiplier;
 
 		vec2 rightStickPosition = _gamePad->getRStickPosition();
 		_camera->Pitch(rightStickPosition.y * multiplier);
@@ -328,8 +328,10 @@ void DisplayHelp()
 	_consoleWrapper->WriteLine("---[IGCS Help]----------------------------------------------------------", CONSOLE_WHITE);
 	_consoleWrapper->WriteLine("INS                                      : Enable/Disable camera");
 	_consoleWrapper->WriteLine("HOME                                     : Lock/unlock camera movement");
-	_consoleWrapper->WriteLine("ALT+rotate/move or LB+left/right-stick   : Faster rotate / move");
-	_consoleWrapper->WriteLine("CTRL+rotate/move or RB+left/right-stick  : Slower rotate / move");
+	_consoleWrapper->WriteLine("ALT+rotate/move                          : Faster rotate / move");
+	_consoleWrapper->WriteLine("SHIFT+rotate/move                        : Slower rotate / move");
+	_consoleWrapper->WriteLine("Controller A-button + left/right-stick   : Faster rotate / move");
+	_consoleWrapper->WriteLine("Controller X-button + left/right-stick   : Slower rotate / move");
 	_consoleWrapper->WriteLine("Arrow up/down or mouse or right-stick    : Rotate camera up/down");
 	_consoleWrapper->WriteLine("Arrow left/right or mouse or right-stick : Rotate camera left/right");
 	_consoleWrapper->WriteLine("Numpad 8/Numpad 5 or left-stick          : Move camera forward/backward");

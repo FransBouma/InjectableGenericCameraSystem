@@ -33,8 +33,8 @@
 
 // System defaults
 #define FRAME_SLEEP				8		// in milliseconds
-#define ALT_MULTIPLIER			3.0f
-#define CTRL_MULTIPLIER			0.15f
+#define FASTER_MULTIPLIER		3.0f
+#define SLOWER_MULTIPLIER		0.15f
 #define MOUSE_SPEED_CORRECTION	0.1f	// to correct for the mouse-deltas related to normal rotation.
 #define DEFAULT_MOVEMENT_SPEED	0.05f
 #define DEFAULT_ROTATION_SPEED	0.01f
@@ -70,6 +70,5 @@
 #define IGCS_BUTTON_TILT_RIGHT		Gamepad::button_t::RIGHT
 #define IGCS_BUTTON_FASTER			Gamepad::button_t::LB
 #define IGCS_BUTTON_SLOWER			Gamepad::button_t::RB
-#define IGCS_BUTTON_RESET_FOV		Gamepad::button_t::B
 
 static const byte jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]
