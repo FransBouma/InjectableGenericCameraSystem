@@ -35,12 +35,13 @@ Camera::Camera() : m_yaw(0),m_pitch(0),m_roll(0)
 	m_movementSpeed = DEFAULT_MOVEMENT_SPEED;
 	m_rotationSpeed = DEFAULT_ROTATION_SPEED;
 	m_movementOccurred = false;
-
 }
+
 
 Camera::~Camera(void)
 {
 }
+
 
 XMVECTOR Camera::CalculateLookQuaternion()
 {
@@ -54,6 +55,7 @@ XMVECTOR Camera::CalculateLookQuaternion()
 	XMQuaternionNormalize(qToReturn);
 	return qToReturn;
 }
+
 
 void Camera::ResetMovement()
 {

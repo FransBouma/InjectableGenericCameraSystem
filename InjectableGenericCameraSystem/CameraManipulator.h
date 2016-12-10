@@ -37,4 +37,4 @@ void CacheOriginalCameraValues();
 void ResetFoV();
 void ChangeFoV(float amount);
 XMFLOAT3 GetCurrentCameraCoords();
-void SetTimeStopValue(LPBYTE hostImageAddress, byte newValue);
+void SetTimeStopValue(byte newValue);

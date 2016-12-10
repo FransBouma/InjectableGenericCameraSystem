@@ -151,6 +151,7 @@
     <ClInclude Include="Console.h" />
     <ClInclude Include="Defaults.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Gamepad.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="InterceptorHelper.h" />
     <ClInclude Include="GameConstants.h" />
@@ -177,6 +178,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Gamepad.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="InterceptorHelper.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -29,11 +29,12 @@
 
 // Mandatory constants to define for a game
 #define GAME_NAME									"Hitman 2016 v1.7"
-#define CAMERA_VERSION								"0.9"
+#define CAMERA_VERSION								"1.0"
 #define CAMERA_CREDITS								"Otis_Inf, Jim2Point0, One3rd"
 #define INITIAL_PITCH_RADIANS						(-90.0f * XM_PI) / 180.f	// World has Z up and Y out of the screen, so rotate around X (pitch) -90 degrees.
 #define INITIAL_YAW_RADIANS							0.0f
 #define INITIAL_ROLL_RADIANS						0.0f
+#define CONTROLLER_Y_INVERT							true
 // End Mandatory constants
 
 // Offsets for camera intercept code. Used in interceptor.

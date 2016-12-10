@@ -40,7 +40,7 @@ static float _originalCoordsData[3];
 static bool _timeHasBeenStopped = false;
 
 // newValue: 1 == time should be frozen, 0 == normal gameplay
-void SetTimeStopValue(LPBYTE hostImageAddress, byte newValue)
+void SetTimeStopValue(byte newValue)
 {
 	// set flag so camera works during menu driven timestop
 	_timeHasBeenStopped = (newValue == 1);

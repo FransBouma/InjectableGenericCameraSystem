@@ -29,6 +29,7 @@
 
 #include "stdafx.h"
 #include "input.h"
+#include "Gamepad.h"
 
 // System defaults
 #define FRAME_SLEEP				8		// in milliseconds
@@ -61,5 +62,14 @@
 #define IGCS_KEY_FOV_DECREASE	Keyboard::KEY_NUMPAD_MINUS
 #define IGCS_KEY_HELP			Keyboard::KEY_H
 #define IGCS_KEY_TIMESTOP		Keyboard::KEY_NUMPAD_0
+
+#define IGCS_BUTTON_FOV_DECREASE	Gamepad::button_t::UP
+#define IGCS_BUTTON_FOV_INCREASE	Gamepad::button_t::DOWN
+#define IGCS_BUTTON_RESET_FOV		Gamepad::button_t::B
+#define IGCS_BUTTON_TILT_LEFT		Gamepad::button_t::LEFT
+#define IGCS_BUTTON_TILT_RIGHT		Gamepad::button_t::RIGHT
+#define IGCS_BUTTON_FASTER			Gamepad::button_t::LB
+#define IGCS_BUTTON_SLOWER			Gamepad::button_t::RB
+#define IGCS_BUTTON_RESET_FOV		Gamepad::button_t::B
 
 static const byte jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]

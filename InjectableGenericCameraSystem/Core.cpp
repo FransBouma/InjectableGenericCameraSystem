@@ -29,6 +29,7 @@
 #include "input.h"
 #include "Camera.h"
 #include "InterceptorHelper.h"
+#include "Gamepad.h"
 
 using namespace std;
 
@@ -43,6 +44,7 @@ extern "C" {
 //--------------------------------------------------------------------------------------------------------------------------------
 // local data 
 static Camera* _camera=NULL;
+static Gamepad* _gamePad = NULL;
 static Console* _consoleWrapper=NULL;
 static LPBYTE _hostImageAddress = NULL;
 static bool _cameraMovementLocked = false;
@@ -64,6 +66,9 @@ void SystemStart(HMODULE hostBaseAddress, Console c)
 	g_systemActive = true;
 	_consoleWrapper = &c;
 	_hostImageAddress = (LPBYTE)hostBaseAddress;
+	_gamePad = new Gamepad(0);
+	_gamePad->setInvertLStickY(CONTROLLER_Y_INVERT);
+	_gamePad->setInvertRStickY(CONTROLLER_Y_INVERT);
 	DisplayHelp();
 	// initialization
 	SetCameraStructInterceptorHook(_hostImageAddress);
@@ -75,6 +80,7 @@ void SystemStart(HMODULE hostBaseAddress, Console c)
 	DisableFoVWrite(_hostImageAddress);
 	// done initializing, start main loop of camera. We won't return from this
 	MainLoop();
+	delete _gamePad;
 }
 
 
@@ -101,6 +107,7 @@ void HandleUserInput()
 {
 	Keyboard &keyboard = Keyboard::instance();
 	Mouse &mouse = Mouse::instance();
+	_gamePad->update();
 	keyboard.update();
 	mouse.update();
 	bool altPressed = keyboard.keyDown(Keyboard::KEY_LALT) || keyboard.keyDown(Keyboard::KEY_RALT);
@@ -145,7 +152,7 @@ void HandleUserInput()
 			_consoleWrapper->WriteLine("Game paused");
 		}
 		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
-		SetTimeStopValue(_hostImageAddress, _timeStopped);
+		SetTimeStopValue(_timeStopped);
 
 		// wait 250 ms to avoid fast keyboard hammering unlocking/locking the timestop right away
 		Sleep(250);
@@ -246,8 +253,41 @@ void HandleUserInput()
 	_camera->Pitch(mouse.yPosRelative() * MOUSE_SPEED_CORRECTION * multiplier);
 	_camera->Yaw(mouse.xPosRelative() * MOUSE_SPEED_CORRECTION * multiplier);
 
-	// XInput for controller update
-#pragma message (">>>>>>>>> IMPLEMENT CONTROLLER SUPPORT ")
+	// gamepad
+	if (_gamePad->isConnected())
+	{
+		multiplier = _gamePad->isButtonPressed(IGCS_BUTTON_FASTER) ? ALT_MULTIPLIER : _gamePad->isButtonPressed(IGCS_BUTTON_SLOWER) ? CTRL_MULTIPLIER : multiplier;
+
+		vec2 rightStickPosition = _gamePad->getRStickPosition();
+		_camera->Pitch(rightStickPosition.y * multiplier);
+		_camera->Yaw(rightStickPosition.x * multiplier);
+
+		vec2 leftStickPosition = _gamePad->getLStickPosition();
+		_camera->MoveForward(-leftStickPosition.y * multiplier);
+		_camera->MoveRight(leftStickPosition.x * multiplier);
+		_camera->MoveUp((_gamePad->getLTrigger() - _gamePad->getRTrigger()) * multiplier);
+
+		if (_gamePad->isButtonPressed(IGCS_BUTTON_TILT_LEFT))
+		{
+			_camera->Roll(multiplier);
+		}
+		if (_gamePad->isButtonPressed(IGCS_BUTTON_TILT_RIGHT))
+		{
+			_camera->Roll(-multiplier);
+		}
+		if (_gamePad->isButtonPressed(IGCS_BUTTON_RESET_FOV))
+		{
+			ResetFoV();
+		}
+		if (_gamePad->isButtonPressed(IGCS_BUTTON_FOV_DECREASE))
+		{
+			ChangeFoV(-DEFAULT_FOV_SPEED);
+		}
+		if (_gamePad->isButtonPressed(IGCS_BUTTON_FOV_INCREASE))
+		{
+			ChangeFoV(DEFAULT_FOV_SPEED);
+		}
+	}
 }
 
 
@@ -283,26 +323,22 @@ void InitCamera()
 
 void DisplayHelp()
 {
-	_consoleWrapper->WriteLine("---[IGCS Help]------------------------------------------", CONSOLE_WHITE);
-	_consoleWrapper->WriteLine("Keyboard:", CONSOLE_WHITE);
-	_consoleWrapper->WriteLine("--------------------------------------------------------", CONSOLE_WHITE);
-	_consoleWrapper->WriteLine("INS               : Enable/Disable camera");
-	_consoleWrapper->WriteLine("HOME              : Lock/unlock camera movement");
-	_consoleWrapper->WriteLine("ALT+rotate/move   : Faster rotate / move");
-	_consoleWrapper->WriteLine("CTLR+rotate/move  : Slower rotate / move");
-	_consoleWrapper->WriteLine("Arrow up/down     : Rotate camera up/down");
-	_consoleWrapper->WriteLine("Arrow left/right  : Rotate camera left/right");
-	_consoleWrapper->WriteLine("Numpad 8/Numpad 5 : Move camera forward/backward");
-	_consoleWrapper->WriteLine("Numpad 4/Numpad 6 : Move camera left / right");
-	_consoleWrapper->WriteLine("Numpad 7/Numpad 9 : Move camera up / down");
-	_consoleWrapper->WriteLine("Numpad 1/Numpad 3 : Tilt camera left / right");
-	_consoleWrapper->WriteLine("Numpad +/Numpad - : Increase / decrease FoV");
-	_consoleWrapper->WriteLine("Numpad *          : Reset FoV");
-	_consoleWrapper->WriteLine("Numpad 0          : Pause / Continue game");
-	_consoleWrapper->WriteLine("ALT+H             : This help");
-	_consoleWrapper->WriteLine("");
-	_consoleWrapper->WriteLine("Mouse:", CONSOLE_WHITE);
-	_consoleWrapper->WriteLine("--------------------------------------------------------", CONSOLE_WHITE);
-	_consoleWrapper->WriteLine("Mouse movement    : Rotate camera up/down/left/right");
-	_consoleWrapper->WriteLine("--------------------------------------------------------", CONSOLE_WHITE);
+	                          //0         1         2         3         4         5         6         7
+	                          //01234567890123456789012345678901234567890123456789012345678901234567890123456789
+	_consoleWrapper->WriteLine("---[IGCS Help]----------------------------------------------------------", CONSOLE_WHITE);
+	_consoleWrapper->WriteLine("INS                                      : Enable/Disable camera");
+	_consoleWrapper->WriteLine("HOME                                     : Lock/unlock camera movement");
+	_consoleWrapper->WriteLine("ALT+rotate/move or LB+left/right-stick   : Faster rotate / move");
+	_consoleWrapper->WriteLine("CTLR+rotate/move or RB+left/right-stick  : Slower rotate / move");
+	_consoleWrapper->WriteLine("Arrow up/down or mouse or right-stick    : Rotate camera up/down");
+	_consoleWrapper->WriteLine("Arrow left/right or mouse or right-stick : Rotate camera left/right");
+	_consoleWrapper->WriteLine("Numpad 8/Numpad 5 or left-stick          : Move camera forward/backward");
+	_consoleWrapper->WriteLine("Numpad 4/Numpad 6 or left-stick          : Move camera left / right");
+	_consoleWrapper->WriteLine("Numpad 7/Numpad 9 or left/right trigger  : Move camera up / down");
+	_consoleWrapper->WriteLine("Numpad 1/Numpad 3 or d-pad left/right    : Tilt camera left / right");
+	_consoleWrapper->WriteLine("Numpad +/Numpad - or d-pad up/down       : Increase / decrease FoV");
+	_consoleWrapper->WriteLine("Numpad * or controller B-button          : Reset FoV");
+	_consoleWrapper->WriteLine("Numpad 0                                 : Pause / Continue game");
+	_consoleWrapper->WriteLine("ALT+H                                    : This help");
+	_consoleWrapper->WriteLine("------------------------------------------------------------------------", CONSOLE_WHITE);
 }

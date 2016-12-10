@@ -1,20 +1,21 @@
 Injectable Generic Camera System
 ============================
 
-This will hopefully grow to a generic camera system to be used for taking screenshots within games. 
+This is a generic camera system to be used as a base for cameras for taking screenshots within games. 
 The main purpose of the system is to hijack the in-game 3D camera by overwriting values in its camera structure
 with our own values so we can control where the camera is located, it's pitch/yaw/roll values,
 its FoV and the camera's look vector. 
 
-It's written in C++ with some x64 assembler to be able to intercept the location of the 3D camera in the game. 
-The system is designed for 64bit hosts as all games are 64bit nowadays. 
+It's written in C++ with some x86/x64 assembler to be able to intercept the location of the 3D camera in the game. 
+The system is initially designed for 64bit hosts as all games are 64bit nowadays, but can be reworked to be used for 32bit games. To do so, you have to change the C++ / Linker parameters
+of the VC++ project and make sure the assembler is generating x86 code.
 
 ## Requirements to build the code
 To build the code, you need to have VC++ 2013 or higher, but highly recommended is to use 2015, latest updates. Additionally you need to have installed the Windows SDK, at least the 
 windows 8 version. The VC++ installer should install this. The SDK is needed for Direct input/xinput and DirectXMath.h
 
 ### External dependencies
-It depends on DirectInput8 (which is part of every DX version) and DX11+ for the math. So using this for an x64 game using DX9/10 might not work. 
+It depends on DirectInput8 (which is part of every DX version). It uses DirectXMath for the 3D math, which is a self-contained library.
 
 ## Core design
 The core idea is that the generic camera system is used to _build_ injectable cameras with. This means that a camera hack for game XYZ uses the code
@@ -46,7 +47,7 @@ going to write to the camera values or not and if not, it will execute the state
 TBD.
 
 ## Current status
-Everything works. 
+Everything works, one game camera done: Hitman 2016.
 
 ## Useful links
 * Setting up Visual C++ to use with MASM to call / use x64 assembly: http://lallouslab.net/2016/01/11/introduction-to-writing-x64-assembly-in-visual-studio/
