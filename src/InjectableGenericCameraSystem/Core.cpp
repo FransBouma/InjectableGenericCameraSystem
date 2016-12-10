@@ -329,7 +329,7 @@ void DisplayHelp()
 	_consoleWrapper->WriteLine("INS                                      : Enable/Disable camera");
 	_consoleWrapper->WriteLine("HOME                                     : Lock/unlock camera movement");
 	_consoleWrapper->WriteLine("ALT+rotate/move or LB+left/right-stick   : Faster rotate / move");
-	_consoleWrapper->WriteLine("CTLR+rotate/move or RB+left/right-stick  : Slower rotate / move");
+	_consoleWrapper->WriteLine("CTRL+rotate/move or RB+left/right-stick  : Slower rotate / move");
 	_consoleWrapper->WriteLine("Arrow up/down or mouse or right-stick    : Rotate camera up/down");
 	_consoleWrapper->WriteLine("Arrow left/right or mouse or right-stick : Rotate camera left/right");
 	_consoleWrapper->WriteLine("Numpad 8/Numpad 5 or left-stick          : Move camera forward/backward");
