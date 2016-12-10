@@ -7,6 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "InjectableGenericCameraSyst
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BA46013C-7486-4C48-945C-5D059C19F494}"
 	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
 		ReadMe.md = ReadMe.md
 	EndProjectSection
 EndProject

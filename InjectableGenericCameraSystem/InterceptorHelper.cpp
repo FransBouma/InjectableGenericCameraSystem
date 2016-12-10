@@ -1,4 +1,30 @@
-/////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Part of Injectable Generic Camera System
+// Copyright(c) 2016, Frans Bouma
+// All rights reserved.
+// https://github.com/FransBouma/InjectableGenericCameraSystem
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met :
+//
+//  * Redistributions of source code must retain the above copyright notice, this
+//	  list of conditions and the following disclaimer.
+//
+//  * Redistributions in binary form must reproduce the above copyright notice,
+//    this list of conditions and the following disclaimer in the documentation
+//    and / or other materials provided with the distribution.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED.IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Game specific code. The interface is defined in InterceptorHelper.h, these methods have to be implemented, that's it.
 // Use asm functions to inject the hooks
 /////////////////////////////////////////////////////////////////////////////////
@@ -11,7 +37,6 @@ using namespace std;
 
 extern "C" {
 	void cameraAddressInterceptor();
-	void cameraAddressInterceptor2();
 	void cameraWriteInterceptor1();		// create as much interceptors for write interception as needed. In the example game, there are 4.
 	void cameraWriteInterceptor2();
 	void cameraWriteInterceptor3();
@@ -21,7 +46,6 @@ extern "C" {
 extern "C" {
 	// The continue address for continuing execution after camera values address interception. 
 	LPBYTE _cameraStructInterceptionContinue = 0;
-	LPBYTE _cameraStructInterceptionContinue2 = 0;
 	// the continue address for continuing execution after interception of the first block of code which writes to the camera values. 
 	LPBYTE _cameraWriteInterceptionContinue1 = 0;
 	// the continue address for continuing execution after interception of the second block of code which writes to the camera values. 
@@ -42,7 +66,6 @@ static LPBYTE _gamespeedInterceptionStart = 0;
 void SetCameraStructInterceptorHook(LPBYTE hostImageAddress)
 {
 	SetHook(hostImageAddress, CAMERA_ADDRESS_INTERCEPT_START_OFFSET, CAMERA_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_cameraStructInterceptionContinue, &cameraAddressInterceptor);
-	SetHook(hostImageAddress, CAMERA2_ADDRESS_INTERCEPT_START_OFFSET, CAMERA2_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_cameraStructInterceptionContinue2, &cameraAddressInterceptor2);
 }
 
 
