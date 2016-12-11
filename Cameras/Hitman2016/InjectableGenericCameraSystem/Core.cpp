@@ -49,6 +49,7 @@ static Console* _consoleWrapper=NULL;
 static LPBYTE _hostImageAddress = NULL;
 static bool _cameraMovementLocked = false;
 static bool _cameraStructFound = false;
+static float _lookDirectionInverter = 1.0f;
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // Local function definitions
@@ -116,8 +117,22 @@ void HandleUserInput()
 	if (keyboard.keyDown(IGCS_KEY_HELP) && altPressed)
 	{
 		DisplayHelp();
-		// wait for 250ms to avoid fast keyboard hammering displaying multiple times the help!
-		Sleep(250);
+		// wait for 350ms to avoid fast keyboard hammering displaying multiple times the help!
+		Sleep(350);
+	}
+	if (keyboard.keyDown(IGCS_KEY_INVERT_Y_LOOK) && altPressed)
+	{
+		_lookDirectionInverter = -_lookDirectionInverter;
+		if (_lookDirectionInverter < 0)
+		{
+			_consoleWrapper->WriteLine("Y look direction is inverted");
+		}
+		else
+		{
+			_consoleWrapper->WriteLine("Y look direction is normal");
+		}
+		// wait for 350ms to avoid fast keyboard hammering switching look directive multiple times
+		Sleep(350);
 	}
 	if(!_cameraStructFound)
 	{
@@ -138,8 +153,8 @@ void HandleUserInput()
 			_camera->ResetAngles();
 		}
 		_cameraEnabled = _cameraEnabled == 0 ? (byte)1 : (byte)0;
-		// wait for 250ms to avoid fast keyboard hammering disabling the camera right away
-		Sleep(250);
+		// wait for 350ms to avoid fast keyboard hammering disabling the camera right away
+		Sleep(350);
 	}
 	if (keyboard.keyDown(IGCS_KEY_TIMESTOP))
 	{
@@ -154,8 +169,8 @@ void HandleUserInput()
 		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
 		SetTimeStopValue(_timeStopped);
 
-		// wait 250 ms to avoid fast keyboard hammering unlocking/locking the timestop right away
-		Sleep(250);
+		// wait 350 ms to avoid fast keyboard hammering unlocking/locking the timestop right away
+		Sleep(350);
 	}
 
 	//////////////////////////////////////////////////// FOV
@@ -226,11 +241,11 @@ void HandleUserInput()
 	}
 	if (keyboard.keyDown(IGCS_KEY_ROTATE_DOWN))
 	{
-		_camera->Pitch(multiplier);
+		_camera->Pitch(multiplier * _lookDirectionInverter);
 	}
 	if (keyboard.keyDown(IGCS_KEY_ROTATE_UP))
 	{
-		_camera->Pitch(-multiplier);
+		_camera->Pitch((-multiplier) * _lookDirectionInverter);
 	}
 	if (keyboard.keyDown(IGCS_KEY_ROTATE_RIGHT))
 	{
@@ -250,7 +265,7 @@ void HandleUserInput()
 	}
 
 	// mouse 
-	_camera->Pitch(mouse.yPosRelative() * MOUSE_SPEED_CORRECTION * multiplier);
+	_camera->Pitch(mouse.yPosRelative() * MOUSE_SPEED_CORRECTION * multiplier * _lookDirectionInverter);
 	_camera->Yaw(mouse.xPosRelative() * MOUSE_SPEED_CORRECTION * multiplier);
 
 	// gamepad
@@ -259,7 +274,7 @@ void HandleUserInput()
 		multiplier = _gamePad->isButtonPressed(IGCS_BUTTON_FASTER) ? FASTER_MULTIPLIER : _gamePad->isButtonPressed(IGCS_BUTTON_SLOWER) ? SLOWER_MULTIPLIER : multiplier;
 
 		vec2 rightStickPosition = _gamePad->getRStickPosition();
-		_camera->Pitch(rightStickPosition.y * multiplier);
+		_camera->Pitch(rightStickPosition.y * multiplier * _lookDirectionInverter);
 		_camera->Yaw(rightStickPosition.x * multiplier);
 
 		vec2 leftStickPosition = _gamePad->getLStickPosition();
@@ -306,7 +321,6 @@ void WriteNewCameraValuesToCameraStructs()
 }
 
 
-
 void InitCamera()
 {
 	_consoleWrapper->WriteLine("Waiting for camera struct interception...");
@@ -341,6 +355,7 @@ void DisplayHelp()
 	_consoleWrapper->WriteLine("Numpad +/Numpad - or d-pad up/down       : Increase / decrease FoV");
 	_consoleWrapper->WriteLine("Numpad * or controller B-button          : Reset FoV");
 	_consoleWrapper->WriteLine("Numpad 0                                 : Pause / Continue game");
+	_consoleWrapper->WriteLine("ALT+Arrow up                             : Toggle Y look direction");
 	_consoleWrapper->WriteLine("ALT+H                                    : This help");
 	_consoleWrapper->WriteLine("------------------------------------------------------------------------", CONSOLE_WHITE);
 }
