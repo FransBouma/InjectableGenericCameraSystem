@@ -96,8 +96,8 @@ cameraWriteInterceptor1 PROC
 	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
-	movaps xmm0, dword ptr [rax]						; original statement
-	movups dword ptr [rbx+080h],xmm0					; original statement
+	movaps xmm0, xmmword ptr [rax]						; original statement
+	movups xmmword ptr [rbx+080h],xmm0					; original statement
 exit:
 	movss xmm0, dword ptr [rsp+050h]					; original statement
 	jmp qword ptr [_cameraWriteInterceptionContinue1]	; jmp back into the original game code which is the location after the original statements above.
@@ -111,8 +111,8 @@ cameraWriteInterceptor2 PROC
 	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
-	movups dword ptr [rbx+098h], xmm0					; original statement
-	movss dword ptr [rbx+094h], xmm1					; original statement	
+	movss dword ptr [rbx+98h],xmm0						; original statement
+	movss dword ptr [rbx+94h],xmm1						; original statement
 exit:
 	jmp qword ptr [_cameraWriteInterceptionContinue2]	; jmp back into the original game code which is the location after the original statements above.
 cameraWriteInterceptor2 ENDP
@@ -125,14 +125,14 @@ cameraWriteInterceptor3 PROC
 	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
-	movups dword ptr [rbx+080h],xmm0					; original statement
-	movaps xmm1, dword ptr[rdi+030h]					; original statement
-	movaps xmm0,xmm1									; original statement
-	movss dword ptr [rbx+090h],xmm1						; original statement
-	shufps xmm0,xmm1, 055h								; original statement
-	shufps xmm1,xmm1,-056h								; original statement
-	movss dword ptr [rbx+098h], xmm1					; original statement
-	movss dword ptr [rbx+094h], xmm0					; original statement
+	movups xmmword ptr [rbx+80h],xmm0  					; original statement
+	movaps xmm1,xmmword ptr [rdi+30h]  					; original statement
+	movaps xmm0,xmm1  									; original statement
+	movss  dword ptr [rbx+90h],xmm1  					; original statement
+	shufps xmm0,xmm1,55h  								; original statement
+	shufps xmm1,xmm1,0AAh  								; original statement
+	movss  dword ptr [rbx+98h],xmm1  					; original statement
+	movss  dword ptr [rbx+94h],xmm0						; original statement
 exit:
 	jmp qword ptr [_cameraWriteInterceptionContinue3]	; jmp back into the original game code which is the location after the original statements above.
 cameraWriteInterceptor3 ENDP
