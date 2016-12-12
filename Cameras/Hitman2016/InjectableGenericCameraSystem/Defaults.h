@@ -63,6 +63,7 @@
 #define IGCS_KEY_HELP			Keyboard::KEY_H
 #define IGCS_KEY_TIMESTOP		Keyboard::KEY_NUMPAD_0
 #define IGCS_KEY_INVERT_Y_LOOK	Keyboard::KEY_UP
+#define IGCS_KEY_ALT_TIMESTOP	Keyboard::KEY_NUMPAD_PERIOD
 
 #define IGCS_BUTTON_FOV_DECREASE	Gamepad::button_t::UP
 #define IGCS_BUTTON_FOV_INCREASE	Gamepad::button_t::DOWN

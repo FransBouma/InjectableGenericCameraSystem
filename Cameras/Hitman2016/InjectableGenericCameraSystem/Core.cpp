@@ -50,6 +50,7 @@ static LPBYTE _hostImageAddress = NULL;
 static bool _cameraMovementLocked = false;
 static bool _cameraStructFound = false;
 static float _lookDirectionInverter = 1.0f;
+static bool _alternativeTimeStopped = false;
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // Local function definitions
@@ -168,7 +169,22 @@ void HandleUserInput()
 		}
 		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
 		SetTimeStopValue(_timeStopped);
+		// wait 350 ms to avoid fast keyboard hammering unlocking/locking the timestop right away
+		Sleep(350);
+	}
 
+	if (keyboard.keyDown(IGCS_KEY_ALT_TIMESTOP))
+	{
+		if (_alternativeTimeStopped)
+		{
+			_consoleWrapper->WriteLine("Game unpaused (alt)");
+		}
+		else
+		{
+			_consoleWrapper->WriteLine("Game paused (alt)");
+		}
+		_alternativeTimeStopped = !_alternativeTimeStopped;
+		SetAlternativeTimeStop(_hostImageAddress, _alternativeTimeStopped);
 		// wait 350 ms to avoid fast keyboard hammering unlocking/locking the timestop right away
 		Sleep(350);
 	}
@@ -339,7 +355,7 @@ void DisplayHelp()
 {
 	                          //0         1         2         3         4         5         6         7
 	                          //01234567890123456789012345678901234567890123456789012345678901234567890123456789
-	_consoleWrapper->WriteLine("---[IGCS Help]----------------------------------------------------------", CONSOLE_WHITE);
+	_consoleWrapper->WriteLine("---[IGCS Help]---------------------------------------------------------------", CONSOLE_WHITE);
 	_consoleWrapper->WriteLine("INS                                      : Enable/Disable camera");
 	_consoleWrapper->WriteLine("HOME                                     : Lock/unlock camera movement");
 	_consoleWrapper->WriteLine("ALT+rotate/move                          : Faster rotate / move");
@@ -355,7 +371,8 @@ void DisplayHelp()
 	_consoleWrapper->WriteLine("Numpad +/Numpad - or d-pad up/down       : Increase / decrease FoV");
 	_consoleWrapper->WriteLine("Numpad * or controller B-button          : Reset FoV");
 	_consoleWrapper->WriteLine("Numpad 0                                 : Pause / Continue game");
+	_consoleWrapper->WriteLine("Numpad .                                 : Alt Pause / Continue game (no FoV)");
 	_consoleWrapper->WriteLine("ALT+Arrow up                             : Toggle Y look direction");
 	_consoleWrapper->WriteLine("ALT+H                                    : This help");
-	_consoleWrapper->WriteLine("------------------------------------------------------------------------", CONSOLE_WHITE);
+	_consoleWrapper->WriteLine("-----------------------------------------------------------------------------", CONSOLE_WHITE);
 }

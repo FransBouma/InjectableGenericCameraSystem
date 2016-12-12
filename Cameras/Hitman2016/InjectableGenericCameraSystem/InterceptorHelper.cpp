@@ -37,6 +37,7 @@ using namespace std;
 
 extern "C" {
 	void cameraAddressInterceptor();
+	void cameraAddressInterceptor2();
 	void cameraWriteInterceptor1();		// create as much interceptors for write interception as needed. In the example game, there are 4.
 	void cameraWriteInterceptor2();
 	void cameraWriteInterceptor3();
@@ -46,6 +47,8 @@ extern "C" {
 extern "C" {
 	// The continue address for continuing execution after camera values address interception. 
 	LPBYTE _cameraStructInterceptionContinue = 0;
+	// Secondary camera struct, for alternative timestop. No FoV in this case.
+	LPBYTE _cameraStructInterceptionContinue2 = 0;
 	// the continue address for continuing execution after interception of the first block of code which writes to the camera values. 
 	LPBYTE _cameraWriteInterceptionContinue1 = 0;
 	// the continue address for continuing execution after interception of the second block of code which writes to the camera values. 
@@ -66,6 +69,7 @@ static LPBYTE _gamespeedInterceptionStart = 0;
 void SetCameraStructInterceptorHook(LPBYTE hostImageAddress)
 {
 	SetHook(hostImageAddress, CAMERA_ADDRESS_INTERCEPT_START_OFFSET, CAMERA_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_cameraStructInterceptionContinue, &cameraAddressInterceptor);
+	SetHook(hostImageAddress, CAMERA2_ADDRESS_INTERCEPT_START_OFFSET, CAMERA2_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_cameraStructInterceptionContinue2, &cameraAddressInterceptor2);
 }
 
 
