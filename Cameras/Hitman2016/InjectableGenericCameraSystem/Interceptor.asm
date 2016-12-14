@@ -98,9 +98,9 @@ cameraAddressInterceptor2 PROC
 	mov [_cameraStructAddress2], rax					; camera used during menu / timestop. 
 	cmp byte ptr [_cameraEnabled], 1
 	je originalCode
-	movss xmm0, dword ptr [rax+20]						; original statement
+	movss xmm0, dword ptr [rax+020h]						; original statement
 originalCode:
-	movq xmm2, qword ptr [rax+18]						; original statement
+	movq xmm2, qword ptr [rax+018h]						; original statement
 	movaps xmm1,xmm5									; original statement
 	addps xmm1,xmm5										; original statement
 	jmp qword ptr [_cameraStructInterceptionContinue2]
