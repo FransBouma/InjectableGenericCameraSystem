@@ -191,6 +191,8 @@ void Mouse::init(HINSTANCE parentModuleHandle)
 
 bool Mouse::create()
 {
+	return false;
+
 	HINSTANCE hInstance = NULL == g_parentModuleHandle ? GetModuleHandle(0) : Mouse::g_parentModuleHandle;
     HWND hWnd = GetForegroundWindow();
 

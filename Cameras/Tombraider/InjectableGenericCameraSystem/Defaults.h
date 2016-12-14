@@ -36,7 +36,7 @@
 #define FASTER_MULTIPLIER		3.0f
 #define SLOWER_MULTIPLIER		0.15f
 #define MOUSE_SPEED_CORRECTION	0.1f	// to correct for the mouse-deltas related to normal rotation.
-#define DEFAULT_MOVEMENT_SPEED	0.05f
+#define DEFAULT_MOVEMENT_SPEED	1.0f
 #define DEFAULT_ROTATION_SPEED	0.01f
 #define DEFAULT_FOV_RADIANS		0.7f
 #define DEFAULT_FOV_DEGREES		40.0f

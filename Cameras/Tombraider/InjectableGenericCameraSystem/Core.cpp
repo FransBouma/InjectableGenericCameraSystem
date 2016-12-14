@@ -315,8 +315,8 @@ void WriteNewCameraValuesToCameraStructs()
 
 	// calculate new camera values
 	XMVECTOR newLookQuaternion = _camera->CalculateLookQuaternion();
-	XMFLOAT3 currentCoords = GetCurrentCameraCoords();
-	XMFLOAT3 newCoords = _camera->CalculateNewCoords(currentCoords, newLookQuaternion);
+	//XMFLOAT3 currentCoords = GetCurrentCameraCoords();
+	XMFLOAT3 newCoords;// = _camera->CalculateNewCoords(currentCoords, newLookQuaternion);
 	WriteNewCameraValuesToGameData(newLookQuaternion, newCoords);
 }
 

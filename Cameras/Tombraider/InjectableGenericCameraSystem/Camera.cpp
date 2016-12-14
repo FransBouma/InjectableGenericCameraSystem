@@ -30,7 +30,7 @@
 
 using namespace DirectX;
 
-Camera::Camera() : m_yaw(0),m_pitch(0),m_roll(0)
+Camera::Camera() : m_yaw(0), m_pitch(0), m_roll(0)
 {
 	m_movementSpeed = DEFAULT_MOVEMENT_SPEED;
 	m_rotationSpeed = DEFAULT_ROTATION_SPEED;
@@ -49,9 +49,8 @@ XMVECTOR Camera::CalculateLookQuaternion()
 	XMVECTOR yQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), m_roll);		// game has Z up and Y+ out of the screen, so roll is used for Y rotation
 	XMVECTOR zQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), m_yaw);		// game has Z up and Y+ out of the screen, so yaw is used for Z rotation
 
-	// order is important! rotation Z * rotation Y * rotation X. Unconventional because world axis don't align with camera (Z is up, Y+ is out of the screen)
 	XMVECTOR tmpQ = XMQuaternionMultiply(zQ, yQ);
-	XMVECTOR qToReturn = XMQuaternionMultiply(tmpQ, xQ);
+	XMVECTOR qToReturn = XMQuaternionMultiply(tmpQ, zQ);
 	XMQuaternionNormalize(qToReturn);
 	return qToReturn;
 }
@@ -82,7 +81,7 @@ XMFLOAT3 Camera::CalculateNewCoords(const XMFLOAT3 currentCoords, const XMVECTOR
 	toReturn.z = currentCoords.z;
 	if (m_movementOccurred)
 	{
-		XMMATRIX lookMatrix= XMMatrixRotationQuaternion(lookQ);
+		XMMATRIX lookMatrix = XMMatrixRotationQuaternion(lookQ);
 		XMFLOAT4X4 lookAs4X4;
 		XMStoreFloat4x4(&lookAs4X4, lookMatrix);
 		// the lookMatrix is the transformation matrix of the look Quaternion. The first column is the x axis, the third column is the actual look vector. 
@@ -99,40 +98,40 @@ XMFLOAT3 Camera::CalculateNewCoords(const XMFLOAT3 currentCoords, const XMVECTOR
 }
 
 
-void Camera::MoveForward(float amount) 
-{ 
+void Camera::MoveForward(float amount)
+{
 	m_direction.y += (m_movementSpeed * amount);			// game has Z up and Y out of the screen
 	m_movementOccurred = true;
 }
 
-void Camera::MoveRight(float amount) 
+void Camera::MoveRight(float amount)
 {
 	m_direction.x += (m_movementSpeed * amount);
 	m_movementOccurred = true;
 }
 
 void Camera::MoveUp(float amount)
-{ 
+{
 	m_direction.z += (m_movementSpeed * amount);
 	m_movementOccurred = true;
 }
 
-void Camera::Yaw(float amount) 
+void Camera::Yaw(float amount)
 {
-	m_yaw+= (m_rotationSpeed * amount);
-	m_yaw= ClampAngle(m_yaw);
-}	
+	m_yaw += (m_rotationSpeed * amount);
+	m_yaw = ClampAngle(m_yaw);
+}
 
 void Camera::Pitch(float amount)
 {
-	m_pitch+= (m_rotationSpeed * amount);
-	m_pitch= ClampAngle(m_pitch);
+	m_pitch += (m_rotationSpeed * amount);
+	m_pitch = ClampAngle(m_pitch);
 }
 
-void Camera::Roll(float amount) 
+void Camera::Roll(float amount)
 {
-	m_roll+= (m_rotationSpeed * amount);
-	m_roll= ClampAngle(m_roll);
+	m_roll += (m_rotationSpeed * amount);
+	m_roll = ClampAngle(m_roll);
 }
 
 void Camera::SetPitch(float angle)

@@ -37,10 +37,8 @@ extern "C" {
 	LPBYTE _gamespeedStructAddress = NULL;
 }
 
-static float _originalLookData[4];
-static float _originalCoordsData[3];
+static float _originalMatrix[16];
 static bool _timeHasBeenStopped = false;
-static bool _alternativeTimeHasBeenStopped = false;
 
 // newValue: 1 == time should be frozen, 0 == normal gameplay
 void SetTimeStopValue(byte newValue)
@@ -74,11 +72,11 @@ void WriteNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoor
 	lookInMemory[2] = qAsFloat4.z;
 	lookInMemory[3] = qAsFloat4.w;
 
-	// Coords
-	float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-	coordsInMemory[0] = newCoords.x;
-	coordsInMemory[1] = newCoords.y;
-	coordsInMemory[2] = newCoords.z;
+	//// Coords
+	//float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
+	//coordsInMemory[0] = newCoords.x;
+	//coordsInMemory[1] = newCoords.y;
+	//coordsInMemory[2] = newCoords.z;
 }
 
 
@@ -114,18 +112,14 @@ void ChangeFoV(float amount)
 // should restore the camera values in the camera structures to the cached values. This assures the free camera is always enabled at the original camera location.
 void RestoreOriginalCameraValues()
 {
-	float* lookInMemory = reinterpret_cast<float*>(_cameraStructAddress + LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET);
-	float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-	memcpy(lookInMemory, _originalLookData, 4 * sizeof(float));
-	memcpy(coordsInMemory, _originalCoordsData, 3 * sizeof(float));
+	//float* viewMatrixInMemory = reinterpret_cast<float*>(_cameraStructAddress + VIEW_MATRIX_IN_CAMERA_STRUCT_OFFSET);
+	//memcpy(viewMatrixInMemory, _originalMatrix, 16 * sizeof(float));
 }
 
 
 void CacheOriginalCameraValues()
 {
-	float* lookInMemory = reinterpret_cast<float*>(_cameraStructAddress + LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET);
-	float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-	memcpy(_originalLookData, lookInMemory, 4 * sizeof(float));
-	memcpy(_originalCoordsData, coordsInMemory, 3 * sizeof(float));
+	//float* viewMatrixInMemory = reinterpret_cast<float*>(_cameraStructAddress + VIEW_MATRIX_IN_CAMERA_STRUCT_OFFSET);
+	//memcpy(_originalMatrix, viewMatrixInMemory, 16 * sizeof(float));
 }
 

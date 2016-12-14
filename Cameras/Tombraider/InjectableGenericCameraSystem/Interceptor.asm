@@ -60,9 +60,8 @@ cameraAddressInterceptor PROC
 	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
-	mov [esi-60],eax									; original statement
+	movaps [esi+00000090h],xmm0							; original statement
 exit:
-	mov ecx,[edi+04]									; original statement
 	jmp [_cameraStructInterceptionContinue]				; jmp back into the original game code, which is the location after the original statements above.
 cameraAddressInterceptor ENDP
 
@@ -82,32 +81,95 @@ gamespeedAddressInterceptor ENDP
 ; execute the code regardless of whether our camera is enabled.
 
 cameraWriteInterceptor1 PROC
-	;; Game jmps to this location due to the hook set in C function SetMatrixWriteInterceptorHooks. 
-	;; first check if this is really a call for the camera. Other logic will use this code too. Check rbx with our known cameraStruct address to be sure
-	;cmp dword ptr rbx, [_cameraStructAddress]
-	;jne originalCode
-	;cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
-	;je exit												; our own camera is enabled, just skip the writes
-;originalCode:
-	;movaps xmm0, xmmword ptr [rax]						; original statement
-	;movups xmmword ptr [rbx+080h],xmm0					; original statement
-;exit:
-	;movss xmm0, dword ptr [rsp+050h]					; original statement
-	;jmp qword ptr [_cameraWriteInterceptionContinue1]	; jmp back into the original game code which is the location after the original statements above.
+	; Game jmps to this location due to the hook set in C function SetMatrixWriteInterceptorHooks. 
+	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
+	je intercepted										; our own camera is enabled, just skip the writes
+originalCode:
+	movaps [eax],xmm0									; original statement
+	movaps xmm0,[edx]									; original statement
+	mov edx,[ebp+14h]									; original statement
+	movaps [eax+10h],xmm0								; original statement
+	movaps xmm0,[ecx]									; original statement
+	movaps [eax+20h],xmm0								; original statement
+	movaps xmm0,[edx]									; original statement
+	fst dword ptr [eax+0Ch]								; original statement
+	fst dword ptr [eax+01Ch]							; original statement
+	movaps [eax+30h],xmm0								; original statement
+	jmp exit
+intercepted:											; the original statements without the writes. 
+	movaps xmm0,[edx]									; original statement
+	mov edx,[ebp+14h]									; original statement
+	movaps xmm0,[ecx]									; original statement
+	movaps xmm0,[edx]									; original statement
+	fst dword ptr [eax+0Ch]								; original statement
+	fst dword ptr [eax+01Ch]							; original statement
+exit:
+	jmp [_cameraWriteInterceptionContinue1]				; jmp back into the original game code which is the location after the original statements above.
 cameraWriteInterceptor1 ENDP
 
 cameraWriteInterceptor2 PROC
-	;; Game jmps to this location due to the hook set in C function SetMatrixWriteInterceptorHooks. 
-	;; first check if this is really a call for the camera. Other logic will use this code too. Check rbx with our known cameraStruct address to be sure
-	;cmp qword ptr rbx, [_cameraStructAddress]
-	;jne originalCode
-	;cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
-	;je exit												; our own camera is enabled, just skip the writes
-;originalCode:
-	;movss dword ptr [rbx+98h],xmm0						; original statement
-	;movss dword ptr [rbx+94h],xmm1						; original statement
-;exit:
-	;jmp qword ptr [_cameraWriteInterceptionContinue2]	; jmp back into the original game code which is the location after the original statements above.
+	; Game jmps to this location due to the hook set in C function SetMatrixWriteInterceptorHooks. 
+	cmp dword ptr esi, [_cameraStructAddress]
+	jne originalCode
+	; The first write is in the camera address interception, these are the rest of the writes.
+	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
+	je intercepted												; our own camera is enabled, just skip the writes
+originalCode:
+	mov [esi-5Ch],ecx
+	mov edx,[edi+08h]
+	mov [esi-58h],edx
+	mov eax,[edi+0Ch]
+	mov [esi-54h],eax
+	mov ecx,[esi+000003C0h]
+	mov [esi-50h],ecx
+	mov edx,[esi+000003C4h]
+	mov [esi-4Ch],edx
+	mov eax,[esi+000003C8h]
+	mov [esi-48h],eax
+	mov ecx,[esi+000003CCh]
+	mov edi,[esp+1Ch]
+	mov [esi-44h],ecx
+	mov edx,[esi+000003D0h]
+	mov [esi-40h],edx
+	mov eax,[esi+000003D4h]
+	mov [esi-3Ch],eax
+	mov ecx,[esi+000003D8h]
+	mov [esi-38h],ecx
+	mov edx,[esi+000003DCh]
+	mov [esi-34h],edx
+	mov eax,[esi+000003E0h]
+	mov [esi-30h],eax
+	mov ecx,[esi+000003E4h]
+	mov [esi-2Ch],ecx
+	mov edx,[esi+000003E8h]
+	mov [esi-28h],edx
+	mov eax,[esi+000003ECh]
+	push 00h
+	push ebx
+	mov ecx,edi
+	mov [esi-24h],eax
+	jmp exit
+intercepted:
+	mov edx,[edi+08h]
+	mov eax,[edi+0Ch]
+	mov ecx,[esi+000003C0h]
+	mov edx,[esi+000003C4h]
+	mov eax,[esi+000003C8h]
+	mov ecx,[esi+000003CCh]
+	mov edi,[esp+1Ch]
+	mov edx,[esi+000003D0h]
+	mov eax,[esi+000003D4h]
+	mov ecx,[esi+000003D8h]
+	mov edx,[esi+000003DCh]
+	mov eax,[esi+000003E0h]
+	mov ecx,[esi+000003E4h]
+	mov edx,[esi+000003E8h]
+	mov eax,[esi+000003ECh]
+	push 00h
+	push ebx
+	mov ecx,edi
+exit:
+	jmp [_cameraWriteInterceptionContinue2]	; jmp back into the original game code which is the location after the original statements above.
 cameraWriteInterceptor2 ENDP
 
 
