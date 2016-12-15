@@ -70,8 +70,8 @@ void SetCameraStructInterceptorHook(LPBYTE hostImageAddress)
 void SetCameraWriteInterceptorHooks(LPBYTE hostImageAddress)
 {
 	// for each block of code that writes to the camera values we're manipulating we need an interception to block it. For the example game there are 3. 
-	//SetHook(hostImageAddress, CAMERA_WRITE_INTERCEPT1_START_OFFSET, CAMERA_WRITE_INTERCEPT1_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue1, &cameraWriteInterceptor1);
-	//SetHook(hostImageAddress, CAMERA_WRITE_INTERCEPT2_START_OFFSET, CAMERA_WRITE_INTERCEPT2_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue2, &cameraWriteInterceptor2);
+	SetHook(hostImageAddress, CAMERA_WRITE_INTERCEPT1_START_OFFSET, CAMERA_WRITE_INTERCEPT1_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue1, &cameraWriteInterceptor1);
+	SetHook(hostImageAddress, CAMERA_WRITE_INTERCEPT2_START_OFFSET, CAMERA_WRITE_INTERCEPT2_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue2, &cameraWriteInterceptor2);
 }
 
 void SetTimestopInterceptorHook(LPBYTE hostImageAddress)

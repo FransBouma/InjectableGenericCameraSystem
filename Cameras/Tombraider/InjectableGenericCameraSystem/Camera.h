@@ -36,10 +36,11 @@ public:
 	Camera();
 	~Camera(void);
 
+	XMVECTOR CalculateLookQuaternion(XMVECTOR currentLookQ);
 	XMVECTOR CalculateLookQuaternion();
 	XMFLOAT3 CalculateNewCoords(const XMFLOAT3 currentCoords, const XMVECTOR lookQ);
 
-	void ResetMovement();
+	void ResetDeltas();
 	void ResetAngles();
 	void MoveForward(float amount);
 	void MoveRight(float amount);
@@ -52,10 +53,13 @@ public:
 	void SetRoll(float angle);
 
 private:
-	XMFLOAT3 m_direction = XMFLOAT3(0.0f, 0.0f, 0.0f); // camera direction, defined by move methods. Reset by ResetMovement
+	XMFLOAT3 m_direction = XMFLOAT3(0.0f, 0.0f, 0.0f); // camera direction, defined by move methods. Reset by ResetDeltas
 	float m_yaw;
 	float m_pitch;
 	float m_roll;
+	float m_yawDelta;
+	float m_rollDelta;
+	float m_pitchDelta;
 	bool m_movementOccurred;
 	float m_movementSpeed;
 	float m_rotationSpeed;

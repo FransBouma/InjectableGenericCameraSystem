@@ -37,4 +37,5 @@ void CacheOriginalCameraValues();
 void ResetFoV();
 void ChangeFoV(float amount);
 XMFLOAT3 GetCurrentCameraCoords();
+XMVECTOR GetCurrentCameraLookQuaternion();
 void SetTimeStopValue(byte newValue);

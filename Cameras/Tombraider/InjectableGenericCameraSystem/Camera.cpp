@@ -35,6 +35,9 @@ Camera::Camera() : m_yaw(0), m_pitch(0), m_roll(0)
 	m_movementSpeed = DEFAULT_MOVEMENT_SPEED;
 	m_rotationSpeed = DEFAULT_ROTATION_SPEED;
 	m_movementOccurred = false;
+	m_yawDelta = 0.0f;
+	m_pitchDelta = 0.0f;
+	m_rollDelta = 0.0f;
 }
 
 
@@ -43,25 +46,68 @@ Camera::~Camera(void)
 }
 
 
+// uses the current quaternion used by the game to calculate the new quaternion by first creating a new quaternion from the angle delta's and multiplying it with the 
+// current look quaternion like: angleQ * currentLookQ. This new quaternion is then used as the new game quaternion.
+XMVECTOR Camera::CalculateLookQuaternion(XMVECTOR currentLookQ)
+{
+	// Game has Y into the screen. roll is therefore used for Y. pitch / yaw have to be negative due to the alignment of the axis vs what the user expects. 
+	// Game will create tilt when rotated, as Y is into the screen.
+	/*
+	// WORKS, but creates massive tilt.
+	XMVECTOR angleQ = XMQuaternionRotationRollPitchYaw(-m_pitchDelta, m_rollDelta, -m_yawDelta);
+	XMVECTOR toReturn = XMQuaternionMultiply(angleQ, currentLookQ);
+	*/ 
+
+	// alternative method, separated calculations, no tilt. Trick is in swapping order of (xQ*currentQ) * zQ. Doing it as zQ* (xQ*currentQ) will introduce tilt. 
+	XMVECTOR xQ = XMQuaternionRotationNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), -m_pitchDelta);
+	XMVECTOR yQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), m_rollDelta);
+	XMVECTOR zQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), -m_yawDelta);
+	XMVECTOR tmpQ = XMQuaternionMultiply(xQ, currentLookQ);
+	tmpQ = XMQuaternionMultiply(tmpQ, zQ);					
+	XMVECTOR qToReturn = XMQuaternionMultiply(yQ, tmpQ);
+	XMQuaternionNormalize(qToReturn);
+	return qToReturn;
+}
+
+
 XMVECTOR Camera::CalculateLookQuaternion()
 {
-	XMVECTOR xQ = XMQuaternionRotationNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f), m_pitch);
-	XMVECTOR yQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), m_roll);		// game has Z up and Y+ out of the screen, so roll is used for Y rotation
-	XMVECTOR zQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), m_yaw);		// game has Z up and Y+ out of the screen, so yaw is used for Z rotation
+	/*
+	To test how the quaternion is stored, and which axis are pointing where (e.g. is Y into the screen or up?) use these default quaternions:
+	w			x			y			z			Description
+	1			0			0			0			Identity quaternion, no rotation
+	0			1			0			0			180° turn around X axis
+	0			0			1			0			180° turn around Y axis
+	0			0			0			1			180° turn around Z axis
+	sqrt(0.5)	sqrt(0.5)	0			0			90° rotation around X axis
+	sqrt(0.5)	0			sqrt(0.5)	0			90° rotation around Y axis
+	sqrt(0.5)	0			0			sqrt(0.5)	90° rotation around Z axis
+	sqrt(0.5)	-sqrt(0.5)	0			0			-90° rotation around X axis
+	sqrt(0.5)	0			-sqrt(0.5)	0			-90° rotation around Y axis
+	sqrt(0.5)	0			0			-sqrt(0.5)	-90° rotation around Z axis
+	*/
 
-	XMVECTOR tmpQ = XMQuaternionMultiply(zQ, yQ);
+	XMVECTOR xQ = XMQuaternionRotationNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f), m_yaw);
+	XMVECTOR yQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), m_roll);
+	XMVECTOR zQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), m_pitch);
+
+	XMVECTOR tmpQ = XMQuaternionMultiply(yQ, xQ);
 	XMVECTOR qToReturn = XMQuaternionMultiply(tmpQ, zQ);
 	XMQuaternionNormalize(qToReturn);
 	return qToReturn;
 }
 
 
-void Camera::ResetMovement()
+void Camera::ResetDeltas()
 {
 	m_movementOccurred = false;
 	m_direction.x = 0.0f;
 	m_direction.y = 0.0f;
 	m_direction.z = 0.0f;
+
+	m_yawDelta = 0.0f;
+	m_pitchDelta = 0.0f;
+	m_rollDelta = 0.0f;
 }
 
 
@@ -81,18 +127,12 @@ XMFLOAT3 Camera::CalculateNewCoords(const XMFLOAT3 currentCoords, const XMVECTOR
 	toReturn.z = currentCoords.z;
 	if (m_movementOccurred)
 	{
-		XMMATRIX lookMatrix = XMMatrixRotationQuaternion(lookQ);
-		XMFLOAT4X4 lookAs4X4;
-		XMStoreFloat4x4(&lookAs4X4, lookMatrix);
-		// the lookMatrix is the transformation matrix of the look Quaternion. The first column is the x axis, the third column is the actual look vector. 
-		// This is a transformation matrix so the values we need to use are negated. As Z+ is up, Y+ is out of the screen, X+ is to the right. 
-		toReturn.x += lookAs4X4._11 * m_direction.x;
-		toReturn.y += lookAs4X4._21 * m_direction.x;
-		toReturn.z += lookAs4X4._31 * m_direction.x;
-		toReturn.x += lookAs4X4._13 * -m_direction.y;
-		toReturn.y += lookAs4X4._23 * -m_direction.y;	// movement in the camera look direction. Y+ is out of the screen in worldspace! (Z is up!)
-		toReturn.z += lookAs4X4._33 * -m_direction.y;
-		toReturn.z += m_direction.z;					// Don't use the look matrix' second column (which is up) as we want Z to move along world Z axis always.
+		XMVECTOR directionAsQ = XMVectorSet(m_direction.x, m_direction.y, m_direction.z, 0.0f);
+		XMVECTOR newDirection = XMVector3Rotate(directionAsQ, lookQ);
+		toReturn.x += XMVectorGetX(newDirection);
+		toReturn.y += XMVectorGetY(newDirection);
+		toReturn.z += XMVectorGetZ(newDirection);
+		toReturn.z += m_direction.z;
 	}
 	return toReturn;
 }
@@ -120,18 +160,24 @@ void Camera::Yaw(float amount)
 {
 	m_yaw += (m_rotationSpeed * amount);
 	m_yaw = ClampAngle(m_yaw);
+	m_yawDelta += m_rotationSpeed * amount;
+	m_yawDelta = ClampAngle(m_yawDelta);
 }
 
 void Camera::Pitch(float amount)
 {
 	m_pitch += (m_rotationSpeed * amount);
 	m_pitch = ClampAngle(m_pitch);
+	m_pitchDelta += m_rotationSpeed * amount;
+	m_pitchDelta = ClampAngle(m_pitchDelta);
 }
 
 void Camera::Roll(float amount)
 {
 	m_roll += (m_rotationSpeed * amount);
 	m_roll = ClampAngle(m_roll);
+	m_rollDelta = m_rotationSpeed * amount;
+	m_rollDelta = ClampAngle(m_rollDelta);
 }
 
 void Camera::SetPitch(float angle)

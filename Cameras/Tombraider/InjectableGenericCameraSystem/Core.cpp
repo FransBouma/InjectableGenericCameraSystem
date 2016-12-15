@@ -110,10 +110,9 @@ void HandleUserInput()
 	Keyboard &keyboard = Keyboard::instance();
 	Mouse &mouse = Mouse::instance();
 	_gamePad->update();
-	keyboard.update();
 	mouse.update();
-	bool altPressed = keyboard.keyDown(Keyboard::KEY_LALT) || keyboard.keyDown(Keyboard::KEY_RALT);
-	bool shiftPressed = keyboard.keyDown(Keyboard::KEY_LSHIFT) || keyboard.keyDown(Keyboard::KEY_RSHIFT);
+	bool altPressed = keyboard.keyDown(VK_MENU) || keyboard.keyDown(VK_RMENU);
+	bool shiftPressed = keyboard.keyDown(VK_SHIFT) || keyboard.keyDown(VK_RSHIFT);
 
 	if (keyboard.keyDown(IGCS_KEY_HELP) && altPressed)
 	{
@@ -140,18 +139,20 @@ void HandleUserInput()
 		// camera not found yet, can't proceed.
 		return;
 	}
-	if(keyboard.keyPressed(IGCS_KEY_CAMERA_ENABLE))
+	if(keyboard.keyDown(IGCS_KEY_CAMERA_ENABLE))
 	{
 		if (_cameraEnabled)
 		{
 			RestoreOriginalCameraValues();
 			_consoleWrapper->WriteLine("Camera disabled");
+			keyboard.destroy();
 		}
 		else
 		{
 			CacheOriginalCameraValues();
 			_consoleWrapper->WriteLine("Camera enabled");
 			_camera->ResetAngles();
+			keyboard.create();
 		}
 		_cameraEnabled = _cameraEnabled == 0 ? (byte)1 : (byte)0;
 		// wait for 350ms to avoid fast keyboard hammering disabling the camera right away
@@ -193,7 +194,7 @@ void HandleUserInput()
 		// camera is disabled. We simply disable all input to the camera movement. 
 		return;
 	}
-	_camera->ResetMovement();
+	_camera->ResetDeltas();
 	float multiplier = altPressed ? FASTER_MULTIPLIER : shiftPressed ? SLOWER_MULTIPLIER : 1.0f;
 
 	if (keyboard.keyDown(IGCS_KEY_CAMERA_LOCK))
@@ -314,9 +315,10 @@ void WriteNewCameraValuesToCameraStructs()
 	}
 
 	// calculate new camera values
-	XMVECTOR newLookQuaternion = _camera->CalculateLookQuaternion();
-	//XMFLOAT3 currentCoords = GetCurrentCameraCoords();
-	XMFLOAT3 newCoords;// = _camera->CalculateNewCoords(currentCoords, newLookQuaternion);
+	XMVECTOR currentLookQ = GetCurrentCameraLookQuaternion();
+	XMVECTOR newLookQuaternion = _camera->CalculateLookQuaternion(currentLookQ);
+	XMFLOAT3 currentCoords = GetCurrentCameraCoords();
+	XMFLOAT3 newCoords = _camera->CalculateNewCoords(currentCoords, newLookQuaternion);
 	WriteNewCameraValuesToGameData(newLookQuaternion, newCoords);
 }
 

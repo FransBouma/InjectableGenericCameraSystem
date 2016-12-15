@@ -39,14 +39,17 @@ Keyboard::Keyboard()
 	Keyboard::g_parentModuleHandle = NULL;
     m_pDirectInput = 0;
     m_pDevice = 0;
-    m_pCurrKeyStates = m_keyStates[0];
-    m_pPrevKeyStates = m_keyStates[1];
-    m_lastChar = 0;
 }
 
 Keyboard::~Keyboard()
 {
     destroy();
+}
+
+
+bool Keyboard::keyDown(int virtualKeyCode)
+{
+	return (GetKeyState(virtualKeyCode) & 0x8000);
 }
 
 
@@ -56,10 +59,12 @@ void Keyboard::init(HINSTANCE parentModuleHandle)
 }
 
 
+// Here solely used to kill input for the game. 
+// BETTER: https://www.unknowncheats.me/forum/563323-post8.html
 bool Keyboard::create()
 {
 	HINSTANCE hInstance = NULL == g_parentModuleHandle ? GetModuleHandle(0) : Keyboard::g_parentModuleHandle;
-    HWND hWnd = GetForegroundWindow();
+    HWND hWnd = GetConsoleWindow();
 
     if (FAILED(DirectInput8Create(hInstance, DIRECTINPUT_VERSION,
             IID_IDirectInput8, reinterpret_cast<void**>(&m_pDirectInput), 0)))
@@ -71,13 +76,11 @@ bool Keyboard::create()
     if (FAILED(m_pDevice->SetDataFormat(&c_dfDIKeyboard)))
         return false;
 
-    if (FAILED(m_pDevice->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE)))
+    if (FAILED(m_pDevice->SetCooperativeLevel(NULL, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE)))
         return false;
 
     if (FAILED(m_pDevice->Acquire()))
         return false;
-
-    memset(m_keyStates, 0, sizeof(m_keyStates));
     return true;
 }
 
@@ -94,55 +97,6 @@ void Keyboard::destroy()
     {
         m_pDirectInput->Release();
         m_pDirectInput = 0;
-    }
-}
-
-void Keyboard::handleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-    switch (msg)
-    {
-    case WM_CHAR:
-        m_lastChar = static_cast<char>(wParam);
-        break;
-
-    default:
-        break;
-    }
-}
-
-void Keyboard::update()
-{
-    if (!m_pDirectInput || !m_pDevice)
-    {
-        if (!create())
-        {
-            destroy();
-            return;
-        }
-    }
-
-    HRESULT hr = 0;
-    unsigned char *pTemp = m_pPrevKeyStates;
-
-    m_pPrevKeyStates = m_pCurrKeyStates;
-    m_pCurrKeyStates = pTemp;
-    
-    while (true)
-    {
-        hr = m_pDevice->GetDeviceState(256, m_pCurrKeyStates);
-        
-        if (FAILED(hr))
-        {
-            if (hr == DIERR_INPUTLOST || hr == DIERR_NOTACQUIRED)
-            {
-                if (FAILED(m_pDevice->Acquire()))
-                    return;
-            }
-        }
-        else
-        {
-            break;
-        }
     }
 }
 
@@ -191,8 +145,6 @@ void Mouse::init(HINSTANCE parentModuleHandle)
 
 bool Mouse::create()
 {
-	return false;
-
 	HINSTANCE hInstance = NULL == g_parentModuleHandle ? GetModuleHandle(0) : Mouse::g_parentModuleHandle;
     HWND hWnd = GetForegroundWindow();
 
@@ -206,7 +158,7 @@ bool Mouse::create()
     if (FAILED(m_pDevice->SetDataFormat(&c_dfDIMouse)))
         return false;
 
-    if (FAILED(m_pDevice->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE)))
+    if (FAILED(m_pDevice->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE)))
         return false;
 
     if (FAILED(m_pDevice->Acquire()))

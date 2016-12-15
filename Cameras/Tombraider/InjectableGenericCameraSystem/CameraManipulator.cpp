@@ -50,6 +50,14 @@ void SetTimeStopValue(byte newValue)
 }
 
 
+XMVECTOR GetCurrentCameraLookQuaternion()
+{
+	float* lookInMemory = reinterpret_cast<float*>(_cameraStructAddress + LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET);
+	XMVECTOR toReturn = XMVectorSet(lookInMemory[0], lookInMemory[1], lookInMemory[2], lookInMemory[3]);
+	return toReturn;
+}
+
+
 XMFLOAT3 GetCurrentCameraCoords()
 {
 	float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
@@ -72,11 +80,11 @@ void WriteNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoor
 	lookInMemory[2] = qAsFloat4.z;
 	lookInMemory[3] = qAsFloat4.w;
 
-	//// Coords
-	//float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-	//coordsInMemory[0] = newCoords.x;
-	//coordsInMemory[1] = newCoords.y;
-	//coordsInMemory[2] = newCoords.z;
+	// Coords
+	float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
+	coordsInMemory[0] = newCoords.x;
+	coordsInMemory[1] = newCoords.y;
+	coordsInMemory[2] = newCoords.z;
 }
 
 
