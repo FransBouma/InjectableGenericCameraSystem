@@ -33,7 +33,7 @@ using namespace std;
 
 extern "C" {
 	LPBYTE _cameraStructAddress = NULL;
-	LPBYTE _cameraStructAddress2 = NULL;
+	LPBYTE _cameraStructAddressInterceptor1 = NULL;		// same struct but different address, as it uses a different offset.
 	LPBYTE _gamespeedStructAddress = NULL;
 }
 
@@ -94,6 +94,7 @@ void WaitForCameraStructAddresses()
 	{
 		Sleep(100);
 	}
+	_cameraStructAddressInterceptor1 = (_cameraStructAddress + LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET) - 0x90;	// 0x90 is the offset used in the asm of the 2nd interceptor.
 #ifdef _DEBUG
 	cout << "Address found: " << hex << (void*)_cameraStructAddress << endl;
 #endif

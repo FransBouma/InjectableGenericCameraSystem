@@ -40,6 +40,7 @@
 ; Externs defined in Core.cpp, which are used and set by the system. Read / write these
 ; values in asm to communicate with the system
 EXTERN _cameraStructAddress: dword
+EXTERN _cameraStructAddressInterceptor1: dword
 EXTERN _gamespeedStructAddress: dword
 EXTERN _cameraEnabled: byte
 EXTERN _timeStopped: byte
@@ -111,8 +112,10 @@ fovWriteInterceptor2 ENDP
 
 cameraWriteInterceptor1 PROC
 	; Game jmps to this location due to the hook set in C function SetCameraWriteInterceptorHooks. 
+	cmp dword ptr esi, [_cameraStructAddressInterceptor1]
+	jne originalCode
 	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
-	je exit										; our own camera is enabled, just skip the writes
+	je exit												; our own camera is enabled, just skip the writes
 originalCode:
 	movaps [esi+090h],xmm0
 exit:

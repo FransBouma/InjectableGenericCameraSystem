@@ -29,7 +29,7 @@
 
 // Mandatory constants to define for a game
 #define GAME_NAME									"Tomb Raider v1.1.748"
-#define CAMERA_VERSION								"1.0.0"
+#define CAMERA_VERSION								"1.0.1"
 #define CAMERA_CREDITS								"Otis_Inf. Thanks to Jim2Point0"
 #define GAME_WINDOW_TITLE							"Tomb Raider"
 #define INITIAL_PITCH_RADIANS						0.0f

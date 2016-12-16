@@ -327,9 +327,9 @@ void WriteNewCameraValuesToCameraStructs()
 		return;
 	}
 
-	// calculate new camera values
-	XMVECTOR currentLookQ = GetCurrentCameraLookQuaternion();
-	XMVECTOR newLookQuaternion = _camera->CalculateLookQuaternion(currentLookQ);
+	// calculate new camera values. We don't use the current quaternion at the moment as it bugs in some scenes where the quaternion is the one used in some effect layer. 
+	// so we calculate one from scratch.
+	XMVECTOR newLookQuaternion = _camera->CalculateLookQuaternion();
 	XMFLOAT3 currentCoords = GetCurrentCameraCoords();
 	XMFLOAT3 newCoords = _camera->CalculateNewCoords(currentCoords, newLookQuaternion);
 	WriteNewCameraValuesToGameData(newLookQuaternion, newCoords);

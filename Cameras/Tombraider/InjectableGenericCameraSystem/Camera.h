@@ -37,6 +37,7 @@ public:
 	~Camera(void);
 
 	XMVECTOR CalculateLookQuaternion(XMVECTOR currentLookQ);
+	XMVECTOR Camera::CalculateLookQuaternion();
 	XMFLOAT3 CalculateNewCoords(const XMFLOAT3 currentCoords, const XMVECTOR lookQ);
 
 	void ResetDeltas();
