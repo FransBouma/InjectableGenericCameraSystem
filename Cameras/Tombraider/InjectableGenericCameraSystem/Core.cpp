@@ -30,6 +30,7 @@
 #include "Camera.h"
 #include "InterceptorHelper.h"
 #include "Gamepad.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -49,8 +50,10 @@ static Console* _consoleWrapper=NULL;
 static LPBYTE _hostImageAddress = NULL;
 static bool _cameraMovementLocked = false;
 static bool _cameraStructFound = false;
+static bool _mouseKeyboardInputBlocked = false;
 static float _lookDirectionInverter = 1.0f;
 static bool _alternativeTimeStopped = false;
+static WNDPROC _oldMainWindowWndProc = 0;
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // Local function definitions
@@ -60,6 +63,7 @@ void HandleUserInput();
 void InitCamera();
 void WriteNewCameraValuesToCameraStructs();
 void DisplayHelp();
+void InjectMessageInterceptor();
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // Implementations
@@ -75,11 +79,10 @@ void SystemStart(HMODULE hostBaseAddress, Console c)
 	// initialization
 	SetCameraStructInterceptorHook(_hostImageAddress);
 	SetTimestopInterceptorHook(_hostImageAddress);
-	Keyboard::init(hostBaseAddress);
-	Mouse::init(hostBaseAddress);
 	InitCamera();
+	InjectMessageInterceptor();
 	SetCameraWriteInterceptorHooks(_hostImageAddress);
-	DisableFoVWrite(_hostImageAddress);
+	SetFoVWriteInterceptorHooks(_hostImageAddress);
 	// done initializing, start main loop of camera. We won't return from this
 	MainLoop();
 	delete _gamePad;
@@ -107,20 +110,17 @@ void UpdateFrame()
 
 void HandleUserInput()
 {
-	Keyboard &keyboard = Keyboard::instance();
-	Mouse &mouse = Mouse::instance();
 	_gamePad->update();
-	mouse.update();
-	bool altPressed = keyboard.keyDown(VK_MENU) || keyboard.keyDown(VK_RMENU);
-	bool shiftPressed = keyboard.keyDown(VK_SHIFT) || keyboard.keyDown(VK_RSHIFT);
+	bool altPressed = KeyDown(VK_MENU) || KeyDown(VK_RMENU);
+	bool controlPressed = KeyDown(VK_CONTROL) || KeyDown(VK_RCONTROL);
 
-	if (keyboard.keyDown(IGCS_KEY_HELP) && altPressed)
+	if (KeyDown(IGCS_KEY_HELP) && altPressed)
 	{
 		DisplayHelp();
 		// wait for 350ms to avoid fast keyboard hammering displaying multiple times the help!
 		Sleep(350);
 	}
-	if (keyboard.keyDown(IGCS_KEY_INVERT_Y_LOOK) && altPressed)
+	if (KeyDown(IGCS_KEY_INVERT_Y_LOOK))
 	{
 		_lookDirectionInverter = -_lookDirectionInverter;
 		if (_lookDirectionInverter < 0)
@@ -139,26 +139,22 @@ void HandleUserInput()
 		// camera not found yet, can't proceed.
 		return;
 	}
-	if(keyboard.keyDown(IGCS_KEY_CAMERA_ENABLE))
+	if(KeyDown(IGCS_KEY_CAMERA_ENABLE))
 	{
 		if (_cameraEnabled)
 		{
-			RestoreOriginalCameraValues();
 			_consoleWrapper->WriteLine("Camera disabled");
-			keyboard.destroy();
 		}
 		else
 		{
-			CacheOriginalCameraValues();
 			_consoleWrapper->WriteLine("Camera enabled");
 			_camera->ResetAngles();
-			keyboard.create();
 		}
 		_cameraEnabled = _cameraEnabled == 0 ? (byte)1 : (byte)0;
 		// wait for 350ms to avoid fast keyboard hammering disabling the camera right away
 		Sleep(350);
 	}
-	if (keyboard.keyDown(IGCS_KEY_TIMESTOP))
+	if (KeyDown(IGCS_KEY_TIMESTOP))
 	{
 		if (_timeStopped)
 		{
@@ -173,19 +169,20 @@ void HandleUserInput()
 		// wait 350 ms to avoid fast keyboard hammering unlocking/locking the timestop right away
 		Sleep(350);
 	}
-
-	//////////////////////////////////////////////////// FOV
-	if (keyboard.keyDown(IGCS_KEY_FOV_RESET))
+	
+	if (KeyDown(IGCS_KEY_BLOCK_MKB_INPUT))
 	{
-		ResetFoV();
-	}
-	if (keyboard.keyDown(IGCS_KEY_FOV_DECREASE))
-	{
-		ChangeFoV(-DEFAULT_FOV_SPEED);
-	}
-	if (keyboard.keyDown(IGCS_KEY_FOV_INCREASE))
-	{
-		ChangeFoV(DEFAULT_FOV_SPEED);
+		if (_mouseKeyboardInputBlocked)
+		{
+			_consoleWrapper->WriteLine("Mouse / Keyboard input to game resumed");
+		}
+		else
+		{
+			_consoleWrapper->WriteLine("Mouse / Keyboard input to game blocked");
+		}
+		_mouseKeyboardInputBlocked = !_mouseKeyboardInputBlocked;
+		// wait 350 ms to avoid fast keyboard hammering
+		Sleep(350);
 	}
 
 	//////////////////////////////////////////////////// CAMERA
@@ -194,10 +191,20 @@ void HandleUserInput()
 		// camera is disabled. We simply disable all input to the camera movement. 
 		return;
 	}
-	_camera->ResetDeltas();
-	float multiplier = altPressed ? FASTER_MULTIPLIER : shiftPressed ? SLOWER_MULTIPLIER : 1.0f;
 
-	if (keyboard.keyDown(IGCS_KEY_CAMERA_LOCK))
+	if (KeyDown(IGCS_KEY_FOV_DECREASE))
+	{
+		ChangeFoV(-DEFAULT_FOV_SPEED);
+	}
+	if (KeyDown(IGCS_KEY_FOV_INCREASE))
+	{
+		ChangeFoV(DEFAULT_FOV_SPEED);
+	}
+
+	_camera->ResetDeltas();
+	float multiplier = altPressed ? FASTER_MULTIPLIER : controlPressed ? SLOWER_MULTIPLIER : 1.0f;
+
+	if (KeyDown(IGCS_KEY_CAMERA_LOCK))
 	{
 		if (_cameraMovementLocked)
 		{
@@ -208,66 +215,76 @@ void HandleUserInput()
 			_consoleWrapper->WriteLine("Camera movement locked");
 		}
 		_cameraMovementLocked = !_cameraMovementLocked;
-		// wait 150 ms to avoid fast keyboard hammering unlocking/locking the camera movement right away
-		Sleep(150);
+		// wait 350 ms to avoid fast keyboard hammering unlocking/locking the camera movement right away
+		Sleep(350);
 	}
 	if (_cameraMovementLocked)
 	{
 		// no movement allowed, simply return
 		return;
 	}
-	if(keyboard.keyDown(IGCS_KEY_MOVE_FORWARD))
+	if(KeyDown(IGCS_KEY_MOVE_FORWARD))
 	{
 		_camera->MoveForward(multiplier);
 	}
-	if(keyboard.keyDown(IGCS_KEY_MOVE_BACKWARD))
+	if(KeyDown(IGCS_KEY_MOVE_BACKWARD))
 	{
 		_camera->MoveForward(-multiplier);
 	}
-	if (keyboard.keyDown(IGCS_KEY_MOVE_RIGHT))
+	if (KeyDown(IGCS_KEY_MOVE_RIGHT))
 	{
 		_camera->MoveRight(multiplier);
 	}
-	if (keyboard.keyDown(IGCS_KEY_MOVE_LEFT))
+	if (KeyDown(IGCS_KEY_MOVE_LEFT))
 	{
 		_camera->MoveRight(-multiplier);
 	}
-	if (keyboard.keyDown(IGCS_KEY_MOVE_UP))
+	if (KeyDown(IGCS_KEY_MOVE_UP))
 	{
 		_camera->MoveUp(multiplier);
 	}
-	if (keyboard.keyDown(IGCS_KEY_MOVE_DOWN))
+	if (KeyDown(IGCS_KEY_MOVE_DOWN))
 	{
 		_camera->MoveUp(-multiplier);
 	}
-	if (keyboard.keyDown(IGCS_KEY_ROTATE_DOWN))
+	if (KeyDown(IGCS_KEY_ROTATE_DOWN))
 	{
 		_camera->Pitch(multiplier * _lookDirectionInverter);
 	}
-	if (keyboard.keyDown(IGCS_KEY_ROTATE_UP))
+	if (KeyDown(IGCS_KEY_ROTATE_UP))
 	{
 		_camera->Pitch((-multiplier) * _lookDirectionInverter);
 	}
-	if (keyboard.keyDown(IGCS_KEY_ROTATE_RIGHT))
+	if (KeyDown(IGCS_KEY_ROTATE_RIGHT))
 	{
 		_camera->Yaw(multiplier);
 	}
-	if (keyboard.keyDown(IGCS_KEY_ROTATE_LEFT))
+	if (KeyDown(IGCS_KEY_ROTATE_LEFT))
 	{
 		_camera->Yaw(-multiplier);
 	}
-	if (keyboard.keyDown(IGCS_KEY_TILT_LEFT))
+	if (KeyDown(IGCS_KEY_TILT_LEFT))
 	{
 		_camera->Roll(multiplier);
 	}
-	if (keyboard.keyDown(IGCS_KEY_TILT_RIGHT))
+	if (KeyDown(IGCS_KEY_TILT_RIGHT))
 	{
 		_camera->Roll(-multiplier);
 	}
 
 	// mouse 
-	_camera->Pitch(mouse.yPosRelative() * MOUSE_SPEED_CORRECTION * multiplier * _lookDirectionInverter);
-	_camera->Yaw(mouse.xPosRelative() * MOUSE_SPEED_CORRECTION * multiplier);
+	long mouseDeltaX = GetMouseDeltaX();
+	long mouseDeltaY = GetMouseDeltaY();
+	if(mouseDeltaY != 0)
+	{
+		_camera->Pitch(static_cast<float>(mouseDeltaY) * MOUSE_SPEED_CORRECTION * multiplier * _lookDirectionInverter);
+	}
+	if(mouseDeltaX != 0)
+	{
+		_camera->Yaw(static_cast<float>(mouseDeltaX) * MOUSE_SPEED_CORRECTION * multiplier);
+	}
+	// after we've read them, we can clear them
+	ResetMouseDeltas();
 
 	// gamepad
 	if (_gamePad->isConnected())
@@ -290,10 +307,6 @@ void HandleUserInput()
 		if (_gamePad->isButtonPressed(IGCS_BUTTON_TILT_RIGHT))
 		{
 			_camera->Roll(-multiplier);
-		}
-		if (_gamePad->isButtonPressed(IGCS_BUTTON_RESET_FOV))
-		{
-			ResetFoV();
 		}
 		if (_gamePad->isButtonPressed(IGCS_BUTTON_FOV_DECREASE))
 		{
@@ -337,16 +350,108 @@ void InitCamera()
 }
 
 
+LRESULT CALLBACK InterceptorWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
+{
+	if (_cameraEnabled)
+	{
+		// messages we need to handle ourselves. 
+		switch(uMsg)
+		{
+			case WM_INPUT:
+				// handle mouse
+				RAWINPUT *pRI = NULL;
+
+				// Determine how big the buffer should be
+				UINT iBuffer;
+				GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &iBuffer, sizeof(RAWINPUTHEADER));
+				// Allocate a buffer with enough size to hold the raw input data
+				LPBYTE lpb = new BYTE[iBuffer];
+				if (lpb == NULL)
+				{
+					return 0;
+				}
+				// Get the raw input data
+				UINT readSize = GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &iBuffer, sizeof(RAWINPUTHEADER));
+				if (readSize == iBuffer)
+				{
+					pRI = (RAWINPUT*)lpb;
+					// Process the Mouse Messages
+					if (pRI->header.dwType == RIM_TYPEMOUSE)
+					{
+						ProcessRawMouseData(&pRI->data.mouse);
+					}
+				}
+				delete lpb;
+				break;
+		}
+	}
+	if (_mouseKeyboardInputBlocked) 
+	{
+		switch (uMsg) 
+		{
+			// simply return 1 for all messages related to mouse / keyboard so they won't reach the message pump of the main window. 
+			case WM_KEYDOWN:
+			case WM_KEYUP:
+			case WM_INPUT:
+			case WM_CAPTURECHANGED:
+			case WM_LBUTTONDBLCLK:
+			case WM_LBUTTONDOWN:
+			case WM_MBUTTONDBLCLK:
+			case WM_MBUTTONDOWN:
+			case WM_MBUTTONUP:
+			case WM_MOUSEACTIVATE:
+			case WM_MOUSEHOVER:
+			case WM_MOUSEHWHEEL:
+			case WM_MOUSEMOVE:
+			case WM_MOUSELEAVE:
+			case WM_MOUSEWHEEL:
+			case WM_NCHITTEST:
+			case WM_NCLBUTTONDBLCLK:
+			case WM_NCLBUTTONDOWN:
+			case WM_NCLBUTTONUP:
+			case WM_NCMBUTTONDBLCLK:
+			case WM_NCMBUTTONDOWN:
+			case WM_NCMBUTTONUP:
+			case WM_NCMOUSEHOVER:
+			case WM_NCMOUSELEAVE:
+			case WM_NCMOUSEMOVE:
+			case WM_NCRBUTTONDBLCLK:
+			case WM_NCRBUTTONDOWN:
+			case WM_NCRBUTTONUP:
+			case WM_NCXBUTTONDBLCLK:
+			case WM_NCXBUTTONDOWN:
+			case WM_NCXBUTTONUP:
+			case WM_RBUTTONDBLCLK:
+			case WM_RBUTTONDOWN:
+			case WM_RBUTTONUP:
+			case WM_XBUTTONDBLCLK:
+			case WM_XBUTTONDOWN:
+			case WM_XBUTTONUP:
+			case WM_LBUTTONUP:
+			return 1L;
+		}
+	}
+	return CallWindowProc(_oldMainWindowWndProc, hwnd, uMsg, wParam, lParam);
+}
+
+
+void InjectMessageInterceptor()
+{
+	HWND mainWindowHandle = FindMainWindow(GetCurrentProcessId());
+	_oldMainWindowWndProc = (WNDPROC)SetWindowLongPtr(mainWindowHandle, GWL_WNDPROC, (LONG)(LONG_PTR)InterceptorWndProc);
+}
+
+
 void DisplayHelp()
 {
-	                          //0         1         2         3         4         5         6         7
-	                          //01234567890123456789012345678901234567890123456789012345678901234567890123456789
-	_consoleWrapper->WriteLine("---[IGCS Help]---------------------------------------------------------------", CONSOLE_WHITE);
+	//0         1         2         3         4         5         6         7
+	//01234567890123456789012345678901234567890123456789012345678901234567890123456789
+	_consoleWrapper->WriteLine("---[IGCS Help]----------------------------------------------------------------", CONSOLE_WHITE);
 	_consoleWrapper->WriteLine("INS                                      : Enable/Disable camera");
 	_consoleWrapper->WriteLine("HOME                                     : Lock/unlock camera movement");
 	_consoleWrapper->WriteLine("ALT+rotate/move                          : Faster rotate / move");
-	_consoleWrapper->WriteLine("SHIFT+rotate/move                        : Slower rotate / move");
-	_consoleWrapper->WriteLine("Controller A-button + left/right-stick   : Faster rotate / move");
+	_consoleWrapper->WriteLine("CTRL+rotate/move                         : Slower rotate / move");
+	_consoleWrapper->WriteLine("Controller Y-button + left/right-stick   : Faster rotate / move");
 	_consoleWrapper->WriteLine("Controller X-button + left/right-stick   : Slower rotate / move");
 	_consoleWrapper->WriteLine("Arrow up/down or mouse or right-stick    : Rotate camera up/down");
 	_consoleWrapper->WriteLine("Arrow left/right or mouse or right-stick : Rotate camera left/right");
@@ -354,11 +459,10 @@ void DisplayHelp()
 	_consoleWrapper->WriteLine("Numpad 4/Numpad 6 or left-stick          : Move camera left / right");
 	_consoleWrapper->WriteLine("Numpad 7/Numpad 9 or left/right trigger  : Move camera up / down");
 	_consoleWrapper->WriteLine("Numpad 1/Numpad 3 or d-pad left/right    : Tilt camera left / right");
-	_consoleWrapper->WriteLine("Numpad +/Numpad - or d-pad up/down       : Increase / decrease FoV");
-	_consoleWrapper->WriteLine("Numpad * or controller B-button          : Reset FoV");
-	_consoleWrapper->WriteLine("Numpad 0                                 : Pause / Continue game");
-	_consoleWrapper->WriteLine("Numpad .                                 : Alt Pause / Continue game (no FoV)");
-	_consoleWrapper->WriteLine("ALT+Arrow up                             : Toggle Y look direction");
+	_consoleWrapper->WriteLine("Numpad +/Numpad - or d-pad up/down       : Free camera increase / decrease FoV");
+	_consoleWrapper->WriteLine("Numpad 0                                 : Pause / Continue game (see readme!)");
+	_consoleWrapper->WriteLine("Numpad .                                 : Toggle mouse/keyboard input to game");
+	_consoleWrapper->WriteLine("Numpad /                                 : Toggle Y look direction");
 	_consoleWrapper->WriteLine("ALT+H                                    : This help");
-	_consoleWrapper->WriteLine("-----------------------------------------------------------------------------", CONSOLE_WHITE);
+	_consoleWrapper->WriteLine("------------------------------------------------------------------------------", CONSOLE_WHITE);
 }

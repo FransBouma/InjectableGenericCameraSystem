@@ -39,6 +39,8 @@ extern "C" {
 	void cameraAddressInterceptor();
 	void cameraWriteInterceptor1();		// create as much interceptors for write interception as needed. In the example game, there are 4.
 	void cameraWriteInterceptor2();
+	void fovWriteInterceptor1();
+	void fovWriteInterceptor2();
 	void gamespeedAddressInterceptor();
 }
 
@@ -51,6 +53,10 @@ extern "C" {
 	LPBYTE _cameraWriteInterceptionContinue1 = 0;
 	// the continue address for continuing execution after interception of the second block of code which writes to the camera values. 
 	LPBYTE _cameraWriteInterceptionContinue2 = 0;
+	// the continue address for continuing execution after interception of the first block of code which writes to the fov values. 
+	LPBYTE _fovWriteInterceptionContinue1 = 0;
+	// the continue address for continuing execution after interception of the second block of code which writes to the fov values. 
+	LPBYTE _fovWriteInterceptionContinue2 = 0;
 	// the continue address for the continuing execution after interception of the gamespeed block of code. 
 	LPBYTE _gamespeedInterceptionContinue = 0;
 }
@@ -58,6 +64,8 @@ extern "C" {
 static LPBYTE _cameraStructInterceptionStart = 0;
 static LPBYTE _cameraWriteInterceptionStart1 = 0;
 static LPBYTE _cameraWriteInterceptionStart2 = 0;
+static LPBYTE _fovWriteInterceptionStart1 = 0;
+static LPBYTE _fovWriteInterceptionStart2 = 0;
 static LPBYTE _gamespeedInterceptionStart = 0;
 
 
@@ -76,15 +84,13 @@ void SetCameraWriteInterceptorHooks(LPBYTE hostImageAddress)
 
 void SetTimestopInterceptorHook(LPBYTE hostImageAddress)
 {
-	//SetHook(hostImageAddress, GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET, GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_gamespeedInterceptionContinue, &gamespeedAddressInterceptor);
+	SetHook(hostImageAddress, GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET, GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_gamespeedInterceptionContinue, &gamespeedAddressInterceptor);
 }
 
 
-// The FoV write is disabled with NOPs, as the code block contains jumps out of the block so it's not easy to intercept with a silent method. It's OK though
-// as the FoV changes simply change a value, so instead of the game keeping it at a value we overwrite it. We reset it to a default value when the FoV is disabled by the user 
-void DisableFoVWrite(LPBYTE hostImageAddress)
+void SetFoVWriteInterceptorHooks(LPBYTE hostImageAddress)
 {
-	//NopRange(hostImageAddress + FOV_WRITE_INTERCEPT1_START_OFFSET, 2);
-	//NopRange(hostImageAddress + FOV_WRITE_INTERCEPT2_START_OFFSET, 8);
+	SetHook(hostImageAddress, FOV_WRITE_INTERCEPT1_START_OFFSET, FOV_WRITE_INTERCEPT1_CONTINUE_OFFSET, &_fovWriteInterceptionContinue1, &fovWriteInterceptor1);
+	SetHook(hostImageAddress, FOV_WRITE_INTERCEPT2_START_OFFSET, FOV_WRITE_INTERCEPT2_CONTINUE_OFFSET, &_fovWriteInterceptionContinue2, &fovWriteInterceptor2);
 }
 

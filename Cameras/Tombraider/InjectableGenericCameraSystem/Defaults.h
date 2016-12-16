@@ -33,44 +33,40 @@
 
 // System defaults
 #define FRAME_SLEEP				8		// in milliseconds
-#define FASTER_MULTIPLIER		4.0f
+#define FASTER_MULTIPLIER		5.0f
 #define SLOWER_MULTIPLIER		0.15f
 #define MOUSE_SPEED_CORRECTION	0.1f	// to correct for the mouse-deltas related to normal rotation.
-#define DEFAULT_MOVEMENT_SPEED	2.5f
+#define DEFAULT_MOVEMENT_SPEED	2.0f
 #define DEFAULT_ROTATION_SPEED	0.02f
-#define DEFAULT_FOV_RADIANS		0.7f
-#define DEFAULT_FOV_DEGREES		40.0f
-#define DEFAULT_FOV_SPEED		0.005f
+#define DEFAULT_FOV_SPEED		0.01f
 
 // Keyboard camera control
-#define IGCS_KEY_CAMERA_ENABLE	VK_INSERT
-#define IGCS_KEY_CAMERA_LOCK	VK_HOME
-#define IGCS_KEY_ROTATE_RIGHT	VK_RIGHT		// pitch
-#define IGCS_KEY_ROTATE_LEFT	VK_LEFT
-#define IGCS_KEY_ROTATE_UP		VK_UP		// yaw
-#define IGCS_KEY_ROTATE_DOWN	VK_DOWN
-#define IGCS_KEY_MOVE_FORWARD	VK_NUMPAD8
-#define IGCS_KEY_MOVE_BACKWARD	VK_NUMPAD5
-#define IGCS_KEY_MOVE_LEFT		VK_NUMPAD4
-#define IGCS_KEY_MOVE_RIGHT		VK_NUMPAD6
-#define IGCS_KEY_MOVE_UP		VK_NUMPAD7
-#define IGCS_KEY_MOVE_DOWN		VK_NUMPAD9
-#define IGCS_KEY_TILT_LEFT		VK_NUMPAD1		// roll
-#define IGCS_KEY_TILT_RIGHT		VK_NUMPAD3
-#define IGCS_KEY_FOV_RESET		VK_MULTIPLY
-#define IGCS_KEY_FOV_INCREASE	VK_ADD
-#define IGCS_KEY_FOV_DECREASE	VK_SUBTRACT
-#define IGCS_KEY_HELP			0x48			// H
-#define IGCS_KEY_TIMESTOP		VK_NUMPAD0
-#define IGCS_KEY_INVERT_Y_LOOK	VK_UP
-#define IGCS_KEY_ALT_TIMESTOP	VK_DECIMAL
+#define IGCS_KEY_CAMERA_ENABLE		VK_INSERT
+#define IGCS_KEY_CAMERA_LOCK		VK_HOME
+#define IGCS_KEY_ROTATE_RIGHT		VK_RIGHT		// pitch
+#define IGCS_KEY_ROTATE_LEFT		VK_LEFT
+#define IGCS_KEY_ROTATE_UP			VK_UP			// yaw
+#define IGCS_KEY_ROTATE_DOWN		VK_DOWN
+#define IGCS_KEY_MOVE_FORWARD		VK_NUMPAD8
+#define IGCS_KEY_MOVE_BACKWARD		VK_NUMPAD5
+#define IGCS_KEY_MOVE_LEFT			VK_NUMPAD4
+#define IGCS_KEY_MOVE_RIGHT			VK_NUMPAD6
+#define IGCS_KEY_MOVE_UP			VK_NUMPAD7
+#define IGCS_KEY_MOVE_DOWN			VK_NUMPAD9
+#define IGCS_KEY_TILT_LEFT			VK_NUMPAD1		// roll
+#define IGCS_KEY_TILT_RIGHT			VK_NUMPAD3
+#define IGCS_KEY_FOV_INCREASE		VK_ADD
+#define IGCS_KEY_FOV_DECREASE		VK_SUBTRACT
+#define IGCS_KEY_HELP				0x48			// H
+#define IGCS_KEY_TIMESTOP			VK_NUMPAD0
+#define IGCS_KEY_INVERT_Y_LOOK		VK_DIVIDE
+#define IGCS_KEY_BLOCK_MKB_INPUT	VK_DECIMAL
 
 #define IGCS_BUTTON_FOV_DECREASE	Gamepad::button_t::UP
 #define IGCS_BUTTON_FOV_INCREASE	Gamepad::button_t::DOWN
-#define IGCS_BUTTON_RESET_FOV		Gamepad::button_t::B
 #define IGCS_BUTTON_TILT_LEFT		Gamepad::button_t::LEFT
 #define IGCS_BUTTON_TILT_RIGHT		Gamepad::button_t::RIGHT
-#define IGCS_BUTTON_FASTER			Gamepad::button_t::A
+#define IGCS_BUTTON_FASTER			Gamepad::button_t::Y
 #define IGCS_BUTTON_SLOWER			Gamepad::button_t::X
 
 static const byte jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]. Used in x64

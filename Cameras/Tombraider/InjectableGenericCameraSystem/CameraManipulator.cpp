@@ -37,7 +37,6 @@ extern "C" {
 	LPBYTE _gamespeedStructAddress = NULL;
 }
 
-static float _originalMatrix[16];
 static bool _timeHasBeenStopped = false;
 
 // newValue: 1 == time should be frozen, 0 == normal gameplay
@@ -46,7 +45,7 @@ void SetTimeStopValue(byte newValue)
 	// set flag so camera works during menu driven timestop
 	_timeHasBeenStopped = (newValue == 1);
 	float* gamespeedAddress = reinterpret_cast<float*>(_gamespeedStructAddress + GAMESPEED_IN_STRUCT_OFFSET);
-	*gamespeedAddress = _timeHasBeenStopped ? 0.000001f : 1.0f;
+	*gamespeedAddress = _timeHasBeenStopped ? 0.00001f : 1.0f;
 }
 
 
@@ -101,14 +100,6 @@ void WaitForCameraStructAddresses()
 }
 
 
-// Resets the FOV to the default
-void ResetFoV()
-{
-	float* fovInMemory = reinterpret_cast<float*>(_cameraStructAddress + FOV_IN_CAMERA_STRUCT_OFFSET);
-	*fovInMemory = DEFAULT_FOV_RADIANS;
-}
-
-
 // changes the FoV with the specified amount
 void ChangeFoV(float amount)
 {
@@ -116,18 +107,4 @@ void ChangeFoV(float amount)
 	*fovInMemory += amount;
 }
 
-
-// should restore the camera values in the camera structures to the cached values. This assures the free camera is always enabled at the original camera location.
-void RestoreOriginalCameraValues()
-{
-	//float* viewMatrixInMemory = reinterpret_cast<float*>(_cameraStructAddress + VIEW_MATRIX_IN_CAMERA_STRUCT_OFFSET);
-	//memcpy(viewMatrixInMemory, _originalMatrix, 16 * sizeof(float));
-}
-
-
-void CacheOriginalCameraValues()
-{
-	//float* viewMatrixInMemory = reinterpret_cast<float*>(_cameraStructAddress + VIEW_MATRIX_IN_CAMERA_STRUCT_OFFSET);
-	//memcpy(_originalMatrix, viewMatrixInMemory, 16 * sizeof(float));
-}
 

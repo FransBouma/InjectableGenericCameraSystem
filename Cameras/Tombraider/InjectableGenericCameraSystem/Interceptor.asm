@@ -50,7 +50,9 @@ EXTERN _timeStopped: byte
 EXTERN _cameraStructInterceptionContinue: dword
 EXTERN _cameraWriteInterceptionContinue1: dword
 EXTERN _cameraWriteInterceptionContinue2: dword
-EXTERN _gamespeedInterceptionContinue: qword
+EXTERN _fovWriteInterceptionContinue1: dword
+EXTERN _fovWriteInterceptionContinue2: dword
+EXTERN _gamespeedInterceptionContinue: dword
 
 
 .code 
@@ -65,13 +67,42 @@ cameraAddressInterceptor ENDP
 
 
 gamespeedAddressInterceptor PROC
-	;mov [_gamespeedStructAddress], rbx
-	;mov [rbx+028h],rax
-	;mov rcx,[rbx+018h]
-	;mov [rbx+020h],rcx
-	;add [rbx+018h],rax
-	;jmp qword ptr [_gamespeedInterceptionContinue]
+	mov [_gamespeedStructAddress], esi
+	cmp byte ptr [_timeStopped], 1
+	je exit
+originalCode:
+	fstp dword ptr [esi+00000104h]
+exit:
+	jmp [_gamespeedInterceptionContinue]
 gamespeedAddressInterceptor ENDP
+
+
+fovWriteInterceptor1 PROC
+	; Game jmps to this location due to the hook set in C function SetFoVWriteInterceptorHooks. 
+	cmp dword ptr esi, [_cameraStructAddress]
+	jne originalCode
+	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
+	je exit												; our own camera is enabled, just skip the writes
+originalCode:
+	fstp dword ptr [esi-78h]							; original statement
+exit:
+	push ebx											; original statement
+	mov ecx,edi											; original statement
+	jmp [_fovWriteInterceptionContinue1]				; jmp back into the original game code which is the location after the original statements above.
+fovWriteInterceptor1 ENDP
+
+
+fovWriteInterceptor2 PROC
+	; Game jmps to this location due to the hook set in C function SetFoVWriteInterceptorHooks. 
+	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
+	je exit												; our own camera is enabled, just skip the writes
+originalCode:
+	fld dword ptr [eax+ecx+38h]							; original statement
+	lea eax,[eax+ecx+10h]								; original statement
+exit:
+	jmp [_fovWriteInterceptionContinue2]				; jmp back into the original game code which is the location after the original statements above.
+fovWriteInterceptor2 ENDP
+
 
 ;-------------------------------------------------------------------
 ; Camera values write interceptions. For each block of statements in the game's exe which write to the camera values, we intercept them and execute them if our
@@ -79,7 +110,7 @@ gamespeedAddressInterceptor ENDP
 ; execute the code regardless of whether our camera is enabled.
 
 cameraWriteInterceptor1 PROC
-	; Game jmps to this location due to the hook set in C function SetMatrixWriteInterceptorHooks. 
+	; Game jmps to this location due to the hook set in C function SetCameraWriteInterceptorHooks. 
 	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit										; our own camera is enabled, just skip the writes
 originalCode:
@@ -89,7 +120,7 @@ exit:
 cameraWriteInterceptor1 ENDP
 
 cameraWriteInterceptor2 PROC
-	; Game jmps to this location due to the hook set in C function SetMatrixWriteInterceptorHooks. 
+	; Game jmps to this location due to the hook set in C function SetCameraWriteInterceptorHooks. 
 	cmp dword ptr esi, [_cameraStructAddress]
 	jne originalCode
 	; The first write is in the camera address interception, these are the rest of the writes.

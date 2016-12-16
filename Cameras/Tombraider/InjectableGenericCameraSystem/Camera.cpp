@@ -70,34 +70,6 @@ XMVECTOR Camera::CalculateLookQuaternion(XMVECTOR currentLookQ)
 }
 
 
-XMVECTOR Camera::CalculateLookQuaternion()
-{
-	/*
-	To test how the quaternion is stored, and which axis are pointing where (e.g. is Y into the screen or up?) use these default quaternions:
-	w			x			y			z			Description
-	1			0			0			0			Identity quaternion, no rotation
-	0			1			0			0			180° turn around X axis
-	0			0			1			0			180° turn around Y axis
-	0			0			0			1			180° turn around Z axis
-	sqrt(0.5)	sqrt(0.5)	0			0			90° rotation around X axis
-	sqrt(0.5)	0			sqrt(0.5)	0			90° rotation around Y axis
-	sqrt(0.5)	0			0			sqrt(0.5)	90° rotation around Z axis
-	sqrt(0.5)	-sqrt(0.5)	0			0			-90° rotation around X axis
-	sqrt(0.5)	0			-sqrt(0.5)	0			-90° rotation around Y axis
-	sqrt(0.5)	0			0			-sqrt(0.5)	-90° rotation around Z axis
-	*/
-
-	XMVECTOR xQ = XMQuaternionRotationNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f), m_yaw);
-	XMVECTOR yQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), m_roll);
-	XMVECTOR zQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), m_pitch);
-
-	XMVECTOR tmpQ = XMQuaternionMultiply(yQ, xQ);
-	XMVECTOR qToReturn = XMQuaternionMultiply(tmpQ, zQ);
-	XMQuaternionNormalize(qToReturn);
-	return qToReturn;
-}
-
-
 void Camera::ResetDeltas()
 {
 	m_movementOccurred = false;
