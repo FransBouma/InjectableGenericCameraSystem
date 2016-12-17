@@ -114,6 +114,7 @@ void HandleUserInput()
 	mouse.update();
 	bool altPressed = keyboard.keyDown(Keyboard::KEY_LALT) || keyboard.keyDown(Keyboard::KEY_RALT);
 	bool shiftPressed = keyboard.keyDown(Keyboard::KEY_LSHIFT) || keyboard.keyDown(Keyboard::KEY_RSHIFT);
+	bool ctrlPressed = keyboard.keyDown(Keyboard::KEY_LCONTROL) || keyboard.keyDown(Keyboard::KEY_RCONTROL);
 
 	if (keyboard.keyDown(IGCS_KEY_HELP) && altPressed)
 	{
@@ -193,17 +194,18 @@ In v1.8, the alternative camera hasn't been found.
 	}
 	*/
 	//////////////////////////////////////////////////// FOV
+	float FOVmultiplier = altPressed ? FASTER_FOVMULTIPLIER : shiftPressed ? SLOWER_FOVMULTIPLIER : ctrlPressed ? SLOWER_FOVMULTIPLIER2 : 0.005f;
 	if (keyboard.keyDown(IGCS_KEY_FOV_RESET))
 	{
 		ResetFoV();
 	}
 	if (keyboard.keyDown(IGCS_KEY_FOV_DECREASE))
 	{
-		ChangeFoV(-DEFAULT_FOV_SPEED);
+		ChangeFoV(-FOVmultiplier);
 	}
 	if (keyboard.keyDown(IGCS_KEY_FOV_INCREASE))
 	{
-		ChangeFoV(DEFAULT_FOV_SPEED);
+		ChangeFoV(FOVmultiplier);
 	}
 
 	//////////////////////////////////////////////////// CAMERA
@@ -213,7 +215,7 @@ In v1.8, the alternative camera hasn't been found.
 		return;
 	}
 	_camera->ResetMovement();
-	float multiplier = altPressed ? FASTER_MULTIPLIER : shiftPressed ? SLOWER_MULTIPLIER : 1.0f;
+	float multiplier = altPressed ? FASTER_MULTIPLIER : shiftPressed ? SLOWER_MULTIPLIER : ctrlPressed ? SLOWER_MULTIPLIER2 : 1.0f;
 
 	if (keyboard.keyDown(IGCS_KEY_CAMERA_LOCK))
 	{
@@ -315,11 +317,11 @@ In v1.8, the alternative camera hasn't been found.
 		}
 		if (_gamePad->isButtonPressed(IGCS_BUTTON_FOV_DECREASE))
 		{
-			ChangeFoV(-DEFAULT_FOV_SPEED);
+			ChangeFoV(-FOVmultiplier);
 		}
 		if (_gamePad->isButtonPressed(IGCS_BUTTON_FOV_INCREASE))
 		{
-			ChangeFoV(DEFAULT_FOV_SPEED);
+			ChangeFoV(FOVmultiplier);
 		}
 	}
 }
@@ -361,8 +363,9 @@ void DisplayHelp()
 	_consoleWrapper->WriteLine("---[IGCS Help]---------------------------------------------------------------", CONSOLE_WHITE);
 	_consoleWrapper->WriteLine("INS                                      : Enable/Disable camera");
 	_consoleWrapper->WriteLine("HOME                                     : Lock/unlock camera movement");
-	_consoleWrapper->WriteLine("ALT+rotate/move                          : Faster rotate / move");
-	_consoleWrapper->WriteLine("SHIFT+rotate/move                        : Slower rotate / move");
+	_consoleWrapper->WriteLine("ALT+rotate/move/FoV                      : Faster rotate / move / FoV");
+	_consoleWrapper->WriteLine("SHIFT+rotate/move/FoV                    : Slower rotate / move / FoV");
+	_consoleWrapper->WriteLine("CTRL+rotate/move/FoV                     : Even Slower rotate / move /FoV");
 	_consoleWrapper->WriteLine("Controller A-button + left/right-stick   : Faster rotate / move");
 	_consoleWrapper->WriteLine("Controller X-button + left/right-stick   : Slower rotate / move");
 	_consoleWrapper->WriteLine("Arrow up/down or mouse or right-stick    : Rotate camera up/down");
