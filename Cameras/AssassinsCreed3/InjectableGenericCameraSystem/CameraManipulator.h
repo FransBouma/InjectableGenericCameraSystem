@@ -33,5 +33,7 @@ using namespace DirectX;
 void WriteNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoords);
 void WaitForCameraStructAddresses();
 void ChangeFoV(float amount);
+void ResetFoV();
 XMFLOAT3 GetCurrentCameraCoords();
+XMVECTOR GetCurrentCameraLookQuaternion();
 void SetTimeStopValue(byte newValue);

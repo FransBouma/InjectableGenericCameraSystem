@@ -30,8 +30,39 @@
 
 using namespace DirectX;
 
-void WriteNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoords);
-void WaitForCameraStructAddresses();
-void ChangeFoV(float amount);
-XMFLOAT3 GetCurrentCameraCoords();
-void SetTimeStopValue(byte newValue);
+class Camera
+{
+public:
+	Camera();
+	~Camera(void);
+
+	XMVECTOR CalculateLookQuaternion(XMVECTOR currentLookQ);
+	XMVECTOR Camera::CalculateLookQuaternion();
+	XMFLOAT3 CalculateNewCoords(const XMFLOAT3 currentCoords, const XMVECTOR lookQ);
+
+	void ResetDeltas();
+	void ResetAngles();
+	void MoveForward(float amount);
+	void MoveRight(float amount);
+	void MoveUp(float amount);
+	void Yaw(float amount);
+	void Pitch(float amount);
+	void Roll(float amount);
+	void SetPitch(float angle);
+	void SetYaw(float angle);
+	void SetRoll(float angle);
+
+private:
+	XMFLOAT3 m_direction = XMFLOAT3(0.0f, 0.0f, 0.0f); // camera direction, defined by move methods. Reset by ResetDeltas
+	float m_yaw;
+	float m_pitch;
+	float m_roll;
+	float m_yawDelta;
+	float m_rollDelta;
+	float m_pitchDelta;
+	bool m_movementOccurred;
+	float m_movementSpeed;
+	float m_rotationSpeed;
+
+	float ClampAngle(float angle) const;
+};

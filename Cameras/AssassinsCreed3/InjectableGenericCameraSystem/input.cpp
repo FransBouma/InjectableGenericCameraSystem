@@ -25,13 +25,47 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "stdafx.h"
+#include "input.h"
 
-using namespace DirectX;
+// I know, multi-threaded programming, but these two values are scalars, and read/write of multiple threads (which is the case) doesn't really 
+// matter: wrapping this in mutexes is overkill: x86 processors can write up to 7 bytes in an atomic instruction, more than enough for a long, 
+// and the values are used in a system which is updated rapidly, so if a write overlaps a read, the next frame will correct that. The 'volatile'
+// keyword should be enough to mark them for the optimizer not to mess with them. 
+volatile static long _deltaMouseX=0;
+volatile static long _deltaMouseY=0;
 
-void WriteNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoords);
-void WaitForCameraStructAddresses();
-void ChangeFoV(float amount);
-XMFLOAT3 GetCurrentCameraCoords();
-void SetTimeStopValue(byte newValue);
+
+bool KeyDown(int virtualKeyCode)
+{
+	return (GetKeyState(virtualKeyCode) & 0x8000);
+}
+
+
+void ResetMouseDeltas()
+{
+	_deltaMouseX = 0;
+	_deltaMouseY = 0;
+}
+
+
+void ProcessRawMouseData(const RAWMOUSE *rmouse)
+{
+	if (MOUSE_MOVE_RELATIVE == rmouse->usFlags)
+	{
+		_deltaMouseX = rmouse->lLastX;
+		_deltaMouseY = rmouse->lLastY;
+	}
+}
+
+
+long GetMouseDeltaX()
+{
+	return _deltaMouseX;
+}
+
+
+long GetMouseDeltaY()
+{
+	return _deltaMouseY;
+}

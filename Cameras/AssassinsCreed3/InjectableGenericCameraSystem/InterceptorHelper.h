@@ -26,12 +26,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "stdafx.h"
 
-using namespace DirectX;
-
-void WriteNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoords);
-void WaitForCameraStructAddresses();
-void ChangeFoV(float amount);
-XMFLOAT3 GetCurrentCameraCoords();
-void SetTimeStopValue(byte newValue);
+void SetFoVWriteInterceptorHooks(LPBYTE hostImageAddress);
+void SetCameraStructInterceptorHook(LPBYTE hostImageAddress);
+void SetCameraWriteInterceptorHooks(LPBYTE hostImageAddress);
+void SetTimestopInterceptorHook(LPBYTE hostImageAddress);
