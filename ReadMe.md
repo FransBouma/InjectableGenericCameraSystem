@@ -7,8 +7,7 @@ with our own values so we can control where the camera is located, it's pitch/ya
 its FoV and the camera's look vector. 
 
 It's written in C++ with some x86/x64 assembler to be able to intercept the location of the 3D camera in the game. 
-The system is initially designed for 64bit hosts as all games are 64bit nowadays, but can be reworked to be used for 32bit games. To do so, you have to change the C++ / Linker parameters
-of the VC++ project and make sure the assembler is generating x86 code.
+The system is initially designed for 64bit hosts as all games are 64bit nowadays, but has been reworked to be used for 32bit games too. 
 
 ## Overview of folder structure
 
@@ -23,7 +22,9 @@ windows 8 version. The VC++ installer should install this. The SDK is needed for
 It depends on DirectInput8 (which is part of every DX version). It uses DirectXMath for the 3D math, which is a self-contained library.
 
 ## Camera's released: 
-* Hitman 2016 (game version v1.7): https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/Hitman2016_v10
+* Hitman 2016: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Hitman2016
+* Tomb Raider 2013: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Tombraider
+* Assassin's Creed 3: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/AssassinsCreed3
 
 ## Acknowledgements
 Uses input class from dhpoware for Mouse / Keyboard handling.  
