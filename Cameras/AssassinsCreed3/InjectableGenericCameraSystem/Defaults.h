@@ -40,6 +40,7 @@
 #define DEFAULT_ROTATION_SPEED	0.01f
 #define DEFAULT_FOV_SPEED		0.003f
 #define DEFAULT_FOV				0.81f
+#define DEFAULT_Z_MOVEMENT_MULTIPLIER 0.5f
 
 // Keyboard camera control
 #define IGCS_KEY_CAMERA_ENABLE		VK_INSERT

@@ -33,8 +33,7 @@ using namespace std;
 
 extern "C" {
 	LPBYTE _cameraStructAddress = NULL;
-	LPBYTE _cameraStructAddressInterceptor1 = NULL;		// same struct but different address, as it uses a different offset.
-	LPBYTE _gamespeedStructAddress = NULL;
+	LPBYTE _timestopStructAddress = NULL;
 }
 
 static bool _timeHasBeenStopped = false;
@@ -42,10 +41,28 @@ static bool _timeHasBeenStopped = false;
 // newValue: 1 == time should be frozen, 0 == normal gameplay
 void SetTimeStopValue(byte newValue)
 {
-	// set flag so camera works during menu driven timestop
-	//_timeHasBeenStopped = (newValue == 1);
-	//float* gamespeedAddress = reinterpret_cast<float*>(_gamespeedStructAddress + GAMESPEED_IN_STRUCT_OFFSET);
-	//*gamespeedAddress = _timeHasBeenStopped ? 0.00001f : 1.0f;
+	DWORD* timestopAddress = reinterpret_cast<DWORD*>(_timestopStructAddress + TIMESTOP_IN_STRUCT_OFFSET);
+	if (newValue > 0)
+	{
+		// simply increase the value. This is also how the game does it.
+		// check if the game is already frozen, i.e. the value is >= 1. If so, skip it as it's of no use to freeze the time if it's already frozen. We're not barbarians.
+		if (*timestopAddress == 0)
+		{
+			*timestopAddress += 1;
+		}
+	}
+	else
+	{
+		if (*timestopAddress > 0)
+		{
+			*timestopAddress -= 1;
+		}
+		if (*timestopAddress < 0 || *timestopAddress > 3)
+		{
+			// reset
+			*timestopAddress = 0;
+		}
+	}
 }
 
 

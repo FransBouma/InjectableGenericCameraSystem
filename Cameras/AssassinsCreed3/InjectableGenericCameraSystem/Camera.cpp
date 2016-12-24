@@ -46,45 +46,14 @@ Camera::~Camera(void)
 }
 
 
-// uses the current quaternion used by the game to calculate the new quaternion by first creating a new quaternion from the angle delta's and multiplying it with the 
-// current look quaternion like: angleQ * currentLookQ. This new quaternion is then used as the new game quaternion.
-//
-// [Otis] Not used right now, as it bugs in some scenes where effects are used as it apparently picks up a quaternion from the effects and using that makes the camera spin out of
-// control. 
-XMVECTOR Camera::CalculateLookQuaternion(XMVECTOR currentLookQ)
-{
-	// Game has Y into the screen. roll is therefore used for Y. pitch / yaw have to be negative due to the alignment of the axis vs what the user expects. 
-	// Game will create tilt when rotated, as Y is into the screen.
-	/*
-	// WORKS, but creates massive tilt.
-	XMVECTOR angleQ = XMQuaternionRotationRollPitchYaw(-m_pitchDelta, m_rollDelta, -m_yawDelta);
-	XMVECTOR toReturn = XMQuaternionMultiply(angleQ, currentLookQ);
-	*/ 
-
-	// alternative method, separated calculations, no tilt. Trick is in swapping order of (xQ*currentQ) * zQ. Doing it as zQ* (xQ*currentQ) will introduce tilt. 
-	XMVECTOR xQ = XMQuaternionRotationNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), -m_pitchDelta);
-	XMVECTOR yQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), m_rollDelta);
-	XMVECTOR zQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), -m_yawDelta);
-	XMVECTOR tmpQ = xQ;// XMQuaternionMultiply(xQ, currentLookQ);
-	tmpQ = XMQuaternionMultiply(tmpQ, zQ);					 
-	XMVECTOR qToReturn = XMQuaternionMultiply(yQ, tmpQ);
-	XMQuaternionNormalize(qToReturn);
-	return qToReturn;
-
-}
-
-
 XMVECTOR Camera::CalculateLookQuaternion()
 {
-	// Game has Y into the screen. roll is therefore used for Y. pitch / yaw have to be negative due to the alignment of the axis vs what the user expects. 
-	// Game will create tilt when rotated, as Y is into the screen.
-
 	XMVECTOR xQ = XMQuaternionRotationNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f), -m_pitch);
 	XMVECTOR yQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), m_roll);		
 	XMVECTOR zQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), -m_yaw);		
 
-	XMVECTOR tmpQ = XMQuaternionMultiply(zQ, yQ);
-	XMVECTOR qToReturn = XMQuaternionMultiply(xQ, tmpQ);
+	XMVECTOR tmpQ = XMQuaternionMultiply(xQ, zQ);
+	XMVECTOR qToReturn = XMQuaternionMultiply(yQ, tmpQ);
 	XMQuaternionNormalize(qToReturn);
 	return qToReturn;
 }
@@ -144,7 +113,7 @@ void Camera::MoveRight(float amount)
 
 void Camera::MoveUp(float amount)
 {
-	m_direction.z += (m_movementSpeed * amount);
+	m_direction.z += (m_movementSpeed * amount * DEFAULT_Z_MOVEMENT_MULTIPLIER);
 	m_movementOccurred = true;
 }
 

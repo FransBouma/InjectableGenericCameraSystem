@@ -37,22 +37,20 @@
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
-; Externs defined in Core.cpp, which are used and set by the system. Read / write these
+; Externs defined in CameraManipulator.cpp, which are used and set by the system. Read / write these
 ; values in asm to communicate with the system
 EXTERN _cameraStructAddress: dword
-EXTERN _gamespeedStructAddress: dword
+EXTERN _timestopStructAddress: dword
 EXTERN _cameraEnabled: byte
-EXTERN _timeStopped: byte
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
 ; Own externs, defined in InterceptorHelper.cpp
 EXTERN _cameraStructInterceptionContinue: dword
 EXTERN _cameraWriteInterceptionContinue1: dword
-
+EXTERN _timestopStructInterceptionContinue: dword
 
 .code 
-
 cameraAddressInterceptor PROC
 	; Game jmps to this location due to the hook set in C function SetCameraStructInterceptorHook
 	mov [_cameraStructAddress], esi						; intercept address of camera struct
@@ -63,27 +61,27 @@ exit:
 	jmp [_cameraStructInterceptionContinue]				; jmp back into the original game code, which is the location after the original statements above.
 cameraAddressInterceptor ENDP
 
+
 cameraWriteInterceptor1 PROC
 	; Game jmps to this location due to the hook set in C function SetFoVWriteInterceptorHooks. 
 	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
 	movaps xmmword ptr [esi+10h],xmm0					; original statement
-	movaps xmm0,xmmword ptr [edi+20h]					; original statement
+	movaps xmm0, xmmword ptr [edi+20h]					; original statement
 	movaps xmmword ptr [esi+20h],xmm0					; original statement
 exit:
 	jmp [_cameraWriteInterceptionContinue1]				; jmp back into the original game code which is the location after the original statements above.
 cameraWriteInterceptor1 ENDP
 
-;gamespeedAddressInterceptor PROC
-	;mov [_gamespeedStructAddress], esi
-	;cmp byte ptr [_timeStopped], 1
-	;je exit
-;originalCode:
-	;fstp dword ptr [esi+00000104h]
-;exit:
-	;jmp [_gamespeedInterceptionContinue]
-;gamespeedAddressInterceptor ENDP
+
+timestopStructInterceptor PROC
+	mov [_timestopStructAddress], eax
+originalCode:
+	cmp dword ptr[eax + 0000089Ch], 00
+exit:
+	jmp [_timestopStructInterceptionContinue]
+timestopStructInterceptor ENDP
 
 
 _TEXT ENDS

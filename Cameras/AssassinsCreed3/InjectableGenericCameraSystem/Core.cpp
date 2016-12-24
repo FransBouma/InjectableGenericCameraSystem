@@ -165,13 +165,6 @@ void HandleUserInput()
 		Sleep(350);
 	}
 
-	//////////////////////////////////////////////////// CAMERA
-	if(!_cameraEnabled)
-	{
-		// camera is disabled. We simply disable all input to the camera movement. 
-		return;
-	}
-
 	if (KeyDown(IGCS_KEY_FOV_DECREASE))
 	{
 		ChangeFoV(-DEFAULT_FOV_SPEED);
@@ -186,6 +179,13 @@ void HandleUserInput()
 		_consoleWrapper->WriteLine("FoV Reset");
 		// wait 350 ms to avoid fast keyboard hammering
 		Sleep(350);
+	}
+
+	//////////////////////////////////////////////////// CAMERA
+	if (!_cameraEnabled)
+	{
+		// camera is disabled. We simply disable all input to the camera movement. 
+		return;
 	}
 
 	_camera->ResetDeltas();
@@ -342,7 +342,7 @@ void DisplayHelp()
 	_consoleWrapper->WriteLine("Numpad 1/Numpad 3 or d-pad left/right    : Tilt camera left / right");
 	_consoleWrapper->WriteLine("Numpad +/Numpad - or d-pad up/down       : Increase / decrease FoV");
 	_consoleWrapper->WriteLine("Numpad *                                 : Reset FoV");
-	_consoleWrapper->WriteLine("Numpad 0                                 : Pause / Continue game");
+	_consoleWrapper->WriteLine("Numpad 0                                 : Pause / Continue game (See readme!)");
 	_consoleWrapper->WriteLine("Numpad /                                 : Toggle Y look direction");
 	_consoleWrapper->WriteLine("ALT+H                                    : This help");
 	_consoleWrapper->WriteLine("------------------------------------------------------------------------------", CONSOLE_WHITE);
