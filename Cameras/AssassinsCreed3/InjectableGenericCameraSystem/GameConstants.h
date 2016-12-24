@@ -26,12 +26,31 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "stdafx.h"
 
-using namespace DirectX;
+// Mandatory constants to define for a game
+#define GAME_NAME									"Assassin's Creed 3 Single Player"
+#define CAMERA_VERSION								"1.0.0"
+#define CAMERA_CREDITS								"Otis_Inf. Thanks to Jim2Point0"
+#define GAME_WINDOW_TITLE							"Assassin's Creed III"
+#define INITIAL_PITCH_RADIANS						0.0f
+#define INITIAL_YAW_RADIANS							0.0f
+#define INITIAL_ROLL_RADIANS						0.0f
+#define CONTROLLER_Y_INVERT							true
+// End Mandatory constants
 
-void WriteNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoords);
-void WaitForCameraStructAddresses();
-void ChangeFoV(float amount);
-XMFLOAT3 GetCurrentCameraCoords();
-void SetTimeStopValue(byte newValue);
+// Offsets for camera intercept code. Used in interceptor.
+#define CAMERA_ADDRESS_INTERCEPT_START_OFFSET		0x1E4155
+#define CAMERA_ADDRESS_INTERCEPT_CONTINUE_OFFSET	0x1E415D
+
+#define	CAMERA_WRITE_INTERCEPT1_START_OFFSET		0x1E025C		
+#define CAMERA_WRITE_INTERCEPT1_CONTINUE_OFFSET		0x1E0268	
+
+#define TIMESTOP_ADDRESS_INTERCEPT_START_OFFSET		0x80330
+#define TIMESTOP_ADDRESS_INTERCEPT_CONTINUE_OFFSET	0x80337		
+
+// Indices in the structures read by interceptors 
+#define LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET		-0xC8
+#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		-0xD8
+#define FOV_IN_CAMERA_STRUCT_OFFSET					0x8
+#define TIMESTOP_IN_STRUCT_OFFSET					0x89C			
+

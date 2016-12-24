@@ -28,10 +28,11 @@
 #pragma once
 #include "stdafx.h"
 
-using namespace DirectX;
+struct handle_data {
+	unsigned long process_id;
+	HWND best_handle;
+};
 
-void WriteNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoords);
-void WaitForCameraStructAddresses();
-void ChangeFoV(float amount);
-XMFLOAT3 GetCurrentCameraCoords();
-void SetTimeStopValue(byte newValue);
+HWND FindMainWindow(unsigned long process_id);
+void NopRange(LPBYTE startAddress, int length);
+void SetHook(LPBYTE hostImageAddress, DWORD startOffset, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction);
