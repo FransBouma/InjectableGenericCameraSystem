@@ -34,13 +34,16 @@
 // System defaults
 #define FRAME_SLEEP				8		// in milliseconds
 #define FASTER_MULTIPLIER		3.0f
-#define SLOWER_MULTIPLIER		0.15f
+#define SLOWER_MULTIPLIER		0.05f
+#define SLOWER_MULTIPLIER2		0.01f
+#define FASTER_FOVMULTIPLIER    0.01f
+#define SLOWER_FOVMULTIPLIER	0.001f
+#define SLOWER_FOVMULTIPLIER2	0.00025f
 #define MOUSE_SPEED_CORRECTION	0.1f	// to correct for the mouse-deltas related to normal rotation.
 #define DEFAULT_MOVEMENT_SPEED	0.05f
 #define DEFAULT_ROTATION_SPEED	0.01f
 #define DEFAULT_FOV_RADIANS		0.7f
 #define DEFAULT_FOV_DEGREES		40.0f
-#define DEFAULT_FOV_SPEED		0.005f
 
 // Keyboard camera control
 #define IGCS_KEY_CAMERA_ENABLE	Keyboard::KEY_INSERT
