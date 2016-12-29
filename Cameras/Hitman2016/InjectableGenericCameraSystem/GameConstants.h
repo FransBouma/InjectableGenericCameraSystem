@@ -31,6 +31,7 @@
 #define GAME_NAME									"Hitman 2016 v1.8"
 #define CAMERA_VERSION								"1.0.4"
 #define CAMERA_CREDITS								"Otis_Inf, Jim2Point0, One3rd"
+#define GAME_WINDOW_TITLE							"HITMAN"
 #define INITIAL_PITCH_RADIANS						(-90.0f * XM_PI) / 180.f	// World has Z up and Y out of the screen, so rotate around X (pitch) -90 degrees.
 #define INITIAL_YAW_RADIANS							0.0f
 #define INITIAL_ROLL_RADIANS						0.0f

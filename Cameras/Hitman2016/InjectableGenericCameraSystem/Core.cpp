@@ -121,7 +121,7 @@ void HandleUserInput()
 		// wait for 350ms to avoid fast keyboard hammering displaying multiple times the help!
 		Sleep(350);
 	}
-	if (keyboard.keyDown(IGCS_KEY_INVERT_Y_LOOK) && altPressed)
+	if (keyboard.keyDown(IGCS_KEY_INVERT_Y_LOOK))
 	{
 		_lookDirectionInverter = -_lookDirectionInverter;
 		if (_lookDirectionInverter < 0)
@@ -173,25 +173,6 @@ void HandleUserInput()
 		Sleep(350);
 	}
 
-	/*
-In v1.8, the alternative camera hasn't been found. 
-
-	if (keyboard.keyDown(IGCS_KEY_ALT_TIMESTOP))
-	{
-		if (_alternativeTimeStopped)
-		{
-			_consoleWrapper->WriteLine("Game unpaused (alt)");
-		}
-		else
-		{
-			_consoleWrapper->WriteLine("Game paused (alt)");
-		}
-		_alternativeTimeStopped = !_alternativeTimeStopped;
-		SetAlternativeTimeStop(_hostImageAddress, _alternativeTimeStopped);
-		// wait 350 ms to avoid fast keyboard hammering unlocking/locking the timestop right away
-		Sleep(350);
-	}
-	*/
 	//////////////////////////////////////////////////// FOV
 	if (keyboard.keyDown(IGCS_KEY_FOV_RESET))
 	{
@@ -374,9 +355,7 @@ void DisplayHelp()
 	_consoleWrapper->WriteLine("Numpad +/Numpad - or d-pad up/down       : Increase / decrease FoV");
 	_consoleWrapper->WriteLine("Numpad * or controller B-button          : Reset FoV");
 	_consoleWrapper->WriteLine("Numpad 0                                 : Pause / Continue game");
-// In v1.8 the alternative camera hasn't been found. 
-	//_consoleWrapper->WriteLine("Numpad .                                 : Alt Pause / Continue game (no FoV)");
-	_consoleWrapper->WriteLine("ALT+Arrow up                             : Toggle Y look direction");
+	_consoleWrapper->WriteLine("Numpad /                                 : Toggle Y look direction");
 	_consoleWrapper->WriteLine("ALT+H                                    : This help");
 	_consoleWrapper->WriteLine("-----------------------------------------------------------------------------", CONSOLE_WHITE);
 }

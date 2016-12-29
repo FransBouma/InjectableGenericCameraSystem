@@ -438,6 +438,7 @@ LRESULT CALLBACK InterceptorWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 void InjectMessageInterceptor()
 {
 	HWND mainWindowHandle = FindMainWindow(GetCurrentProcessId());
+	// WARNING: For x64 bit, cast InterceptorWndProc to (LONG_PTR) only, not (LONG)(LONG_PTR)! https://blogs.msdn.microsoft.com/oldnewthing/20131226-00/?p=2263
 	_oldMainWindowWndProc = (WNDPROC)SetWindowLongPtr(mainWindowHandle, GWL_WNDPROC, (LONG)(LONG_PTR)InterceptorWndProc);
 }
 

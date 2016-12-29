@@ -40,30 +40,29 @@
 #define DEFAULT_ROTATION_SPEED	0.01f
 #define DEFAULT_FOV_RADIANS		0.7f
 #define DEFAULT_FOV_DEGREES		40.0f
-#define DEFAULT_FOV_SPEED		0.005f
+#define DEFAULT_FOV_SPEED		0.002f
 
 // Keyboard camera control
-#define IGCS_KEY_CAMERA_ENABLE	Keyboard::KEY_INSERT
-#define IGCS_KEY_CAMERA_LOCK	Keyboard::KEY_HOME
-#define IGCS_KEY_ROTATE_RIGHT	Keyboard::KEY_RIGHT		// pitch
-#define IGCS_KEY_ROTATE_LEFT	Keyboard::KEY_LEFT
-#define IGCS_KEY_ROTATE_UP		Keyboard::KEY_UP		// yaw
-#define IGCS_KEY_ROTATE_DOWN	Keyboard::KEY_DOWN
-#define IGCS_KEY_MOVE_FORWARD	Keyboard::KEY_NUMPAD_8
-#define IGCS_KEY_MOVE_BACKWARD	Keyboard::KEY_NUMPAD_5
-#define IGCS_KEY_MOVE_LEFT		Keyboard::KEY_NUMPAD_4
-#define IGCS_KEY_MOVE_RIGHT		Keyboard::KEY_NUMPAD_6
-#define IGCS_KEY_MOVE_UP		Keyboard::KEY_NUMPAD_7
-#define IGCS_KEY_MOVE_DOWN		Keyboard::KEY_NUMPAD_9
-#define IGCS_KEY_TILT_LEFT		Keyboard::KEY_NUMPAD_1		// roll
-#define IGCS_KEY_TILT_RIGHT		Keyboard::KEY_NUMPAD_3
-#define IGCS_KEY_FOV_RESET		Keyboard::KEY_NUMPAD_MULTIPLY
-#define IGCS_KEY_FOV_INCREASE	Keyboard::KEY_NUMPAD_ADD
-#define IGCS_KEY_FOV_DECREASE	Keyboard::KEY_NUMPAD_MINUS
-#define IGCS_KEY_HELP			Keyboard::KEY_H
-#define IGCS_KEY_TIMESTOP		Keyboard::KEY_NUMPAD_0
-#define IGCS_KEY_INVERT_Y_LOOK	Keyboard::KEY_UP
-#define IGCS_KEY_ALT_TIMESTOP	Keyboard::KEY_NUMPAD_PERIOD
+#define IGCS_KEY_CAMERA_ENABLE		Keyboard::KEY_INSERT
+#define IGCS_KEY_CAMERA_LOCK		Keyboard::KEY_HOME
+#define IGCS_KEY_ROTATE_RIGHT		Keyboard::KEY_RIGHT		// pitch
+#define IGCS_KEY_ROTATE_LEFT		Keyboard::KEY_LEFT
+#define IGCS_KEY_ROTATE_UP			Keyboard::KEY_UP		// yaw
+#define IGCS_KEY_ROTATE_DOWN		Keyboard::KEY_DOWN
+#define IGCS_KEY_MOVE_FORWARD		Keyboard::KEY_NUMPAD_8
+#define IGCS_KEY_MOVE_BACKWARD		Keyboard::KEY_NUMPAD_5
+#define IGCS_KEY_MOVE_LEFT			Keyboard::KEY_NUMPAD_4
+#define IGCS_KEY_MOVE_RIGHT			Keyboard::KEY_NUMPAD_6
+#define IGCS_KEY_MOVE_UP			Keyboard::KEY_NUMPAD_7
+#define IGCS_KEY_MOVE_DOWN			Keyboard::KEY_NUMPAD_9
+#define IGCS_KEY_TILT_LEFT			Keyboard::KEY_NUMPAD_1		// roll
+#define IGCS_KEY_TILT_RIGHT			Keyboard::KEY_NUMPAD_3
+#define IGCS_KEY_FOV_RESET			Keyboard::KEY_NUMPAD_MULTIPLY
+#define IGCS_KEY_FOV_INCREASE		Keyboard::KEY_NUMPAD_ADD
+#define IGCS_KEY_FOV_DECREASE		Keyboard::KEY_NUMPAD_MINUS
+#define IGCS_KEY_HELP				Keyboard::KEY_H
+#define IGCS_KEY_TIMESTOP			Keyboard::KEY_NUMPAD_0
+#define IGCS_KEY_INVERT_Y_LOOK		Keyboard::KEY_NUMPAD_DIVIDE
 
 #define IGCS_BUTTON_FOV_DECREASE	Gamepad::button_t::UP
 #define IGCS_BUTTON_FOV_INCREASE	Gamepad::button_t::DOWN
