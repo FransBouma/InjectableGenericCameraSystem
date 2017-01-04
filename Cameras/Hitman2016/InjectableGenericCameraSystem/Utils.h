@@ -26,6 +26,13 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "stdafx.h"
+
+struct handle_data {
+	unsigned long process_id;
+	HWND best_handle;
+};
+
 void NopRange(LPBYTE startAddress, int length);
 void SetHook(LPBYTE hostImageAddress, DWORD startOffset, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction);
-
+HWND FindMainWindow(unsigned long process_id);

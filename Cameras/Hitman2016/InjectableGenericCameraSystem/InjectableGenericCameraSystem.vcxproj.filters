@@ -53,7 +53,7 @@
     <ClInclude Include="Gamepad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InputHooks.h">
+    <ClInclude Include="InputHooker.h">
       <Filter>Hooking</Filter>
     </ClInclude>
   </ItemGroup>
@@ -88,7 +88,7 @@
     <ClCompile Include="Gamepad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InputHooks.cpp">
+    <ClCompile Include="InputHooker.cpp">
       <Filter>Hooking</Filter>
     </ClCompile>
   </ItemGroup>

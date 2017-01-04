@@ -32,7 +32,6 @@
 ;---------------------------------------------------------------
 ; Public definitions so the linker knows which names are present in this file
 PUBLIC cameraAddressInterceptor
-PUBLIC cameraAddressInterceptor2
 PUBLIC cameraWriteInterceptor1
 PUBLIC cameraWriteInterceptor2
 PUBLIC cameraWriteInterceptor3
@@ -43,16 +42,13 @@ PUBLIC gamespeedAddressInterceptor
 ; Externs defined in Core.cpp, which are used and set by the system. Read / write these
 ; values in asm to communicate with the system
 EXTERN _cameraStructAddress: qword
-EXTERN _cameraStructAddress2: qword
 EXTERN _gamespeedStructAddress: qword
-EXTERN _cameraEnabled: byte
-EXTERN _timeStopped: byte
+EXTERN g_cameraEnabled: byte
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
 ; Own externs, defined in InterceptorHelper.cpp
 EXTERN _cameraStructInterceptionContinue: qword
-EXTERN _cameraStructInterceptionContinue2: qword
 EXTERN _cameraWriteInterceptionContinue1: qword
 EXTERN _cameraWriteInterceptionContinue2: qword
 EXTERN _cameraWriteInterceptionContinue3: qword
@@ -75,7 +71,7 @@ cameraAddressInterceptor PROC
 	cmp byte ptr [rbx+038h], 0 							; check if this is the camera in rbx. For this game: Check with a 0-check. Could also check +20 or +24 for 0 if the above fails
 	jne originalCode
 	mov [_cameraStructAddress], rbx						; intercept address of camera struct
-	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
+	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
 	movss dword ptr [rbx+090h], xmm0					; original statement
@@ -93,18 +89,6 @@ gamespeedAddressInterceptor PROC
 	jmp qword ptr [_gamespeedInterceptionContinue]
 gamespeedAddressInterceptor ENDP
 
-cameraAddressInterceptor2 PROC
-	; Game jmps to this location due to the hook set in C function SetCameraStructInterceptorHook
-	mov [_cameraStructAddress2], rax					; camera used during menu / timestop. 
-	cmp byte ptr [_cameraEnabled], 1
-	je originalCode
-	movss xmm0, dword ptr [rax+020h]						; original statement
-originalCode:
-	movq xmm2, qword ptr [rax+018h]						; original statement
-	movaps xmm1,xmm5									; original statement
-	addps xmm1,xmm5										; original statement
-	jmp qword ptr [_cameraStructInterceptionContinue2]
-cameraAddressInterceptor2 ENDP
 
 ;-------------------------------------------------------------------
 ; Camera values write interceptions. For each block of statements in the game's exe which write to the camera values, we intercept them and execute them if our
@@ -116,7 +100,7 @@ cameraWriteInterceptor1 PROC
 	; first check if this is really a call for the camera. Other logic will use this code too. Check rbx with our known cameraStruct address to be sure
 	cmp qword ptr rbx, [_cameraStructAddress]
 	jne originalCode
-	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
+	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
 	movaps xmm0, xmmword ptr [rax]						; original statement
@@ -131,7 +115,7 @@ cameraWriteInterceptor2 PROC
 	; first check if this is really a call for the camera. Other logic will use this code too. Check rbx with our known cameraStruct address to be sure
 	cmp qword ptr rbx, [_cameraStructAddress]
 	jne originalCode
-	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
+	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
 	movss dword ptr [rbx+98h],xmm0						; original statement
@@ -145,7 +129,7 @@ cameraWriteInterceptor3 PROC
 	; first check if this is really a call for the camera. Other logic will use this code too. Check rbx with our known cameraStruct address to be sure
 	cmp qword ptr rbx, [_cameraStructAddress]
 	jne originalCode
-	cmp byte ptr [_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
+	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
 	movups xmmword ptr [rbx+80h],xmm0  					; original statement

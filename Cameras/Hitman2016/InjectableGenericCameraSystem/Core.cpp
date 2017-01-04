@@ -30,7 +30,7 @@
 #include "Camera.h"
 #include "InterceptorHelper.h"
 #include "Gamepad.h"
-#include "InputHooks.h"
+#include "InputHooker.h"
 
 using namespace std;
 
@@ -38,8 +38,7 @@ using namespace std;
 // data shared with asm functions. This is allocated here, 'C' style and not in some datastructure as passing that to 
 // MASM is rather tedious. 
 extern "C" {
-	byte _cameraEnabled = 0;
-	byte _timeStopped = 0;
+	byte g_cameraEnabled = 0;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -55,10 +54,12 @@ static LPBYTE _hostImageAddress = NULL;
 static bool _cameraMovementLocked = false;
 static bool _cameraStructFound = false;
 static float _lookDirectionInverter = 1.0f;
+static bool _timeStopped = false;
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // Local function definitions
 void MainLoop();
+void RegisterRawInput();
 void UpdateFrame();
 void HandleUserInput();
 void InitCamera();
@@ -78,6 +79,7 @@ void SystemStart(HMODULE hostBaseAddress, Console c)
 	DisplayHelp();
 	// initialization
 	SetInputHooks();
+	RegisterRawInput();
 	SetCameraStructInterceptorHook(_hostImageAddress);
 	SetTimestopInterceptorHook(_hostImageAddress);
 	Keyboard::init(hostBaseAddress);
@@ -163,7 +165,7 @@ void HandleUserInput()
 	}
 	if(keyboard.keyPressed(IGCS_KEY_CAMERA_ENABLE))
 	{
-		if (_cameraEnabled)
+		if (g_cameraEnabled)
 		{
 			RestoreOriginalCameraValues();
 			g_consoleWrapper->WriteLine("Camera disabled");
@@ -174,7 +176,7 @@ void HandleUserInput()
 			g_consoleWrapper->WriteLine("Camera enabled");
 			_camera->ResetAngles();
 		}
-		_cameraEnabled = _cameraEnabled == 0 ? (byte)1 : (byte)0;
+		g_cameraEnabled = g_cameraEnabled == 0 ? (byte)1 : (byte)0;
 		// wait for 350ms to avoid fast keyboard hammering disabling the camera right away
 		Sleep(350);
 	}
@@ -209,7 +211,7 @@ void HandleUserInput()
 	}
 
 	//////////////////////////////////////////////////// CAMERA
-	if(!_cameraEnabled)
+	if(!g_cameraEnabled)
 	{
 		// camera is disabled. We simply disable all input to the camera movement. 
 		return;
@@ -329,7 +331,7 @@ void HandleUserInput()
 
 void WriteNewCameraValuesToCameraStructs()
 {
-	if (!_cameraEnabled)
+	if (!g_cameraEnabled)
 	{
 		return;
 	}
@@ -355,6 +357,33 @@ void InitCamera()
 	_camera->SetYaw(INITIAL_YAW_RADIANS);
 }
 
+
+void RegisterRawInput()
+{
+	// get the main window of the host.
+	RAWINPUTDEVICE rid[1];
+	rid[0].usUsagePage = 0x01;
+	rid[0].usUsage = 0x02;
+	rid[0].dwFlags = 0; 
+	rid[0].hwndTarget = FindMainWindow(GetCurrentProcessId());
+
+	if (RegisterRawInputDevices(rid, 1, sizeof(rid[0])) == FALSE)
+	{
+		g_consoleWrapper->WriteError("Couldn't register raw input. Error code: " + to_string(GetLastError()));
+	}
+	else
+	{
+#ifdef _DEBUG
+		g_consoleWrapper->WriteLine("Raw input registered");
+#endif
+	}
+}
+
+
+bool IsCameraEnabled()
+{
+	return g_cameraEnabled;
+}
 
 void DisplayHelp()
 {

@@ -160,7 +160,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Gamepad.h" />
     <ClInclude Include="input.h" />
-    <ClInclude Include="InputHooks.h" />
+    <ClInclude Include="InputHooker.h" />
     <ClInclude Include="InterceptorHelper.h" />
     <ClInclude Include="GameConstants.h" />
     <ClInclude Include="stdafx.h" />
@@ -188,7 +188,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Gamepad.cpp" />
     <ClCompile Include="input.cpp" />
-    <ClCompile Include="InputHooks.cpp" />
+    <ClCompile Include="InputHooker.cpp" />
     <ClCompile Include="InterceptorHelper.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

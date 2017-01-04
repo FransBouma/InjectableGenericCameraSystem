@@ -56,3 +56,44 @@ void NopRange(LPBYTE startAddress, int length)
 }
 
 
+BOOL IsMainWindow(HWND handle)
+{
+	BOOL toReturn = GetWindow(handle, GW_OWNER) == (HWND)0 && IsWindowVisible(handle);
+	if (toReturn)
+	{
+		// check window title as there can be more top windows. 
+		int bufsize = GetWindowTextLength(handle) + 1;
+		LPWSTR title = new WCHAR[bufsize];
+		GetWindowText(handle, title, bufsize);
+		toReturn &= (_wcsicmp(title, TEXT(GAME_WINDOW_TITLE)) == 0);
+#ifdef _DEBUG
+		wcout << "Window found with title: '" << title << "'" << endl;
+#endif
+	}
+	return toReturn;
+}
+
+
+BOOL CALLBACK EnumWindowsCallback(HWND handle, LPARAM lParam)
+{
+	handle_data& data = *(handle_data*)lParam;
+	unsigned long process_id = 0;
+	GetWindowThreadProcessId(handle, &process_id);
+	if (data.process_id != process_id || !IsMainWindow(handle))
+	{
+		return TRUE;
+	}
+	data.best_handle = handle;
+	return FALSE;
+}
+
+
+HWND FindMainWindow(unsigned long process_id)
+{
+	handle_data data;
+	data.process_id = process_id;
+	data.best_handle = 0;
+	EnumWindows(EnumWindowsCallback, (LPARAM)&data);
+	return data.best_handle;
+}
+
