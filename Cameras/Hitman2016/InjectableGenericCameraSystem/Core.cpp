@@ -39,6 +39,7 @@ using namespace std;
 // MASM is rather tedious. 
 extern "C" {
 	byte g_cameraEnabled = 0;
+	byte g_aimFrozen = 0;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -59,12 +60,17 @@ static bool _timeStopped = false;
 //--------------------------------------------------------------------------------------------------------------------------------
 // Local function definitions
 void MainLoop();
-void RegisterRawInput();
 void UpdateFrame();
 void HandleUserInput();
 void InitCamera();
 void WriteNewCameraValuesToCameraStructs();
 void DisplayHelp();
+void DisplayTimestopState();
+void DisplayCameraState();
+void DisplayYLookDirectionState();
+void ToggleCameraMovementLockState(bool newValue);
+void ToggleInputBlockState(bool newValue);
+void ToggleFreeze47AimState(byte newValue);
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // Implementations
@@ -79,11 +85,8 @@ void SystemStart(HMODULE hostBaseAddress, Console c)
 	DisplayHelp();
 	// initialization
 	SetInputHooks();
-	RegisterRawInput();
 	SetCameraStructInterceptorHook(_hostImageAddress);
 	SetTimestopInterceptorHook(_hostImageAddress);
-	Keyboard::init(hostBaseAddress);
-	Mouse::init(hostBaseAddress);
 	InitCamera();
 	SetCameraWriteInterceptorHooks(_hostImageAddress);
 	DisableFoVWrite(_hostImageAddress);
@@ -114,46 +117,20 @@ void UpdateFrame()
 
 void HandleUserInput()
 {
-	Keyboard &keyboard = Keyboard::instance();
-	Mouse &mouse = Mouse::instance();
 	g_gamePad->update();
-	keyboard.update();
-	mouse.update();
-	bool altPressed = keyboard.keyDown(Keyboard::KEY_LALT) || keyboard.keyDown(Keyboard::KEY_RALT);
-	bool shiftPressed = keyboard.keyDown(Keyboard::KEY_LSHIFT) || keyboard.keyDown(Keyboard::KEY_RSHIFT);
+	bool altPressed = KeyDown(VK_LMENU) || KeyDown(VK_RMENU);
+	bool controlPressed = KeyDown(VK_RCONTROL);
 
-	if (keyboard.keyDown(IGCS_KEY_HELP) && altPressed)
+	if (KeyDown(IGCS_KEY_HELP) && altPressed)
 	{
 		DisplayHelp();
 		// wait for 350ms to avoid fast keyboard hammering displaying multiple times the help!
 		Sleep(350);
 	}
-	if (keyboard.keyDown(IGCS_KEY_INVERT_Y_LOOK))
+	if (KeyDown(IGCS_KEY_INVERT_Y_LOOK))
 	{
 		_lookDirectionInverter = -_lookDirectionInverter;
-		if (_lookDirectionInverter < 0)
-		{
-			g_consoleWrapper->WriteLine("Y look direction is inverted");
-		}
-		else
-		{
-			g_consoleWrapper->WriteLine("Y look direction is normal");
-		}
-		// wait for 350ms to avoid fast keyboard hammering switching look directive multiple times
-		Sleep(350);
-	}
-
-	if (keyboard.keyDown(IGCS_KEY_BLOCK_INPUT))
-	{
-		g_inputBlocked = !g_inputBlocked;
-		if (g_inputBlocked)
-		{
-			g_consoleWrapper->WriteLine("Input to game is now blocked");
-		}
-		else
-		{
-			g_consoleWrapper->WriteLine("Input to game is now enabled");
-		}
+		DisplayYLookDirectionState();
 		// wait for 350ms to avoid fast keyboard hammering switching look directive multiple times
 		Sleep(350);
 	}
@@ -163,49 +140,45 @@ void HandleUserInput()
 		// camera not found yet, can't proceed.
 		return;
 	}
-	if(keyboard.keyPressed(IGCS_KEY_CAMERA_ENABLE))
+	if(KeyDown(IGCS_KEY_CAMERA_ENABLE))
 	{
-		if (g_cameraEnabled)
+		if(g_cameraEnabled)
 		{
+			// it's going to be disabled, make sure things are alright when we give it back to the host
 			RestoreOriginalCameraValues();
-			g_consoleWrapper->WriteLine("Camera disabled");
+			ToggleCameraMovementLockState(false);
+			ToggleFreeze47AimState(0);
 		}
 		else
 		{
+			// it's going to be enabled, so cache the original values before we enable it so we can restore it afterwards
 			CacheOriginalCameraValues();
-			g_consoleWrapper->WriteLine("Camera enabled");
 			_camera->ResetAngles();
 		}
 		g_cameraEnabled = g_cameraEnabled == 0 ? (byte)1 : (byte)0;
+		DisplayCameraState();
 		// wait for 350ms to avoid fast keyboard hammering disabling the camera right away
 		Sleep(350);
 	}
-	if (keyboard.keyDown(IGCS_KEY_TIMESTOP))
+	if (KeyDown(IGCS_KEY_TIMESTOP))
 	{
-		if (_timeStopped)
-		{
-			g_consoleWrapper->WriteLine("Game unpaused");
-		}
-		else
-		{
-			g_consoleWrapper->WriteLine("Game paused");
-		}
 		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
+		DisplayTimestopState();
 		SetTimeStopValue(_timeStopped);
 		// wait 350 ms to avoid fast keyboard hammering unlocking/locking the timestop right away
 		Sleep(350);
 	}
 
 	//////////////////////////////////////////////////// FOV
-	if (keyboard.keyDown(IGCS_KEY_FOV_RESET))
+	if (KeyDown(IGCS_KEY_FOV_RESET))
 	{
 		ResetFoV();
 	}
-	if (keyboard.keyDown(IGCS_KEY_FOV_DECREASE))
+	if (KeyDown(IGCS_KEY_FOV_DECREASE))
 	{
 		ChangeFoV(-DEFAULT_FOV_SPEED);
 	}
-	if (keyboard.keyDown(IGCS_KEY_FOV_INCREASE))
+	if (KeyDown(IGCS_KEY_FOV_INCREASE))
 	{
 		ChangeFoV(DEFAULT_FOV_SPEED);
 	}
@@ -216,20 +189,27 @@ void HandleUserInput()
 		// camera is disabled. We simply disable all input to the camera movement. 
 		return;
 	}
-	_camera->ResetMovement();
-	float multiplier = altPressed ? FASTER_MULTIPLIER : shiftPressed ? SLOWER_MULTIPLIER : 1.0f;
-
-	if (keyboard.keyDown(IGCS_KEY_CAMERA_LOCK))
+	
+	if (KeyDown(IGCS_KEY_BLOCK_INPUT))
 	{
-		if (_cameraMovementLocked)
-		{
-			g_consoleWrapper->WriteLine("Camera movement unlocked");
-		}
-		else
-		{
-			g_consoleWrapper->WriteLine("Camera movement locked");
-		}
-		_cameraMovementLocked = !_cameraMovementLocked;
+		ToggleInputBlockState(!g_inputBlocked);
+		// wait for 350ms to avoid fast keyboard hammering switching look directive multiple times
+		Sleep(350);
+	}
+
+	if (KeyDown(IGCS_KEY_FREEZE_47))
+	{
+		ToggleFreeze47AimState(g_aimFrozen ? (byte)0 : (byte)1);
+		// wait for 350ms to avoid fast keyboard hammering
+		Sleep(350);
+	}
+
+	_camera->ResetMovement();
+	float multiplier = altPressed ? FASTER_MULTIPLIER : controlPressed ? SLOWER_MULTIPLIER : 1.0f;
+
+	if (KeyDown(IGCS_KEY_CAMERA_LOCK))
+	{
+		ToggleCameraMovementLockState(!_cameraMovementLocked);
 		// wait 150 ms to avoid fast keyboard hammering unlocking/locking the camera movement right away
 		Sleep(150);
 	}
@@ -238,58 +218,66 @@ void HandleUserInput()
 		// no movement allowed, simply return
 		return;
 	}
-	if(keyboard.keyDown(IGCS_KEY_MOVE_FORWARD))
+	if(KeyDown(IGCS_KEY_MOVE_FORWARD))
 	{
 		_camera->MoveForward(multiplier);
 	}
-	if(keyboard.keyDown(IGCS_KEY_MOVE_BACKWARD))
+	if(KeyDown(IGCS_KEY_MOVE_BACKWARD))
 	{
 		_camera->MoveForward(-multiplier);
 	}
-	if (keyboard.keyDown(IGCS_KEY_MOVE_RIGHT))
+	if (KeyDown(IGCS_KEY_MOVE_RIGHT))
 	{
 		_camera->MoveRight(multiplier);
 	}
-	if (keyboard.keyDown(IGCS_KEY_MOVE_LEFT))
+	if (KeyDown(IGCS_KEY_MOVE_LEFT))
 	{
 		_camera->MoveRight(-multiplier);
 	}
-	if (keyboard.keyDown(IGCS_KEY_MOVE_UP))
+	if (KeyDown(IGCS_KEY_MOVE_UP))
 	{
 		_camera->MoveUp(multiplier);
 	}
-	if (keyboard.keyDown(IGCS_KEY_MOVE_DOWN))
+	if (KeyDown(IGCS_KEY_MOVE_DOWN))
 	{
 		_camera->MoveUp(-multiplier);
 	}
-	if (keyboard.keyDown(IGCS_KEY_ROTATE_DOWN))
+	if (KeyDown(IGCS_KEY_ROTATE_DOWN))
 	{
 		_camera->Pitch(multiplier * _lookDirectionInverter);
 	}
-	if (keyboard.keyDown(IGCS_KEY_ROTATE_UP))
+	if (KeyDown(IGCS_KEY_ROTATE_UP))
 	{
 		_camera->Pitch((-multiplier) * _lookDirectionInverter);
 	}
-	if (keyboard.keyDown(IGCS_KEY_ROTATE_RIGHT))
+	if (KeyDown(IGCS_KEY_ROTATE_RIGHT))
 	{
 		_camera->Yaw(multiplier);
 	}
-	if (keyboard.keyDown(IGCS_KEY_ROTATE_LEFT))
+	if (KeyDown(IGCS_KEY_ROTATE_LEFT))
 	{
 		_camera->Yaw(-multiplier);
 	}
-	if (keyboard.keyDown(IGCS_KEY_TILT_LEFT))
+	if (KeyDown(IGCS_KEY_TILT_LEFT))
 	{
 		_camera->Roll(multiplier);
 	}
-	if (keyboard.keyDown(IGCS_KEY_TILT_RIGHT))
+	if (KeyDown(IGCS_KEY_TILT_RIGHT))
 	{
 		_camera->Roll(-multiplier);
 	}
 
 	// mouse 
-	_camera->Pitch(mouse.yPosRelative() * MOUSE_SPEED_CORRECTION * multiplier * _lookDirectionInverter);
-	_camera->Yaw(mouse.xPosRelative() * MOUSE_SPEED_CORRECTION * multiplier);
+	long mouseDeltaX = GetMouseDeltaX();
+	long mouseDeltaY = GetMouseDeltaY();
+	if (mouseDeltaY != 0)
+	{
+		_camera->Pitch(static_cast<float>(mouseDeltaY) * MOUSE_SPEED_CORRECTION * multiplier * _lookDirectionInverter);
+	}
+	if (mouseDeltaX != 0)
+	{
+		_camera->Yaw(static_cast<float>(mouseDeltaX) * MOUSE_SPEED_CORRECTION * multiplier);
+	}
 
 	// gamepad
 	if (g_gamePad->isConnected())
@@ -358,55 +346,89 @@ void InitCamera()
 }
 
 
-void RegisterRawInput()
-{
-	// get the main window of the host.
-	RAWINPUTDEVICE rid[1];
-	rid[0].usUsagePage = 0x01;
-	rid[0].usUsage = 0x02;
-	rid[0].dwFlags = 0; 
-	rid[0].hwndTarget = FindMainWindow(GetCurrentProcessId());
-
-	if (RegisterRawInputDevices(rid, 1, sizeof(rid[0])) == FALSE)
-	{
-		g_consoleWrapper->WriteError("Couldn't register raw input. Error code: " + to_string(GetLastError()));
-	}
-	else
-	{
-#ifdef _DEBUG
-		g_consoleWrapper->WriteLine("Raw input registered");
-#endif
-	}
-}
-
-
 bool IsCameraEnabled()
 {
 	return g_cameraEnabled;
 }
+
+
+void DisplayTimestopState()
+{
+	g_consoleWrapper->WriteLine(_timeStopped ? "Game paused" : "Game unpaused");
+}
+
+
+void DisplayCameraState()
+{
+	g_consoleWrapper->WriteLine(g_cameraEnabled ? "Camera enabled" : "Camera disabled");
+}
+
+
+void DisplayYLookDirectionState()
+{
+	g_consoleWrapper->WriteLine(_lookDirectionInverter < 0 ? "Y look direction is inverted" : "Y look direction is normal");
+}
+
+
+void ToggleInputBlockState(bool newValue)
+{
+	if (g_inputBlocked == newValue)
+	{
+		// already in this state. Ignore
+		return;
+	}
+	g_inputBlocked = newValue;
+	g_consoleWrapper->WriteLine(g_inputBlocked ? "Input to game blocked" : "Input to game enabled");
+}
+
+
+void ToggleFreeze47AimState(byte newValue)
+{
+	if (g_aimFrozen == newValue)
+	{
+		// already in this state. Ignore
+		return;
+	}
+	g_aimFrozen = newValue;
+	g_consoleWrapper->WriteLine(g_aimFrozen ? "47's aim is now frozen" : "47's aim is now normal (relative to the camera)");
+}
+
+
+void ToggleCameraMovementLockState(bool newValue)
+{
+	if (_cameraMovementLocked == newValue)
+	{
+		// already in this state. Ignore
+		return;
+	}
+	_cameraMovementLocked = newValue;
+	g_consoleWrapper->WriteLine(_cameraMovementLocked ? "Camera movement is locked" : "Camera movement is unlocked");
+}
+
 
 void DisplayHelp()
 {
 	                          //0         1         2         3         4         5         6         7
 	                          //01234567890123456789012345678901234567890123456789012345678901234567890123456789
 	g_consoleWrapper->WriteLine("---[IGCS Help]---------------------------------------------------------------", CONSOLE_WHITE);
-	g_consoleWrapper->WriteLine("INS                                      : Enable/Disable camera");
-	g_consoleWrapper->WriteLine("HOME                                     : Lock/unlock camera movement");
-	g_consoleWrapper->WriteLine("ALT+rotate/move                          : Faster rotate / move");
-	g_consoleWrapper->WriteLine("SHIFT+rotate/move                        : Slower rotate / move");
-	g_consoleWrapper->WriteLine("Controller A-button + left/right-stick   : Faster rotate / move");
-	g_consoleWrapper->WriteLine("Controller X-button + left/right-stick   : Slower rotate / move");
-	g_consoleWrapper->WriteLine("Arrow up/down or mouse or right-stick    : Rotate camera up/down");
-	g_consoleWrapper->WriteLine("Arrow left/right or mouse or right-stick : Rotate camera left/right");
-	g_consoleWrapper->WriteLine("Numpad 8/Numpad 5 or left-stick          : Move camera forward/backward");
-	g_consoleWrapper->WriteLine("Numpad 4/Numpad 6 or left-stick          : Move camera left / right");
-	g_consoleWrapper->WriteLine("Numpad 7/Numpad 9 or left/right trigger  : Move camera up / down");
-	g_consoleWrapper->WriteLine("Numpad 1/Numpad 3 or d-pad left/right    : Tilt camera left / right");
-	g_consoleWrapper->WriteLine("Numpad +/Numpad - or d-pad up/down       : Increase / decrease FoV");
-	g_consoleWrapper->WriteLine("Numpad * or controller B-button          : Reset FoV");
-	g_consoleWrapper->WriteLine("Numpad 0                                 : Pause / Continue game");
-	g_consoleWrapper->WriteLine("Numpad /                                 : Toggle Y look direction");
-	g_consoleWrapper->WriteLine("Numpad .                                 : Block input to game");
-	g_consoleWrapper->WriteLine("ALT+H                                    : This help");
+	g_consoleWrapper->WriteLine("INS                                   : Enable/Disable camera");
+	g_consoleWrapper->WriteLine("HOME                                  : Lock/unlock camera movement");
+	g_consoleWrapper->WriteLine("ALT+rotate/move                       : Faster rotate / move");
+	g_consoleWrapper->WriteLine("Right-CTRL+rotate/move                : Slower rotate / move");
+	g_consoleWrapper->WriteLine("Controller A-button + l/r-stick       : Faster rotate / move");
+	g_consoleWrapper->WriteLine("Controller X-button + l/r-stick       : Slower rotate / move");
+	g_consoleWrapper->WriteLine("Arrow up/down or mouse or r-stick     : Rotate camera up/down");
+	g_consoleWrapper->WriteLine("Arrow left/right or mouse or r-stick  : Rotate camera left/right");
+	g_consoleWrapper->WriteLine("Numpad 8/Numpad 5 or l-stick          : Move camera forward/backward");
+	g_consoleWrapper->WriteLine("Numpad 4/Numpad 6 or l-stick          : Move camera left / right");
+	g_consoleWrapper->WriteLine("Numpad 7/Numpad 9 or l/r-trigger      : Move camera up / down");
+	g_consoleWrapper->WriteLine("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
+	g_consoleWrapper->WriteLine("Numpad +/Numpad - or d-pad up/down    : Increase / decrease FoV");
+	g_consoleWrapper->WriteLine("Numpad * or controller B-button       : Reset FoV");
+	g_consoleWrapper->WriteLine("Numpad 0                              : Pause / Continue game");
+	g_consoleWrapper->WriteLine("Numpad /                              : Toggle Y look direction");
+	g_consoleWrapper->WriteLine("Numpad .                              : Block input to game");
+	g_consoleWrapper->WriteLine("END                                   : (During game pause) Freeze 47's aim");
+	g_consoleWrapper->WriteLine("ALT+H                                 : This help");
 	g_consoleWrapper->WriteLine("-----------------------------------------------------------------------------", CONSOLE_WHITE);
 }

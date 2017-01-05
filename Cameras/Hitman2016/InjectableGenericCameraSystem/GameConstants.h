@@ -29,7 +29,7 @@
 
 // Mandatory constants to define for a game
 #define GAME_NAME									"Hitman 2016 v1.8"
-#define CAMERA_VERSION								"1.0.4"
+#define CAMERA_VERSION								"1.0.5"
 #define CAMERA_CREDITS								"Otis_Inf, Jim2Point0, One3rd"
 #define GAME_WINDOW_TITLE							"HITMAN"
 #define INITIAL_PITCH_RADIANS						(-90.0f * XM_PI) / 180.f	// World has Z up and Y out of the screen, so rotate around X (pitch) -90 degrees.
@@ -48,6 +48,8 @@
 #define CAMERA_WRITE_INTERCEPT2_CONTINUE_OFFSET		0x409CCA8	// v1.7: 0x41C5BB8
 #define	CAMERA_WRITE_INTERCEPT3_START_OFFSET		0x409CCB7	// v1.7: 0x41C5BC7
 #define CAMERA_WRITE_INTERCEPT3_CONTINUE_OFFSET		0x409CCE5	// v1.7: 0x41C5BF5
+#define CAMERA_READ_INTERCEPT1_START_OFFSET			0x40A0020
+#define CAMERA_READ_INTERCEPT1_CONTINUE_OFFSET		0x40A002F
 
 #define GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET	0x409FAB4	
 #define GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET 0x409FAC4	
@@ -62,3 +64,5 @@
 #define GAMESPEED_IN_STRUCT_OFFSET					0x48		
 #define MENU_TIMESTOP_OFFSET_IN_IMAGE				0x2662508	
 
+// specific option.
+#define IGCS_KEY_FREEZE_47							VK_END	

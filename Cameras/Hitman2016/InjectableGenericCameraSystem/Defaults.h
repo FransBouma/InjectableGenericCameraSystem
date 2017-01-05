@@ -35,35 +35,35 @@
 #define FRAME_SLEEP				8		// in milliseconds
 #define FASTER_MULTIPLIER		3.0f
 #define SLOWER_MULTIPLIER		0.15f
-#define MOUSE_SPEED_CORRECTION	0.1f	// to correct for the mouse-deltas related to normal rotation.
-#define DEFAULT_MOVEMENT_SPEED	0.05f
+#define MOUSE_SPEED_CORRECTION	0.2f	// to correct for the mouse-deltas related to normal rotation.
+#define DEFAULT_MOVEMENT_SPEED	0.03f
 #define DEFAULT_ROTATION_SPEED	0.01f
 #define DEFAULT_FOV_RADIANS		0.7f
 #define DEFAULT_FOV_DEGREES		40.0f
 #define DEFAULT_FOV_SPEED		0.002f
 
 // Keyboard camera control
-#define IGCS_KEY_CAMERA_ENABLE		Keyboard::KEY_INSERT
-#define IGCS_KEY_CAMERA_LOCK		Keyboard::KEY_HOME
-#define IGCS_KEY_ROTATE_RIGHT		Keyboard::KEY_RIGHT		// pitch
-#define IGCS_KEY_ROTATE_LEFT		Keyboard::KEY_LEFT
-#define IGCS_KEY_ROTATE_UP			Keyboard::KEY_UP		// yaw
-#define IGCS_KEY_ROTATE_DOWN		Keyboard::KEY_DOWN
-#define IGCS_KEY_MOVE_FORWARD		Keyboard::KEY_NUMPAD_8
-#define IGCS_KEY_MOVE_BACKWARD		Keyboard::KEY_NUMPAD_5
-#define IGCS_KEY_MOVE_LEFT			Keyboard::KEY_NUMPAD_4
-#define IGCS_KEY_MOVE_RIGHT			Keyboard::KEY_NUMPAD_6
-#define IGCS_KEY_MOVE_UP			Keyboard::KEY_NUMPAD_7
-#define IGCS_KEY_MOVE_DOWN			Keyboard::KEY_NUMPAD_9
-#define IGCS_KEY_TILT_LEFT			Keyboard::KEY_NUMPAD_1		// roll
-#define IGCS_KEY_TILT_RIGHT			Keyboard::KEY_NUMPAD_3
-#define IGCS_KEY_FOV_RESET			Keyboard::KEY_NUMPAD_MULTIPLY
-#define IGCS_KEY_FOV_INCREASE		Keyboard::KEY_NUMPAD_ADD
-#define IGCS_KEY_FOV_DECREASE		Keyboard::KEY_NUMPAD_MINUS
-#define IGCS_KEY_HELP				Keyboard::KEY_H
-#define IGCS_KEY_TIMESTOP			Keyboard::KEY_NUMPAD_0
-#define IGCS_KEY_INVERT_Y_LOOK		Keyboard::KEY_NUMPAD_DIVIDE
-#define IGCS_KEY_BLOCK_INPUT		Keyboard::KEY_NUMPAD_PERIOD
+#define IGCS_KEY_CAMERA_ENABLE		VK_INSERT
+#define IGCS_KEY_CAMERA_LOCK		VK_HOME
+#define IGCS_KEY_ROTATE_RIGHT		VK_RIGHT		// pitch
+#define IGCS_KEY_ROTATE_LEFT		VK_LEFT
+#define IGCS_KEY_ROTATE_UP			VK_UP			// yaw
+#define IGCS_KEY_ROTATE_DOWN		VK_DOWN
+#define IGCS_KEY_MOVE_FORWARD		VK_NUMPAD8
+#define IGCS_KEY_MOVE_BACKWARD		VK_NUMPAD5
+#define IGCS_KEY_MOVE_LEFT			VK_NUMPAD4
+#define IGCS_KEY_MOVE_RIGHT			VK_NUMPAD6
+#define IGCS_KEY_MOVE_UP			VK_NUMPAD7
+#define IGCS_KEY_MOVE_DOWN			VK_NUMPAD9
+#define IGCS_KEY_TILT_LEFT			VK_NUMPAD1		// roll
+#define IGCS_KEY_TILT_RIGHT			VK_NUMPAD3
+#define IGCS_KEY_FOV_RESET			VK_MULTIPLY
+#define IGCS_KEY_FOV_INCREASE		VK_ADD
+#define IGCS_KEY_FOV_DECREASE		VK_SUBTRACT
+#define IGCS_KEY_HELP				0x48			// H
+#define IGCS_KEY_TIMESTOP			VK_NUMPAD0
+#define IGCS_KEY_INVERT_Y_LOOK		VK_DIVIDE
+#define IGCS_KEY_BLOCK_INPUT		VK_DECIMAL
 
 #define IGCS_BUTTON_FOV_DECREASE	Gamepad::button_t::UP
 #define IGCS_BUTTON_FOV_INCREASE	Gamepad::button_t::DOWN

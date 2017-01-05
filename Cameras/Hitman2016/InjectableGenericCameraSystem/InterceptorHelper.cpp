@@ -40,6 +40,7 @@ extern "C" {
 	void cameraWriteInterceptor1();		// create as much interceptors for write interception as needed. In the example game, there are 4.
 	void cameraWriteInterceptor2();
 	void cameraWriteInterceptor3();
+	void cameraReadInterceptor1();
 	void gamespeedAddressInterceptor();
 }
 
@@ -54,6 +55,8 @@ extern "C" {
 	LPBYTE _cameraWriteInterceptionContinue3 = 0;
 	// the continue address for the continuing execution after interception of the gamespeed block of code. 
 	LPBYTE _gamespeedInterceptionContinue = 0;
+	// the continue address for the continuing exeuction after interception of the camera quaternion read code.
+	LPBYTE _cameraReadInterceptionContinue1 = 0;
 }
 
 static LPBYTE _cameraStructInterceptionStart = 0;
@@ -61,6 +64,7 @@ static LPBYTE _cameraWriteInterceptionStart1 = 0;
 static LPBYTE _cameraWriteInterceptionStart2 = 0;
 static LPBYTE _cameraWriteInterceptionStart3 = 0;
 static LPBYTE _gamespeedInterceptionStart = 0;
+static LPBYTE _cameraReadInterception1Start = 0;
 
 
 void SetCameraStructInterceptorHook(LPBYTE hostImageAddress)
@@ -75,6 +79,7 @@ void SetCameraWriteInterceptorHooks(LPBYTE hostImageAddress)
 	SetHook(hostImageAddress, CAMERA_WRITE_INTERCEPT1_START_OFFSET, CAMERA_WRITE_INTERCEPT1_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue1, &cameraWriteInterceptor1);
 	SetHook(hostImageAddress, CAMERA_WRITE_INTERCEPT2_START_OFFSET, CAMERA_WRITE_INTERCEPT2_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue2, &cameraWriteInterceptor2);
 	SetHook(hostImageAddress, CAMERA_WRITE_INTERCEPT3_START_OFFSET, CAMERA_WRITE_INTERCEPT3_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue3, &cameraWriteInterceptor3);
+	SetHook(hostImageAddress, CAMERA_READ_INTERCEPT1_START_OFFSET, CAMERA_READ_INTERCEPT1_CONTINUE_OFFSET, &_cameraReadInterceptionContinue1, &cameraReadInterceptor1);
 }
 
 void SetTimestopInterceptorHook(LPBYTE hostImageAddress)

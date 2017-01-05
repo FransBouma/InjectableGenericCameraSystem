@@ -35,6 +35,7 @@ PUBLIC cameraAddressInterceptor
 PUBLIC cameraWriteInterceptor1
 PUBLIC cameraWriteInterceptor2
 PUBLIC cameraWriteInterceptor3
+PUBLIC cameraReadInterceptor1
 PUBLIC gamespeedAddressInterceptor
 ;---------------------------------------------------------------
 
@@ -44,6 +45,7 @@ PUBLIC gamespeedAddressInterceptor
 EXTERN _cameraStructAddress: qword
 EXTERN _gamespeedStructAddress: qword
 EXTERN g_cameraEnabled: byte
+EXTERN g_aimFrozen: byte
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -52,6 +54,7 @@ EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _cameraWriteInterceptionContinue1: qword
 EXTERN _cameraWriteInterceptionContinue2: qword
 EXTERN _cameraWriteInterceptionContinue3: qword
+EXTERN _cameraReadInterceptionContinue1: qword
 EXTERN _gamespeedInterceptionContinue: qword
 
 ;---------------------------------------------------------------
@@ -143,5 +146,21 @@ originalCode:
 exit:
 	jmp qword ptr [_cameraWriteInterceptionContinue3]	; jmp back into the original game code which is the location after the original statements above.
 cameraWriteInterceptor3 ENDP
+
+cameraReadInterceptor1 PROC
+	cmp byte ptr [g_cameraEnabled], 1					
+	jne originalCode
+	cmp byte ptr [g_aimFrozen], 1
+	jne originalCode
+	; aim is frozen and camera is enabled. We now issue a 'ret', which means it will return to the caller of the original code as we jmp-ed to this location
+	; from there. This means we won't continue in the original code. 
+	ret
+originalCode:
+	push rbx
+	sub rsp, 00000080h
+	test byte ptr [rcx+000000AEh],02h
+exit:
+	jmp qword ptr [_cameraReadInterceptionContinue1]	; jmp back into the original game code which is the location after the original statements above.
+cameraReadInterceptor1 ENDP
 
 END

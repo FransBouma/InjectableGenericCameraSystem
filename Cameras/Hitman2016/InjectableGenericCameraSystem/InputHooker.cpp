@@ -84,9 +84,9 @@ DWORD WINAPI DetourXInputGetState(DWORD dwUserIndex, XINPUT_STATE* pState)
 	// first call the original function
 	DWORD toReturn = hookedXInputGetState(dwUserIndex, pState);
 	// check if the passed in pState is equal to our gamestate. If so, always allow.
-	if (pState != g_gamePad->getState())
+	if (IsCameraEnabled() && pState != g_gamePad->getState())
 	{
-		// check if the camera is enabled. If so, zero the state
+		// check if input is blocked. If so, zero the state, so the host will see no input data
 		if (g_inputBlocked)
 		{
 			ZeroMemory(pState, sizeof(XINPUT_STATE));
@@ -160,92 +160,6 @@ void ProcessMessage(LPMSG lpMsg, bool removeIfRequired)
 }
 
 
-bool HandleMessage(LPMSG lpMsg)
-{
-	// only handle the message if the camera is enabled, otherwise ignore it as the camera isn't controllable 
-	if (lpMsg == nullptr || lpMsg->hwnd == nullptr || !IsCameraEnabled())
-	{
-		return false;
-	}
-	bool toReturn = false;
-	switch (lpMsg->message)
-	{
-		case WM_INPUT:
-		{
-			// handle mouse
-			RAWINPUT *pRI = NULL;
-
-			// Determine how big the buffer should be
-			UINT iBuffer;
-			GetRawInputData((HRAWINPUT)lpMsg->lParam, RID_INPUT, NULL, &iBuffer, sizeof(RAWINPUTHEADER));
-			// Allocate a buffer with enough size to hold the raw input data
-			LPBYTE lpb = new BYTE[iBuffer];
-			if (lpb == NULL)
-			{
-				return 0;
-			}
-			// Get the raw input data
-			UINT readSize = GetRawInputData((HRAWINPUT)lpMsg->lParam, RID_INPUT, lpb, &iBuffer, sizeof(RAWINPUTHEADER));
-			if (readSize == iBuffer)
-			{
-				pRI = (RAWINPUT*)lpb;
-				// Process the Mouse Messages
-				if (pRI->header.dwType == RIM_TYPEMOUSE)
-				{
-#error CONTINUE HERE
-					//ProcessRawMouseData(&pRI->data.mouse);
-				}
-			}
-			delete lpb;
-			toReturn = true;
-		}
-		break;
-		// simply return 1 for all messages related to mouse / keyboard so they won't reach the message pump of the main window. 
-		case WM_KEYDOWN:
-		case WM_KEYUP:
-		case WM_CAPTURECHANGED:
-		case WM_LBUTTONDBLCLK:
-		case WM_LBUTTONDOWN:
-		case WM_MBUTTONDBLCLK:
-		case WM_MBUTTONDOWN:
-		case WM_MBUTTONUP:
-		case WM_MOUSEACTIVATE:
-		case WM_MOUSEHOVER:
-		case WM_MOUSEHWHEEL:
-		case WM_MOUSEMOVE:
-		case WM_MOUSELEAVE:
-		case WM_MOUSEWHEEL:
-		case WM_NCHITTEST:
-		case WM_NCLBUTTONDBLCLK:
-		case WM_NCLBUTTONDOWN:
-		case WM_NCLBUTTONUP:
-		case WM_NCMBUTTONDBLCLK:
-		case WM_NCMBUTTONDOWN:
-		case WM_NCMBUTTONUP:
-		case WM_NCMOUSEHOVER:
-		case WM_NCMOUSELEAVE:
-		case WM_NCMOUSEMOVE:
-		case WM_NCRBUTTONDBLCLK:
-		case WM_NCRBUTTONDOWN:
-		case WM_NCRBUTTONUP:
-		case WM_NCXBUTTONDBLCLK:
-		case WM_NCXBUTTONDOWN:
-		case WM_NCXBUTTONUP:
-		case WM_RBUTTONDBLCLK:
-		case WM_RBUTTONDOWN:
-		case WM_RBUTTONUP:
-		case WM_XBUTTONDBLCLK:
-		case WM_XBUTTONDOWN:
-		case WM_XBUTTONUP:
-		case WM_LBUTTONUP:
-			// say we handled it, so the host won't see it
-			toReturn = true;
-			break;
-	}
-	return toReturn;
-}
-
-
 // Sets the input hooks for the various input related functions we defined own wrapper functions for. After a successful hook setup
 // they're enabled. 
 void SetInputHooks()
@@ -259,7 +173,34 @@ void SetInputHooks()
 	g_consoleWrapper->WriteLine("Hook set to XInputSetState");
 #endif
 
-
+	if (MH_CreateHookApiEx(L"user32", "GetMessageA", &DetourGetMessageA, &hookedGetMessageA) != MH_OK)
+	{
+		g_consoleWrapper->WriteError("Hooking GetMessageA failed!");
+	}
+#ifdef _DEBUG
+	g_consoleWrapper->WriteLine("Hook set to GetMessageA");
+#endif
+	if (MH_CreateHookApiEx(L"user32", "GetMessageW", &DetourGetMessageW, &hookedGetMessageW) != MH_OK)
+	{
+		g_consoleWrapper->WriteError("Hooking GetMessageW failed!");
+	}
+#ifdef _DEBUG
+	g_consoleWrapper->WriteLine("Hook set to GetMessageW");
+#endif
+	if (MH_CreateHookApiEx(L"user32", "PeekMessageA", &DetourPeekMessageA, &hookedPeekMessageA) != MH_OK)
+	{
+		g_consoleWrapper->WriteError("Hooking PeekMessageA failed!");
+	}
+#ifdef _DEBUG
+	g_consoleWrapper->WriteLine("Hook set to PeekMessageA");
+#endif
+	if (MH_CreateHookApiEx(L"user32", "PeekMessageW", &DetourPeekMessageW, &hookedPeekMessageW) != MH_OK)
+	{
+		g_consoleWrapper->WriteError("Hooking PeekMessageW failed!");
+	}
+#ifdef _DEBUG
+	g_consoleWrapper->WriteLine("Hook set to PeekMessageW");
+#endif
 
 	// Enable all hooks
 	if (MH_EnableHook(MH_ALL_HOOKS) == MH_OK)
