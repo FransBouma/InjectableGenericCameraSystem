@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2016, Frans Bouma
+// Copyright(c) 2017, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -25,8 +25,61 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma once
+#include "stdafx.h"
+#include "Globals.h"
+#include "System.h"
+#include "Utils.h"
 
-static bool g_systemActive = false;
+using namespace std;
+using namespace IGCS;
 
-void SystemStart(HMODULE hostBaseAddress, Console c);
+DWORD WINAPI MainThread(LPVOID lpParam);
+HMODULE GetBaseAddressOfContainingProcess();
+
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD  reason, LPVOID lpReserved)
+{
+	DWORD threadID;
+
+	DisableThreadLibraryCalls(hModule);
+
+	switch (reason)
+	{
+		case DLL_PROCESS_ATTACH:
+			CreateThread(
+				NULL,
+				0,
+				MainThread,
+				hModule,
+				0,
+				&threadID
+			);
+			break;
+		case DLL_PROCESS_DETACH:
+			Globals::instance().systemActive(false);
+			break;
+	}
+	return TRUE;
+}
+
+
+// lpParam gets the hModule value of the DllMain process
+DWORD WINAPI MainThread(LPVOID lpParam)
+{
+	Console::Init();
+	Console::WriteHeader();
+
+	HMODULE baseAddress = Utils::getBaseAddressOfContainingProcess();
+	if(NULL == baseAddress)
+	{
+		Console::WriteError("Not able to obtain parent process base address... exiting");
+	}
+	else
+	{
+		System s;
+		s.start(baseAddress);
+	}
+	Console::Release();
+	return 0;
+}
+
+

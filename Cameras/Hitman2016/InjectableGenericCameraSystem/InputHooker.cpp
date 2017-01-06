@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2016, Frans Bouma
+// Copyright(c) 2017, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -29,188 +29,186 @@
 #include "Utils.h"
 #include "MinHook.h"
 #include "Gamepad.h"
+#include "Globals.h"
+#include "input.h"
 
 using namespace std;
 
-//--------------------------------------------------------------------------------------------------------------------------------
-// Externs
-extern bool g_inputBlocked;
-extern Gamepad* g_gamePad;
-extern Console* g_consoleWrapper;
-
-//--------------------------------------------------------------------------------------------------------------------------------
-// Forward declarations
-bool HandleMessage(LPMSG lpMsg);
-void ProcessMessage(LPMSG lpMsg, bool removeIfRequired);
-
-//--------------------------------------------------------------------------------------------------------------------------------
-// Typedefs of functions to hook
-typedef DWORD (WINAPI *XINPUTGETSTATE)(DWORD, XINPUT_STATE*);
-typedef BOOL (WINAPI *GETMESSAGEA)(LPMSG, HWND, UINT, UINT);
-typedef BOOL (WINAPI *GETMESSAGEW)(LPMSG, HWND, UINT, UINT);
-typedef BOOL (WINAPI *PEEKMESSAGEA)(LPMSG, HWND, UINT, UINT, UINT);
-typedef BOOL (WINAPI *PEEKMESSAGEW)(LPMSG, HWND, UINT, UINT, UINT);
-
-//--------------------------------------------------------------------------------------------------------------------------------
-// Pointers to the original hooked functions
-static XINPUTGETSTATE hookedXInputGetState = nullptr;
-static GETMESSAGEA hookedGetMessageA = nullptr;
-static GETMESSAGEW hookedGetMessageW = nullptr;
-static PEEKMESSAGEA hookedPeekMessageA = nullptr;
-static PEEKMESSAGEW hookedPeekMessageW = nullptr;
-
-//--------------------------------------------------------------------------------------------------------------------------------
-// Implementations
-
-// wrapper for easier setting up hooks for MinHook
-template <typename T>
-inline MH_STATUS MH_CreateHookEx(LPVOID pTarget, LPVOID pDetour, T** ppOriginal)
+namespace IGCS::InputHooker
 {
-	return MH_CreateHook(pTarget, pDetour, reinterpret_cast<LPVOID*>(ppOriginal));
-}
+	//--------------------------------------------------------------------------------------------------------------------------------
+	// Forward declarations
+	void processMessage(LPMSG lpMsg, bool removeIfRequired);
 
-template <typename T>
-inline MH_STATUS MH_CreateHookApiEx(
-	LPCWSTR pszModule, LPCSTR pszProcName, LPVOID pDetour, T** ppOriginal)
-{
-	return MH_CreateHookApi(
-		pszModule, pszProcName, pDetour, reinterpret_cast<LPVOID*>(ppOriginal));
-}
+	//--------------------------------------------------------------------------------------------------------------------------------
+	// Typedefs of functions to hook
+	typedef DWORD(WINAPI *XINPUTGETSTATE)(DWORD, XINPUT_STATE*);
+	typedef BOOL(WINAPI *GETMESSAGEA)(LPMSG, HWND, UINT, UINT);
+	typedef BOOL(WINAPI *GETMESSAGEW)(LPMSG, HWND, UINT, UINT);
+	typedef BOOL(WINAPI *PEEKMESSAGEA)(LPMSG, HWND, UINT, UINT, UINT);
+	typedef BOOL(WINAPI *PEEKMESSAGEW)(LPMSG, HWND, UINT, UINT, UINT);
 
+	//--------------------------------------------------------------------------------------------------------------------------------
+	// Pointers to the original hooked functions
+	static XINPUTGETSTATE hookedXInputGetState = nullptr;
+	static GETMESSAGEA hookedGetMessageA = nullptr;
+	static GETMESSAGEW hookedGetMessageW = nullptr;
+	static PEEKMESSAGEA hookedPeekMessageA = nullptr;
+	static PEEKMESSAGEW hookedPeekMessageW = nullptr;
 
-// Our own version of XInputGetState
-DWORD WINAPI DetourXInputGetState(DWORD dwUserIndex, XINPUT_STATE* pState)
-{
-	// first call the original function
-	DWORD toReturn = hookedXInputGetState(dwUserIndex, pState);
-	// check if the passed in pState is equal to our gamestate. If so, always allow.
-	if (IsCameraEnabled() && pState != g_gamePad->getState())
+	//--------------------------------------------------------------------------------------------------------------------------------
+	// Implementations
+
+	// wrapper for easier setting up hooks for MinHook
+	template <typename T>
+	inline MH_STATUS MH_CreateHookEx(LPVOID pTarget, LPVOID pDetour, T** ppOriginal)
 	{
-		// check if input is blocked. If so, zero the state, so the host will see no input data
-		if (g_inputBlocked)
+		return MH_CreateHook(pTarget, pDetour, reinterpret_cast<LPVOID*>(ppOriginal));
+	}
+
+	template <typename T>
+	inline MH_STATUS MH_CreateHookApiEx(
+		LPCWSTR pszModule, LPCSTR pszProcName, LPVOID pDetour, T** ppOriginal)
+	{
+		return MH_CreateHookApi(
+			pszModule, pszProcName, pDetour, reinterpret_cast<LPVOID*>(ppOriginal));
+	}
+
+
+	// Our own version of XInputGetState
+	DWORD WINAPI detourXInputGetState(DWORD dwUserIndex, XINPUT_STATE* pState)
+	{
+		// first call the original function
+		DWORD toReturn = hookedXInputGetState(dwUserIndex, pState);
+		// check if the passed in pState is equal to our gamestate. If so, always allow.
+		if (g_cameraEnabled && pState != Globals::instance().gamePad().getState())
 		{
-			ZeroMemory(pState, sizeof(XINPUT_STATE));
+			// check if input is blocked. If so, zero the state, so the host will see no input data
+			if (Globals::instance().inputBlocked())
+			{
+				ZeroMemory(pState, sizeof(XINPUT_STATE));
+			}
+		}
+		return toReturn;
+	}
+
+
+	// Our own version of GetMessageA
+	BOOL WINAPI detourGetMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax)
+	{
+		// first call the original function
+		if (!hookedGetMessageA(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax))
+		{
+			return FALSE;
+		}
+		processMessage(lpMsg, true);
+		return TRUE;
+	}
+
+
+	// Our own version of GetMessageW
+	BOOL WINAPI detourGetMessageW(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax)
+	{
+		// first call the original function
+		if (!hookedGetMessageW(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax))
+		{
+			return FALSE;
+		}
+		processMessage(lpMsg, true);
+		return TRUE;
+	}
+
+
+	// Our own version of PeekMessageA
+	BOOL WINAPI detourPeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg)
+	{
+		// first call the original function
+		if (!hookedPeekMessageA(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg))
+		{
+			return FALSE;
+		}
+		processMessage(lpMsg, wRemoveMsg & PM_REMOVE);
+		return TRUE;
+	}
+
+	// Our own version of PeekMessageW
+	BOOL WINAPI detourPeekMessageW(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg)
+	{
+		// first call the original function
+		if (!hookedPeekMessageW(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg))
+		{
+			return FALSE;
+		}
+		processMessage(lpMsg, wRemoveMsg & PM_REMOVE);
+		return TRUE;
+	}
+
+
+	void processMessage(LPMSG lpMsg, bool removeIfRequired)
+	{
+		if (lpMsg->hwnd != nullptr && removeIfRequired && Input::handleMessage(lpMsg))
+		{
+			// message was handled by our code. This means it's a message we want to block if input blocking is enabled. 
+			if (Globals::instance().inputBlocked())
+			{
+				lpMsg->message = WM_NULL;	// reset to WM_NULL so the host will receive a dummy message instead.
+			}
 		}
 	}
-	return toReturn;
-}
 
 
-// Our own version of GetMessageA
-BOOL WINAPI DetourGetMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax)
-{
-	// first call the original function
-	if (!hookedGetMessageA(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax))
+	// Sets the input hooks for the various input related functions we defined own wrapper functions for. After a successful hook setup
+	// they're enabled. 
+	void setInputHooks()
 	{
-		return FALSE;
-	}
-	ProcessMessage(lpMsg, true);
-	return TRUE;
-}
-
-
-// Our own version of GetMessageW
-BOOL WINAPI DetourGetMessageW(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax)
-{
-	// first call the original function
-	if (!hookedGetMessageW(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax))
-	{
-		return FALSE;
-	}
-	ProcessMessage(lpMsg, true);
-	return TRUE;
-}
-
-
-// Our own version of PeekMessageA
-BOOL WINAPI DetourPeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg)
-{
-	// first call the original function
-	if (!hookedPeekMessageA(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg))
-	{
-		return FALSE;
-	}
-	ProcessMessage(lpMsg, wRemoveMsg & PM_REMOVE);
-	return TRUE;
-}
-
-// Our own version of PeekMessageW
-BOOL WINAPI DetourPeekMessageW(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg)
-{
-	// first call the original function
-	if (!hookedPeekMessageW(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg))
-	{
-		return FALSE;
-	}
-	ProcessMessage(lpMsg, wRemoveMsg & PM_REMOVE);
-	return TRUE;
-}
-
-
-void ProcessMessage(LPMSG lpMsg, bool removeIfRequired)
-{
-	if (lpMsg->hwnd != nullptr && removeIfRequired && HandleMessage(lpMsg))
-	{
-		// message was handled by our code. This means it's a message we want to block if input blocking is enabled. 
-		if (g_inputBlocked)
+		MH_Initialize();
+		if (MH_CreateHookApiEx(L"xinput9_1_0", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
 		{
-			lpMsg->message = WM_NULL;	// reset to WM_NULL so the host will receive a dummy message instead.
+			Console::WriteError("Hooking XInput 9_1_0 failed!");
 		}
-	}
-}
-
-
-// Sets the input hooks for the various input related functions we defined own wrapper functions for. After a successful hook setup
-// they're enabled. 
-void SetInputHooks()
-{
-	MH_Initialize();
-	if (MH_CreateHookApiEx(L"xinput9_1_0", "XInputGetState", &DetourXInputGetState, &hookedXInputGetState) != MH_OK)
-	{
-		g_consoleWrapper->WriteError("Hooking XInput 9_1_0 failed!");
-	}
 #ifdef _DEBUG
-	g_consoleWrapper->WriteLine("Hook set to XInputSetState");
+		Console::WriteLine("Hook set to XInputSetState");
 #endif
 
-	if (MH_CreateHookApiEx(L"user32", "GetMessageA", &DetourGetMessageA, &hookedGetMessageA) != MH_OK)
-	{
-		g_consoleWrapper->WriteError("Hooking GetMessageA failed!");
-	}
+		if (MH_CreateHookApiEx(L"user32", "GetMessageA", &detourGetMessageA, &hookedGetMessageA) != MH_OK)
+		{
+			Console::WriteError("Hooking GetMessageA failed!");
+		}
 #ifdef _DEBUG
-	g_consoleWrapper->WriteLine("Hook set to GetMessageA");
+		Console::WriteLine("Hook set to GetMessageA");
 #endif
-	if (MH_CreateHookApiEx(L"user32", "GetMessageW", &DetourGetMessageW, &hookedGetMessageW) != MH_OK)
-	{
-		g_consoleWrapper->WriteError("Hooking GetMessageW failed!");
-	}
+		if (MH_CreateHookApiEx(L"user32", "GetMessageW", &detourGetMessageW, &hookedGetMessageW) != MH_OK)
+		{
+			Console::WriteError("Hooking GetMessageW failed!");
+		}
 #ifdef _DEBUG
-	g_consoleWrapper->WriteLine("Hook set to GetMessageW");
+		Console::WriteLine("Hook set to GetMessageW");
 #endif
-	if (MH_CreateHookApiEx(L"user32", "PeekMessageA", &DetourPeekMessageA, &hookedPeekMessageA) != MH_OK)
-	{
-		g_consoleWrapper->WriteError("Hooking PeekMessageA failed!");
-	}
+		if (MH_CreateHookApiEx(L"user32", "PeekMessageA", &detourPeekMessageA, &hookedPeekMessageA) != MH_OK)
+		{
+			Console::WriteError("Hooking PeekMessageA failed!");
+		}
 #ifdef _DEBUG
-	g_consoleWrapper->WriteLine("Hook set to PeekMessageA");
+		Console::WriteLine("Hook set to PeekMessageA");
 #endif
-	if (MH_CreateHookApiEx(L"user32", "PeekMessageW", &DetourPeekMessageW, &hookedPeekMessageW) != MH_OK)
-	{
-		g_consoleWrapper->WriteError("Hooking PeekMessageW failed!");
-	}
+		if (MH_CreateHookApiEx(L"user32", "PeekMessageW", &detourPeekMessageW, &hookedPeekMessageW) != MH_OK)
+		{
+			Console::WriteError("Hooking PeekMessageW failed!");
+		}
 #ifdef _DEBUG
-	g_consoleWrapper->WriteLine("Hook set to PeekMessageW");
+		Console::WriteLine("Hook set to PeekMessageW");
 #endif
 
-	// Enable all hooks
-	if (MH_EnableHook(MH_ALL_HOOKS) == MH_OK)
-	{
+		// Enable all hooks
+		if (MH_EnableHook(MH_ALL_HOOKS) == MH_OK)
+		{
 #ifdef _DEBUG
-		g_consoleWrapper->WriteLine("All hooks enabled");
+			Console::WriteLine("All hooks enabled");
 #endif
-	}
-	else
-	{
-		g_consoleWrapper->WriteError("Enabling hooks failed");
+		}
+		else
+		{
+			Console::WriteError("Enabling hooks failed");
+		}
 	}
 }

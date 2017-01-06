@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2016, Frans Bouma
+// Copyright(c) 2017, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -27,7 +27,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-void DisableFoVWrite(LPBYTE hostImageAddress);
-void SetCameraStructInterceptorHook(LPBYTE hostImageAddress);
-void SetCameraWriteInterceptorHooks(LPBYTE hostImageAddress);
-void SetTimestopInterceptorHook(LPBYTE hostImageAddress);
+namespace IGCS::GameSpecific::InterceptorHelper
+{
+	void disableFoVWrite(LPBYTE hostImageAddress);
+	void setCameraStructInterceptorHook(LPBYTE hostImageAddress);
+	void setCameraWriteInterceptorHooks(LPBYTE hostImageAddress);
+	void setTimestopInterceptorHook(LPBYTE hostImageAddress);
+}

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2016, Frans Bouma
+// Copyright(c) 2017, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -30,14 +30,10 @@
 
 using namespace std;
 
-#define CONSOLE_WHITE	15
-#define CONSOLE_NORMAL  7
-
-class Console
+namespace IGCS::Console
 {
-public:
-	Console();
-	~Console();
+	#define CONSOLE_WHITE	15
+	#define CONSOLE_NORMAL  7
 
 	void Init();
 	void Release();
@@ -46,7 +42,5 @@ public:
 	void WriteLine(const string& toWrite, int color);
 	void WriteError(const string& error);
 	void SetColor(int color);
-
-private:
-};
+}
 

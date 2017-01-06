@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2016, Frans Bouma
+// Copyright(c) 2017, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -27,42 +27,54 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-// Mandatory constants to define for a game
-#define GAME_NAME									"Hitman 2016 v1.8"
-#define CAMERA_VERSION								"1.0.5"
-#define CAMERA_CREDITS								"Otis_Inf, Jim2Point0, One3rd"
-#define GAME_WINDOW_TITLE							"HITMAN"
-#define INITIAL_PITCH_RADIANS						(-90.0f * XM_PI) / 180.f	// World has Z up and Y out of the screen, so rotate around X (pitch) -90 degrees.
-#define INITIAL_YAW_RADIANS							0.0f
-#define INITIAL_ROLL_RADIANS						0.0f
-#define CONTROLLER_Y_INVERT							true
-// End Mandatory constants
+namespace IGCS::GameSpecific
+{
+	// Mandatory constants to define for a game
+	#define GAME_NAME									"Hitman 2016 v1.8"
+	#define CAMERA_VERSION								"1.0.5"
+	#define CAMERA_CREDITS								"Otis_Inf, Jim2Point0, One3rd"
+	#define GAME_WINDOW_TITLE							"HITMAN"
+	#define INITIAL_PITCH_RADIANS						(-90.0f * XM_PI) / 180.f	// World has Z up and Y out of the screen, so rotate around X (pitch) -90 degrees.
+	#define INITIAL_YAW_RADIANS							0.0f
+	#define INITIAL_ROLL_RADIANS						0.0f
+	#define CONTROLLER_Y_INVERT							true
+	#define FASTER_MULTIPLIER							3.0f
+	#define SLOWER_MULTIPLIER							0.15f
+	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
+	#define DEFAULT_MOVEMENT_SPEED						0.03f
+	#define DEFAULT_ROTATION_SPEED						0.01f
+	#define DEFAULT_FOV_RADIANS							0.7f
+	#define DEFAULT_FOV_DEGREES							40.0f
+	#define DEFAULT_FOV_SPEED							0.002f
+	#define DEFAULT_Z_MOVEMENT_MULTIPLIER				0.5f
+	// End Mandatory constants
 
-// Offsets for camera intercept code. Used in interceptor.
-#define CAMERA_ADDRESS_INTERCEPT_START_OFFSET		0x409CC8A	// v1.7: 0x41C5B9A
-#define CAMERA_ADDRESS_INTERCEPT_CONTINUE_OFFSET	0x409CC98	// v1.7: 0x41C5BA8
+	// Offsets for camera intercept code. Used in interceptor.
+	#define CAMERA_ADDRESS_INTERCEPT_START_OFFSET		0x409CC8A	// v1.7: 0x41C5B9A
+	#define CAMERA_ADDRESS_INTERCEPT_CONTINUE_OFFSET	0x409CC98	// v1.7: 0x41C5BA8
 
-#define	CAMERA_WRITE_INTERCEPT1_START_OFFSET		0x409CC7A	// v1.7: 0x41C5B8A
-#define CAMERA_WRITE_INTERCEPT1_CONTINUE_OFFSET		0x409CC8A	// v1.7: 0x41C5B9A
-#define	CAMERA_WRITE_INTERCEPT2_START_OFFSET		0x409CC98	// v1.7: 0x41C5BA8
-#define CAMERA_WRITE_INTERCEPT2_CONTINUE_OFFSET		0x409CCA8	// v1.7: 0x41C5BB8
-#define	CAMERA_WRITE_INTERCEPT3_START_OFFSET		0x409CCB7	// v1.7: 0x41C5BC7
-#define CAMERA_WRITE_INTERCEPT3_CONTINUE_OFFSET		0x409CCE5	// v1.7: 0x41C5BF5
-#define CAMERA_READ_INTERCEPT1_START_OFFSET			0x40A0020
-#define CAMERA_READ_INTERCEPT1_CONTINUE_OFFSET		0x40A002F
+	#define	CAMERA_WRITE_INTERCEPT1_START_OFFSET		0x409CC7A	// v1.7: 0x41C5B8A
+	#define CAMERA_WRITE_INTERCEPT1_CONTINUE_OFFSET		0x409CC8A	// v1.7: 0x41C5B9A
+	#define	CAMERA_WRITE_INTERCEPT2_START_OFFSET		0x409CC98	// v1.7: 0x41C5BA8
+	#define CAMERA_WRITE_INTERCEPT2_CONTINUE_OFFSET		0x409CCA8	// v1.7: 0x41C5BB8
+	#define	CAMERA_WRITE_INTERCEPT3_START_OFFSET		0x409CCB7	// v1.7: 0x41C5BC7
+	#define CAMERA_WRITE_INTERCEPT3_CONTINUE_OFFSET		0x409CCE5	// v1.7: 0x41C5BF5
+	#define CAMERA_READ_INTERCEPT1_START_OFFSET			0x40A0020
+	#define CAMERA_READ_INTERCEPT1_CONTINUE_OFFSET		0x40A002F
 
-#define GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET	0x409FAB4	
-#define GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET 0x409FAC4	
+	#define GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET	0x409FAB4	
+	#define GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET 0x409FAC4	
 
-#define FOV_WRITE_INTERCEPT1_START_OFFSET			0x43BBAE7	
-#define FOV_WRITE_INTERCEPT2_START_OFFSET			0x43BBB09	
+	#define FOV_WRITE_INTERCEPT1_START_OFFSET			0x43BBAE7	
+	#define FOV_WRITE_INTERCEPT2_START_OFFSET			0x43BBB09	
 
-// Indices in the structures read by interceptors 
-#define LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET		0x80		
-#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0x90		
-#define FOV_IN_CAMERA_STRUCT_OFFSET					0x17C		
-#define GAMESPEED_IN_STRUCT_OFFSET					0x48		
-#define MENU_TIMESTOP_OFFSET_IN_IMAGE				0x2662508	
+	// Indices in the structures read by interceptors 
+	#define LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET		0x80		
+	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0x90		
+	#define FOV_IN_CAMERA_STRUCT_OFFSET					0x17C		
+	#define GAMESPEED_IN_STRUCT_OFFSET					0x48		
+	#define MENU_TIMESTOP_OFFSET_IN_IMAGE				0x2662508	
 
-// specific option.
-#define IGCS_KEY_FREEZE_47							VK_END	
+	// specific option.
+	#define IGCS_KEY_FREEZE_47							VK_END	
+}

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2016, Frans Bouma
+// Copyright(c) 2017, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -30,11 +30,14 @@
 
 using namespace DirectX;
 
-void WriteNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoords);
-void WaitForCameraStructAddresses();
-void RestoreOriginalCameraValues();
-void CacheOriginalCameraValues();
-void ResetFoV();
-void ChangeFoV(float amount);
-XMFLOAT3 GetCurrentCameraCoords();
-void SetTimeStopValue(byte newValue);
+namespace IGCS::GameSpecific::CameraManipulator
+{
+	void writeNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoords);
+	void waitForCameraStructAddresses();
+	void restoreOriginalCameraValues();
+	void cacheOriginalCameraValues();
+	void resetFoV();
+	void changeFoV(float amount);
+	XMFLOAT3 getCurrentCameraCoords();
+	void setTimeStopValue(byte newValue);
+}

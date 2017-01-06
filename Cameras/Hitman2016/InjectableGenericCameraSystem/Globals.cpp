@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2016, Frans Bouma
+// Copyright(c) 2017, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -25,40 +25,33 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma once
 #include "stdafx.h"
+#include "Globals.h"
 
-using namespace DirectX;
+//--------------------------------------------------------------------------------------------------------------------------------
+// data shared with asm functions. This is allocated here, 'C' style and not in some datastructure as passing that to 
+// MASM is rather tedious. 
+extern "C" {
+	byte g_cameraEnabled = 0;
+	byte g_aimFrozen = 0;
+}
 
-class Camera
+
+namespace IGCS
 {
-public:
-	Camera();
-	~Camera(void);
+	Globals::Globals()
+	{
+	}
 
-	XMVECTOR CalculateLookQuaternion();
-	XMFLOAT3 CalculateNewCoords(const XMFLOAT3 currentCoords, const XMVECTOR lookQ);
 
-	void ResetMovement();
-	void ResetAngles();
-	void MoveForward(float amount);
-	void MoveRight(float amount);
-	void MoveUp(float amount);
-	void Yaw(float amount);
-	void Pitch(float amount);
-	void Roll(float amount);
-	void SetPitch(float angle);
-	void SetYaw(float angle);
-	void SetRoll(float angle);
+	Globals::~Globals()
+	{
+	}
 
-private:
-	XMFLOAT3 m_direction = XMFLOAT3(0.0f, 0.0f, 0.0f); // camera direction, defined by move methods. Reset by ResetMovement
-	float m_yaw;
-	float m_pitch;
-	float m_roll;
-	bool m_movementOccurred;
-	float m_movementSpeed;
-	float m_rotationSpeed;
 
-	float ClampAngle(float angle) const;
-};
+	Globals &Globals::instance()
+	{
+		static Globals theInstance;
+		return theInstance;
+	}
+}

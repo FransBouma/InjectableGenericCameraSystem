@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2016, Frans Bouma
+// Copyright(c) 2017, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -28,49 +28,43 @@
 #pragma once
 
 #include "stdafx.h"
-#include "input.h"
 #include "Gamepad.h"
 
-// System defaults
-#define FRAME_SLEEP				8		// in milliseconds
-#define FASTER_MULTIPLIER		3.0f
-#define SLOWER_MULTIPLIER		0.15f
-#define MOUSE_SPEED_CORRECTION	0.2f	// to correct for the mouse-deltas related to normal rotation.
-#define DEFAULT_MOVEMENT_SPEED	0.03f
-#define DEFAULT_ROTATION_SPEED	0.01f
-#define DEFAULT_FOV_RADIANS		0.7f
-#define DEFAULT_FOV_DEGREES		40.0f
-#define DEFAULT_FOV_SPEED		0.002f
+namespace IGCS
+{
+	// System defaults
+	#define FRAME_SLEEP				8		// in milliseconds
 
-// Keyboard camera control
-#define IGCS_KEY_CAMERA_ENABLE		VK_INSERT
-#define IGCS_KEY_CAMERA_LOCK		VK_HOME
-#define IGCS_KEY_ROTATE_RIGHT		VK_RIGHT		// pitch
-#define IGCS_KEY_ROTATE_LEFT		VK_LEFT
-#define IGCS_KEY_ROTATE_UP			VK_UP			// yaw
-#define IGCS_KEY_ROTATE_DOWN		VK_DOWN
-#define IGCS_KEY_MOVE_FORWARD		VK_NUMPAD8
-#define IGCS_KEY_MOVE_BACKWARD		VK_NUMPAD5
-#define IGCS_KEY_MOVE_LEFT			VK_NUMPAD4
-#define IGCS_KEY_MOVE_RIGHT			VK_NUMPAD6
-#define IGCS_KEY_MOVE_UP			VK_NUMPAD7
-#define IGCS_KEY_MOVE_DOWN			VK_NUMPAD9
-#define IGCS_KEY_TILT_LEFT			VK_NUMPAD1		// roll
-#define IGCS_KEY_TILT_RIGHT			VK_NUMPAD3
-#define IGCS_KEY_FOV_RESET			VK_MULTIPLY
-#define IGCS_KEY_FOV_INCREASE		VK_ADD
-#define IGCS_KEY_FOV_DECREASE		VK_SUBTRACT
-#define IGCS_KEY_HELP				0x48			// H
-#define IGCS_KEY_TIMESTOP			VK_NUMPAD0
-#define IGCS_KEY_INVERT_Y_LOOK		VK_DIVIDE
-#define IGCS_KEY_BLOCK_INPUT		VK_DECIMAL
+	// Keyboard camera control
+	#define IGCS_KEY_CAMERA_ENABLE		VK_INSERT
+	#define IGCS_KEY_CAMERA_LOCK		VK_HOME
+	#define IGCS_KEY_ROTATE_RIGHT		VK_RIGHT		// pitch
+	#define IGCS_KEY_ROTATE_LEFT		VK_LEFT
+	#define IGCS_KEY_ROTATE_UP			VK_UP			// yaw
+	#define IGCS_KEY_ROTATE_DOWN		VK_DOWN
+	#define IGCS_KEY_MOVE_FORWARD		VK_NUMPAD8
+	#define IGCS_KEY_MOVE_BACKWARD		VK_NUMPAD5
+	#define IGCS_KEY_MOVE_LEFT			VK_NUMPAD4
+	#define IGCS_KEY_MOVE_RIGHT			VK_NUMPAD6
+	#define IGCS_KEY_MOVE_UP			VK_NUMPAD7
+	#define IGCS_KEY_MOVE_DOWN			VK_NUMPAD9
+	#define IGCS_KEY_TILT_LEFT			VK_NUMPAD1		// roll
+	#define IGCS_KEY_TILT_RIGHT			VK_NUMPAD3
+	#define IGCS_KEY_FOV_RESET			VK_MULTIPLY
+	#define IGCS_KEY_FOV_INCREASE		VK_ADD
+	#define IGCS_KEY_FOV_DECREASE		VK_SUBTRACT
+	#define IGCS_KEY_HELP				0x48			// H
+	#define IGCS_KEY_TIMESTOP			VK_NUMPAD0
+	#define IGCS_KEY_INVERT_Y_LOOK		VK_DIVIDE
+	#define IGCS_KEY_BLOCK_INPUT		VK_DECIMAL
 
-#define IGCS_BUTTON_FOV_DECREASE	Gamepad::button_t::UP
-#define IGCS_BUTTON_FOV_INCREASE	Gamepad::button_t::DOWN
-#define IGCS_BUTTON_RESET_FOV		Gamepad::button_t::B
-#define IGCS_BUTTON_TILT_LEFT		Gamepad::button_t::LEFT
-#define IGCS_BUTTON_TILT_RIGHT		Gamepad::button_t::RIGHT
-#define IGCS_BUTTON_FASTER			Gamepad::button_t::A
-#define IGCS_BUTTON_SLOWER			Gamepad::button_t::X
+	#define IGCS_BUTTON_FOV_DECREASE	Gamepad::button_t::UP
+	#define IGCS_BUTTON_FOV_INCREASE	Gamepad::button_t::DOWN
+	#define IGCS_BUTTON_RESET_FOV		Gamepad::button_t::B
+	#define IGCS_BUTTON_TILT_LEFT		Gamepad::button_t::LEFT
+	#define IGCS_BUTTON_TILT_RIGHT		Gamepad::button_t::RIGHT
+	#define IGCS_BUTTON_FASTER			Gamepad::button_t::A
+	#define IGCS_BUTTON_SLOWER			Gamepad::button_t::X
 
-static const byte jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]
+	static const byte jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]
+}

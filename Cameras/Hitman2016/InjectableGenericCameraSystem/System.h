@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2016, Frans Bouma
+// Copyright(c) 2017, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -26,8 +26,42 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "stdafx.h"
+#include "Camera.h"
+#include "Gamepad.h"
 
-void DisableFoVWrite(LPBYTE hostImageAddress);
-void SetCameraStructInterceptorHook(LPBYTE hostImageAddress);
-void SetCameraWriteInterceptorHooks(LPBYTE hostImageAddress);
-void SetTimestopInterceptorHook(LPBYTE hostImageAddress);
+namespace IGCS
+{
+	class System
+	{
+	public:
+		System();
+		~System();
+
+		void start(HMODULE hostBaseAddress);
+
+	private:
+		void mainLoop();
+		void initialize();
+		void updateFrame();
+		void handleUserInput();
+		void writeNewCameraValuesToCameraStructs();
+		void displayHelp();
+		void displayCameraState();
+		void toggleTimestopState();
+		void toggleYLookDirectionState();
+		void toggleCameraMovementLockState(bool newValue);
+		void toggleInputBlockState(bool newValue);
+		void toggleFreeze47AimState(byte newValue);
+		void handleKeyboardCameraMovement(float multiplier);
+		void handleMouseCameraMovement(float multiplier);
+		void handleGamePadMouseMovement(float multiplierBase);
+
+		Camera _camera;
+		LPBYTE _hostImageAddress;
+		bool _cameraMovementLocked = false;
+		bool _cameraStructFound = false;
+		bool _timeStopped = false;
+	};
+}
+

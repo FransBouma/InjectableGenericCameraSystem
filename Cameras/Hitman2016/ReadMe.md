@@ -5,3 +5,6 @@ Current supported game version: v1.8
 Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/Hitman2016_v105  
 Feedback / Guide: http://www.deadendthrills.com/forum/discussion/512/guide-hitman-2016  
 Credits: Otis_Inf / Jim2Point0 / One3rd  
+
+### Acknowledgements
+This camera uses [MinHook](https://github.com/TsudaKageyu/minhook) by Tsuda Kageyu.

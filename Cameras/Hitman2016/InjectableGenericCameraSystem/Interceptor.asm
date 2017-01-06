@@ -1,6 +1,6 @@
 ;////////////////////////////////////////////////////////////////////////////////////////////////////////
 ;// Part of Injectable Generic Camera System
-;// Copyright(c) 2016, Frans Bouma
+;// Copyright(c) 2017, Frans Bouma
 ;// All rights reserved.
 ;// https://github.com/FransBouma/InjectableGenericCameraSystem
 ;//
@@ -40,10 +40,10 @@ PUBLIC gamespeedAddressInterceptor
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
-; Externs defined in Core.cpp, which are used and set by the system. Read / write these
+; Externs which are used and set by the system. Read / write these
 ; values in asm to communicate with the system
-EXTERN _cameraStructAddress: qword
-EXTERN _gamespeedStructAddress: qword
+EXTERN g_cameraStructAddress: qword
+EXTERN g_gamespeedStructAddress: qword
 EXTERN g_cameraEnabled: byte
 EXTERN g_aimFrozen: byte
 ;---------------------------------------------------------------
@@ -73,7 +73,7 @@ cameraAddressInterceptor PROC
 	; Game jmps to this location due to the hook set in C function SetCameraStructInterceptorHook
 	cmp byte ptr [rbx+038h], 0 							; check if this is the camera in rbx. For this game: Check with a 0-check. Could also check +20 or +24 for 0 if the above fails
 	jne originalCode
-	mov [_cameraStructAddress], rbx						; intercept address of camera struct
+	mov [g_cameraStructAddress], rbx						; intercept address of camera struct
 	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
@@ -84,7 +84,7 @@ exit:
 cameraAddressInterceptor ENDP
 
 gamespeedAddressInterceptor PROC
-	mov [_gamespeedStructAddress], rbx
+	mov [g_gamespeedStructAddress], rbx
 	mov [rbx+028h],rax
 	mov rcx,[rbx+018h]
 	mov [rbx+020h],rcx
@@ -101,7 +101,7 @@ gamespeedAddressInterceptor ENDP
 cameraWriteInterceptor1 PROC
 	; Game jmps to this location due to the hook set in C function SetMatrixWriteInterceptorHooks. 
 	; first check if this is really a call for the camera. Other logic will use this code too. Check rbx with our known cameraStruct address to be sure
-	cmp qword ptr rbx, [_cameraStructAddress]
+	cmp qword ptr rbx, [g_cameraStructAddress]
 	jne originalCode
 	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
@@ -116,7 +116,7 @@ cameraWriteInterceptor1 ENDP
 cameraWriteInterceptor2 PROC
 	; Game jmps to this location due to the hook set in C function SetMatrixWriteInterceptorHooks. 
 	; first check if this is really a call for the camera. Other logic will use this code too. Check rbx with our known cameraStruct address to be sure
-	cmp qword ptr rbx, [_cameraStructAddress]
+	cmp qword ptr rbx, [g_cameraStructAddress]
 	jne originalCode
 	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
@@ -130,7 +130,7 @@ cameraWriteInterceptor2 ENDP
 cameraWriteInterceptor3 PROC
 	; Game jmps to this location due to the hook set in C function SetMatrixWriteInterceptorHooks. 
 	; first check if this is really a call for the camera. Other logic will use this code too. Check rbx with our known cameraStruct address to be sure
-	cmp qword ptr rbx, [_cameraStructAddress]
+	cmp qword ptr rbx, [g_cameraStructAddress]
 	jne originalCode
 	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes

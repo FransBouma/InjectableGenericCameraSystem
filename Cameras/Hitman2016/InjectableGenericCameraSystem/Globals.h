@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2016, Frans Bouma
+// Copyright(c) 2017, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -27,26 +27,31 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "stdafx.h"
+#include "Console.h"
+#include "Gamepad.h"
 
-using namespace std;
+extern "C" byte g_cameraEnabled;
+extern "C" byte g_aimFrozen;
 
-#define CONSOLE_WHITE	15
-#define CONSOLE_NORMAL  7
-
-class Console
+namespace IGCS
 {
-public:
-	Console();
-	~Console();
+	class Globals
+	{
+	public:
+		Globals();
+		~Globals();
 
-	void Init();
-	void Release();
-	void WriteHeader();
-	void WriteLine(const string& toWrite);
-	void WriteLine(const string& toWrite, int color);
-	void WriteError(const string& error);
-	void SetColor(int color);
+		static Globals& instance();
 
-private:
-};
+		bool inputBlocked() const { return _inputBlocked; }
+		void inputBlocked(bool value) { _inputBlocked = value; }
+		bool systemActive() const { return _systemActive; }
+		void systemActive(bool value) { _systemActive = value; }
+		Gamepad& gamePad() { return _gamePad; }
 
+	private:
+		bool _inputBlocked = false;
+		bool _systemActive = false;
+		Gamepad _gamePad;
+	};
+}

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2016, Frans Bouma
+// Copyright(c) 2017, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -27,157 +27,161 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "input.h"
+#include "Utils.h"
+#include "Console.h"
+#include "Globals.h"
 
-//--------------------------------------------------------------------------------------------------------------------------------
-// Externs
-extern Console* g_consoleWrapper;
-
-// I know, multi-threaded programming, but these two values are scalars, and read/write of multiple threads (which is the case) doesn't really 
-// matter: wrapping this in mutexes is overkill: x86 processors can write up to 7 bytes in an atomic instruction, more than enough for a long, 
-// and the values are used in a system which is updated rapidly, so if a write overlaps a read, the next frame will correct that. The 'volatile'
-// keyword should be enough to mark them for the optimizer not to mess with them. 
-volatile static long _deltaMouseX = 0;
-volatile static long _deltaMouseY = 0;
-
-
-bool KeyDown(int virtualKeyCode)
+namespace IGCS::Input
 {
-	return (GetKeyState(virtualKeyCode) & 0x8000);
-}
+	using namespace std;
+
+	// I know, multi-threaded programming, but these two values are scalars, and read/write of multiple threads (which is the case) doesn't really 
+	// matter: wrapping this in mutexes is overkill: x86 processors can write up to 7 bytes in an atomic instruction, more than enough for a long, 
+	// and the values are used in a system which is updated rapidly, so if a write overlaps a read, the next frame will correct that. The 'volatile'
+	// keyword should be enough to mark them for the optimizer not to mess with them. 
+	volatile static long _deltaMouseX = 0;
+	volatile static long _deltaMouseY = 0;
 
 
-void ResetMouseDeltas()
-{
-	_deltaMouseX = 0;
-	_deltaMouseY = 0;
-}
-
-
-void ProcessRawMouseData(const RAWMOUSE *rmouse)
-{
-	if (MOUSE_MOVE_RELATIVE == rmouse->usFlags)
+	bool keyDown(int virtualKeyCode)
 	{
-		_deltaMouseX = rmouse->lLastX;
-		_deltaMouseY = rmouse->lLastY;
+		return (GetKeyState(virtualKeyCode) & 0x8000);
 	}
-}
 
 
-long GetMouseDeltaX()
-{
-	return _deltaMouseX;
-}
-
-
-long GetMouseDeltaY()
-{
-	return _deltaMouseY;
-}
-
-
-void RegisterRawInput()
-{
-	// get the main window of the host.
-	RAWINPUTDEVICE rid[1];
-	rid[0].usUsagePage = 0x01;
-	rid[0].usUsage = 0x02;
-	rid[0].dwFlags = 0;
-	rid[0].hwndTarget = FindMainWindow(GetCurrentProcessId());
-
-	if (RegisterRawInputDevices(rid, 1, sizeof(rid[0])) == FALSE)
+	void resetMouseDeltas()
 	{
-		g_consoleWrapper->WriteError("Couldn't register raw input. Error code: " + to_string(GetLastError()));
+		_deltaMouseX = 0;
+		_deltaMouseY = 0;
 	}
-	else
+
+
+	void processRawMouseData(const RAWMOUSE *rmouse)
 	{
+		if (MOUSE_MOVE_RELATIVE == rmouse->usFlags)
+		{
+			_deltaMouseX = rmouse->lLastX;
+			_deltaMouseY = rmouse->lLastY;
+		}
+	}
+
+
+	long getMouseDeltaX()
+	{
+		return _deltaMouseX;
+	}
+
+
+	long getMouseDeltaY()
+	{
+		return _deltaMouseY;
+	}
+
+
+	void registerRawInput()
+	{
+		// get the main window of the host.
+		RAWINPUTDEVICE rid[1];
+		rid[0].usUsagePage = 0x01;
+		rid[0].usUsage = 0x02;
+		rid[0].dwFlags = 0;
+		rid[0].hwndTarget = Utils::findMainWindow(GetCurrentProcessId());
+
+		if (RegisterRawInputDevices(rid, 1, sizeof(rid[0])) == FALSE)
+		{
+			Console::WriteError("Couldn't register raw input. Error code: " + to_string(GetLastError()));
+		}
+		else
+		{
 #ifdef _DEBUG
-		g_consoleWrapper->WriteLine("Raw input registered");
+			Console::WriteLine("Raw input registered");
 #endif
+		}
 	}
-}
 
 
-// returns true if the message was handled by this method, otherwise false.
-bool HandleMessage(LPMSG lpMsg)
-{
-	// only handle the message if the camera is enabled, otherwise ignore it as the camera isn't controllable 
-	if (lpMsg == nullptr || lpMsg->hwnd == nullptr || !IsCameraEnabled())
+	// returns true if the message was handled by this method, otherwise false.
+	bool handleMessage(LPMSG lpMsg)
 	{
-		return false;
-	}
-	bool toReturn = false;
-	switch (lpMsg->message)
-	{
-	case WM_INPUT:
-	{
-		// handle mouse
-		RAWINPUT *pRI = NULL;
-
-		// Determine how big the buffer should be
-		UINT iBuffer;
-		GetRawInputData((HRAWINPUT)lpMsg->lParam, RID_INPUT, NULL, &iBuffer, sizeof(RAWINPUTHEADER));
-		// Allocate a buffer with enough size to hold the raw input data
-		LPBYTE lpb = new BYTE[iBuffer];
-		if (lpb == NULL)
+		// only handle the message if the camera is enabled, otherwise ignore it as the camera isn't controllable 
+		if (lpMsg == nullptr || lpMsg->hwnd == nullptr || !g_cameraEnabled)
 		{
 			return false;
 		}
-		// Get the raw input data
-		UINT readSize = GetRawInputData((HRAWINPUT)lpMsg->lParam, RID_INPUT, lpb, &iBuffer, sizeof(RAWINPUTHEADER));
-		if (readSize == iBuffer)
+		bool toReturn = false;
+		switch (lpMsg->message)
 		{
-			pRI = (RAWINPUT*)lpb;
-			// Process the Mouse Messages
-			if (pRI->header.dwType == RIM_TYPEMOUSE)
+		case WM_INPUT:
+		{
+			// handle mouse
+			RAWINPUT *pRI = NULL;
+
+			// Determine how big the buffer should be
+			UINT iBuffer;
+			GetRawInputData((HRAWINPUT)lpMsg->lParam, RID_INPUT, NULL, &iBuffer, sizeof(RAWINPUTHEADER));
+			// Allocate a buffer with enough size to hold the raw input data
+			LPBYTE lpb = new BYTE[iBuffer];
+			if (lpb == NULL)
 			{
-				ProcessRawMouseData(&pRI->data.mouse);
+				return false;
 			}
+			// Get the raw input data
+			UINT readSize = GetRawInputData((HRAWINPUT)lpMsg->lParam, RID_INPUT, lpb, &iBuffer, sizeof(RAWINPUTHEADER));
+			if (readSize == iBuffer)
+			{
+				pRI = (RAWINPUT*)lpb;
+				// Process the Mouse Messages
+				if (pRI->header.dwType == RIM_TYPEMOUSE)
+				{
+					processRawMouseData(&pRI->data.mouse);
+				}
+			}
+			delete lpb;
+			toReturn = true;
 		}
-		delete lpb;
-		toReturn = true;
-	}
-	break;
-	// simply return true for all messages related to mouse / keyboard so they won't reach the message pump of the main window. 
-	case WM_KEYDOWN:
-	case WM_KEYUP:
-	case WM_CAPTURECHANGED:
-	case WM_LBUTTONDBLCLK:
-	case WM_LBUTTONDOWN:
-	case WM_MBUTTONDBLCLK:
-	case WM_MBUTTONDOWN:
-	case WM_MBUTTONUP:
-	case WM_MOUSEACTIVATE:
-	case WM_MOUSEHOVER:
-	case WM_MOUSEHWHEEL:
-	case WM_MOUSEMOVE:
-	case WM_MOUSELEAVE:
-	case WM_MOUSEWHEEL:
-	case WM_NCHITTEST:
-	case WM_NCLBUTTONDBLCLK:
-	case WM_NCLBUTTONDOWN:
-	case WM_NCLBUTTONUP:
-	case WM_NCMBUTTONDBLCLK:
-	case WM_NCMBUTTONDOWN:
-	case WM_NCMBUTTONUP:
-	case WM_NCMOUSEHOVER:
-	case WM_NCMOUSELEAVE:
-	case WM_NCMOUSEMOVE:
-	case WM_NCRBUTTONDBLCLK:
-	case WM_NCRBUTTONDOWN:
-	case WM_NCRBUTTONUP:
-	case WM_NCXBUTTONDBLCLK:
-	case WM_NCXBUTTONDOWN:
-	case WM_NCXBUTTONUP:
-	case WM_RBUTTONDBLCLK:
-	case WM_RBUTTONDOWN:
-	case WM_RBUTTONUP:
-	case WM_XBUTTONDBLCLK:
-	case WM_XBUTTONDOWN:
-	case WM_XBUTTONUP:
-	case WM_LBUTTONUP:
-		// say we handled it, so the host won't see it
-		toReturn = true;
 		break;
+		// simply return true for all messages related to mouse / keyboard so they won't reach the message pump of the main window. 
+		case WM_KEYDOWN:
+		case WM_KEYUP:
+		case WM_CAPTURECHANGED:
+		case WM_LBUTTONDBLCLK:
+		case WM_LBUTTONDOWN:
+		case WM_MBUTTONDBLCLK:
+		case WM_MBUTTONDOWN:
+		case WM_MBUTTONUP:
+		case WM_MOUSEACTIVATE:
+		case WM_MOUSEHOVER:
+		case WM_MOUSEHWHEEL:
+		case WM_MOUSEMOVE:
+		case WM_MOUSELEAVE:
+		case WM_MOUSEWHEEL:
+		case WM_NCHITTEST:
+		case WM_NCLBUTTONDBLCLK:
+		case WM_NCLBUTTONDOWN:
+		case WM_NCLBUTTONUP:
+		case WM_NCMBUTTONDBLCLK:
+		case WM_NCMBUTTONDOWN:
+		case WM_NCMBUTTONUP:
+		case WM_NCMOUSEHOVER:
+		case WM_NCMOUSELEAVE:
+		case WM_NCMOUSEMOVE:
+		case WM_NCRBUTTONDBLCLK:
+		case WM_NCRBUTTONDOWN:
+		case WM_NCRBUTTONUP:
+		case WM_NCXBUTTONDBLCLK:
+		case WM_NCXBUTTONDOWN:
+		case WM_NCXBUTTONUP:
+		case WM_RBUTTONDBLCLK:
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
+		case WM_XBUTTONDBLCLK:
+		case WM_XBUTTONDOWN:
+		case WM_XBUTTONUP:
+		case WM_LBUTTONUP:
+			// say we handled it, so the host won't see it
+			toReturn = true;
+			break;
+		}
+		return toReturn;
 	}
-	return toReturn;
 }

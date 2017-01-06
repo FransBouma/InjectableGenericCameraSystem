@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2016, Frans Bouma
+// Copyright(c) 2017, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -27,73 +27,73 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "Utils.h"
+#include "GameConstants.h"
 
-// Sets a jmp qword ptr [address] statement at hostImageAddress + startOffset.
-void SetHook(LPBYTE hostImageAddress, DWORD startOffset, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction)
-{
-	LPBYTE startOfHookAddress = hostImageAddress + startOffset;
-	*interceptionContinue = hostImageAddress + continueOffset;
-	// now write bytes of jmp qword ptr [address], which is jmp qword ptr 0 offset.
-	memcpy(startOfHookAddress, jmpFarInstructionBytes, sizeof(jmpFarInstructionBytes));
-#ifdef _WIN64
-	// now write the address. Do this with a recast of the pointer to an __int64 pointer to avoid endianmess.
-	__int64* interceptorAddressDestination = (__int64*)(startOfHookAddress + 6);
-	interceptorAddressDestination[0] = (__int64)asmFunction;
-#else	// x86
-	// now write the address. Do this with a recast of the pointer to a DWORD pointer to avoid endianmess.
-	LPDWORD interceptorAddressDestination = (LPDWORD)(startOfHookAddress + 6);
-	interceptorAddressDestination[0] = (LPDWORD)asmFunction;
-#endif
-}
+using namespace std;
 
-// Writes NOP opcodes to a range of memory.
-void NopRange(LPBYTE startAddress, int length)
+namespace IGCS::Utils
 {
-	for (int i = 0; i < length; i++)
+	BOOL isMainWindow(HWND handle)
 	{
-		startAddress[i] = 0x90;
-	}
-}
-
-
-BOOL IsMainWindow(HWND handle)
-{
-	BOOL toReturn = GetWindow(handle, GW_OWNER) == (HWND)0 && IsWindowVisible(handle);
-	if (toReturn)
-	{
-		// check window title as there can be more top windows. 
-		int bufsize = GetWindowTextLength(handle) + 1;
-		LPWSTR title = new WCHAR[bufsize];
-		GetWindowText(handle, title, bufsize);
-		toReturn &= (_wcsicmp(title, TEXT(GAME_WINDOW_TITLE)) == 0);
+		BOOL toReturn = GetWindow(handle, GW_OWNER) == (HWND)0 && IsWindowVisible(handle);
+		if (toReturn)
+		{
+			// check window title as there can be more top windows. 
+			int bufsize = GetWindowTextLength(handle) + 1;
+			LPWSTR title = new WCHAR[bufsize];
+			GetWindowText(handle, title, bufsize);
+			toReturn &= (_wcsicmp(title, TEXT(GAME_WINDOW_TITLE)) == 0);
 #ifdef _DEBUG
-		wcout << "Window found with title: '" << title << "'" << endl;
+			wcout << "Window found with title: '" << title << "'" << endl;
 #endif
+		}
+		return toReturn;
 	}
-	return toReturn;
-}
 
 
-BOOL CALLBACK EnumWindowsCallback(HWND handle, LPARAM lParam)
-{
-	handle_data& data = *(handle_data*)lParam;
-	unsigned long process_id = 0;
-	GetWindowThreadProcessId(handle, &process_id);
-	if (data.process_id != process_id || !IsMainWindow(handle))
+	BOOL CALLBACK enumWindowsCallback(HWND handle, LPARAM lParam)
 	{
-		return TRUE;
+		handle_data& data = *(handle_data*)lParam;
+		unsigned long process_id = 0;
+		GetWindowThreadProcessId(handle, &process_id);
+		if (data.process_id != process_id || !isMainWindow(handle))
+		{
+			return TRUE;
+		}
+		data.best_handle = handle;
+		return FALSE;
 	}
-	data.best_handle = handle;
-	return FALSE;
+	
+
+	HMODULE getBaseAddressOfContainingProcess()
+	{
+		TCHAR processName[MAX_PATH] = TEXT("<unknown>");
+		HANDLE processHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
+		HMODULE toReturn = NULL;
+
+		if (NULL != processHandle)
+		{
+			DWORD cbNeeded;
+			if (EnumProcessModulesEx(processHandle, &toReturn, sizeof(toReturn), &cbNeeded, LIST_MODULES_32BIT | LIST_MODULES_64BIT))
+			{
+				GetModuleBaseName(processHandle, toReturn, processName, sizeof(processName) / sizeof(TCHAR));
+			}
+			else
+			{
+				toReturn = NULL;
+			}
+		}
+		CloseHandle(processHandle);
+		return toReturn;
+	}
+
+
+	HWND findMainWindow(unsigned long process_id)
+	{
+		handle_data data;
+		data.process_id = process_id;
+		data.best_handle = 0;
+		EnumWindows(enumWindowsCallback, (LPARAM)&data);
+		return data.best_handle;
+	}
 }
-
-
-HWND FindMainWindow(unsigned long process_id)
-{
-	handle_data data;
-	data.process_id = process_id;
-	data.best_handle = 0;
-	EnumWindows(EnumWindowsCallback, (LPARAM)&data);
-	return data.best_handle;
-}
-

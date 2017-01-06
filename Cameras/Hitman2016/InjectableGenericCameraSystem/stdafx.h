@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2016, Frans Bouma
+// Copyright(c) 2017, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -47,14 +47,5 @@
 #include <utility>
 #include <vector>
 #include "DirectXMath.h"
-
-#include "Utils.h"
-#include "Console.h"
-#include "Core.h"
-#include "InterceptorHelper.h"
-#include "Defaults.h"
-#include "CameraManipulator.h"
-#include "GameConstants.h"
-
 
 // TODO: reference additional headers your program requires here

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2016, Frans Bouma
+// Copyright(c) 2017, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -30,35 +30,40 @@
 
 using namespace DirectX;
 
-class Camera
+namespace IGCS
 {
-public:
-	Camera();
-	~Camera(void);
+	class Camera
+	{
+	public:
+		Camera();
+		~Camera(void);
 
-	XMVECTOR CalculateLookQuaternion();
-	XMFLOAT3 CalculateNewCoords(const XMFLOAT3 currentCoords, const XMVECTOR lookQ);
+		XMVECTOR calculateLookQuaternion();
+		XMFLOAT3 calculateNewCoords(const XMFLOAT3 currentCoords, const XMVECTOR lookQ);
+		void resetMovement();
+		void resetAngles();
+		void moveForward(float amount);
+		void moveRight(float amount);
+		void moveUp(float amount);
+		void yaw(float amount);
+		void pitch(float amount);
+		void roll(float amount);
+		void setPitch(float angle);
+		void setYaw(float angle);
+		void setRoll(float angle);
+		float lookDirectionInverter() { return _lookDirectionInverter; }
+		void toggleLookDirectionInverter() { _lookDirectionInverter = -_lookDirectionInverter; }
 
-	void ResetMovement();
-	void ResetAngles();
-	void MoveForward(float amount);
-	void MoveRight(float amount);
-	void MoveUp(float amount);
-	void Yaw(float amount);
-	void Pitch(float amount);
-	void Roll(float amount);
-	void SetPitch(float angle);
-	void SetYaw(float angle);
-	void SetRoll(float angle);
+	private:
+		float clampAngle(float angle) const;
 
-private:
-	XMFLOAT3 m_direction = XMFLOAT3(0.0f, 0.0f, 0.0f); // camera direction, defined by move methods. Reset by ResetMovement
-	float m_yaw;
-	float m_pitch;
-	float m_roll;
-	bool m_movementOccurred;
-	float m_movementSpeed;
-	float m_rotationSpeed;
-
-	float ClampAngle(float angle) const;
-};
+		XMFLOAT3 _direction;
+		float _yaw;
+		float _pitch;
+		float _roll;
+		bool _movementOccurred;
+		float _movementSpeed;
+		float _rotationSpeed;
+		float _lookDirectionInverter;
+	};
+}

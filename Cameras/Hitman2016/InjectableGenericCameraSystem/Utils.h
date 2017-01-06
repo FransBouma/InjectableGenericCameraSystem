@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2016, Frans Bouma
+// Copyright(c) 2017, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -28,11 +28,13 @@
 #pragma once
 #include "stdafx.h"
 
-struct handle_data {
-	unsigned long process_id;
-	HWND best_handle;
-};
+namespace IGCS::Utils
+{
+	struct handle_data {
+		unsigned long process_id;
+		HWND best_handle;
+	};
 
-void NopRange(LPBYTE startAddress, int length);
-void SetHook(LPBYTE hostImageAddress, DWORD startOffset, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction);
-HWND FindMainWindow(unsigned long process_id);
+	HWND findMainWindow(unsigned long process_id);
+	HMODULE getBaseAddressOfContainingProcess();
+}
