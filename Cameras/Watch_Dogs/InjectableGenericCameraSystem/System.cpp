@@ -406,10 +406,10 @@ namespace IGCS
 		Console::WriteLine("Numpad 0                              : Pause / Continue game");
 		Console::WriteLine("F1                                    : Decrease Game speed (during pause)");
 		Console::WriteLine("F2                                    : Increase Game speed (during pause)");
-		Console::WriteLine("F3                                    : Decrease Time-of-Day");
-		Console::WriteLine("F4                                    : Increase Time-of-Day");
-		Console::WriteLine("ALT+F3                                : Faster decrease Time-of-Day");
-		Console::WriteLine("ALT+F4                                : Faster increase Time-of-Day");
+		Console::WriteLine("[                                     : Decrease Time-of-Day");
+		Console::WriteLine("]                                     : Increase Time-of-Day");
+		Console::WriteLine("ALT+[                                 : Faster decrease Time-of-Day");
+		Console::WriteLine("ALT+]                                 : Faster increase Time-of-Day");
 		Console::WriteLine("Numpad /                              : Toggle Y look direction");
 		Console::WriteLine("Numpad .                              : Block keyboard/mouse input to game");
 		Console::WriteLine("ALT+H                                 : This help");
