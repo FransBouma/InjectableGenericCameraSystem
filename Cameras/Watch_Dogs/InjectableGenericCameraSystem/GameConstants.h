@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Watch_Dogs 1.06.329, Uplay"
-	#define CAMERA_VERSION								"1.0.0"
+	#define CAMERA_VERSION								"1.0.1"
 	#define CAMERA_CREDITS								"Otis_Inf, Jim2Point0"
 	#define GAME_WINDOW_TITLE							"Watch_Dogs"
 	#define INITIAL_PITCH_RADIANS						0.0f
@@ -67,8 +67,8 @@ namespace IGCS::GameSpecific
 
 	#define GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET	0x47FBB3	
 	#define GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET 0x47FBC6	
-	#define TOD_ADDRESS_INTERCEPT_START_OFFSET			0x685848	
-	#define TOD_ADDRESS_INTERCEPT_CONTINUE_OFFSET		0x685857	
+	#define TOD_ADDRESS_INTERCEPT_START_OFFSET			0x685844	
+	#define TOD_ADDRESS_INTERCEPT_CONTINUE_OFFSET		0x685854	
 
 	#define FOV_WRITE_INTERCEPT1_START_OFFSET			0x862224	
 

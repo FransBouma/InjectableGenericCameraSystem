@@ -124,9 +124,9 @@ gamespeedAddressInterceptor ENDP
 
 todAddressInterceptor PROC
 	mov [g_todStructAddress], rsi
+	mulss xmm0,xmm1
 	subss xmm7,xmm0  
 	movss dword ptr [rsi+758h],xmm7  
-	mov rcx,rsi  
 	jmp qword ptr [_todAddressInterceptorContinue]
 todAddressInterceptor ENDP
 
