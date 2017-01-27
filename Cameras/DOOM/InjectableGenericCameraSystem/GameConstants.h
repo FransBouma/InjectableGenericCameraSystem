@@ -30,22 +30,21 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Watch_Dogs 1.06.329"
-	#define CAMERA_VERSION								"1.0.2b"
-	#define CAMERA_CREDITS								"Otis_Inf, Jim2Point0"
-	#define GAME_WINDOW_TITLE							"Watch_Dogs"
+	#define GAME_NAME									"DOOM x64, Steam"
+	#define CAMERA_VERSION								"1.0.0"
+	#define CAMERA_CREDITS								"Otis_Inf"
+	#define GAME_WINDOW_TITLE							"DOOMx64"
 	#define INITIAL_PITCH_RADIANS						0.0f
 	#define INITIAL_YAW_RADIANS							0.0f
-	#define INITIAL_ROLL_RADIANS						(-90.0f * XM_PI) / 180.f	// world coords are ... messed up in this game, so we have to correct for that!
+	#define INITIAL_ROLL_RADIANS						0.0f
 	#define CONTROLLER_Y_INVERT							true
 	#define FASTER_MULTIPLIER							3.0f
 	#define SLOWER_MULTIPLIER							0.15f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
-	#define DEFAULT_MOVEMENT_SPEED						0.03f
+	#define DEFAULT_MOVEMENT_SPEED						1.0f
 	#define DEFAULT_ROTATION_SPEED						0.01f
-	#define DEFAULT_FOV_RADIANS							1.31f
-	#define DEFAULT_FOV_DEGREES							40.0f
-	#define DEFAULT_FOV_SPEED							0.002f
+	#define DEFAULT_FOV_SPEED							0.5f
+	#define DEFAULT_FOV									90.0f
 	#define DEFAULT_Z_MOVEMENT_MULTIPLIER				0.5f
 	#define DEFAULT_GAME_SPEED							1.875f
 	#define DEFAULT_MIN_GAME_SPEED						0.1f
@@ -55,8 +54,10 @@ namespace IGCS::GameSpecific
 	// Offsets for camera intercept code. Used in interceptor.
 	// Game uses 2 camera objects with the same data, one is used for calculations and the contents is then copied to the other, and vice versa.
 	// So our camera has to update both at the same time as we never know which one is active. 
-	#define CAMERA_ADDRESS_INTERCEPT_START_OFFSET		0x17BCDA4
-	#define CAMERA_ADDRESS_INTERCEPT_CONTINUE_OFFSET	0x17BCDB4
+	#define CAMERA_ADDRESS_INTERCEPT_START_OFFSET		0x91F87E
+	#define CAMERA_ADDRESS_INTERCEPT_CONTINUE_OFFSET	0x91F8E6
+	#define FOV_ADDRESS_INTERCEPT_START_OFFSET			0xD1D11	// doesn't work
+	#define FOV_ADDRESS_INTERCEPT_CONTINUE_OFFSET		0xD1D20	
 
 	#define	CAMERA_WRITE_INTERCEPT1_START_OFFSET		0x85B9E0
 	#define CAMERA_WRITE_INTERCEPT1_CONTINUE_OFFSET		0x85B9F1
@@ -67,15 +68,11 @@ namespace IGCS::GameSpecific
 
 	#define GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET	0x47FBB3	
 	#define GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET 0x47FBC6	
-	#define TOD_ADDRESS_INTERCEPT_START_OFFSET			0x685844	
-	#define TOD_ADDRESS_INTERCEPT_CONTINUE_OFFSET		0x685854	
-
-	#define FOV_WRITE_INTERCEPT1_START_OFFSET			0x862224	
 
 	// Indices in the structures read by interceptors 
-	#define LOOK_DATA_IN_CAMERA_STRUCT_OFFSET			0x44		
-	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0x4		
-	#define FOV_IN_CAMERA_STRUCT_OFFSET					0x24		
+	#define LOOK_DATA_IN_CAMERA_STRUCT_OFFSET			0xCC		
+	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0xC0		
+	#define FOV_IN_STRUCT_OFFSET						0x10
+
 	#define GAMESPEED_IN_STRUCT_OFFSET					0x74
-	#define TOD_IN_STRUCT_OFFSET						0x758
 }
