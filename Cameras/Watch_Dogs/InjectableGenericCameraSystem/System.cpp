@@ -411,7 +411,7 @@ namespace IGCS
 		Console::WriteLine("ALT+[                                 : Faster decrease Time-of-Day");
 		Console::WriteLine("ALT+]                                 : Faster increase Time-of-Day");
 		Console::WriteLine("Numpad /                              : Toggle Y look direction");
-		Console::WriteLine("Numpad .                              : Block keyboard/mouse input to game");
+		Console::WriteLine("Numpad .                              : Block input to game");
 		Console::WriteLine("ALT+H                                 : This help");
 		Console::WriteLine("-----------------------------------------------------------------------------", CONSOLE_WHITE);
 		// wait for 350ms to avoid fast keyboard hammering

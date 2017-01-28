@@ -31,4 +31,5 @@ namespace IGCS::GameImageHooker
 {
 	void nopRange(LPBYTE startAddress, int length);
 	void setHook(LPBYTE hostImageAddress, DWORD startOffset, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction);
+	void writeBytesToProcessMemory(LPBYTE startAddress, int length, byte value);
 }

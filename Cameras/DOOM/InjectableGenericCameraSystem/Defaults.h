@@ -50,7 +50,7 @@ namespace IGCS
 	#define IGCS_KEY_MOVE_DOWN			VK_NUMPAD9
 	#define IGCS_KEY_TILT_LEFT			VK_NUMPAD1		// roll
 	#define IGCS_KEY_TILT_RIGHT			VK_NUMPAD3
-	#define IGCS_KEY_FOV_RESET			VK_END
+	#define IGCS_KEY_FOV_ENABLE			VK_END
 	#define IGCS_KEY_FOV_INCREASE		VK_PRIOR
 	#define IGCS_KEY_FOV_DECREASE		VK_NEXT
 	#define IGCS_KEY_HELP				0x48			// H
@@ -62,7 +62,7 @@ namespace IGCS
 
 	#define IGCS_BUTTON_FOV_DECREASE	Gamepad::button_t::UP
 	#define IGCS_BUTTON_FOV_INCREASE	Gamepad::button_t::DOWN
-	#define IGCS_BUTTON_FOV_RESET		Gamepad::button_t::B
+	#define IGCS_BUTTON_FOV_ENABLE		Gamepad::button_t::B
 	#define IGCS_BUTTON_TILT_LEFT		Gamepad::button_t::LEFT
 	#define IGCS_BUTTON_TILT_RIGHT		Gamepad::button_t::RIGHT
 	#define IGCS_BUTTON_FASTER			Gamepad::button_t::A

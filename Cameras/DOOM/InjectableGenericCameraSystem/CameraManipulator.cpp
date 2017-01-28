@@ -29,6 +29,7 @@
 #include "CameraManipulator.h"
 #include "GameConstants.h"
 #include "Console.h"
+#include "Globals.h"
 
 using namespace DirectX;
 using namespace std;
@@ -46,37 +47,12 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static bool _timeHasBeenStopped = false;
 
 	// newValue: 1 == time should be frozen, 0 == normal gameplay
-	void setTimeStopValue(byte newValue)
+	void setTimeStopValue(LPBYTE hostImageAddress, byte newValue)
 	{
 		// set flag so camera works during menu driven timestop
-		_timeHasBeenStopped = (newValue == 1);
-		float* gamespeedAddress = reinterpret_cast<float*>(g_gamespeedStructAddress + GAMESPEED_IN_STRUCT_OFFSET);
-		*gamespeedAddress = _timeHasBeenStopped ? 0.1f : DEFAULT_GAME_SPEED;
+		LPBYTE timestopAddress = hostImageAddress + TIMESTOP_IN_IMAGE_OFFSET;
+		*timestopAddress = newValue;
 	}
-
-
-	// decreases / increases the gamespeed till 0.1f or 10f. 
-	void modifyGameSpeed(bool decrease)
-	{
-		if (!_timeHasBeenStopped)
-		{
-			return;
-		}
-		float* gamespeedAddress = reinterpret_cast<float*>(g_gamespeedStructAddress + GAMESPEED_IN_STRUCT_OFFSET);
-		float newValue = *gamespeedAddress;
-		newValue += (decrease ? -0.1f : 0.1f);
-		if (newValue < DEFAULT_MIN_GAME_SPEED)
-		{
-			newValue = DEFAULT_MIN_GAME_SPEED;
-		}
-		if (newValue > DEFAULT_MAX_GAME_SPEED)
-		{
-			newValue = DEFAULT_MAX_GAME_SPEED;
-		}
-		*gamespeedAddress = newValue;
-		Console::WriteLine("Game speed is set to now: " + to_string(newValue));
-	}
-
 
 	XMFLOAT3 getCurrentCameraCoords()
 	{
@@ -133,18 +109,10 @@ namespace IGCS::GameSpecific::CameraManipulator
 	}
 
 
-	void resetFoV()
-	{
-		float* fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
-		*fovInMemory = DEFAULT_FOV;
-	}
-
-
 	// changes the FoV with the specified amount
 	void changeFoV(float amount)
 	{
-		float* fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
-		*fovInMemory += amount;
+		g_ownFoVValue += amount;
 	}
 
 

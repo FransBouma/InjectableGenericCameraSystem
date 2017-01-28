@@ -36,10 +36,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void waitForCameraStructAddresses();
 	void restoreOriginalCameraValues();
 	void cacheOriginalCameraValues();
-	void resetFoV();
 	void changeFoV(float amount);
 	XMFLOAT3 getCurrentCameraCoords();
-	void setTimeStopValue(byte newValue);
-	void modifyGameSpeed(bool decrease);
-	void modifyTimeOfDay(bool decrease, bool faster);
+	void setTimeStopValue(LPBYTE hostImageAddress, byte newValue);
 }

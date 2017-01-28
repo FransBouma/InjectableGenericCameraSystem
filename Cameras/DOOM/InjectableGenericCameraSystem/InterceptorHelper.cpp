@@ -40,7 +40,7 @@ extern "C" {
 	void cameraWriteInterceptor2();
 	void cameraWriteInterceptor3();
 	void gamespeedAddressInterceptor();
-	void fovAddressInterceptor();
+	void fovInterceptor();
 }
 
 // external addresses used in asm.
@@ -56,7 +56,9 @@ extern "C" {
 	// the continue address for the continuing execution after interception of the gamespeed block of code. 
 	LPBYTE _gamespeedInterceptionContinue = nullptr;
 	// the continue address for the continuing execution after interception of the FoV block of code
-	LPBYTE _fovAddressInterceptorContinue = nullptr;
+	LPBYTE _fovInterceptorContinue = nullptr;
+	// the base address of the host process. 
+	LPBYTE _hostBaseAddress = nullptr;
 }
 
 
@@ -68,17 +70,10 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	}
 
 
-	void setFoVStructInterceptorHook(LPBYTE hostImageAddress)
+	void setFoVInterceptorHook(LPBYTE hostImageAddress)
 	{
-		GameImageHooker::setHook(hostImageAddress, FOV_ADDRESS_INTERCEPT_START_OFFSET, FOV_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_fovAddressInterceptorContinue, &fovAddressInterceptor);
-	}
-
-
-	void setCameraWriteInterceptorHooks(LPBYTE hostImageAddress)
-	{
-		// for each block of code that writes to the camera values we're manipulating we need an interception to block it. For the example game there are 3. 
-		//GameImageHooker::setHook(hostImageAddress, CAMERA_WRITE_INTERCEPT1_START_OFFSET, CAMERA_WRITE_INTERCEPT1_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue1, &cameraWriteInterceptor1);
-		//GameImageHooker::setHook(hostImageAddress, CAMERA_WRITE_INTERCEPT2_START_OFFSET, CAMERA_WRITE_INTERCEPT2_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue2, &cameraWriteInterceptor2);
+		_hostBaseAddress = hostImageAddress;
+		GameImageHooker::setHook(hostImageAddress, FOV_INTERCEPT_START_OFFSET, FOV_INTERCEPT_CONTINUE_OFFSET, &_fovInterceptorContinue, &fovInterceptor);
 	}
 
 
@@ -88,10 +83,4 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		//GameImageHooker::setHook(hostImageAddress, TOD_ADDRESS_INTERCEPT_START_OFFSET, TOD_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_todAddressInterceptorContinue, &todAddressInterceptor);
 	}
 
-
-	// The FoV write is disabled with NOPs, as we reset the fov ourselves. We reset it to a default value when the FoV is disabled by the user 
-	void disableFoVWrite(LPBYTE hostImageAddress)
-	{
-		//GameImageHooker::nopRange(hostImageAddress + FOV_WRITE_INTERCEPT1_START_OFFSET, 5);
-	}
 }

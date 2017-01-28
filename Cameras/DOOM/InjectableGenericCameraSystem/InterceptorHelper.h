@@ -29,9 +29,7 @@
 
 namespace IGCS::GameSpecific::InterceptorHelper
 {
-	void disableFoVWrite(LPBYTE hostImageAddress);
 	void setCameraStructInterceptorHook(LPBYTE hostImageAddress);
-	void setFoVStructInterceptorHook(LPBYTE hostImageAddress);
-	void setCameraWriteInterceptorHooks(LPBYTE hostImageAddress);
+	void setFoVInterceptorHook(LPBYTE hostImageAddress);
 	void setTimestopInterceptorHook(LPBYTE hostImageAddress);
 }
