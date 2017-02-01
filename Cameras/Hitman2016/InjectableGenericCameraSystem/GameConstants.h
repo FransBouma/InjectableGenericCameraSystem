@@ -41,12 +41,15 @@ namespace IGCS::GameSpecific
 	#define FASTER_MULTIPLIER							3.0f
 	#define SLOWER_MULTIPLIER							0.15f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
+	#define DEFAULT_SUPERSAMPLING_SPEED					0.05f
 	#define DEFAULT_MOVEMENT_SPEED						0.03f
 	#define DEFAULT_ROTATION_SPEED						0.01f
 	#define DEFAULT_FOV_RADIANS							0.7f
 	#define DEFAULT_FOV_DEGREES							40.0f
 	#define DEFAULT_FOV_SPEED							0.002f
 	#define DEFAULT_Z_MOVEMENT_MULTIPLIER				0.5f
+	#define DEFAULT_MIN_GAME_SPEED						0.1f
+	#define DEFAULT_MAX_GAME_SPEED						10.0f
 	// End Mandatory constants
 
 	// Offsets for camera intercept code. Used in interceptor.
@@ -73,6 +76,7 @@ namespace IGCS::GameSpecific
 	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0x90		
 	#define FOV_IN_CAMERA_STRUCT_OFFSET					0x17C		
 	#define GAMESPEED_IN_STRUCT_OFFSET					0x48		
+	#define SUPERSAMPLING_OFFSET						0x30515B8	// offset of the supersampling variable, within hitman.exe
 
 	// specific option.
 	#define IGCS_KEY_FREEZE_47							VK_END	

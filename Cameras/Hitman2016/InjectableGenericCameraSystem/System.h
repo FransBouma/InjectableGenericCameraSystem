@@ -56,6 +56,7 @@ namespace IGCS
 		void handleKeyboardCameraMovement(float multiplier);
 		void handleMouseCameraMovement(float multiplier);
 		void handleGamePadMouseMovement(float multiplierBase);
+		void modifyGameSpeed(bool decrease);
 
 		Camera _camera;
 		LPBYTE _hostImageAddress;

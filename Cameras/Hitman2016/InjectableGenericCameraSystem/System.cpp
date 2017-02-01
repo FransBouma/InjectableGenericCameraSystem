@@ -142,6 +142,16 @@ namespace IGCS
 			toggleTimestopState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
+		if (Input::keyDown(IGCS_KEY_DECREASE_GAMESPEED))
+		{
+			modifyGameSpeed(true);
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
+		if (Input::keyDown(IGCS_KEY_INCREASE_GAMESPEED))
+		{
+			modifyGameSpeed(false);
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
 		if (Input::keyDown(IGCS_KEY_FOV_RESET))
 		{
 			CameraManipulator::resetFoV();
@@ -154,6 +164,17 @@ namespace IGCS
 		{
 			CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
 		}
+		if (Input::keyDown(IGCS_KEY_SUPERSAMPLING_DECREASE))
+		{
+			CameraManipulator::changeSupersampling(_hostImageAddress, -DEFAULT_SUPERSAMPLING_SPEED);
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
+		if (Input::keyDown(IGCS_KEY_SUPERSAMPLING_INCREASE))
+		{
+			CameraManipulator::changeSupersampling(_hostImageAddress, DEFAULT_SUPERSAMPLING_SPEED);
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
+
 		if (!g_cameraEnabled)
 		{
 			// camera is disabled. We simply disable all input to the camera movement, by returning now.
@@ -372,12 +393,20 @@ namespace IGCS
 		Console::WriteLine(_camera.lookDirectionInverter() < 0 ? "Y look direction is inverted" : "Y look direction is normal");
 	}
 
+	void System::modifyGameSpeed(bool decrease)
+	{
+		if (!_timeStopped)
+		{
+			return;
+		}
+		CameraManipulator::modifyGameSpeed(decrease);
+	}
 
 	void System::displayHelp()
 	{
 						  //0         1         2         3         4         5         6         7
 						  //01234567890123456789012345678901234567890123456789012345678901234567890123456789
-		Console::WriteLine("---[IGCS Help]---------------------------------------------------------------", CONSOLE_WHITE);
+		Console::WriteLine("---[IGCS Help]-----------------------------------------------------------------", CONSOLE_WHITE);
 		Console::WriteLine("INS                                   : Enable/Disable camera");
 		Console::WriteLine("HOME                                  : Lock/unlock camera movement");
 		Console::WriteLine("ALT+rotate/move                       : Faster rotate / move");
@@ -393,11 +422,15 @@ namespace IGCS
 		Console::WriteLine("Numpad +/Numpad - or d-pad up/down    : Increase / decrease FoV");
 		Console::WriteLine("Numpad * or controller B-button       : Reset FoV");
 		Console::WriteLine("Numpad 0                              : Pause / Continue game");
+		Console::WriteLine("F2                                    : Decrease Game speed (during pause)");
+		Console::WriteLine("F3                                    : Increase Game speed (during pause)");
+		Console::WriteLine("END                                   : (During game pause) Freeze 47's aim");
+		Console::WriteLine("[                                     : Decrease Supersampling value");
+		Console::WriteLine("]                                     : Increase Supersampling value (careful!)");
 		Console::WriteLine("Numpad /                              : Toggle Y look direction");
 		Console::WriteLine("Numpad .                              : Block input to game");
-		Console::WriteLine("END                                   : (During game pause) Freeze 47's aim");
 		Console::WriteLine("ALT+H                                 : This help");
-		Console::WriteLine("-----------------------------------------------------------------------------", CONSOLE_WHITE);
+		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
 		// wait for 350ms to avoid fast keyboard hammering
 		Sleep(350);
 	}

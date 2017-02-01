@@ -44,6 +44,40 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static float _originalCoordsData[3];
 	static bool _timeHasBeenStopped = false;
 
+	void changeSupersampling(LPBYTE hostImageAddress, float amount)
+	{
+		float* superSamplingValueAddress = reinterpret_cast<float*>(hostImageAddress + SUPERSAMPLING_OFFSET);
+		float newValue = (*superSamplingValueAddress) + amount;
+		if (newValue < 0.5f)
+		{
+			newValue = 0.5f;
+		}
+		*superSamplingValueAddress = newValue;
+		cout << "The supersampling value is now: " + to_string(newValue) << endl;
+	}
+	
+	// decreases / increases the gamespeed till 0.1f or 10f. 
+	void modifyGameSpeed(bool decrease)
+	{
+		if (!_timeHasBeenStopped)
+		{
+			return;
+		}
+		float* gamespeedAddress = reinterpret_cast<float*>(g_gamespeedStructAddress + GAMESPEED_IN_STRUCT_OFFSET);
+		float newValue = *gamespeedAddress;
+		newValue += (decrease ? -0.1f : 0.1f);
+		if (newValue < DEFAULT_MIN_GAME_SPEED)
+		{
+			newValue = DEFAULT_MIN_GAME_SPEED;
+		}
+		if (newValue > DEFAULT_MAX_GAME_SPEED)
+		{
+			newValue = DEFAULT_MAX_GAME_SPEED;
+		}
+		*gamespeedAddress = newValue;
+		Console::WriteLine("Game speed is set to now: " + to_string(newValue));
+	}
+
 	// newValue: 1 == time should be frozen, 0 == normal gameplay
 	void setTimeStopValue(byte newValue)
 	{
