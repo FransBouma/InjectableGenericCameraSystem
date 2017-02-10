@@ -159,6 +159,11 @@ namespace IGCS
 			modifyGameSpeed(false);
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
+		if (!g_cameraEnabled)
+		{
+			// camera is disabled. We simply disable all input to the camera movement, by returning now.
+			return;
+		}
 		if (Input::keyDown(IGCS_KEY_FOV_RESET))
 		{
 			CameraManipulator::resetFoV();
@@ -170,11 +175,6 @@ namespace IGCS
 		if (Input::keyDown(IGCS_KEY_FOV_INCREASE))
 		{
 			CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
-		}
-		if (!g_cameraEnabled)
-		{
-			// camera is disabled. We simply disable all input to the camera movement, by returning now.
-			return;
 		}
 		if (Input::keyDown(IGCS_KEY_BLOCK_INPUT))
 		{
@@ -325,7 +325,7 @@ namespace IGCS
 		_camera.setYaw(INITIAL_YAW_RADIANS);
 		// initialize the writes after the camera has been found and initialized, as they rely on the camera struct address.
 		GameSpecific::InterceptorHelper::setCameraWriteInterceptorHooks(_hostImageAddress);
-		GameSpecific::InterceptorHelper::disableFoVWrite(_hostImageAddress);
+		GameSpecific::InterceptorHelper::setFovWriteInterceptorHook(_hostImageAddress);
 	}
 	
 
@@ -401,8 +401,8 @@ namespace IGCS
 		Console::WriteLine("Numpad 4/Numpad 6 or l-stick          : Move camera left / right");
 		Console::WriteLine("Numpad 7/Numpad 9 or l/r-trigger      : Move camera up / down");
 		Console::WriteLine("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
-		Console::WriteLine("PageUp/PageDown or d-pad up/down      : Increase / decrease FoV");
-		Console::WriteLine("END or controller B-button            : Reset FoV");
+		Console::WriteLine("PageUp/PageDown or d-pad up/down      : Increase / decrease FoV (w/ freecam)");
+		Console::WriteLine("END or controller B-button            : Reset FoV (w/ freecam)");
 		Console::WriteLine("Numpad 0                              : Pause / Continue game");
 		Console::WriteLine("F1                                    : Decrease Game speed (during pause)");
 		Console::WriteLine("F2                                    : Increase Game speed (during pause)");

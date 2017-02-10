@@ -41,6 +41,7 @@ extern "C" {
 	void cameraWriteInterceptor3();
 	void gamespeedAddressInterceptor();
 	void todAddressInterceptor();
+	void fovWriteInterceptor1();
 }
 
 // external addresses used in asm.
@@ -57,6 +58,8 @@ extern "C" {
 	LPBYTE _gamespeedInterceptionContinue = nullptr;
 	// the continue address for the continuing execution after interception of the ToD block of code
 	LPBYTE _todAddressInterceptorContinue = nullptr;
+	// the continue addresss for the continuing execution after interception of the fov write block of code.
+	LPBYTE _fovWriteInterceptorContinue = nullptr;
 	// if set to 1, new camera struct addresses are initialized when new addresses arrive in the interceptor code: 
 	// this is needed as the camera address changes with each load and we need to grab 2 so we have to check if we have the right address.
 	// if set to 1, a new address is written as the first struct. If set to 0, a new address is written as the second struct.
@@ -87,9 +90,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	}
 
 
-	// The FoV write is disabled with NOPs, as we reset the fov ourselves. We reset it to a default value when the FoV is disabled by the user 
-	void disableFoVWrite(LPBYTE hostImageAddress)
+	void setFovWriteInterceptorHook(LPBYTE hostImageAddress)
 	{
-		GameImageHooker::nopRange(hostImageAddress + FOV_WRITE_INTERCEPT1_START_OFFSET, 5);
+		GameImageHooker::setHook(hostImageAddress, FOV_WRITE_INTERCEPT1_START_OFFSET, FOV_WRITE_INTERCEPT1_CONTINUE_OFFSET, &_fovWriteInterceptorContinue, &fovWriteInterceptor1);
 	}
 }

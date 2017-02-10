@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Watch_Dogs 1.06.329"
-	#define CAMERA_VERSION								"1.0.2b"
+	#define CAMERA_VERSION								"1.0.2"
 	#define CAMERA_CREDITS								"Otis_Inf, Jim2Point0"
 	#define GAME_WINDOW_TITLE							"Watch_Dogs"
 	#define INITIAL_PITCH_RADIANS						0.0f
@@ -70,7 +70,8 @@ namespace IGCS::GameSpecific
 	#define TOD_ADDRESS_INTERCEPT_START_OFFSET			0x685844	
 	#define TOD_ADDRESS_INTERCEPT_CONTINUE_OFFSET		0x685854	
 
-	#define FOV_WRITE_INTERCEPT1_START_OFFSET			0x862224	
+	#define FOV_WRITE_INTERCEPT1_START_OFFSET			0x862220
+	#define FOV_WRITE_INTERCEPT1_CONTINUE_OFFSET		0x86222E
 
 	// Indices in the structures read by interceptors 
 	#define LOOK_DATA_IN_CAMERA_STRUCT_OFFSET			0x44		

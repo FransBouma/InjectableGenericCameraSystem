@@ -37,6 +37,7 @@ PUBLIC cameraWriteInterceptor2
 PUBLIC cameraWriteInterceptor3
 PUBLIC gamespeedAddressInterceptor
 PUBLIC todAddressInterceptor
+PUBLIC fovWriteInterceptor1
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -57,6 +58,7 @@ EXTERN _cameraWriteInterceptionContinue2: qword
 EXTERN _cameraWriteInterceptionContinue3: qword
 EXTERN _gamespeedInterceptionContinue: qword
 EXTERN _todAddressInterceptorContinue: qword
+EXTERN _fovWriteInterceptorContinue: qword
 EXTERN _resetCameraStructAddressOnNewAddresses: byte
 
 ;---------------------------------------------------------------
@@ -129,6 +131,21 @@ todAddressInterceptor PROC
 	movss dword ptr [rsi+758h],xmm7  
 	jmp qword ptr [_todAddressInterceptorContinue]
 todAddressInterceptor ENDP
+
+fovWriteInterceptor1 PROC
+;Disrupt_b64.dll+862220 - 44 89 41 3C           - mov [rcx+3C],r8d				<<<< INTERCEPT HERE
+;Disrupt_b64.dll+862224 - F3 0F11 49 24         - movss [rcx+24],xmm1			<<<< FOV Write
+;Disrupt_b64.dll+862229 - F3 0F11 49 28         - movss [rcx+28],xmm1
+;Disrupt_b64.dll+86222E - C3                    - ret							<<<< CONTINUE
+	mov [rcx+3Ch], r8d
+	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
+	je noFovWrite												; our own camera is enabled, just skip the writes
+	movss dword ptr [rcx+24h],xmm1	
+noFovWrite:
+	movss dword ptr [rcx+28h],xmm1
+	jmp qword ptr [_fovWriteInterceptorContinue]
+fovWriteInterceptor1 ENDP
+
 
 ;-------------------------------------------------------------------
 ; Camera values write interceptions. For each block of statements in the game's exe which write to the camera values, we intercept them and execute them if our
