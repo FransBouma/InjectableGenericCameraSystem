@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Hitman 2016 v1.9"
-	#define CAMERA_VERSION								"1.0.6"
+	#define CAMERA_VERSION								"1.0.7"
 	#define CAMERA_CREDITS								"Otis_Inf, Jim2Point0. Special thanks to: One3rd"
 	#define GAME_WINDOW_TITLE							"HITMAN"
 	#define INITIAL_PITCH_RADIANS						(-90.0f * XM_PI) / 180.f	// World has Z up and Y out of the screen, so rotate around X (pitch) -90 degrees.
@@ -53,30 +53,30 @@ namespace IGCS::GameSpecific
 	// End Mandatory constants
 
 	// Offsets for camera intercept code. Used in interceptor.
-	#define CAMERA_ADDRESS_INTERCEPT_START_OFFSET		0x44F6F9A	// v1.8: 0x409CC8A	// v1.7: 0x41C5B9A	
-	#define CAMERA_ADDRESS_INTERCEPT_CONTINUE_OFFSET	0x44F6FA8   // v1.8: 0x409CC98	// v1.7: 0x41C5BA8
-
-	#define	CAMERA_WRITE_INTERCEPT1_START_OFFSET		0x44F6F8A	// v1.8: 0x409CC7A	// v1.7: 0x41C5B8A
-	#define CAMERA_WRITE_INTERCEPT1_CONTINUE_OFFSET		0x44F6F9A	// v1.8: 0x409CC8A	// v1.7: 0x41C5B9A
-	#define	CAMERA_WRITE_INTERCEPT2_START_OFFSET		0x44F6FA8	// v1.8: 0x409CC98	// v1.7: 0x41C5BA8
-	#define CAMERA_WRITE_INTERCEPT2_CONTINUE_OFFSET		0x44F6FB8	// v1.8: 0x409CCA8	// v1.7: 0x41C5BB8
-	#define	CAMERA_WRITE_INTERCEPT3_START_OFFSET		0x44F6FC8	// v1.8: 0x409CCB7	// v1.7: 0x41C5BC7
-	#define CAMERA_WRITE_INTERCEPT3_CONTINUE_OFFSET		0x44F6FF6	// v1.8: 0x409CCE5	// v1.7: 0x41C5BF5
-	#define CAMERA_READ_INTERCEPT1_START_OFFSET			0x44FA590	// v1.8: 0x40A0020
-	#define CAMERA_READ_INTERCEPT1_CONTINUE_OFFSET		0x44FA59F	// v1.8: 0x40A002F
-
-	#define GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET	0x44FA00E	// v1.8: 0x409FAB4	
-	#define GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET 0x44FA01E	// v1.8: 0x409FAC4	
-
-	#define FOV_WRITE_INTERCEPT1_START_OFFSET			0x481B4D7	// v1.8: 0x43BBAE7. Original code: (will be NOPPED) 74 32                 - je hitman.exe+481B50B
-	#define FOV_WRITE_INTERCEPT2_START_OFFSET			0x481B4F9	// v1.8: 0x43BBB09. Original code: (will be NOPPED) F3 0F11 81 7C010000   - movss [rcx+0000017C],xmm0
+	#define CAMERA_ADDRESS_INTERCEPT_START_OFFSET		0x43BE9FA	//v1.9, cam v1.0.6: 0x44F6F9A	// v1.8: 0x409CC8A	// v1.7: 0x41C5B9A	
+	#define CAMERA_ADDRESS_INTERCEPT_CONTINUE_OFFSET	0x43BEA08	//v1.9, cam v1.0.6: 0x44F6FA8   // v1.8: 0x409CC98	// v1.7: 0x41C5BA8
+														
+	#define	CAMERA_WRITE_INTERCEPT1_START_OFFSET		0x43BE9EA	//v1.9, cam v1.0.6: 0x44F6F8A	// v1.8: 0x409CC7A	// v1.7: 0x41C5B8A
+	#define CAMERA_WRITE_INTERCEPT1_CONTINUE_OFFSET		0x43BE9FA	//v1.9, cam v1.0.6: 0x44F6F9A	// v1.8: 0x409CC8A	// v1.7: 0x41C5B9A
+	#define	CAMERA_WRITE_INTERCEPT2_START_OFFSET		0x43BEA08	//v1.9, cam v1.0.6: 0x44F6FA8	// v1.8: 0x409CC98	// v1.7: 0x41C5BA8
+	#define CAMERA_WRITE_INTERCEPT2_CONTINUE_OFFSET		0x43BEA18	//v1.9, cam v1.0.6: 0x44F6FB8	// v1.8: 0x409CCA8	// v1.7: 0x41C5BB8
+	#define	CAMERA_WRITE_INTERCEPT3_START_OFFSET		0x43BEA27	//v1.9, cam v1.0.6: 0x44F6FC8	// v1.8: 0x409CCB7	// v1.7: 0x41C5BC7
+	#define CAMERA_WRITE_INTERCEPT3_CONTINUE_OFFSET		0x43BEA55	//v1.9, cam v1.0.6: 0x44F6FF6	// v1.8: 0x409CCE5	// v1.7: 0x41C5BF5
+	#define CAMERA_READ_INTERCEPT1_START_OFFSET			0x43C1DB0	//v1.9, cam v1.0.6: 0x44FA590	// v1.8: 0x40A0020
+	#define CAMERA_READ_INTERCEPT1_CONTINUE_OFFSET		0x43C1DBF	//v1.9, cam v1.0.6: 0x44FA59F	// v1.8: 0x40A002F
+														
+	#define GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET	0x43C183F	//v1.9, cam v1.0.6: 0x44FA00E	// v1.8: 0x409FAB4	
+	#define GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET 0x43C184F	//v1.9, cam v1.0.6: 0x44FA01E	// v1.8: 0x409FAC4	
+														
+	#define FOV_WRITE_INTERCEPT1_START_OFFSET			0x46E1247	//v1.9, cam v1.0.6: 0x481B4D7	// v1.8: 0x43BBAE7. Original code: (will be NOPPED) 74 2D                 - je hitman.exe+46E1276
+	#define FOV_WRITE_INTERCEPT2_START_OFFSET			0x46E1269	//v1.9, cam v1.0.6: 0x481B4F9	// v1.8: 0x43BBB09. Original code: (will be NOPPED) F3 0F11 81 7C010000   - movss [rcx+0000017C],xmm0
 
 	// Indices in the structures read by interceptors 
 	#define LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET		0x80		
 	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0x90		
 	#define FOV_IN_CAMERA_STRUCT_OFFSET					0x17C		
 	#define GAMESPEED_IN_STRUCT_OFFSET					0x48		
-	#define SUPERSAMPLING_OFFSET						0x30515B8	// offset of the supersampling variable, within hitman.exe
+	#define SUPERSAMPLING_OFFSET						0x30515B8	// offset of the supersampling variable, within hitman.exe. Doesn't change often.
 
 	// specific option.
 	#define IGCS_KEY_FREEZE_47							VK_END	

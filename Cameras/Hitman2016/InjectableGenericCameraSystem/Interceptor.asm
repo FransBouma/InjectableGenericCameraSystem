@@ -71,7 +71,7 @@ cameraAddressInterceptor PROC
 	; Game jmps to this location due to the hook set in C function SetCameraStructInterceptorHook
 	cmp byte ptr [rbx+038h], 0 							; check if this is the camera in rbx. For this game: Check with a 0-check. Could also check +20 or +24 for 0 if the above fails
 	jne originalCode
-	mov [g_cameraStructAddress], rbx						; intercept address of camera struct
+	mov [g_cameraStructAddress], rbx					; intercept address of camera struct
 	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
@@ -82,12 +82,12 @@ exit:
 cameraAddressInterceptor ENDP
 
 gamespeedAddressInterceptor PROC
-;hitman.exe+44FA00A - 48 C1 F8 14           - sar rax,14 { 20 }				
-;hitman.exe+44FA00E - 48 89 43 28           - mov [rbx+28],rax				<<< HERE
-;hitman.exe+44FA012 - 48 8B 4B 18           - mov rcx,[rbx+18]
-;hitman.exe+44FA016 - 48 89 4B 20           - mov [rbx+20],rcx
-;hitman.exe+44FA01A - 48 01 43 18           - add [rbx+18],rax
-;hitman.exe+44FA01E - EB 48                 - jmp hitman.exe+44FA068		<<< CONTINUE
+;hitman.exe+43C183B - 48 C1 F8 14           - sar rax,14 { 20 }
+;hitman.exe+43C183F - 48 89 43 28           - mov [rbx+28],rax				<<< HERE
+;hitman.exe+43C1843 - 48 8B 4B 18           - mov rcx,[rbx+18]
+;hitman.exe+43C1847 - 48 89 4B 20           - mov [rbx+20],rcx
+;hitman.exe+43C184B - 48 01 43 18           - add [rbx+18],rax
+;hitman.exe+43C184F - EB 42                 - jmp hitman.exe+43C1893		<<< CONTINUE. JMP offset can differ per build.
 	mov [g_gamespeedStructAddress], rbx
 	mov [rbx+028h],rax
 	mov rcx,[rbx+018h]
