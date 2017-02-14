@@ -62,12 +62,12 @@ EXTERN _gamespeedInterceptionContinue: qword
 .code
 
 cameraAddressInterceptor PROC
-;hitman.exe+44F6F94 - F3 0F10 44 24 50      - movss xmm0,[rsp+50]
-;hitman.exe+44F6F9A - F3 0F11 83 90000000   - movss [rbx+00000090],xmm0		<<<<<<<< HERE
-;hitman.exe+44F6FA2 - F3 0F10 44 24 58      - movss xmm0,[rsp+58]
-;hitman.exe+44F6FA8 - F3 0F11 83 98000000   - movss [rbx+00000098],xmm0	    <<<<<<<< CONTINUE
-;hitman.exe+44F6FB0 - F3 0F11 8B 94000000   - movss [rbx+00000094],xmm1
-
+;hitman.exe+43B9E24 - F3 0F10 44 24 50      - movss xmm0,[rsp+50]
+;hitman.exe+43B9E2A - F3 0F11 83 90000000   - movss [rbx+00000090],xmm0		<<<<<<<< HERE
+;hitman.exe+43B9E32 - F3 0F10 44 24 58      - movss xmm0,[rsp+58]
+;hitman.exe+43B9E38 - F3 0F11 83 98000000   - movss [rbx+00000098],xmm0		<<<<<<<< CONTINUE
+;hitman.exe+43B9E40 - F3 0F11 8B 94000000   - movss [rbx+00000094],xmm1
+;
 	; Game jmps to this location due to the hook set in C function SetCameraStructInterceptorHook
 	cmp byte ptr [rbx+038h], 0 							; check if this is the camera in rbx. For this game: Check with a 0-check. Could also check +20 or +24 for 0 if the above fails
 	jne originalCode
@@ -82,12 +82,12 @@ exit:
 cameraAddressInterceptor ENDP
 
 gamespeedAddressInterceptor PROC
-;hitman.exe+43C183B - 48 C1 F8 14           - sar rax,14 { 20 }
-;hitman.exe+43C183F - 48 89 43 28           - mov [rbx+28],rax				<<< HERE
-;hitman.exe+43C1843 - 48 8B 4B 18           - mov rcx,[rbx+18]
-;hitman.exe+43C1847 - 48 89 4B 20           - mov [rbx+20],rcx
-;hitman.exe+43C184B - 48 01 43 18           - add [rbx+18],rax
-;hitman.exe+43C184F - EB 42                 - jmp hitman.exe+43C1893		<<< CONTINUE. JMP offset can differ per build.
+;hitman.exe+43BCC87 - 48 C1 F8 14           - sar rax,14 { 20 }
+;hitman.exe+43BCC8B - 48 89 43 28           - mov [rbx+28],rax				<<< HERE
+;hitman.exe+43BCC8F - 48 8B 4B 18           - mov rcx,[rbx+18]
+;hitman.exe+43BCC93 - 48 89 4B 20           - mov [rbx+20],rcx
+;hitman.exe+43BCC97 - 48 01 43 18           - add [rbx+18],rax
+;hitman.exe+43BCC9B - EB 3B                 - jmp hitman.exe+43BCCD8		<<< CONTINUE. JMP offset can differ per build.
 	mov [g_gamespeedStructAddress], rbx
 	mov [rbx+028h],rax
 	mov rcx,[rbx+018h]
@@ -103,12 +103,11 @@ gamespeedAddressInterceptor ENDP
 ; execute the code regardless of whether our camera is enabled.
 
 cameraWriteInterceptor1 PROC
-;hitman.exe+44F6F84 - F3 0F10 4C 24 54      - movss xmm1,[rsp+54]
-;hitman.exe+44F6F8A - 0F28 00               - movaps xmm0,[rax]					<<<<< HERE
-;hitman.exe+44F6F8D - 0F11 83 80000000      - movups [rbx+00000080],xmm0
-;hitman.exe+44F6F94 - F3 0F10 44 24 50      - movss xmm0,[rsp+50]
-;hitman.exe+44F6F9A - F3 0F11 83 90000000   - movss [rbx+00000090],xmm0			<<<<< CONTINUE
-
+;hitman.exe+43B9E14 - F3 0F10 4C 24 54      - movss xmm1,[rsp+54]
+;hitman.exe+43B9E1A - 0F28 00               - movaps xmm0,[rax]					<<<< HERE
+;hitman.exe+43B9E1D - 0F11 83 80000000      - movups [rbx+00000080],xmm0
+;hitman.exe+43B9E24 - F3 0F10 44 24 50      - movss xmm0,[rsp+50]
+;hitman.exe+43B9E2A - F3 0F11 83 90000000   - movss [rbx+00000090],xmm0			<<<< CONTINUE
 	; Game jmps to this location due to the hook set in C function SetMatrixWriteInterceptorHooks. 
 	; first check if this is really a call for the camera. Other logic will use this code too. Check rbx with our known cameraStruct address to be sure
 	cmp qword ptr rbx, [g_cameraStructAddress]
@@ -124,10 +123,10 @@ exit:
 cameraWriteInterceptor1 ENDP
 
 cameraWriteInterceptor2 PROC
-;hitman.exe+44F6FA2 - F3 0F10 44 24 58      - movss xmm0,[rsp+58]
-;hitman.exe+44F6FA8 - F3 0F11 83 98000000   - movss [rbx+00000098],xmm0			<<<< HERE
-;hitman.exe+44F6FB0 - F3 0F11 8B 94000000   - movss [rbx+00000094],xmm1
-;hitman.exe+44F6FB8 - EB 3C                 - jmp hitman.exe+44F6FF6			<<<< CONTINUE
+;hitman.exe+43B9E32 - F3 0F10 44 24 58      - movss xmm0,[rsp+58]
+;hitman.exe+43B9E38 - F3 0F11 83 98000000   - movss [rbx+00000098],xmm0			<<<<< HERE
+;hitman.exe+43B9E40 - F3 0F11 8B 94000000   - movss [rbx+00000094],xmm1
+;hitman.exe+43B9E48 - EB 44                 - jmp hitman.exe+43B9E8E			<<<<< CONTINUE
 
 	; Game jmps to this location due to the hook set in C function SetMatrixWriteInterceptorHooks. 
 	; first check if this is really a call for the camera. Other logic will use this code too. Check rbx with our known cameraStruct address to be sure
@@ -143,17 +142,16 @@ exit:
 cameraWriteInterceptor2 ENDP
 
 cameraWriteInterceptor3 PROC
-;hitman.exe+44F6FC5 - 0F28 00               - movaps xmm0,[rax]
-;hitman.exe+44F6FC8 - 0F11 83 80000000      - movups [rbx+00000080],xmm0		<<<< HERE
-;hitman.exe+44F6FCF - 0F28 4F 30            - movaps xmm1,[rdi+30]
-;hitman.exe+44F6FD3 - 0F28 C1               - movaps xmm0,xmm1
-;hitman.exe+44F6FD6 - F3 0F11 8B 90000000   - movss [rbx+00000090],xmm1
-;hitman.exe+44F6FDE - 0FC6 C1 55            - shufps xmm0,xmm1,55 { 85 }
-;hitman.exe+44F6FE2 - 0FC6 C9 AA            - shufps xmm1,xmm1,-56 { 170 }
-;hitman.exe+44F6FE6 - F3 0F11 8B 98000000   - movss [rbx+00000098],xmm1
-;hitman.exe+44F6FEE - F3 0F11 83 94000000   - movss [rbx+00000094],xmm0
-;hitman.exe+44F6FF6 - 48 8B 03              - mov rax,[rbx]						<<<< CONTINUE
-;
+;hitman.exe+43B9E5D - 0F28 00               - movaps xmm0,[rax]
+;hitman.exe+43B9E60 - 0F11 83 80000000      - movups [rbx+00000080],xmm0		<<<< HERE
+;hitman.exe+43B9E67 - 0F28 4F 30            - movaps xmm1,[rdi+30]
+;hitman.exe+43B9E6B - 0F28 C1               - movaps xmm0,xmm1
+;hitman.exe+43B9E6E - F3 0F11 8B 90000000   - movss [rbx+00000090],xmm1
+;hitman.exe+43B9E76 - 0FC6 C1 55            - shufps xmm0,xmm1,55 { 85 }
+;hitman.exe+43B9E7A - 0FC6 C9 AA            - shufps xmm1,xmm1,-56 { 170 }
+;hitman.exe+43B9E7E - F3 0F11 8B 98000000   - movss [rbx+00000098],xmm1
+;hitman.exe+43B9E86 - F3 0F11 83 94000000   - movss [rbx+00000094],xmm0
+;hitman.exe+43B9E8E - 48 8B 03              - mov rax,[rbx]						<<<< CONTINUE
 	; Game jmps to this location due to the hook set in C function SetMatrixWriteInterceptorHooks. 
 	; first check if this is really a call for the camera. Other logic will use this code too. Check rbx with our known cameraStruct address to be sure
 	cmp qword ptr rbx, [g_cameraStructAddress]
@@ -174,10 +172,10 @@ exit:
 cameraWriteInterceptor3 ENDP
 
 cameraReadInterceptor1 PROC
-;hitman.exe+44FA590 - 53                    - push rbx								<<< HERE
-;hitman.exe+44FA591 - 48 81 EC 80000000     - sub rsp,00000080 { 128 }
-;hitman.exe+44FA598 - F6 81 AE000000 02     - test byte ptr [rcx+000000AE],02 { 2 }
-;hitman.exe+44FA59F - 48 89 CB              - mov rbx,rcx							<<< CONTINUE
+;hitman.exe+43BD210 - 53                    - push rbx								<<< HERE
+;hitman.exe+43BD211 - 48 81 EC 80000000     - sub rsp,00000080 { 128 }		
+;hitman.exe+43BD218 - F6 81 AE000000 02     - test byte ptr [rcx+000000AE],02 { 2 }
+;hitman.exe+43BD21F - 48 89 CB              - mov rbx,rcx							<<< CONTINUE
 	cmp byte ptr [g_cameraEnabled], 1					
 	jne originalCode
 	cmp byte ptr [g_aimFrozen], 1
