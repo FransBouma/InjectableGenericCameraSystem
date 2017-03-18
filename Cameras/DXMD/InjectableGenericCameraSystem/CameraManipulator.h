@@ -42,4 +42,5 @@ namespace IGCS::GameSpecific::CameraManipulator
 	XMFLOAT3 getCurrentCameraCoords();
 	void setTimeStopValue(byte newValue);
 	void toggleHud(bool showHud);
+	void setGamespeedFreezeValue(byte newValue);
 }

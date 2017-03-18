@@ -143,6 +143,11 @@ namespace IGCS
 			toggleTimestopState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
+		if (Input::keyDown(IGCS_KEY_GAMESPEEDSTOP))
+		{
+			toggleGamespeedStopState();
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
 		if (Input::keyDown(IGCS_KEY_DECREASE_GAMESPEED))
 		{
 			modifyGameSpeed(true);
@@ -379,8 +384,16 @@ namespace IGCS
 	void System::toggleTimestopState()
 	{
 		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
-		Console::WriteLine(_timeStopped ? "Game paused" : "Game unpaused");
+		Console::WriteLine(_timeStopped ? "Game hard-pause ON" : "Game hard-pause OFF");
 		CameraManipulator::setTimeStopValue(_timeStopped);
+	}
+
+
+	void System::toggleGamespeedStopState()
+	{
+		_gamespeedStopped = _gamespeedStopped == 0 ? (byte)1 : (byte)0;
+		Console::WriteLine(_gamespeedStopped ? "Game speed frozen" : "Game speed normal");
+		CameraManipulator::setGamespeedFreezeValue(_gamespeedStopped);
 	}
 
 
@@ -406,7 +419,7 @@ namespace IGCS
 
 	void System::modifyGameSpeed(bool decrease)
 	{
-		if (!_timeStopped)
+		if (!_gamespeedStopped)
 		{
 			return;
 		}
@@ -417,7 +430,7 @@ namespace IGCS
 	{
 						  //0         1         2         3         4         5         6         7
 						  //01234567890123456789012345678901234567890123456789012345678901234567890123456789
-		Console::WriteLine("---[IGCS Help]---------------------------------------------------------------", CONSOLE_WHITE);
+		Console::WriteLine("---[IGCS Help]-----------------------------------------------------------------", CONSOLE_WHITE);
 		Console::WriteLine("INS                            : Enable/Disable camera");
 		Console::WriteLine("HOME                           : Lock/unlock camera movement");
 		Console::WriteLine("ALT + rotate/move              : Faster rotate / move");
@@ -433,12 +446,14 @@ namespace IGCS
 		Console::WriteLine("Numpad /                       : Toggle Y look direction");
 		Console::WriteLine("Numpad .                       : Toggle mouse/keyboard input to game");
 		Console::WriteLine("DEL                            : Toggle HUD");
-		Console::WriteLine("[                              : Decrease Game speed (during pause)");
-		Console::WriteLine("]                              : Increase Game speed (during pause)");
+		Console::WriteLine("Page Down                      : Toggle hard-freeze game (No fov change!)");
+		Console::WriteLine("Numpad 0                       : Toggle game speed freeze (allows fov change)");
+		Console::WriteLine("[                              : Decrease game speed (during game speed freeze)");
+		Console::WriteLine("]                              : Increase game speed (during game speed freeze)");
 		Console::WriteLine("ALT+H                          : This help");
-		Console::WriteLine("-----------------------------------------------------------------------------", CONSOLE_WHITE);
+		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
 		Console::WriteLine(" Please read the enclosed readme.txt for the answers to your questions :)");
-		Console::WriteLine("-----------------------------------------------------------------------------", CONSOLE_WHITE);
+		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
 		// wait for 350ms to avoid fast keyboard hammering
 		Sleep(350);
 	}

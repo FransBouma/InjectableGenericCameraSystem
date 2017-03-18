@@ -37,26 +37,46 @@ extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
 	LPBYTE g_gameSpeedStructAddress = nullptr;
 	LPBYTE g_hudToggleStructAddress = nullptr;
+	LPBYTE g_timeStopStructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
 {
 	static float _originalLookData[9];		// game uses a 3x3 matrix
 	static float _originalCoordsData[3];
-	static bool _timeHasBeenStopped = false;
+	static bool _gameSpeedHasBeenStopped = false;
 
 	// newValue: 1 == time should be frozen, 0 == normal gameplay
 	void setTimeStopValue(byte newValue)
 	{
-		// set flag so camera works during menu driven timestop
-		_timeHasBeenStopped = (newValue == 1);
-		float* gamespeedAddress = reinterpret_cast<float*>(g_gameSpeedStructAddress + GAMESPEED_IN_STRUCT_OFFSET);
-		*gamespeedAddress = _timeHasBeenStopped ? DEFAULT_MIN_GAME_SPEED : DEFAULT_GAME_SPEED;
+		if (nullptr == g_timeStopStructAddress)
+		{
+			return;
+		}
+		byte* timestopAddress = (byte*)(g_timeStopStructAddress + TIMESTOP_VALUE_IN_STRUCT_OFFSET);
+		*timestopAddress = newValue;
 	}
 
 
+	void setGamespeedFreezeValue(byte newValue)
+	{
+		if (nullptr == g_gameSpeedStructAddress)
+		{
+			return;
+		}
+		// set flag so camera works during menu driven timestop
+		_gameSpeedHasBeenStopped = (newValue == 1);
+		float* gamespeedAddress = reinterpret_cast<float*>(g_gameSpeedStructAddress + GAMESPEED_IN_STRUCT_OFFSET);
+		*gamespeedAddress = _gameSpeedHasBeenStopped ? DEFAULT_MIN_GAME_SPEED : DEFAULT_GAME_SPEED;
+	}
+
+	
 	void toggleHud(bool showHud)
 	{
+		if (nullptr == g_hudToggleStructAddress)
+		{
+			return;
+		}
 		float* hudToggleAddress = reinterpret_cast<float*>(g_hudToggleStructAddress + HUD_TOGGLE_IN_STRUCT_OFFSET);
 		*hudToggleAddress = showHud ? 1.0f : 0.0f;
 	}
@@ -65,7 +85,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 	// decreases / increases the gamespeed till 0.0001f or 10f. 
 	void modifyGameSpeed(bool decrease)
 	{
-		if (!_timeHasBeenStopped)
+		if (!_gameSpeedHasBeenStopped)
 		{
 			return;
 		}

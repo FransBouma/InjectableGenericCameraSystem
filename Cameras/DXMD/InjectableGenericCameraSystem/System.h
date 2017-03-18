@@ -48,6 +48,7 @@ namespace IGCS
 		void displayHelp();
 		void displayCameraState();
 		void toggleTimestopState();
+		void toggleGamespeedStopState();
 		void toggleYLookDirectionState();
 		void toggleCameraMovementLockState(bool newValue);
 		void toggleInputBlockState(bool newValue);
@@ -63,6 +64,7 @@ namespace IGCS
 		bool _cameraMovementLocked = false;
 		bool _cameraStructFound = false;
 		bool _timeStopped = false;
+		bool _gamespeedStopped = false;
 		bool _hudVisible = true;
 	};
 }

@@ -39,6 +39,7 @@ extern "C" {
 	void gameSpeedInterceptor();
 	void cameraWriteInterceptor();
 	void hudToggleInterceptor();
+	void timeStopInterceptor();
 }
 
 // external addresses used in asm.
@@ -51,6 +52,8 @@ extern "C" {
 	LPBYTE _gameSpeedInterceptorContinue = nullptr;
 	// the continue addresss for the continuing execution after interception of the hud toggle block of code
 	LPBYTE _hudToggleInterceptorContinue = nullptr;
+	// the continue addresss for the continuing execution after interception of the timestop block of code
+	LPBYTE _timeStopStructInterceptionContinue = nullptr;
 }
 
 
@@ -69,6 +72,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void setTimestopInterceptorHook(LPBYTE hostImageAddress)
 	{
 		GameImageHooker::setHook(hostImageAddress, GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET, GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_gameSpeedInterceptorContinue, &gameSpeedInterceptor);
+		GameImageHooker::setHook(hostImageAddress, TIMESTOP_ADDRESS_INTERCEPT_START_OFFSET, TIMESTOP_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_timeStopStructInterceptionContinue, &timeStopInterceptor);
 	}
 
 	void setHudToggleInterceptorHook(LPBYTE hostImageAddress)

@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Deus Ex:Mankind Divided 1.16.761.0"
-	#define CAMERA_VERSION								"1.0.0"
+	#define CAMERA_VERSION								"1.0.1"
 	#define CAMERA_CREDITS								"Otis_Inf. Special thanks to: K-putt, Jim2Point0"
 	#define GAME_WINDOW_TITLE							"Deus Ex: Mankind Divided"
 	#define INITIAL_PITCH_RADIANS						(90.0f * XM_PI) / 180.f	// World has Z up and Y into the screen, so rotate around X (pitch) 90 degrees.
@@ -61,6 +61,8 @@ namespace IGCS::GameSpecific
 	
 	#define GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET	0x34C3306	
 	#define GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET 0x34C3317	
+	#define TIMESTOP_ADDRESS_INTERCEPT_START_OFFSET		0x34BA012
+	#define TIMESTOP_ADDRESS_INTERCEPT_CONTINUE_OFFSET	0x34BA036
 	
 	#define HUD_TOGGLE_ADDRESS_INTERCEPT_START_OFFSET		0x4304190
 	#define HUD_TOGGLE_ADDRESS_INTERCEPT_CONTINUE_OFFSET	0x43041A1
@@ -71,4 +73,5 @@ namespace IGCS::GameSpecific
 	#define FOV_IN_CAMERA_STRUCT_OFFSET					0x13C		
 	#define GAMESPEED_IN_STRUCT_OFFSET					0x60
 	#define HUD_TOGGLE_IN_STRUCT_OFFSET					0x24
+	#define TIMESTOP_VALUE_IN_STRUCT_OFFSET				0xE8
 }
