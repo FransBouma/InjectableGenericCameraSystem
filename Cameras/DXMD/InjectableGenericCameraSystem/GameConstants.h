@@ -31,14 +31,14 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Deus Ex:Mankind Divided 1.16.761.0"
-	#define CAMERA_VERSION								"1.0.1"
+	#define CAMERA_VERSION								"1.0.2"
 	#define CAMERA_CREDITS								"Otis_Inf. Special thanks to: K-putt, Jim2Point0"
 	#define GAME_WINDOW_TITLE							"Deus Ex: Mankind Divided"
 	#define INITIAL_PITCH_RADIANS						(90.0f * XM_PI) / 180.f	// World has Z up and Y into the screen, so rotate around X (pitch) 90 degrees.
 	#define INITIAL_YAW_RADIANS							0.0f	// around Y axis	(out of the screen)
-	#define INITIAL_ROLL_RADIANS						0.0f	// aruond Z axis	(up)
+	#define INITIAL_ROLL_RADIANS						0.0f	// around Z axis	(up)
 	#define CONTROLLER_Y_INVERT							false
-	#define FASTER_MULTIPLIER							7.0f
+	#define FASTER_MULTIPLIER							10.0f
 	#define SLOWER_MULTIPLIER							0.1f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
 	#define DEFAULT_MOVEMENT_SPEED						0.025f
