@@ -28,6 +28,7 @@
 #include "stdafx.h"
 #include "Utils.h"
 #include "GameConstants.h"
+#include "AOBBlock.h"
 
 using namespace std;
 
@@ -65,22 +66,24 @@ namespace IGCS::Utils
 	}
 	
 
-	HMODULE getBaseAddressOfContainingProcess()
+	MODULEINFO getModuleInfoOfContainingProcess()
 	{
-		TCHAR processName[MAX_PATH] = TEXT("<unknown>");
 		HANDLE processHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
-		HMODULE toReturn = NULL;
-
-		if (NULL != processHandle)
+		HMODULE processModule = nullptr;
+		if (nullptr != processHandle)
 		{
 			DWORD cbNeeded;
-			if (EnumProcessModulesEx(processHandle, &toReturn, sizeof(toReturn), &cbNeeded, LIST_MODULES_32BIT | LIST_MODULES_64BIT))
+			if(!EnumProcessModulesEx(processHandle, &processModule, sizeof(processModule), &cbNeeded, LIST_MODULES_32BIT | LIST_MODULES_64BIT))
 			{
-				GetModuleBaseName(processHandle, toReturn, processName, sizeof(processName) / sizeof(TCHAR));
+				processModule = nullptr;
 			}
-			else
+		}
+		MODULEINFO toReturn;
+		if (nullptr != processModule)
+		{
+			if (!GetModuleInformation(processHandle, processModule, &toReturn, sizeof(MODULEINFO)))
 			{
-				toReturn = NULL;
+				toReturn.lpBaseOfDll = nullptr;
 			}
 		}
 		CloseHandle(processHandle);
@@ -95,5 +98,85 @@ namespace IGCS::Utils
 		data.best_handle = 0;
 		EnumWindows(enumWindowsCallback, (LPARAM)&data);
 		return data.best_handle;
+	}
+
+
+	BYTE CharToByte(char c)
+	{
+		BYTE b;
+		sscanf_s(&c, "%hhx", &b);
+		return b;
+	}
+
+
+	bool DataCompare(LPBYTE image, LPBYTE bytePattern, char* patternMask)
+	{
+		for (; *patternMask; ++patternMask, ++image, ++bytePattern)
+		{
+			if (*patternMask == 'x' && *image != *bytePattern)
+			{
+				return false;
+			}
+		}
+		return (*patternMask) == 0;
+	}
+
+
+	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, AOBBlock* const toScanFor)
+	{
+		register BYTE firstByte = *(toScanFor->bytePattern());
+		__int64 length = (__int64)imageAddress + imageSize - toScanFor->patternSize();
+
+		LPBYTE toReturn = nullptr;
+		LPBYTE startOfScan = imageAddress;
+		for (int occurrence = 0; occurrence < toScanFor->occurrence(); occurrence++)
+		{
+			// reset the pointer found, as we're not interested in this occurrence, we need a following occurrence.
+			toReturn = nullptr;
+			for (register __int64 i = (__int64)startOfScan; i < length; i += 4)
+			{
+				unsigned x = *(unsigned*)(i);
+
+				if ((x & 0xFF) == firstByte)
+				{
+					if (DataCompare(reinterpret_cast<BYTE*>(i), toScanFor->bytePattern(), toScanFor->patternMask()))
+					{
+						toReturn = reinterpret_cast<BYTE*>(i);
+						break;
+					}
+				}
+				if ((x & 0xFF00) >> 8 == firstByte)
+				{
+					if (DataCompare(reinterpret_cast<BYTE*>(i + 1), toScanFor->bytePattern(), toScanFor->patternMask()))
+					{
+						toReturn = reinterpret_cast<BYTE*>(i + 1);
+						break;
+					}
+				}
+				if ((x & 0xFF0000) >> 16 == firstByte)
+				{
+					if (DataCompare(reinterpret_cast<BYTE*>(i + 2), toScanFor->bytePattern(), toScanFor->patternMask()))
+					{
+						toReturn = reinterpret_cast<BYTE*>(i + 2);
+						break;
+					}
+				}
+				if ((x & 0xFF000000) >> 24 == firstByte)
+				{
+					if (DataCompare(reinterpret_cast<BYTE*>(i + 3), toScanFor->bytePattern(), toScanFor->patternMask()))
+					{
+						toReturn = reinterpret_cast<BYTE*>(i + 3);
+						break;
+					}
+				}
+			}
+			if (nullptr == toReturn)
+			{
+				// not found, give up
+				return toReturn;
+			}
+			startOfScan = toReturn + 1;	// otherwise we'll match ourselves. 
+		}
+		return toReturn;
 	}
 }

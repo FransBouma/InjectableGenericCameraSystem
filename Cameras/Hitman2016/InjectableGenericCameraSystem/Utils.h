@@ -28,13 +28,25 @@
 #pragma once
 #include "stdafx.h"
 
+using namespace std;
+
+namespace IGCS
+{
+	// forward declaration to avoid cyclic dependency.
+	class AOBBlock;
+}
+
 namespace IGCS::Utils
 {
+
 	struct handle_data {
 		unsigned long process_id;
 		HWND best_handle;
 	};
 
+
 	HWND findMainWindow(unsigned long process_id);
-	HMODULE getBaseAddressOfContainingProcess();
+	MODULEINFO getModuleInfoOfContainingProcess();
+	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, AOBBlock* const toScanFor);
+	BYTE CharToByte(char c);
 }

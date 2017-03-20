@@ -26,9 +26,13 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include <map>
 #include "stdafx.h"
 #include "Camera.h"
 #include "Gamepad.h"
+#include "AOBBlock.h"
+
+using namespace std;
 
 namespace IGCS
 {
@@ -38,7 +42,7 @@ namespace IGCS
 		System();
 		~System();
 
-		void start(HMODULE hostBaseAddress);
+		void start(LPBYTE hostBaseAddress, DWORD hostImageSize);
 
 	private:
 		void mainLoop();
@@ -60,9 +64,11 @@ namespace IGCS
 
 		Camera _camera;
 		LPBYTE _hostImageAddress;
+		DWORD _hostImageSize;
 		bool _cameraMovementLocked = false;
 		bool _cameraStructFound = false;
 		bool _timeStopped = false;
+		map<string, AOBBlock*> _aobBlocks;
 	};
 }
 

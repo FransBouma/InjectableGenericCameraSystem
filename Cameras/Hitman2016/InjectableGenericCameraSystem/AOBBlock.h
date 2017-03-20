@@ -25,61 +25,39 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
-#include "Globals.h"
-#include "System.h"
+#pragma once
+#include "AOBBlock.h"
 #include "Utils.h"
 
 using namespace std;
-using namespace IGCS;
 
-DWORD WINAPI MainThread(LPVOID lpParam);
-HMODULE GetBaseAddressOfContainingProcess();
-
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD  reason, LPVOID lpReserved)
+namespace IGCS
 {
-	DWORD threadID;
-
-	DisableThreadLibraryCalls(hModule);
-
-	switch (reason)
+	class AOBBlock
 	{
-		case DLL_PROCESS_ATTACH:
-			CreateThread(
-				NULL,
-				0,
-				MainThread,
-				hModule,
-				0,
-				&threadID
-			);
-			break;
-		case DLL_PROCESS_DETACH:
-			Globals::instance().systemActive(false);
-			break;
-	}
-	return TRUE;
+	public:
+		AOBBlock(string blockName, string bytePatternAsString, int occurrence);
+		~AOBBlock();
+
+		void scan(LPBYTE imageAddress, DWORD imageSize);
+		LPBYTE locationInImage() { return _locationInImage; }
+		LPBYTE bytePattern() { return _bytePattern; }
+		int occurrence() { return _occurrence; }
+		int patternSize() { return _patternSize; }
+		char* patternMask() { return _patternMask; }
+		int customOffset() { return _customOffset; }
+
+	private:
+		void createAOBPatternFromStringPattern(string pattern);
+
+		string _blockName;
+		string _bytePatternAsString;
+		LPBYTE _bytePattern;
+		char* _patternMask;
+		int _patternSize;
+		int _customOffset;
+		int _occurrence;		// starts at 1: if there are more occurrences, and e.g. the 3rd has to be picked, set this to 3.
+		LPBYTE _locationInImage;	// the location to use after the scan has been completed.
+	};
+
 }
-
-
-// lpParam gets the hModule value of the DllMain process
-DWORD WINAPI MainThread(LPVOID lpParam)
-{
-	Console::Init();
-	Console::WriteHeader();
-
-	MODULEINFO hostModuleInfo = Utils::getModuleInfoOfContainingProcess();
-	if(nullptr==hostModuleInfo.lpBaseOfDll)
-	{
-		Console::WriteError("Not able to obtain parent process base address... exiting");
-	}
-	else
-	{
-		System s;
-		s.start((LPBYTE)hostModuleInfo.lpBaseOfDll, hostModuleInfo.SizeOfImage);
-	}
-	Console::Release();
-	return 0;
-}
-
-

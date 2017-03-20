@@ -30,8 +30,8 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Hitman 2016 v1.9.1"
-	#define CAMERA_VERSION								"1.0.8"
+	#define GAME_NAME									"Hitman 2016 v1.10.0"
+	#define CAMERA_VERSION								"1.0.9"
 	#define CAMERA_CREDITS								"Otis_Inf, Jim2Point0. Special thanks to: One3rd"
 	#define GAME_WINDOW_TITLE							"HITMAN"
 	#define INITIAL_PITCH_RADIANS						(-90.0f * XM_PI) / 180.f	// World has Z up and Y out of the screen, so rotate around X (pitch) -90 degrees.
@@ -53,15 +53,12 @@ namespace IGCS::GameSpecific
 	// End Mandatory constants
 
 	// Offsets for camera intercept code. Used in interceptor.
-	#define CAMERA_ADDRESS_INTERCEPT_START_OFFSET		0x43B9E2A	//v1.9, cam v1.0.6: 0x44F6F9A	// v1.8: 0x409CC8A	// v1.7: 0x41C5B9A	
-	#define CAMERA_ADDRESS_INTERCEPT_CONTINUE_OFFSET	0x43B9E38	//v1.9, cam v1.0.6: 0x44F6FA8   // v1.8: 0x409CC98	// v1.7: 0x41C5BA8
-														
-	#define	CAMERA_WRITE_INTERCEPT1_START_OFFSET		0x43B9E1A	//v1.9, cam v1.0.6: 0x44F6F8A	// v1.8: 0x409CC7A	// v1.7: 0x41C5B8A
-	#define CAMERA_WRITE_INTERCEPT1_CONTINUE_OFFSET		0x43B9E2A	//v1.9, cam v1.0.6: 0x44F6F9A	// v1.8: 0x409CC8A	// v1.7: 0x41C5B9A
-	#define	CAMERA_WRITE_INTERCEPT2_START_OFFSET		0x43B9E38	//v1.9, cam v1.0.6: 0x44F6FA8	// v1.8: 0x409CC98	// v1.7: 0x41C5BA8
-	#define CAMERA_WRITE_INTERCEPT2_CONTINUE_OFFSET		0x43B9E48	//v1.9, cam v1.0.6: 0x44F6FB8	// v1.8: 0x409CCA8	// v1.7: 0x41C5BB8
-	#define	CAMERA_WRITE_INTERCEPT3_START_OFFSET		0x43B9E60	//v1.9, cam v1.0.6: 0x44F6FC8	// v1.8: 0x409CCB7	// v1.7: 0x41C5BC7
-	#define CAMERA_WRITE_INTERCEPT3_CONTINUE_OFFSET		0x43B9E8E	//v1.9, cam v1.0.6: 0x44F6FF6	// v1.8: 0x409CCE5	// v1.7: 0x41C5BF5
+	#define CAMERA_ADDRESS_INTERCEPT_KEY				"AOB_CAMERA_ADDRESS_INTERCEPT"
+	#define CAMERA_WRITE_INTERCEPT1_KEY					"AOB_CAMERA_WRITE_INTERCEPT1"
+	#define CAMERA_WRITE_INTERCEPT2_KEY					"AOB_CAMERA_WRITE_INTERCEPT2"
+	#define CAMERA_WRITE_INTERCEPT3_KEY					"AOB_CAMERA_WRITE_INTERCEPT3"
+	#define CAMERA_READ_INTERCEPT_KEY					"AOB_CAMERA_READ_INTERCEPT3"
+
 	#define CAMERA_READ_INTERCEPT1_START_OFFSET			0x43BD210	//v1.9, cam v1.0.6: 0x44FA590	// v1.8: 0x40A0020
 	#define CAMERA_READ_INTERCEPT1_CONTINUE_OFFSET		0x43BD21F	//v1.9, cam v1.0.6: 0x44FA59F	// v1.8: 0x40A002F
 														

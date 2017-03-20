@@ -26,9 +26,12 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
+#include <map>
 #include "InterceptorHelper.h"
 #include "GameConstants.h"
 #include "GameImageHooker.h"
+#include "Utils.h"
+#include "AOBBlock.h"
 
 using namespace std;
 
@@ -62,25 +65,41 @@ extern "C" {
 
 namespace IGCS::GameSpecific::InterceptorHelper
 {
-	void setCameraStructInterceptorHook(LPBYTE hostImageAddress)
+	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, map<string, AOBBlock*> &aobBlocks)
 	{
-		GameImageHooker::setHook(hostImageAddress, CAMERA_ADDRESS_INTERCEPT_START_OFFSET, CAMERA_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_cameraStructInterceptionContinue, &cameraAddressInterceptor);
+		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "F3 0F 11 83 90 00 00 00 F3 0F 10 44 24 58 F3 0F 11 83 98 00 00 00 F3 0F 11 8B 94 00 00 00", 3);
+		aobBlocks[CAMERA_WRITE_INTERCEPT1_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT1_KEY, "0F 28 00 0F 11 83 80 00 00 00 F3 0F 10 44 24 50 F3 0F 11 83 90 00 00 00", 3);
+		aobBlocks[CAMERA_WRITE_INTERCEPT2_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT2_KEY, "F3 0F 11 83 98 00 00 00 F3 0F 11 8B 94 00 00 00 EB 3B", 2);
+		aobBlocks[CAMERA_WRITE_INTERCEPT3_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT3_KEY, "0F 11 83 80 00 00 00 0F 28 4F 30 0F 28 C1 F3 0F 11 8B 90 00 00 00 0F C6 C1 55 0F C6 C9 AA", 3);
+		aobBlocks[CAMERA_READ_INTERCEPT_KEY] = new AOBBlock(CAMERA_READ_INTERCEPT_KEY, "53 48 81 EC 80 00 00 00 F6 81 AE 00 00 00 02 48 89 CB", 1);
+
+		map<string, AOBBlock*>::iterator it;
+		for(it = aobBlocks.begin(); it!=aobBlocks.end();it++)
+		{
+			it->second->scan(hostImageAddress, hostImageSize);
+		}
 	}
 
 
-	void setCameraWriteInterceptorHooks(LPBYTE hostImageAddress)
+	void setCameraStructInterceptorHook(map<string, AOBBlock*> &aobBlocks)
+	{
+		GameImageHooker::setHook(aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY], 0xE, &_cameraStructInterceptionContinue, &cameraAddressInterceptor);
+	}
+	
+
+	void setCameraWriteInterceptorHooks(map<string, AOBBlock*> &aobBlocks)
 	{
 		// for each block of code that writes to the camera values we're manipulating we need an interception to block it. For the example game there are 3. 
-		GameImageHooker::setHook(hostImageAddress, CAMERA_WRITE_INTERCEPT1_START_OFFSET, CAMERA_WRITE_INTERCEPT1_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue1, &cameraWriteInterceptor1);
-		GameImageHooker::setHook(hostImageAddress, CAMERA_WRITE_INTERCEPT2_START_OFFSET, CAMERA_WRITE_INTERCEPT2_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue2, &cameraWriteInterceptor2);
-		GameImageHooker::setHook(hostImageAddress, CAMERA_WRITE_INTERCEPT3_START_OFFSET, CAMERA_WRITE_INTERCEPT3_CONTINUE_OFFSET, &_cameraWriteInterceptionContinue3, &cameraWriteInterceptor3);
-		GameImageHooker::setHook(hostImageAddress, CAMERA_READ_INTERCEPT1_START_OFFSET, CAMERA_READ_INTERCEPT1_CONTINUE_OFFSET, &_cameraReadInterceptionContinue1, &cameraReadInterceptor1);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE_INTERCEPT1_KEY], 0x10, &_cameraWriteInterceptionContinue1, &cameraWriteInterceptor1);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE_INTERCEPT2_KEY], 0x10, &_cameraWriteInterceptionContinue2, &cameraWriteInterceptor2);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE_INTERCEPT3_KEY], 0x2E, &_cameraWriteInterceptionContinue3, &cameraWriteInterceptor3);
+		GameImageHooker::setHook(aobBlocks[CAMERA_READ_INTERCEPT_KEY], 0xF, &_cameraReadInterceptionContinue1, &cameraReadInterceptor1);
 	}
 
 
 	void setTimestopInterceptorHook(LPBYTE hostImageAddress)
 	{
-		GameImageHooker::setHook(hostImageAddress, GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET, GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_gamespeedInterceptionContinue, &gamespeedAddressInterceptor);
+		//GameImageHooker::setHook(hostImageAddress, GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET, GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_gamespeedInterceptionContinue, &gamespeedAddressInterceptor);
 	}
 
 
@@ -88,7 +107,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	// as the FoV changes simply change a value, so instead of the game keeping it at a value we overwrite it. We reset it to a default value when the FoV is disabled by the user 
 	void disableFoVWrite(LPBYTE hostImageAddress)
 	{
-		GameImageHooker::nopRange(hostImageAddress + FOV_WRITE_INTERCEPT1_START_OFFSET, 2);
-		GameImageHooker::nopRange(hostImageAddress + FOV_WRITE_INTERCEPT2_START_OFFSET, 8);
+		//GameImageHooker::nopRange(hostImageAddress + FOV_WRITE_INTERCEPT1_START_OFFSET, 2);
+		//GameImageHooker::nopRange(hostImageAddress + FOV_WRITE_INTERCEPT2_START_OFFSET, 8);
 	}
 }

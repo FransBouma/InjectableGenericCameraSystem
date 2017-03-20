@@ -28,14 +28,19 @@
 #include "stdafx.h"
 #include "GameImageHooker.h"
 #include "Defaults.h"
+#include "Utils.h"
+#include "AOBBlock.h"
 
 namespace IGCS::GameImageHooker
 {
-	// Sets a jmp qword ptr [address] statement at hostImageAddress + startOffset for x64 and a jmp <relative address> for x86
-	void setHook(LPBYTE hostImageAddress, DWORD startOffset, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction)
+	// Sets a jmp qword ptr [address] statement at baseAddress + startOffset for x64 and a jmp <relative address> for x86
+	void setHook(AOBBlock* hookData, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction)
 	{
-		LPBYTE startOfHookAddress = hostImageAddress + startOffset;
-		*interceptionContinue = hostImageAddress + continueOffset;
+		LPBYTE baseAddress = hookData->locationInImage();
+		DWORD startOffset = hookData->customOffset();
+
+		LPBYTE startOfHookAddress = baseAddress + startOffset;
+		*interceptionContinue = baseAddress + continueOffset;
 #ifdef _WIN64
 		// x64
 		byte instruction[14];	// 6 bytes of the jmp qword ptr [0] and 8 bytes for the real address which is stored right after the 6 bytes of jmp qword ptr [0] bytes 
