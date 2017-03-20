@@ -69,9 +69,10 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	{
 		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "F3 0F 11 83 90 00 00 00 F3 0F 10 44 24 58 F3 0F 11 83 98 00 00 00 F3 0F 11 8B 94 00 00 00", 3);
 		aobBlocks[CAMERA_WRITE_INTERCEPT1_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT1_KEY, "0F 28 00 0F 11 83 80 00 00 00 F3 0F 10 44 24 50 F3 0F 11 83 90 00 00 00", 3);
-		aobBlocks[CAMERA_WRITE_INTERCEPT2_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT2_KEY, "F3 0F 11 83 98 00 00 00 F3 0F 11 8B 94 00 00 00 EB 3B", 2);
+		aobBlocks[CAMERA_WRITE_INTERCEPT2_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT2_KEY, "F3 0F 11 83 98 00 00 00 F3 0F 11 8B 94 00 00 00 EB", 3);
 		aobBlocks[CAMERA_WRITE_INTERCEPT3_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT3_KEY, "0F 11 83 80 00 00 00 0F 28 4F 30 0F 28 C1 F3 0F 11 8B 90 00 00 00 0F C6 C1 55 0F C6 C9 AA", 3);
 		aobBlocks[CAMERA_READ_INTERCEPT_KEY] = new AOBBlock(CAMERA_READ_INTERCEPT_KEY, "53 48 81 EC 80 00 00 00 F6 81 AE 00 00 00 02 48 89 CB", 1);
+		aobBlocks[GAMESPEED_ADDRESS_INTERCEPT_KEY] = new AOBBlock(GAMESPEED_ADDRESS_INTERCEPT_KEY, "48 89 43 28 48 8B 4B 18 48 89 4B 20 48 01 43 18 EB", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		for(it = aobBlocks.begin(); it!=aobBlocks.end();it++)
@@ -97,9 +98,9 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	}
 
 
-	void setTimestopInterceptorHook(LPBYTE hostImageAddress)
+	void setTimestopInterceptorHook(map<string, AOBBlock*> &aobBlocks)
 	{
-		//GameImageHooker::setHook(hostImageAddress, GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET, GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_gamespeedInterceptionContinue, &gamespeedAddressInterceptor);
+		GameImageHooker::setHook(aobBlocks[GAMESPEED_ADDRESS_INTERCEPT_KEY], 0x10, &_gamespeedInterceptionContinue, &gamespeedAddressInterceptor);
 	}
 
 

@@ -326,7 +326,7 @@ namespace IGCS
 		InputHooker::setInputHooks();
 		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
 		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);
-		GameSpecific::InterceptorHelper::setTimestopInterceptorHook(_hostImageAddress);
+		GameSpecific::InterceptorHelper::setTimestopInterceptorHook(_aobBlocks);
 		GameSpecific::CameraManipulator::waitForCameraStructAddresses();		// blocks till camera is found.
 		// camera struct found, init our own camera object now and hook into game code which uses camera.
 		_cameraStructFound = true;

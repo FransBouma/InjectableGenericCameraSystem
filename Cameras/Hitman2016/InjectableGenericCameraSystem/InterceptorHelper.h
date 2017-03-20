@@ -36,6 +36,6 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void disableFoVWrite(LPBYTE hostImageAddress);
 	void setCameraStructInterceptorHook(map<string, AOBBlock*> &aobBlocks);
 	void setCameraWriteInterceptorHooks(map<string, AOBBlock*> &aobBlocks);
-	void setTimestopInterceptorHook(LPBYTE hostImageAddress);
+	void setTimestopInterceptorHook(map<string, AOBBlock*> &aobBlocks);
 	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, map<string, AOBBlock*> &aobBlocks);
 }
