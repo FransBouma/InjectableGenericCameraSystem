@@ -335,7 +335,7 @@ namespace IGCS
 		_camera.setYaw(INITIAL_YAW_RADIANS);
 		// initialize the writes after the camera has been found and initialized, as they rely on the camera struct address.
 		GameSpecific::InterceptorHelper::setCameraWriteInterceptorHooks(_aobBlocks);
-		GameSpecific::InterceptorHelper::disableFoVWrite(_hostImageAddress);
+		GameSpecific::InterceptorHelper::disableFoVWrite(_aobBlocks);
 	}
 	
 

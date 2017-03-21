@@ -202,13 +202,11 @@ namespace IGCS::InputHooker
 		// Enable all hooks
 		if (MH_EnableHook(MH_ALL_HOOKS) == MH_OK)
 		{
-#ifdef _DEBUG
-			Console::WriteLine("All hooks enabled");
-#endif
+			Console::WriteLine("All hooks enabled.");
 		}
 		else
 		{
-			Console::WriteError("Enabling hooks failed");
+			Console::WriteError("Enabling hooks failed.");
 		}
 	}
 }

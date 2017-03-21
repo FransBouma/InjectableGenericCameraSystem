@@ -32,6 +32,7 @@
 #include "GameImageHooker.h"
 #include "Utils.h"
 #include "AOBBlock.h"
+#include "Console.h"
 
 using namespace std;
 
@@ -73,11 +74,22 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE_INTERCEPT3_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT3_KEY, "0F 11 83 80 00 00 00 0F 28 4F 30 0F 28 C1 F3 0F 11 8B 90 00 00 00 0F C6 C1 55 0F C6 C9 AA", 3);
 		aobBlocks[CAMERA_READ_INTERCEPT_KEY] = new AOBBlock(CAMERA_READ_INTERCEPT_KEY, "53 48 81 EC 80 00 00 00 F6 81 AE 00 00 00 02 48 89 CB", 1);
 		aobBlocks[GAMESPEED_ADDRESS_INTERCEPT_KEY] = new AOBBlock(GAMESPEED_ADDRESS_INTERCEPT_KEY, "48 89 43 28 48 8B 4B 18 48 89 4B 20 48 01 43 18 EB", 1);
+		aobBlocks[FOV_WRITE_INTERCEPT1_KEY] = new AOBBlock(FOV_WRITE_INTERCEPT1_KEY, "74 ?? F3 0F 10 05 ?? ?? ?? ?? F3 0F 11 89 FC 00 00 00 F3 0F 59 0D ?? ?? ?? ?? 0F 2F C8", 1);
+		aobBlocks[FOV_WRITE_INTERCEPT2_KEY] = new AOBBlock(FOV_WRITE_INTERCEPT2_KEY, "0F 28 C1 | F3 0F 11 81 7C 01 00 00 E9 ?? ?? ?? ?? C3", 1);	// offset is at 'F3' so we use a '|'. 
 
 		map<string, AOBBlock*>::iterator it;
+		bool result = true;
 		for(it = aobBlocks.begin(); it!=aobBlocks.end();it++)
 		{
-			it->second->scan(hostImageAddress, hostImageSize);
+			result &= it->second->scan(hostImageAddress, hostImageSize);
+		}
+		if (result)
+		{
+			Console::WriteLine("All interception offsets found.");
+		}
+		else
+		{
+			Console::WriteError("One or more interception offsets weren't found: tools aren't compatible with this game's version.");
 		}
 	}
 
@@ -106,9 +118,9 @@ namespace IGCS::GameSpecific::InterceptorHelper
 
 	// The FoV write is disabled with NOPs, as the code block contains jumps out of the block so it's not easy to intercept with a silent method. It's OK though
 	// as the FoV changes simply change a value, so instead of the game keeping it at a value we overwrite it. We reset it to a default value when the FoV is disabled by the user 
-	void disableFoVWrite(LPBYTE hostImageAddress)
+	void disableFoVWrite(map<string, AOBBlock*> &aobBlocks)
 	{
-		//GameImageHooker::nopRange(hostImageAddress + FOV_WRITE_INTERCEPT1_START_OFFSET, 2);
-		//GameImageHooker::nopRange(hostImageAddress + FOV_WRITE_INTERCEPT2_START_OFFSET, 8);
+		GameImageHooker::nopRange(aobBlocks[FOV_WRITE_INTERCEPT1_KEY], 2);
+		GameImageHooker::nopRange(aobBlocks[FOV_WRITE_INTERCEPT2_KEY], 8);
 	}
 }

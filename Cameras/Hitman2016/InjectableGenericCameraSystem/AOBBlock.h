@@ -39,7 +39,7 @@ namespace IGCS
 		AOBBlock(string blockName, string bytePatternAsString, int occurrence);
 		~AOBBlock();
 
-		void scan(LPBYTE imageAddress, DWORD imageSize);
+		bool scan(LPBYTE imageAddress, DWORD imageSize);
 		LPBYTE locationInImage() { return _locationInImage; }
 		LPBYTE bytePattern() { return _bytePattern; }
 		int occurrence() { return _occurrence; }

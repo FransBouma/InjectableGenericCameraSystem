@@ -59,19 +59,15 @@ namespace IGCS::GameSpecific
 	#define CAMERA_WRITE_INTERCEPT3_KEY					"AOB_CAMERA_WRITE_INTERCEPT3"
 	#define CAMERA_READ_INTERCEPT_KEY					"AOB_CAMERA_READ_INTERCEPT3"
 	#define GAMESPEED_ADDRESS_INTERCEPT_KEY				"AOB_GAMESPEED_ADDRESS_INTERCEPT"
+	#define FOV_WRITE_INTERCEPT1_KEY					"AOB_FOV_WRITE_INTERCEPT1"
+	#define FOV_WRITE_INTERCEPT2_KEY					"AOB_FOV_WRITE_INTERCEPT2"
 														
-	#define GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET	0x43BCC8B	//v1.9, cam v1.0.6: 0x44FA00E	// v1.8: 0x409FAB4	
-	#define GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET 0x43BCC9B	//v1.9, cam v1.0.6: 0x44FA01E	// v1.8: 0x409FAC4	
-														
-	#define FOV_WRITE_INTERCEPT1_START_OFFSET			0x46E24A7	//v1.9, cam v1.0.6: 0x481B4D7	// v1.8: 0x43BBAE7. Original code: (will be NOPPED) 74 2D                 - je hitman.exe+46E1276 ; address differs per build!
-	#define FOV_WRITE_INTERCEPT2_START_OFFSET			0x46E24C9	//v1.9, cam v1.0.6: 0x481B4F9	// v1.8: 0x43BBB09. Original code: (will be NOPPED) F3 0F11 81 7C010000   - movss [rcx+0000017C],xmm0
-
 	// Indices in the structures read by interceptors 
 	#define LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET		0x80		
 	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0x90		
 	#define FOV_IN_CAMERA_STRUCT_OFFSET					0x17C		
 	#define GAMESPEED_IN_STRUCT_OFFSET					0x48		
-	#define SUPERSAMPLING_OFFSET						0x30515B8	// offset of the supersampling variable, within hitman.exe. Doesn't change often.
+	#define SUPERSAMPLING_OFFSET						0x305A008	// offset of the supersampling variable, within hitman.exe. Doesn't change often.
 
 	// specific option.
 	#define IGCS_KEY_FREEZE_47							VK_END	

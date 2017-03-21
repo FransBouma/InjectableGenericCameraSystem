@@ -32,6 +32,6 @@ using namespace std;
 
 namespace IGCS::GameImageHooker
 {
-	void nopRange(LPBYTE startAddress, int length);
+	void nopRange(AOBBlock* hookData, int length);
 	void setHook(AOBBlock* hookData, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction);
 }

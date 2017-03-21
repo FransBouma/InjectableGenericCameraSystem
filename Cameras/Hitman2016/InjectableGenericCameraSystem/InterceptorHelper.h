@@ -33,7 +33,7 @@ using namespace std;
 
 namespace IGCS::GameSpecific::InterceptorHelper
 {
-	void disableFoVWrite(LPBYTE hostImageAddress);
+	void disableFoVWrite(map<string, AOBBlock*> &aobBlocks);
 	void setCameraStructInterceptorHook(map<string, AOBBlock*> &aobBlocks);
 	void setCameraWriteInterceptorHooks(map<string, AOBBlock*> &aobBlocks);
 	void setTimestopInterceptorHook(map<string, AOBBlock*> &aobBlocks);

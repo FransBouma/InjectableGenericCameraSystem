@@ -65,7 +65,7 @@ namespace IGCS::GameImageHooker
 
 
 	// Writes NOP opcodes to a range of memory.
-	void nopRange(LPBYTE startAddress, int length)
+	void nopRange(AOBBlock* hookData, int length)
 	{
 		byte* nopBuffer;
 		if (length < 0 || length>1024)
@@ -78,6 +78,7 @@ namespace IGCS::GameImageHooker
 		{
 			nopBuffer[i] = 0x90;
 		}
+		LPBYTE startAddress = hookData->locationInImage() + hookData->customOffset();
 		SIZE_T noBytesWritten;
 		WriteProcessMemory(OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_WRITE, FALSE, GetCurrentProcessId()), startAddress, nopBuffer, length, &noBytesWritten);
 		free(nopBuffer);

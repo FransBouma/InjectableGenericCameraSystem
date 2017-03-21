@@ -44,14 +44,14 @@ namespace IGCS
 	}
 
 
-	void AOBBlock::scan(LPBYTE imageAddress, DWORD imageSize)
+	bool AOBBlock::scan(LPBYTE imageAddress, DWORD imageSize)
 	{
 		createAOBPatternFromStringPattern(_bytePatternAsString);
 		LPBYTE aobPatternLocation = Utils::findAOBPattern(imageAddress, imageSize, this);
 		if (nullptr == aobPatternLocation)
 		{
 			cerr << "Can't find pattern for block '" << _blockName << "'! Hook not set." << endl;
-			return;
+			return false;
 		}
 		else
 		{
@@ -60,6 +60,7 @@ namespace IGCS
 #endif
 		}
 		_locationInImage = aobPatternLocation;
+		return true;
 	}
 	
 
