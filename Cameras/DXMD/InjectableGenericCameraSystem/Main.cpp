@@ -38,20 +38,15 @@ DWORD WINAPI MainThread(LPVOID lpParam);
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  reason, LPVOID lpReserved)
 {
 	DWORD threadID;
+	HANDLE threadHandle;
 
 	DisableThreadLibraryCalls(hModule);
 
 	switch (reason)
 	{
 		case DLL_PROCESS_ATTACH:
-			CreateThread(
-				NULL,
-				0,
-				MainThread,
-				hModule,
-				0,
-				&threadID
-			);
+			threadHandle = CreateThread(nullptr, 0, MainThread, hModule, 0, &threadID);
+			SetThreadPriority(threadHandle, THREAD_PRIORITY_ABOVE_NORMAL);
 			break;
 		case DLL_PROCESS_DETACH:
 			Globals::instance().systemActive(false);
@@ -67,18 +62,15 @@ DWORD WINAPI MainThread(LPVOID lpParam)
 	Console::Init();
 	Console::WriteHeader();
 
-	HMODULE baseAddress = Utils::getBaseAddressOfContainingProcess();
-	if(NULL == baseAddress)
+	MODULEINFO hostModuleInfo = Utils::getModuleInfoOfContainingProcess();
+	if (nullptr == hostModuleInfo.lpBaseOfDll)
 	{
 		Console::WriteError("Not able to obtain parent process base address... exiting");
 	}
 	else
 	{
-#if _DEBUG
-		cout << "baseAddress:" << hex << (void*)baseAddress << endl;
-#endif
 		System s;
-		s.start(baseAddress);
+		s.start((LPBYTE)hostModuleInfo.lpBaseOfDll, hostModuleInfo.SizeOfImage);
 	}
 	Console::Release();
 	return 0;

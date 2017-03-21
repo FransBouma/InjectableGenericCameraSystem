@@ -52,10 +52,11 @@ namespace IGCS
 	}
 
 
-	void System::start(HMODULE hostBaseAddress)
+	void System::start(LPBYTE hostBaseAddress, DWORD hostImageSize)
 	{
 		Globals::instance().systemActive(true);
 		_hostImageAddress = (LPBYTE)hostBaseAddress;
+		_hostImageSize = hostImageSize;
 		Globals::instance().gamePad().setInvertLStickY(CONTROLLER_Y_INVERT);
 		Globals::instance().gamePad().setInvertRStickY(CONTROLLER_Y_INVERT);
 		displayHelp();
@@ -125,22 +126,17 @@ namespace IGCS
 				// it's going to be disabled, make sure things are alright when we give it back to the host
 				CameraManipulator::restoreOriginalCameraValues();
 				toggleCameraMovementLockState(false);
-				toggleFoVWriteState(true);	// enable writes
+				InterceptorHelper::toggleFoVWriteState(_aobBlocks, true);	// enable writes
 			}
 			else
 			{
 				// it's going to be enabled, so cache the original values before we enable it so we can restore it afterwards
 				CameraManipulator::cacheOriginalCameraValues();
 				_camera.resetAngles();
-				toggleFoVWriteState(false);	// disable writes
+				InterceptorHelper::toggleFoVWriteState(_aobBlocks, false);	// disable writes
 			}
 			g_cameraEnabled = g_cameraEnabled == 0 ? (byte)1 : (byte)0;
 			displayCameraState();
-			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
-		}
-		if (Input::keyDown(IGCS_KEY_TIMESTOP))
-		{
-			toggleTimestopState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
 		if (Input::keyDown(IGCS_KEY_GAMESPEEDSTOP))
@@ -327,11 +323,12 @@ namespace IGCS
 	{
 		InputHooker::setInputHooks();
 		Input::registerRawInput();
-		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_hostImageAddress);
-		GameSpecific::InterceptorHelper::setTimestopInterceptorHook(_hostImageAddress);
+		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
+		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);
+		GameSpecific::InterceptorHelper::setTimestopInterceptorHook(_aobBlocks);
 		GameSpecific::CameraManipulator::waitForCameraStructAddresses();		// blocks till camera is found.
-		GameSpecific::InterceptorHelper::setCameraWriteInterceptorHook(_hostImageAddress);
-		GameSpecific::InterceptorHelper::setHudToggleInterceptorHook(_hostImageAddress);
+		GameSpecific::InterceptorHelper::setCameraWriteInterceptorHook(_aobBlocks);
+		GameSpecific::InterceptorHelper::setHudToggleInterceptorHook(_aobBlocks);
 		// camera struct found, init our own camera object now and hook into game code which uses camera.
 		_cameraStructFound = true;
 		_camera.setPitch(INITIAL_PITCH_RADIANS);
@@ -371,21 +368,13 @@ namespace IGCS
 		{
 			// enable writes
 			byte originalStatementBytes[5] = { 0xF3, 0x0F, 0x11, 0x49, 0x0C };      // DXMD.exe+383F18E - F3 0F11 49 0C - movss [rcx+0C],xmm1
-			IGCS::GameImageHooker::writeRange(_hostImageAddress + FOV_WRITE_IN_IMAGE_OFFSET, originalStatementBytes, 5);
+			IGCS::GameImageHooker::writeRange(_aobBlocks[FOV_WRITE_ADDRESS_INTERCEPT_KEY], originalStatementBytes, 5);
 		}
 		else
 		{
 			// disable writes, by nopping the range.
-			IGCS::GameImageHooker::nopRange(_hostImageAddress + FOV_WRITE_IN_IMAGE_OFFSET, 5);
+			IGCS::GameImageHooker::nopRange(_aobBlocks[FOV_WRITE_ADDRESS_INTERCEPT_KEY], 5);
 		}
-	}
-
-
-	void System::toggleTimestopState()
-	{
-		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
-		Console::WriteLine(_timeStopped ? "Game hard-pause ON" : "Game hard-pause OFF");
-		CameraManipulator::setTimeStopValue(_timeStopped);
 	}
 
 
@@ -446,8 +435,7 @@ namespace IGCS
 		Console::WriteLine("Numpad /                       : Toggle Y look direction");
 		Console::WriteLine("Numpad .                       : Toggle mouse/keyboard input to game");
 		Console::WriteLine("DEL                            : Toggle HUD");
-		Console::WriteLine("Page Down                      : Toggle hard-freeze game (No fov change!)");
-		Console::WriteLine("Numpad 0                       : Toggle game speed freeze (allows fov change)");
+		Console::WriteLine("Numpad 0                       : Toggle game speed freeze");
 		Console::WriteLine("[                              : Decrease game speed (during game speed freeze)");
 		Console::WriteLine("]                              : Increase game speed (during game speed freeze)");
 		Console::WriteLine("ALT+H                          : This help");

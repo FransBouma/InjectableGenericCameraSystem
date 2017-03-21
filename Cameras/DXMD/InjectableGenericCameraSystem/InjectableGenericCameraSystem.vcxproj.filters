@@ -64,6 +64,9 @@
     <ClInclude Include="Input.h">
       <Filter>Input</Filter>
     </ClInclude>
+    <ClInclude Include="AOBBlock.h">
+      <Filter>Hooking</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InterceptorHelper.cpp">
@@ -104,6 +107,9 @@
     </ClCompile>
     <ClCompile Include="Input.cpp">
       <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="AOBBlock.cpp">
+      <Filter>Hooking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

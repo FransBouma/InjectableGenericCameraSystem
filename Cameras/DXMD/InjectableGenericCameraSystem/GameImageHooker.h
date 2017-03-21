@@ -26,10 +26,14 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "AOBBlock.h"
 
 namespace IGCS::GameImageHooker
 {
 	void nopRange(LPBYTE startAddress, int length);
+	void nopRange(AOBBlock* hookData, int length);
 	void setHook(LPBYTE hostImageAddress, DWORD startOffset, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction);
+	void setHook(AOBBlock* hookData, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction);
 	void writeRange(LPBYTE startAddress, byte* bufferToWrite, int length);
+	void writeRange(AOBBlock* hookData, byte* bufferToWrite, int length);
 }

@@ -37,7 +37,6 @@ extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
 	LPBYTE g_gameSpeedStructAddress = nullptr;
 	LPBYTE g_hudToggleStructAddress = nullptr;
-	LPBYTE g_timeStopStructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -45,18 +44,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static float _originalLookData[9];		// game uses a 3x3 matrix
 	static float _originalCoordsData[3];
 	static bool _gameSpeedHasBeenStopped = false;
-
-	// newValue: 1 == time should be frozen, 0 == normal gameplay
-	void setTimeStopValue(byte newValue)
-	{
-		if (nullptr == g_timeStopStructAddress)
-		{
-			return;
-		}
-		byte* timestopAddress = (byte*)(g_timeStopStructAddress + TIMESTOP_VALUE_IN_STRUCT_OFFSET);
-		*timestopAddress = newValue;
-	}
-
 
 	void setGamespeedFreezeValue(byte newValue)
 	{

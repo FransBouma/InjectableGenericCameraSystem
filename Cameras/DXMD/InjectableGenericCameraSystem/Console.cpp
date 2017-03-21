@@ -41,7 +41,7 @@ namespace IGCS::Console
 	void WriteHeader()
 	{
 		SetColor(CONSOLE_WHITE);
-		cout << "Injectable camera tools for " << GAME_NAME << ". Version: " << CAMERA_VERSION << endl;
+		cout << "Injectable camera tools v" << CAMERA_VERSION << " for " << GAME_NAME << endl;
 		WriteLine("Powered by Injectable Generic Camera System by Otis_Inf");
 		WriteLine("Get your copy at: https://github.com/FransBouma/InjectableGenericCameraSystem");
 		cout << "Camera credits: " << CAMERA_CREDITS << endl;

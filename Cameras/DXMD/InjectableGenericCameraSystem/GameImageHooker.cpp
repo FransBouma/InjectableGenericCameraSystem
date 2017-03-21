@@ -60,7 +60,7 @@ namespace IGCS::GameImageHooker
 		if (result)
 		{
 #ifdef _DEBUG
-			cout << "Hook set to offset: " << hex << startOffset << endl;
+			cout << "Hook set to address: " << hex << startOfHookAddress << endl;
 #endif
 		}
 		else
@@ -69,6 +69,13 @@ namespace IGCS::GameImageHooker
 			cout << "Error code: " << hex << GetLastError() << endl;
 		}
 	}
+	
+
+	// Sets a jmp qword ptr [address] statement at baseAddress + startOffset for x64 and a jmp <relative address> for x86
+	void setHook(AOBBlock* hookData, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction)
+	{
+		setHook(hookData->locationInImage(), hookData->customOffset(), continueOffset, interceptionContinue, asmFunction);
+	}
 
 
 	// Writes the bytes pointed at by bufferToWrite starting at address startAddress, for the length in 'length'.
@@ -76,6 +83,13 @@ namespace IGCS::GameImageHooker
 	{
 		SIZE_T noBytesWritten;
 		WriteProcessMemory(OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_WRITE, FALSE, GetCurrentProcessId()), startAddress, bufferToWrite, length, &noBytesWritten);
+	}
+
+
+	// Writes the bytes pointed at by bufferToWrite starting at address startAddress, for the length in 'length'.
+	void writeRange(AOBBlock* hookData, byte* bufferToWrite, int length)
+	{
+		writeRange(hookData->locationInImage() + hookData->customOffset(), bufferToWrite, length);
 	}
 
 
@@ -96,5 +110,12 @@ namespace IGCS::GameImageHooker
 		SIZE_T noBytesWritten;
 		WriteProcessMemory(OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_WRITE, FALSE, GetCurrentProcessId()), startAddress, nopBuffer, length, &noBytesWritten);
 		free(nopBuffer);
+	}
+
+
+	// Writes NOP opcodes to a range of memory.
+	void nopRange(AOBBlock* hookData, int length)
+	{
+		nopRange(hookData->locationInImage() + hookData->customOffset(), length);
 	}
 }

@@ -35,7 +35,6 @@ PUBLIC cameraAddressInterceptor
 PUBLIC cameraWriteInterceptor
 PUBLIC gameSpeedInterceptor
 PUBLIC hudToggleInterceptor
-PUBLIC timeStopInterceptor
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -44,7 +43,6 @@ PUBLIC timeStopInterceptor
 EXTERN g_cameraStructAddress: qword
 EXTERN g_gameSpeedStructAddress: qword
 EXTERN g_hudToggleStructAddress: qword
-EXTERN g_timeStopStructAddress: qword
 EXTERN g_cameraEnabled: byte
 ;---------------------------------------------------------------
 
@@ -54,23 +52,19 @@ EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _cameraWriteInterceptionContinue: qword
 EXTERN _gameSpeedInterceptorContinue: qword
 EXTERN _hudToggleInterceptorContinue: qword
-EXTERN _timeStopStructInterceptionContinue: qword
 
 ;---------------------------------------------------------------
 ; Scratch pad
-; Better timestop
-;DXMD.exe+34B9863 - 83 B9 E4000000 00     - cmp dword ptr [rcx+000000E4],00		<<<< INTERCEPT HERE
-;DXMD.exe+34B986A - 77 09                 - ja DXMD.exe+34B9875
-;DXMD.exe+34B986C - 83 B9 EC000000 00     - cmp dword ptr [rcx+000000EC],00
-;DXMD.exe+34B9873 - 76 02                 - jna DXMD.exe+34B9877
-;DXMD.exe+34B9875 - 31 C0                 - xor eax,eax
-;DXMD.exe+34B9877 - 83 B9 E8000000 00     - cmp dword ptr [rcx+000000E8],00		<<< TIMESTOP READ
-;DXMD.exe+34B987E - 77 09                 - ja DXMD.exe+34B9889
-;DXMD.exe+34B9880 - 83 B9 F0000000 00     - cmp dword ptr [rcx+000000F0],00
-;DXMD.exe+34B9887 - 76 0B                 - jna DXMD.exe+34B9894
-;DXMD.exe+34B9889 - B8 0FA24FC3           - mov eax,C34FA20F
-;DXMD.exe+34B988E - 8D 80 F25DB03C        - lea eax,[rax+3CB05DF2]
-;DXMD.exe+34B9894 - F3 C3                 - repe ret							<<<< CONTINUE HERE
+;---------------------------------------------------------------
+
+;---------------------------------------------------------------
+; FOV Write address. This is nopped in the interceptor when needed. 
+;---------------------------------------------------------------
+;DXMD.exe+383F18E - F3 0F11 49 0C         - movss [rcx+0C],xmm1					<<< FOV WRITE
+;DXMD.exe+383F193 - F3 0F10 0D FD935DFE   - movss xmm1,[DXMD.exe+1E18598] { [0.01] }
+;DXMD.exe+383F19B - 48 81 C1 D0FEFFFF     - add rcx,FFFFFED0 { -304 }
+;DXMD.exe+383F1A2 - F3 0F59 81 3C010000   - mulss xmm0,[rcx+0000013C]
+;DXMD.exe+383F1AA - 0F2F C1               - comiss xmm0,xmm1
 ;---------------------------------------------------------------
 .code
 
@@ -90,42 +84,6 @@ originalCode:
 exit:
 	jmp qword ptr [_cameraStructInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraAddressInterceptor ENDP
-
-
-timeStopInterceptor PROC
-;DXMD.exe+34BA012 - 48 8D 81 EC000000     - lea rax,[rcx+000000EC]				<<< INTERCEPT HERE
-;DXMD.exe+34BA019 - 83 78 F8 00           - cmp dword ptr [rax-08],00			<<<< TIMESTOP READ
-;DXMD.exe+34BA01D - 77 15                 - ja DXMD.exe+34BA034
-;DXMD.exe+34BA01F - 83 38 00              - cmp dword ptr [rax],00
-;DXMD.exe+34BA022 - 77 10                 - ja DXMD.exe+34BA034
-;DXMD.exe+34BA024 - FF C2                 - inc edx
-;DXMD.exe+34BA026 - 48 83 C0 04           - add rax,04
-;DXMD.exe+34BA02A - 83 FA 02              - cmp edx,02
-;DXMD.exe+34BA02D - 72 EA                 - jb DXMD.exe+34BA019
-;DXMD.exe+34BA02F - 30 C0                 - xor al,al
-;DXMD.exe+34BA031 - C3                    - ret 
-;DXMD.exe+34BA032 - 00 00                 - add [rax],al
-;DXMD.exe+34BA034 - B0 01                 - mov al,01
-;DXMD.exe+34BA036 - C3                    - ret									<<< CONTINUE HERE
-	mov g_timeStopStructAddress, rcx
-	lea rax,[rcx+000000ECh]
-check:		
-	cmp dword ptr [rax-08h],00	
-	ja continue1
-	cmp dword ptr [rax],00
-	ja continue1
-	inc edx
-	add rax,04h
-	cmp edx,02h
-	jb check
-	xor al,al
-	jmp exit
-	add [rax],al
-continue1:
-	mov al,01h
-exit:
-	jmp qword ptr [_timeStopStructInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
-timeStopInterceptor ENDP
 
 
 cameraWriteInterceptor PROC

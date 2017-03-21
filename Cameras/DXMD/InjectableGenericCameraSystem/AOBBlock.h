@@ -26,20 +26,38 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "stdafx.h"
+#include "AOBBlock.h"
+#include "Utils.h"
 
-using namespace DirectX;
+using namespace std;
 
-namespace IGCS::GameSpecific::CameraManipulator
+namespace IGCS
 {
-	void writeNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoords);
-	void waitForCameraStructAddresses();
-	void restoreOriginalCameraValues();
-	void cacheOriginalCameraValues();
-	void resetFoV();
-	void changeFoV(float amount);
-	void modifyGameSpeed(bool decrease);
-	XMFLOAT3 getCurrentCameraCoords();
-	void toggleHud(bool showHud);
-	void setGamespeedFreezeValue(byte newValue);
+	class AOBBlock
+	{
+	public:
+		AOBBlock(string blockName, string bytePatternAsString, int occurrence);
+		~AOBBlock();
+
+		bool scan(LPBYTE imageAddress, DWORD imageSize);
+		LPBYTE locationInImage() { return _locationInImage; }
+		LPBYTE bytePattern() { return _bytePattern; }
+		int occurrence() { return _occurrence; }
+		int patternSize() { return _patternSize; }
+		char* patternMask() { return _patternMask; }
+		int customOffset() { return _customOffset; }
+
+	private:
+		void createAOBPatternFromStringPattern(string pattern);
+
+		string _blockName;
+		string _bytePatternAsString;
+		LPBYTE _bytePattern;
+		char* _patternMask;
+		int _patternSize;
+		int _customOffset;
+		int _occurrence;		// starts at 1: if there are more occurrences, and e.g. the 3rd has to be picked, set this to 3.
+		LPBYTE _locationInImage;	// the location to use after the scan has been completed.
+	};
+
 }

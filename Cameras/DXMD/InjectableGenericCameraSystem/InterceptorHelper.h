@@ -26,11 +26,16 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include <map>
+#include "Utils.h"
 
 namespace IGCS::GameSpecific::InterceptorHelper
 {
-	void setCameraStructInterceptorHook(LPBYTE hostImageAddress);
-	void setTimestopInterceptorHook(LPBYTE hostImageAddress);
-	void setCameraWriteInterceptorHook(LPBYTE hostImageAddress);
-	void setHudToggleInterceptorHook(LPBYTE hostImageAddress);
+	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, map<string, AOBBlock*> &aobBlocks);
+
+	void setCameraStructInterceptorHook(map<string, AOBBlock*> &aobBlocks);
+	void setTimestopInterceptorHook(map<string, AOBBlock*> &aobBlocks);
+	void setCameraWriteInterceptorHook(map<string, AOBBlock*> &aobBlocks);
+	void setHudToggleInterceptorHook(map<string, AOBBlock*> &aobBlocks);
+	void toggleFoVWriteState(map<string, AOBBlock*> &aobBlocks, bool enabled);
 }
