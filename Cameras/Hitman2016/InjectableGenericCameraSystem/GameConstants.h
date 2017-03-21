@@ -52,7 +52,7 @@ namespace IGCS::GameSpecific
 	#define DEFAULT_MAX_GAME_SPEED						10.0f
 	// End Mandatory constants
 
-	// Offsets for camera intercept code. Used in interceptor.
+	// AOB Keys for interceptor's AOB scanner
 	#define CAMERA_ADDRESS_INTERCEPT_KEY				"AOB_CAMERA_ADDRESS_INTERCEPT"
 	#define CAMERA_WRITE_INTERCEPT1_KEY					"AOB_CAMERA_WRITE_INTERCEPT1"
 	#define CAMERA_WRITE_INTERCEPT2_KEY					"AOB_CAMERA_WRITE_INTERCEPT2"
