@@ -36,7 +36,11 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void waitForCameraStructAddresses(LPBYTE hostImageAddress);
 	void restoreOriginalCameraValues();
 	void cacheOriginalCameraValues();
-	void modifyGameSpeed(bool decrease);
 	XMFLOAT3 getCurrentCameraCoords();
-	void setGamespeedFreezeValue(byte newValue);
+	void modifyGameSpeed(LPBYTE hostImageAddress, bool decrease);
+	void setGamespeedFreezeValue(LPBYTE hostImageAddress, byte newValue);
+	void setEnemyFreezeValue(LPBYTE hostImageAddress, byte newValue);
+	void setBossFreezeValue(LPBYTE hostImageAddress, byte newValue);
+	void resetFoV(LPBYTE hostImageAddress);
+	void changeFoV(LPBYTE hostImageAddress, float amount);
 }

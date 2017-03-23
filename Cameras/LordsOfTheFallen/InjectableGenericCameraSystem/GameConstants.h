@@ -35,16 +35,16 @@ namespace IGCS::GameSpecific
 	#define CAMERA_CREDITS								"Otis_Inf, Petroski. Special thanks to Jim2point0."
 	#define GAME_WINDOW_TITLE							"Lords of the Fallen"
 	#define INITIAL_PITCH_RADIANS						0.0f	// World has X right, Y up, Z out of the screen.
-	#define INITIAL_YAW_RADIANS							0.0f	// around Y axis	(out of the screen)
-	#define INITIAL_ROLL_RADIANS						0.0f	// around Z axis	(up)
+	#define INITIAL_YAW_RADIANS							0.0f	// around Y axis	(up)
+	#define INITIAL_ROLL_RADIANS						0.0f	// around Z axis	(out of the screen)
 	#define CONTROLLER_Y_INVERT							false
 	#define FASTER_MULTIPLIER							10.0f
 	#define SLOWER_MULTIPLIER							0.1f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
-	#define DEFAULT_MOVEMENT_SPEED						1.2f
+	#define DEFAULT_MOVEMENT_SPEED						2.0f
 	#define DEFAULT_ROTATION_SPEED						0.015f
-	#define DEFAULT_FOV_DEGREES							54.54f
-	#define DEFAULT_FOV_SPEED							0.1f
+	#define DEFAULT_FOV_RADIANS							0.8727f
+	#define DEFAULT_FOV_SPEED							0.001f
 	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f
 	#define DEFAULT_GAME_SPEED							1.0f
 	#define DEFAULT_MIN_GAME_SPEED						0.0f
@@ -54,14 +54,14 @@ namespace IGCS::GameSpecific
 	// AOB Keys for interceptor's AOB scanner
 	#define CAMERA_WRITE_INTERCEPT1_KEY					"AOB_CAMERA_WRITE_INTERCEPT1"
 	#define CAMERA_WRITE_INTERCEPT2_KEY					"AOB_CAMERA_WRITE_INTERCEPT2"
-
-
+	#define FOV_WRITE_INTERCEPT_KEY						"AOB_FOV_WRITE_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
 	#define CAMERA_STRUCT_OFFSET_IN_IMAGE				0x5D3DDE0
 	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0x0
 	#define LOOK_DATA_IN_CAMERA_STRUCT_OFFSET			0xC		
-	#define GAMESPEED_IN_IMAGE_OFFSET					0xCFC5870
-	#define GAMESPEED_BOSS_IN_IMAGE_OFFSET				0x5F47038
-	#define GAMESPEED_ENEMIES_IN_IMAGE_OFFSET			0x5D06688
+	#define FOV_POINTER_IN_IMAGE_OFFSET					0x20F1FF0
+	#define GAMESPEED_POINTER_IN_IMAGE_OFFSET			0xCFC5870
+	#define GAMESPEED_BOSS_POINTER_IN_IMAGE_OFFSET		0x5F47038
+	#define GAMESPEED_ENEMIES_POINTER_IN_IMAGE_OFFSET	0x5D06688
 }

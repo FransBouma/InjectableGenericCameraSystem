@@ -36,7 +36,9 @@ using namespace std;
 
 extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
-	LPBYTE g_gameSpeedStructAddress = nullptr;
+	LPBYTE g_gameSpeedAddress = nullptr;
+	LPBYTE g_bossFreezeAddress = nullptr;
+	LPBYTE g_enemiesFreezeAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -44,28 +46,66 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static float _originalLookData[4];		// game uses a quaternion
 	static float _originalCoordsData[3];
 	static bool _gameSpeedHasBeenStopped = false;
+	static bool _enemiesHaveBeenFrozen = false;
+	static bool _bossHasBeenFrozen = false;
+	
 
-	void setGamespeedFreezeValue(byte newValue)
+	// Dirty hack as the gamespeed is stored as a 3 hop pointer chain. I could intercept it where it's read, but I used the 
+	// cheat table of Petroski here to get to the real address using some simple pointer calculations. 
+	LPBYTE calculateFreezeAddress(LPBYTE firstPointerAddress, int firstPointerOffset, int secondPointerOffset)
 	{
-		if (nullptr == g_gameSpeedStructAddress)
-		{
-			return;
-		}
-		// set flag so camera works during menu driven timestop
+		LPBYTE* firstPointer = (LPBYTE*)(firstPointerAddress);
+		LPBYTE* secondPointer = (LPBYTE*)(*firstPointer + 0x28);
+		return (LPBYTE)*secondPointer + 0x34;
+	}
+
+
+	// Dirty hack as the gamespeed is stored as a 2 hop pointer chain. I could intercept it where it's read, but I used the 
+	// cheat table of Petroski here to get to the real address using some simple pointer calculations. 
+	LPBYTE calculateFoVAddress(LPBYTE hostImageAddress)
+	{
+		LPBYTE* fovPointer = (LPBYTE*)(hostImageAddress + FOV_POINTER_IN_IMAGE_OFFSET);
+		return (LPBYTE)*fovPointer + 0x18;
+	}
+
+#error BUG IN POINTERARITHMETIC: ADDRESS IS 0
+	void setEnemyFreezeValue(LPBYTE hostImageAddress, byte newValue)
+	{
+		_enemiesHaveBeenFrozen = (newValue == 1);
+		float* enemySpeedAddress = reinterpret_cast<float*>(calculateFreezeAddress(hostImageAddress + GAMESPEED_ENEMIES_POINTER_IN_IMAGE_OFFSET, 0x38, 0x34));
+#ifdef _DEBUG
+		cout << "enemy speed address: " << hex << (void*)enemySpeedAddress << endl;
+#endif
+		*enemySpeedAddress = _enemiesHaveBeenFrozen ? 0.0f : 1.0f;
+	}
+
+	void setBossFreezeValue(LPBYTE hostImageAddress, byte newValue)
+	{
+		_bossHasBeenFrozen = (newValue == 1);
+		float* bossSpeedAddress = reinterpret_cast<float*>(calculateFreezeAddress(hostImageAddress + GAMESPEED_BOSS_POINTER_IN_IMAGE_OFFSET, 0x38, 0x34));
+#ifdef _DEBUG
+		cout << "boss speed address: " << hex << (void*)bossSpeedAddress << endl;
+#endif
+		*bossSpeedAddress = _bossHasBeenFrozen ? 0.0f : 1.0f;
+	}
+
+
+	void setGamespeedFreezeValue(LPBYTE hostImageAddress, byte newValue)
+	{
 		_gameSpeedHasBeenStopped = (newValue == 1);
-		float* gamespeedAddress = reinterpret_cast<float*>(g_gameSpeedStructAddress);
+		float* gamespeedAddress = reinterpret_cast<float*>(calculateFreezeAddress(hostImageAddress + GAMESPEED_POINTER_IN_IMAGE_OFFSET, 0x28, 0x34));
 		*gamespeedAddress = _gameSpeedHasBeenStopped ? DEFAULT_MIN_GAME_SPEED : DEFAULT_GAME_SPEED;
 	}
 
 
 	// decreases / increases the gamespeed till 0.0001f or 10f. 
-	void modifyGameSpeed(bool decrease)
+	void modifyGameSpeed(LPBYTE hostImageAddress, bool decrease)
 	{
 		if (!_gameSpeedHasBeenStopped)
 		{
 			return;
 		}
-		float* gamespeedAddress = reinterpret_cast<float*>(g_gameSpeedStructAddress);
+		float* gamespeedAddress = reinterpret_cast<float*>(calculateFreezeAddress(hostImageAddress + GAMESPEED_POINTER_IN_IMAGE_OFFSET, 0x28, 0x34));
 		float newValue = *gamespeedAddress;
 		newValue += (decrease ? -0.1f : 0.1f);
 		if (newValue < DEFAULT_MIN_GAME_SPEED)
@@ -78,6 +118,22 @@ namespace IGCS::GameSpecific::CameraManipulator
 		}
 		*gamespeedAddress = newValue;
 		Console::WriteLine("Game speed is set to now: " + to_string(newValue));
+	}
+	
+
+	// Resets the FOV to the default
+	void resetFoV(LPBYTE hostImageAddress)
+	{
+		float* fovInMemory = reinterpret_cast<float*>(calculateFoVAddress(hostImageAddress));
+		*fovInMemory = DEFAULT_FOV_RADIANS;
+	}
+
+
+	// changes the FoV with the specified amount
+	void changeFoV(LPBYTE hostImageAddress, float amount)
+	{
+		float* fovInMemory = reinterpret_cast<float*>(calculateFoVAddress(hostImageAddress));
+		*fovInMemory += amount;
 	}
 
 

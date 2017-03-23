@@ -152,13 +152,34 @@ namespace IGCS
 			modifyGameSpeed(false);
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
+		if (Input::keyDown(IGCS_KEY_FREEZE_ENEMIES))
+		{
+			toggleFreezeEnemiesState();
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
+		if (Input::keyDown(IGCS_KEY_FREEZE_BOSS))
+		{
+			toggleFreezeBossState();
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
 
 		if (!g_cameraEnabled)
 		{
 			// camera is disabled. We simply disable all input to the camera movement, by returning now.
 			return;
 		}
-
+		if (Input::keyDown(IGCS_KEY_FOV_RESET))
+		{
+			CameraManipulator::resetFoV(_hostImageAddress);
+		}
+		if (Input::keyDown(IGCS_KEY_FOV_DECREASE))
+		{
+			CameraManipulator::changeFoV(_hostImageAddress , -DEFAULT_FOV_SPEED);
+		}
+		if (Input::keyDown(IGCS_KEY_FOV_INCREASE))
+		{
+			CameraManipulator::changeFoV(_hostImageAddress, DEFAULT_FOV_SPEED);
+		}
 		if (Input::keyDown(IGCS_KEY_BLOCK_INPUT))
 		{
 			toggleInputBlockState(!Globals::instance().inputBlocked());
@@ -296,6 +317,7 @@ namespace IGCS
 		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
 		GameSpecific::CameraManipulator::waitForCameraStructAddresses(_hostImageAddress);		// blocks till camera is found.
 		GameSpecific::InterceptorHelper::setCameraWriteInterceptorHooks(_aobBlocks);
+		GameSpecific::InterceptorHelper::setFoVWriteInterceptorHook(_aobBlocks);
 		// camera struct found, init our own camera object now and hook into game code which uses camera.
 		_cameraStructFound = true;
 		_camera.setPitch(INITIAL_PITCH_RADIANS);
@@ -332,7 +354,23 @@ namespace IGCS
 	{
 		_gamespeedStopped = _gamespeedStopped == 0 ? (byte)1 : (byte)0;
 		Console::WriteLine(_gamespeedStopped ? "Game speed frozen" : "Game speed normal");
-		CameraManipulator::setGamespeedFreezeValue(_gamespeedStopped);
+		CameraManipulator::setGamespeedFreezeValue(_hostImageAddress, _gamespeedStopped);
+	}
+
+
+	void System::toggleFreezeEnemiesState()
+	{
+		_enemiesFrozen = _enemiesFrozen == 0 ? (byte)1 : (byte)0;
+		Console::WriteLine(_enemiesFrozen ? "Enemy movement frozen" : "Enemy movement normal");
+		CameraManipulator::setEnemyFreezeValue(_hostImageAddress, _enemiesFrozen);
+	}
+
+
+	void System::toggleFreezeBossState()
+	{
+		_bossFrozen = _bossFrozen == 0 ? (byte)1 : (byte)0;
+		Console::WriteLine(_bossFrozen ? "Boss movement frozen" : "Boss movement normal");
+		CameraManipulator::setBossFreezeValue(_hostImageAddress, _bossFrozen);
 	}
 
 
@@ -355,7 +393,7 @@ namespace IGCS
 		{
 			return;
 		}
-		CameraManipulator::modifyGameSpeed(decrease);
+		CameraManipulator::modifyGameSpeed(_hostImageAddress, decrease);
 	}
 
 	void System::displayHelp()

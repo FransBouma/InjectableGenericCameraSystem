@@ -33,6 +33,7 @@
 ; Public definitions so the linker knows which names are present in this file
 PUBLIC cameraWriteInterceptor1
 PUBLIC cameraWriteInterceptor2
+PUBLIC fovWriteInterceptor
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -45,6 +46,7 @@ EXTERN g_cameraEnabled: byte
 ; Own externs, defined in InterceptorHelper.cpp
 EXTERN _cameraWriteInterception1Continue: qword
 EXTERN _cameraWriteInterception2Continue: qword
+EXTERN _fovWriteInterceptionContinue: qword
 EXTERN _cameraCoordsAddress: qword
 EXTERN _cameraQuaternionAddress: qword
 
@@ -53,7 +55,7 @@ EXTERN _cameraQuaternionAddress: qword
 ; FOV WRITE: 
 ;LordsOfTheFallen.exe+D2E5F46 - 0F2E 40 18            - ucomiss xmm0,[rax+18]
 ;LordsOfTheFallen.exe+D2E5F4A - 74 1C                 - je LordsOfTheFallen.exe+D2E5F68
-;LordsOfTheFallen.exe+D2E5F4C - F3 0F11 40 18         - movss [rax+18],xmm0										<< FOV WRITE
+;LordsOfTheFallen.exe+D2E5F4C - F3 0F11 40 18         - movss [rax+18],xmm0										<< FOV WRITE. Intercept here
 ;LordsOfTheFallen.exe+D2E5F51 - C6 80 4C010000 01     - mov byte ptr [rax+0000014C],01 { 1 }
 ;LordsOfTheFallen.exe+D2E5F58 - 66 C7 80 4E010000 0101 - mov word ptr [rax+0000014E],0101 { 257 }
 ;LordsOfTheFallen.exe+D2E5F61 - C6 80 50010000 01     - mov byte ptr [rax+00000150],01 { 1 }
@@ -133,5 +135,25 @@ noCameraWrite:
 exit:
 	jmp qword ptr [_cameraWriteInterception2Continue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWriteInterceptor2 ENDP
+
+
+fovWriteInterceptor PROC
+;LordsOfTheFallen.exe+D2E5F4C - F3 0F11 40 18         - movss [rax+18],xmm0										<< FOV WRITE. Intercept here
+;LordsOfTheFallen.exe+D2E5F51 - C6 80 4C010000 01     - mov byte ptr [rax+0000014C],01 
+;LordsOfTheFallen.exe+D2E5F58 - 66 C7 80 4E010000 0101 - mov word ptr [rax+0000014E],0101
+;LordsOfTheFallen.exe+D2E5F61 - C6 80 50010000 01     - mov byte ptr [rax+00000150],01
+;LordsOfTheFallen.exe+D2E5F68 - 48 8B 49 58           - mov rcx,[rcx+58]									    <<< CONTINUE HERE
+
+	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
+	je continue											; our own camera is enabled, just skip the writes
+originalCode:	
+	movss dword ptr [rax+18h],xmm0		
+continue:
+	mov byte ptr [rax+0000014Ch],01h
+	mov word ptr [rax+0000014Eh],0101h
+	mov byte ptr [rax+00000150h],01h
+exit:
+	jmp qword ptr [_fovWriteInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+fovWriteInterceptor ENDP
 
 END

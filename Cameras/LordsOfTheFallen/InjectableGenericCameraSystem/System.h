@@ -49,17 +49,16 @@ namespace IGCS
 		void writeNewCameraValuesToCameraStructs();
 		void displayHelp();
 		void displayCameraState();
-		void toggleTimestopState();
 		void toggleGamespeedStopState();
+		void toggleFreezeEnemiesState();
+		void toggleFreezeBossState();
 		void toggleYLookDirectionState();
 		void toggleCameraMovementLockState(bool newValue);
 		void toggleInputBlockState(bool newValue);
-		void toggleFoVWriteState(bool enabled);
 		void handleKeyboardCameraMovement(float multiplier);
 		void handleMouseCameraMovement(float multiplier);
 		void handleGamePadMovement(float multiplierBase);
 		void modifyGameSpeed(bool decrease);
-		void toggleHUD();
 
 		Camera _camera;
 		LPBYTE _hostImageAddress;
@@ -68,7 +67,8 @@ namespace IGCS
 		bool _cameraStructFound = false;
 		bool _timeStopped = false;
 		bool _gamespeedStopped = false;
-		bool _hudVisible = true;
+		bool _enemiesFrozen = false;
+		bool _bossFrozen = false;
 		map<string, AOBBlock*> _aobBlocks;
 	};
 }
