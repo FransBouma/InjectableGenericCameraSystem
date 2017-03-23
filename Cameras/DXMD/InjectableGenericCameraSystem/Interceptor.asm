@@ -135,12 +135,15 @@ originalCode:
 gameSpeedInterceptor ENDP
 
 hudToggleInterceptor PROC
-;DXMD.exe+4304190 - 80 79 20 00           - cmp byte ptr [rcx+20],00			<< INTERCEPT HERE
-;DXMD.exe+4304194 - 74 06                 - je DXMD.exe+430419C					(second return)
-;DXMD.exe+4304196 - F3 0F10 41 24         - movss xmm0,[rcx+24]			<< HUD Toggle (1.0f is show, 0.0f is hide)
-;DXMD.exe+430419B - C3                    - ret 
-;DXMD.exe+430419C - F3 0F10 41 28         - movss xmm0,[rcx+28]
-;DXMD.exe+43041A1 - C3                    - ret 								<< CONTINUE HERE.
+; v1.17 introduced 4 alignment bytes between the two statements. 
+;DXMD.exe+4312BC0 - 80 79 20 00           - cmp byte ptr [rcx+20],00 { 0 }		<< INTERCEPT HERE
+;DXMD.exe+4312BC4 - 74 0A                 - je DXMD.exe+4312BD0					(second return)
+;DXMD.exe+4312BC6 - F3 0F10 41 24         - movss xmm0,[rcx+24]					<< HUD Toggle (1.0f is show, 0.0f is hide)
+;DXMD.exe+4312BCB - C3                    - ret 
+;DXMD.exe+4312BCC - 16                    - push ss								<< BS BYTES, not used in original code below.
+;DXMD.exe+4312BCD - 39 6D 8E              - cmp [rbp-72],ebp
+;DXMD.exe+4312BD0 - F3 0F10 41 28         - movss xmm0,[rcx+28]
+;DXMD.exe+4312BD5 - C3                    - ret									<< CONTINUE HERE
 	mov [g_hudToggleStructAddress], rcx
 originalCode:
 	cmp byte ptr [rcx+20h], 00

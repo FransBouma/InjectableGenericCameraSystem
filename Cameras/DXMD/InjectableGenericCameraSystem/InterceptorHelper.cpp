@@ -63,7 +63,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "F3 0F 10 9B 3C 01 00 00 F3 0F 10 8B 08 02 00 00 F3 0F 10 93 0C 02 00 00 0F 28 E3", 1);
 		aobBlocks[CAMERA_WRITE_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT_KEY, "0F C6 C2 49 0F 29 4B 50 0F 28 CA 0F C6 CD 0A 0F 29 43 60 0F C6 CD 98 0F 29 4B 70 C6 43 18 00", 1);
 		aobBlocks[GAMESPEED_ADDRESS_INTERCEPT_KEY] = new AOBBlock(GAMESPEED_ADDRESS_INTERCEPT_KEY, "F3 48 0F 2C C8 48 0F AF C8 48 C1 F9 14 49 89 48 30 49 01 48 20", 1);
-		aobBlocks[HUD_TOGGLE_ADDRESS_INTERCEPT_KEY] = new AOBBlock(HUD_TOGGLE_ADDRESS_INTERCEPT_KEY, "80 79 20 00 74 ?? F3 0F 10 41 24 C3 F3 0F10 41 28 C3", 1);
+		aobBlocks[HUD_TOGGLE_ADDRESS_INTERCEPT_KEY] = new AOBBlock(HUD_TOGGLE_ADDRESS_INTERCEPT_KEY, "80 79 20 00 74 ?? F3 0F 10 41", 1);
 		aobBlocks[FOV_WRITE_ADDRESS_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE_ADDRESS_INTERCEPT_KEY, "F3 0F 11 49 0C F3 0F 10 0D ?? ?? ?? ?? 48 81 C1 ?? ?? ?? ?? F3 0F 59 81 3C 01 00 00 0F 2F C1", 1);
 
 		map<string, AOBBlock*>::iterator it;
@@ -99,7 +99,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 
 	void setHudToggleInterceptorHook(map<string, AOBBlock*> &aobBlocks)
 	{
-		GameImageHooker::setHook(aobBlocks[HUD_TOGGLE_ADDRESS_INTERCEPT_KEY], 0x11, &_hudToggleInterceptorContinue, &hudToggleInterceptor);
+		GameImageHooker::setHook(aobBlocks[HUD_TOGGLE_ADDRESS_INTERCEPT_KEY], 0x15, &_hudToggleInterceptorContinue, &hudToggleInterceptor);
 	}
 
 	void toggleFoVWriteState(map<string, AOBBlock*> &aobBlocks, bool enabled)

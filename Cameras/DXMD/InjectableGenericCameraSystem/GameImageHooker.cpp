@@ -35,6 +35,13 @@ namespace IGCS::GameImageHooker
 	// Sets a jmp qword ptr [address] statement at hostImageAddress + startOffset for x64 and a jmp <relative address> for x86
 	void setHook(LPBYTE hostImageAddress, DWORD startOffset, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction)
 	{
+		if (nullptr == hostImageAddress)
+		{
+#ifdef _DEBUG
+			cout << "Address is NULL, can't set hook to that location. " << endl;
+			return;
+#endif
+		}
 		LPBYTE startOfHookAddress = hostImageAddress + startOffset;
 		*interceptionContinue = hostImageAddress + continueOffset;
 #ifdef _WIN64
@@ -60,7 +67,7 @@ namespace IGCS::GameImageHooker
 		if (result)
 		{
 #ifdef _DEBUG
-			cout << "Hook set to address: " << hex << startOfHookAddress << endl;
+			cout << "Hook set to address: " << hex << (void*)startOfHookAddress << endl;
 #endif
 		}
 		else
