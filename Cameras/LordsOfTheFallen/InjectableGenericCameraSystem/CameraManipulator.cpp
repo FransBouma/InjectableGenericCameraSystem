@@ -29,6 +29,7 @@
 #include "CameraManipulator.h"
 #include "GameConstants.h"
 #include "Console.h"
+#include "InterceptorHelper.h"
 
 using namespace DirectX;
 using namespace std;
@@ -121,7 +122,9 @@ namespace IGCS::GameSpecific::CameraManipulator
 #ifdef _DEBUG
 		cout << "Camera struct address: " << hex << (void*)g_cameraStructAddress << endl;
 #endif
+		InterceptorHelper::initializeCameraAddresses(g_cameraStructAddress);
 	}
+
 
 	// should restore the camera values in the camera structures to the cached values. This assures the free camera is always enabled at the original camera location.
 	void restoreOriginalCameraValues()

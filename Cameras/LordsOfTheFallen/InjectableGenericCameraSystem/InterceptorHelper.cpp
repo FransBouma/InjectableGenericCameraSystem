@@ -47,6 +47,10 @@ extern "C" {
 	LPBYTE _cameraWriteInterception1Continue = nullptr;
 	// the continue address for continuing execution after camera write interception. 
 	LPBYTE _cameraWriteInterception2Continue = nullptr;
+	// the address of the camera coords in the image
+	LPBYTE _cameraCoordsAddress = nullptr;
+	// the address of the quaternion in the image
+	LPBYTE _cameraQuaternionAddress = nullptr;
 }
 
 
@@ -73,9 +77,18 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		}
 	}
 
+
+	void initializeCameraAddresses(LPBYTE cameraStructAddress)
+	{
+		// sub 0x10 as that's the offset used in the intercepted asm block so the address compared with the register is 0x10 lower than the actual coords address
+		_cameraCoordsAddress = cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET - 0x10;	
+		_cameraQuaternionAddress = cameraStructAddress + LOOK_DATA_IN_CAMERA_STRUCT_OFFSET;
+	}
+
+
 	void setCameraWriteInterceptorHooks(map<string, AOBBlock*> &aobBlocks)
 	{
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE_INTERCEPT1_KEY], 0x13, &_cameraWriteInterception1Continue, &cameraWriteInterceptor1);
-		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE_INTERCEPT2_KEY], 0x19, &_cameraWriteInterception1Continue, &cameraWriteInterceptor1);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE_INTERCEPT2_KEY], 0x19, &_cameraWriteInterception2Continue, &cameraWriteInterceptor2);
 	}
 }

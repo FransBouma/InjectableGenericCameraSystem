@@ -60,7 +60,7 @@ namespace IGCS::GameImageHooker
 		if (result)
 		{
 #ifdef _DEBUG
-			cout << "Hook set to address: " << hex << startOfHookAddress << endl;
+			cout << "Hook set to address: " << hex << (void*)startOfHookAddress << endl;
 #endif
 		}
 		else

@@ -45,9 +45,22 @@ EXTERN g_cameraEnabled: byte
 ; Own externs, defined in InterceptorHelper.cpp
 EXTERN _cameraWriteInterception1Continue: qword
 EXTERN _cameraWriteInterception2Continue: qword
+EXTERN _cameraCoordsAddress: qword
+EXTERN _cameraQuaternionAddress: qword
 
 ;---------------------------------------------------------------
 ; Scratch pad
+; FOV WRITE: 
+;LordsOfTheFallen.exe+D2E5F46 - 0F2E 40 18            - ucomiss xmm0,[rax+18]
+;LordsOfTheFallen.exe+D2E5F4A - 74 1C                 - je LordsOfTheFallen.exe+D2E5F68
+;LordsOfTheFallen.exe+D2E5F4C - F3 0F11 40 18         - movss [rax+18],xmm0										<< FOV WRITE
+;LordsOfTheFallen.exe+D2E5F51 - C6 80 4C010000 01     - mov byte ptr [rax+0000014C],01 { 1 }
+;LordsOfTheFallen.exe+D2E5F58 - 66 C7 80 4E010000 0101 - mov word ptr [rax+0000014E],0101 { 257 }
+;LordsOfTheFallen.exe+D2E5F61 - C6 80 50010000 01     - mov byte ptr [rax+00000150],01 { 1 }
+;LordsOfTheFallen.exe+D2E5F68 - 48 8B 49 58           - mov rcx,[rcx+58]
+;
+
+
 ;---------------------------------------------------------------
 .code
 
@@ -58,9 +71,13 @@ cameraWriteInterceptor1 PROC
 ;LordsOfTheFallen.exe+D58411F - 8B 42 04              - mov eax,[rdx+04]
 ;LordsOfTheFallen.exe+D584122 - 89 41 14              - mov [rcx+14],eax
 ;LordsOfTheFallen.exe+D584125 - 8B 42 08              - mov eax,[rdx+08]
-;LordsOfTheFallen.exe+D584128 - B2 15                 - mov dl,15 { 21 }
+;LordsOfTheFallen.exe+D584128 - B2 15                 - mov dl,15
 ;LordsOfTheFallen.exe+D58412A - 89 41 18              - mov [rcx+18],eax
 ;LordsOfTheFallen.exe+D58412D - E8 BE010000           - call LordsOfTheFallen.exe+D5842F0		<< CONTINUE HERE
+
+	; check for our coord target address. This code is used by multiple target structures
+	cmp qword ptr rcx, [_cameraCoordsAddress]
+	jne originalCode									; code operates on other struct than the camera struct, leave it.
 	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je noCameraWrite									; our own camera is enabled, just skip the writes
 	; as we don't know what the registers are used for futher, our 'disabled' part just doesn't write to memory.
@@ -92,10 +109,8 @@ cameraWriteInterceptor2 PROC
 ;LordsOfTheFallen.exe+D5841D1 - 41 89 40 08           - mov [r8+08],eax			<< WRITE QZ
 ;LordsOfTheFallen.exe+D5841D5 - E8 16010000           - call LordsOfTheFallen.exe+D5842F0		<<< CONTINUE HERE
 
-
-ERROR WRONG CODE!
-
-	cmp qword ptr rbx, [g_cameraStructAddress]
+	; check for our quaternion target address. This code is used by multiple target structures
+	cmp qword ptr r8, [_cameraQuaternionAddress]
 	jne originalCode									; code operates on other struct than the camera struct, leave it.
 	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je noCameraWrite									; our own camera is enabled, just skip the writes

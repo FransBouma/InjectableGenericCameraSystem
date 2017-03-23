@@ -30,18 +30,18 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Lords of the Fallen 1.16.761.0"
+	#define GAME_NAME									"Lords of the Fallen, latest"
 	#define CAMERA_VERSION								"1.0.0"
-	#define CAMERA_CREDITS								"Otis_Inf, Jim2Point0. Special thanks to: K-putt, Jim2Point0"
+	#define CAMERA_CREDITS								"Otis_Inf, Petroski. Special thanks to Jim2point0."
 	#define GAME_WINDOW_TITLE							"Lords of the Fallen"
-	#define INITIAL_PITCH_RADIANS						(90.0f * XM_PI) / 180.f	// World has Z up and Y into the screen, so rotate around X (pitch) 90 degrees.
+	#define INITIAL_PITCH_RADIANS						0.0f	// World has X right, Y up, Z out of the screen.
 	#define INITIAL_YAW_RADIANS							0.0f	// around Y axis	(out of the screen)
 	#define INITIAL_ROLL_RADIANS						0.0f	// around Z axis	(up)
 	#define CONTROLLER_Y_INVERT							false
 	#define FASTER_MULTIPLIER							10.0f
 	#define SLOWER_MULTIPLIER							0.1f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
-	#define DEFAULT_MOVEMENT_SPEED						0.025f
+	#define DEFAULT_MOVEMENT_SPEED						1.2f
 	#define DEFAULT_ROTATION_SPEED						0.015f
 	#define DEFAULT_FOV_DEGREES							54.54f
 	#define DEFAULT_FOV_SPEED							0.1f
@@ -60,7 +60,7 @@ namespace IGCS::GameSpecific
 	// Indices in the structures read by interceptors 
 	#define CAMERA_STRUCT_OFFSET_IN_IMAGE				0x5D3DDE0
 	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0x0
-	#define LOOK_DATA_IN_CAMERA_STRUCT_OFFSET			0x12		
+	#define LOOK_DATA_IN_CAMERA_STRUCT_OFFSET			0xC		
 	#define GAMESPEED_IN_IMAGE_OFFSET					0xCFC5870
 	#define GAMESPEED_BOSS_IN_IMAGE_OFFSET				0x5F47038
 	#define GAMESPEED_ENEMIES_IN_IMAGE_OFFSET			0x5D06688

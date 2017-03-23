@@ -180,7 +180,9 @@ namespace IGCS
 
 		handleKeyboardCameraMovement(multiplier);
 		handleMouseCameraMovement(multiplier);
-		handleGamePadMovement(multiplier);
+		// Game controller support has been disabled as it's of no use to use a controller now, input can't be blocked so it's a pain.
+		// Uncomment the line below to enable controller support.
+		//handleGamePadMovement(multiplier);
 	}
 
 
@@ -371,8 +373,8 @@ namespace IGCS
 		Console::WriteLine("Numpad 4/Numpad 6              : Move camera left / right");
 		Console::WriteLine("Numpad 7/Numpad 9              : Move camera up / down");
 		Console::WriteLine("Numpad 1/Numpad 3              : Tilt camera left / right");
-		//Console::WriteLine("Numpad +/-                     : Increase / decrease FoV (w/ freecam)");
-		//Console::WriteLine("Numpad *                       : Reset FoV (w/ freecam)");
+		Console::WriteLine("Numpad +/-                     : Increase / decrease FoV (w/ freecam)");
+		Console::WriteLine("Numpad *                       : Reset FoV (w/ freecam)");
 		Console::WriteLine("Numpad /                       : Toggle Y look direction");
 		Console::WriteLine("Numpad .                       : Toggle mouse/keyboard input to game");
 		Console::WriteLine("Numpad 0                       : Toggle game speed freeze");
