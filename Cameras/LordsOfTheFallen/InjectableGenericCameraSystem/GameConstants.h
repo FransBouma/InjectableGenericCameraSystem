@@ -32,7 +32,7 @@ namespace IGCS::GameSpecific
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Lords of the Fallen, latest"
 	#define CAMERA_VERSION								"1.0.0"
-	#define CAMERA_CREDITS								"Otis_Inf, Petroski. Special thanks to Jim2point0."
+	#define CAMERA_CREDITS								"Otis_Inf, Petroski, Jim2point0."
 	#define GAME_WINDOW_TITLE							"Lords of the Fallen"
 	#define INITIAL_PITCH_RADIANS						0.0f	// World has X right, Y up, Z out of the screen.
 	#define INITIAL_YAW_RADIANS							0.0f	// around Y axis	(up)
@@ -52,15 +52,16 @@ namespace IGCS::GameSpecific
 	// End Mandatory constants
 
 	// AOB Keys for interceptor's AOB scanner
-	#define CAMERA_WRITE_INTERCEPT1_KEY					"AOB_CAMERA_WRITE_INTERCEPT1"
-	#define CAMERA_WRITE_INTERCEPT2_KEY					"AOB_CAMERA_WRITE_INTERCEPT2"
-	#define FOV_WRITE_INTERCEPT_KEY						"AOB_FOV_WRITE_INTERCEPT"
+	#define CAMERA_ADDRESS_INTERCEPT_KEY				"AOB_CAMERA_ADDRESS_INTERCEPT"
+	#define CAMERA_WRITE_INTERCEPT_KEY					"AOB_CAMERA_WRITE_INTERCEPT"
+	#define FOV_WRITE_INTERCEPT1_KEY					"AOB_FOV_WRITE_INTERCEPT1"
+	#define FOV_WRITE_INTERCEPT2_KEY					"AOB_FOV_WRITE_INTERCEPT2"
+	#define HUD_TOGGLE_INTERCEPT_KEY					"AOB_HUD_TOGGLE_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
-	#define CAMERA_STRUCT_OFFSET_IN_IMAGE				0x5D3DDE0
-	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0x0
-	#define LOOK_DATA_IN_CAMERA_STRUCT_OFFSET			0xC		
-	#define FOV_POINTER_IN_IMAGE_OFFSET					0x20F1FF0
+	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0xC0
+	#define LOOK_DATA_IN_CAMERA_STRUCT_OFFSET			0xB0		
+	#define FOV_IN_CAMERA_STRUCT_OFFSET					0x18
 	#define GAMESPEED_POINTER_IN_IMAGE_OFFSET			0xCFC5870
 	#define GAMESPEED_BOSS_POINTER_IN_IMAGE_OFFSET		0x5F47038
 	#define GAMESPEED_ENEMIES_POINTER_IN_IMAGE_OFFSET	0x5D06688

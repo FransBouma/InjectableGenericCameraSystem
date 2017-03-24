@@ -41,6 +41,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void setGamespeedFreezeValue(LPBYTE hostImageAddress, byte newValue);
 	void setEnemyFreezeValue(LPBYTE hostImageAddress, byte newValue);
 	void setBossFreezeValue(LPBYTE hostImageAddress, byte newValue);
-	void resetFoV(LPBYTE hostImageAddress);
-	void changeFoV(LPBYTE hostImageAddress, float amount);
+	void resetFoV();
+	void changeFoV(float amount);
 }

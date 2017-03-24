@@ -31,6 +31,7 @@
 #include "Gamepad.h"
 
 extern "C" byte g_cameraEnabled;
+extern "C" byte g_hudVisible;
 
 namespace IGCS
 {

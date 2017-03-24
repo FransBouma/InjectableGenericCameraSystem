@@ -55,6 +55,7 @@ namespace IGCS
 		void toggleYLookDirectionState();
 		void toggleCameraMovementLockState(bool newValue);
 		void toggleInputBlockState(bool newValue);
+		void toggleHUDState();
 		void handleKeyboardCameraMovement(float multiplier);
 		void handleMouseCameraMovement(float multiplier);
 		void handleGamePadMovement(float multiplierBase);
@@ -69,6 +70,7 @@ namespace IGCS
 		bool _gamespeedStopped = false;
 		bool _enemiesFrozen = false;
 		bool _bossFrozen = false;
+		bool _hudVisible = true;
 		map<string, AOBBlock*> _aobBlocks;
 	};
 }

@@ -1,10 +1,12 @@
-Injectable camera for Deus Ex: Mankind Divided
+Injectable camera for Lords of the Fallen
 ============================
 
-Current supported game version: v1.16.761+
-Camera version: 1.0.2  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/DXMD_102    
-Credits: Otis_Inf. Special thanks to K-putt and Jim2Point0  
+Current supported game version: v1.3 (latest)  
+Camera version: 1.0.0  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/LotF_100    
+Credits: Otis_Inf, Petroski, Jim2Point0
+
+Guide for tweaks / discussion: http://www.deadendthrills.com/forum/discussion/249/lords-of-the-fallen#latest  
 
 ### Acknowledgements
 This camera uses [MinHook](https://github.com/TsudaKageyu/minhook) by Tsuda Kageyu.

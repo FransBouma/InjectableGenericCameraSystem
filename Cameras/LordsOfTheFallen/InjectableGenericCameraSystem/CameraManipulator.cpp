@@ -55,27 +55,15 @@ namespace IGCS::GameSpecific::CameraManipulator
 	LPBYTE calculateFreezeAddress(LPBYTE firstPointerAddress, int firstPointerOffset, int secondPointerOffset)
 	{
 		LPBYTE* firstPointer = (LPBYTE*)(firstPointerAddress);
-		LPBYTE* secondPointer = (LPBYTE*)(*firstPointer + 0x28);
-		return (LPBYTE)*secondPointer + 0x34;
+		LPBYTE* secondPointer = (LPBYTE*)(*firstPointer + firstPointerOffset);
+		return (LPBYTE)*secondPointer + secondPointerOffset;
 	}
 
 
-	// Dirty hack as the gamespeed is stored as a 2 hop pointer chain. I could intercept it where it's read, but I used the 
-	// cheat table of Petroski here to get to the real address using some simple pointer calculations. 
-	LPBYTE calculateFoVAddress(LPBYTE hostImageAddress)
-	{
-		LPBYTE* fovPointer = (LPBYTE*)(hostImageAddress + FOV_POINTER_IN_IMAGE_OFFSET);
-		return (LPBYTE)*fovPointer + 0x18;
-	}
-
-#error BUG IN POINTERARITHMETIC: ADDRESS IS 0
 	void setEnemyFreezeValue(LPBYTE hostImageAddress, byte newValue)
 	{
 		_enemiesHaveBeenFrozen = (newValue == 1);
 		float* enemySpeedAddress = reinterpret_cast<float*>(calculateFreezeAddress(hostImageAddress + GAMESPEED_ENEMIES_POINTER_IN_IMAGE_OFFSET, 0x38, 0x34));
-#ifdef _DEBUG
-		cout << "enemy speed address: " << hex << (void*)enemySpeedAddress << endl;
-#endif
 		*enemySpeedAddress = _enemiesHaveBeenFrozen ? 0.0f : 1.0f;
 	}
 
@@ -83,9 +71,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 	{
 		_bossHasBeenFrozen = (newValue == 1);
 		float* bossSpeedAddress = reinterpret_cast<float*>(calculateFreezeAddress(hostImageAddress + GAMESPEED_BOSS_POINTER_IN_IMAGE_OFFSET, 0x38, 0x34));
-#ifdef _DEBUG
-		cout << "boss speed address: " << hex << (void*)bossSpeedAddress << endl;
-#endif
 		*bossSpeedAddress = _bossHasBeenFrozen ? 0.0f : 1.0f;
 	}
 
@@ -122,17 +107,17 @@ namespace IGCS::GameSpecific::CameraManipulator
 	
 
 	// Resets the FOV to the default
-	void resetFoV(LPBYTE hostImageAddress)
+	void resetFoV()
 	{
-		float* fovInMemory = reinterpret_cast<float*>(calculateFoVAddress(hostImageAddress));
+		float* fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_CAMERA_STRUCT_OFFSET);
 		*fovInMemory = DEFAULT_FOV_RADIANS;
 	}
 
 
 	// changes the FoV with the specified amount
-	void changeFoV(LPBYTE hostImageAddress, float amount)
+	void changeFoV(float amount)
 	{
-		float* fovInMemory = reinterpret_cast<float*>(calculateFoVAddress(hostImageAddress));
+		float* fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_CAMERA_STRUCT_OFFSET);
 		*fovInMemory += amount;
 	}
 
@@ -172,13 +157,15 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void waitForCameraStructAddresses(LPBYTE hostImageAddress)
 	{
 		Console::WriteLine("Waiting for camera struct interception...");
-		g_cameraStructAddress = hostImageAddress + CAMERA_STRUCT_OFFSET_IN_IMAGE;
+		while (nullptr == g_cameraStructAddress)
+		{
+			Sleep(100);
+		}
 		Console::WriteLine("Camera found.");
 
 #ifdef _DEBUG
 		cout << "Camera struct address: " << hex << (void*)g_cameraStructAddress << endl;
 #endif
-		InterceptorHelper::initializeCameraAddresses(g_cameraStructAddress);
 	}
 
 

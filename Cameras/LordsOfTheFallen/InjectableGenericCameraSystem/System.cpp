@@ -162,7 +162,11 @@ namespace IGCS
 			toggleFreezeBossState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
-
+		if (Input::keyDown(IGCS_KEY_TOGGLE_HUD))
+		{
+			toggleHUDState();
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
 		if (!g_cameraEnabled)
 		{
 			// camera is disabled. We simply disable all input to the camera movement, by returning now.
@@ -170,15 +174,15 @@ namespace IGCS
 		}
 		if (Input::keyDown(IGCS_KEY_FOV_RESET))
 		{
-			CameraManipulator::resetFoV(_hostImageAddress);
+			CameraManipulator::resetFoV();
 		}
 		if (Input::keyDown(IGCS_KEY_FOV_DECREASE))
 		{
-			CameraManipulator::changeFoV(_hostImageAddress , -DEFAULT_FOV_SPEED);
+			CameraManipulator::changeFoV(-DEFAULT_FOV_SPEED);
 		}
 		if (Input::keyDown(IGCS_KEY_FOV_INCREASE))
 		{
-			CameraManipulator::changeFoV(_hostImageAddress, DEFAULT_FOV_SPEED);
+			CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
 		}
 		if (Input::keyDown(IGCS_KEY_BLOCK_INPUT))
 		{
@@ -315,9 +319,9 @@ namespace IGCS
 		InputHooker::setInputHooks();
 		Input::registerRawInput();
 		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
+		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);
 		GameSpecific::CameraManipulator::waitForCameraStructAddresses(_hostImageAddress);		// blocks till camera is found.
-		GameSpecific::InterceptorHelper::setCameraWriteInterceptorHooks(_aobBlocks);
-		GameSpecific::InterceptorHelper::setFoVWriteInterceptorHook(_aobBlocks);
+		GameSpecific::InterceptorHelper::setPostCameraStructHooks(_aobBlocks);
 		// camera struct found, init our own camera object now and hook into game code which uses camera.
 		_cameraStructFound = true;
 		_camera.setPitch(INITIAL_PITCH_RADIANS);
@@ -374,6 +378,15 @@ namespace IGCS
 	}
 
 
+	void System::toggleHUDState()
+	{
+		// global flag which will be picked up by the intercepted hud interceptor.
+		g_hudVisible = g_hudVisible == 0 ? (byte)1 : (byte)0;
+		Console::WriteLine(g_hudVisible ? "Hud visible" : "Hud hidden");
+	}
+
+
+
 	void System::displayCameraState()
 	{
 		Console::WriteLine(g_cameraEnabled ? "Camera enabled" : "Camera disabled");
@@ -418,8 +431,9 @@ namespace IGCS
 		Console::WriteLine("Numpad 0                       : Toggle game speed freeze");
 		Console::WriteLine("[                              : Decrease game speed (during game speed freeze)");
 		Console::WriteLine("]                              : Increase game speed (during game speed freeze)");
-		Console::WriteLine("DEL                            : Toggle freeze enemies");
-		Console::WriteLine("END                            : Toggle freeze boss");
+		Console::WriteLine("DEL                            : Toggle HUD");
+		Console::WriteLine("END                            : Toggle freeze enemies");
+		Console::WriteLine("PageDown                       : Toggle freeze boss");
 		Console::WriteLine("ALT+H                          : This help");
 		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
 		Console::WriteLine(" Please read the enclosed readme.txt for the answers to your questions :)");
