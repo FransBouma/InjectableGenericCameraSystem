@@ -71,6 +71,7 @@ namespace IGCS
 	#define IGCS_BUTTON_FASTER			Gamepad::button_t::Y
 	#define IGCS_BUTTON_SLOWER			Gamepad::button_t::X
 	#define IGCS_BUTTON_BLOCK_INPUT		Gamepad::button_t::RB
+	#define IGCS_BUTTON_TOGGLE_HUD		Gamepad::button_t::LB
 
 	static const byte jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]
 }

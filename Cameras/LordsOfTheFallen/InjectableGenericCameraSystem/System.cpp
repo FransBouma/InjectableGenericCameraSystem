@@ -205,9 +205,7 @@ namespace IGCS
 
 		handleKeyboardCameraMovement(multiplier);
 		handleMouseCameraMovement(multiplier);
-		// Game controller support has been disabled as it's of no use to use a controller now, input can't be blocked so it's a pain.
-		// Uncomment the line below to enable controller support.
-		//handleGamePadMovement(multiplier);
+		handleGamePadMovement(multiplier);
 	}
 
 
@@ -235,6 +233,23 @@ namespace IGCS
 			if (gamePad.isButtonPressed(IGCS_BUTTON_TILT_RIGHT))
 			{
 				_camera.roll(-multiplier);
+			}
+			if (gamePad.isButtonPressed(IGCS_BUTTON_RESET_FOV))
+			{
+				CameraManipulator::resetFoV();
+			}
+			if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_DECREASE))
+			{
+				CameraManipulator::changeFoV(-DEFAULT_FOV_SPEED);
+			}
+			if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_INCREASE))
+			{
+				CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
+			}
+			if (gamePad.isButtonPressed(IGCS_BUTTON_TOGGLE_HUD))
+			{
+				toggleHUDState();
+				Sleep(350);
 			}
 			if (gamePad.isButtonPressed(IGCS_BUTTON_BLOCK_INPUT))
 			{
@@ -414,27 +429,29 @@ namespace IGCS
 						  //0         1         2         3         4         5         6         7
 						  //01234567890123456789012345678901234567890123456789012345678901234567890123456789
 		Console::WriteLine("---[IGCS Help]-----------------------------------------------------------------", CONSOLE_WHITE);
-		Console::WriteLine("INS                            : Enable/Disable camera");
-		Console::WriteLine("HOME                           : Lock/unlock camera movement");
-		Console::WriteLine("ALT + rotate/move              : Faster rotate / move");
-		Console::WriteLine("Right-CTRL + rotate/move       : Slower rotate / move");
-		Console::WriteLine("Arrow up/down or mouse         : Rotate camera up/down");
-		Console::WriteLine("Arrow left/right or mouse      : Rotate camera left/right");
-		Console::WriteLine("Numpad 8/Numpad 5              : Move camera forward/backward");
-		Console::WriteLine("Numpad 4/Numpad 6              : Move camera left / right");
-		Console::WriteLine("Numpad 7/Numpad 9              : Move camera up / down");
-		Console::WriteLine("Numpad 1/Numpad 3              : Tilt camera left / right");
-		Console::WriteLine("Numpad +/-                     : Increase / decrease FoV (w/ freecam)");
-		Console::WriteLine("Numpad *                       : Reset FoV (w/ freecam)");
-		Console::WriteLine("Numpad /                       : Toggle Y look direction");
-		Console::WriteLine("Numpad .                       : Toggle mouse/keyboard input to game");
-		Console::WriteLine("Numpad 0                       : Toggle game speed freeze");
-		Console::WriteLine("[                              : Decrease game speed (during game speed freeze)");
-		Console::WriteLine("]                              : Increase game speed (during game speed freeze)");
-		Console::WriteLine("DEL                            : Toggle HUD");
-		Console::WriteLine("END                            : Toggle freeze enemies");
-		Console::WriteLine("PageDown                       : Toggle freeze boss");
-		Console::WriteLine("ALT+H                          : This help");
+		Console::WriteLine("INS                                   : Enable/Disable camera");
+		Console::WriteLine("HOME                                  : Lock/unlock camera movement");
+		Console::WriteLine("ALT + rotate/move                     : Faster rotate / move");
+		Console::WriteLine("Right-CTRL + rotate/move              : Slower rotate / move");
+		Console::WriteLine("Controller Y-button + l/r-stick       : Faster rotate / move");
+		Console::WriteLine("Controller X-button + l/r-stick       : Slower rotate / move");
+		Console::WriteLine("Arrow up/down or mouse or r-stick     : Rotate camera up/down");
+		Console::WriteLine("Arrow left/right or mouse or r-stick  : Rotate camera left/right");
+		Console::WriteLine("Numpad 8/Numpad 5 or l-stick          : Move camera forward/backward");
+		Console::WriteLine("Numpad 4/Numpad 6 or l-stick          : Move camera left / right");
+		Console::WriteLine("Numpad 7/Numpad 9 or l/r-trigger      : Move camera up / down");
+		Console::WriteLine("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
+		Console::WriteLine("Numpad +/- or d-pad up/down           : Increase / decrease FoV (w/ freecam)");
+		Console::WriteLine("Numpad * or controller B-button       : Reset FoV (w/ freecam)");
+		Console::WriteLine("Numpad /                              : Toggle Y look direction");
+		Console::WriteLine("Numpad . or controller Right Bumper   : Toggle input to game");
+		Console::WriteLine("Numpad 0                              : Toggle game pause");
+		Console::WriteLine("[                                     : Decrease game speed (during game pause)");
+		Console::WriteLine("]                                     : Increase game speed (during game pause)");
+		Console::WriteLine("DEL or controller Left Bumper         : Toggle HUD");
+		Console::WriteLine("END                                   : Toggle freeze enemies");
+		Console::WriteLine("PageDown                              : Toggle freeze boss");
+		Console::WriteLine("ALT+H                                 : This help");
 		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
 		Console::WriteLine(" Please read the enclosed readme.txt for the answers to your questions :)");
 		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
