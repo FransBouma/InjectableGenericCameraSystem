@@ -36,6 +36,7 @@ using namespace std;
 
 extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
+	LPBYTE g_camera2StructAddress = nullptr;
 	LPBYTE g_gameSpeedAddress = nullptr;
 	LPBYTE g_bossFreezeAddress = nullptr;
 	LPBYTE g_enemiesFreezeAddress = nullptr;
@@ -150,6 +151,19 @@ namespace IGCS::GameSpecific::CameraManipulator
 		coordsInMemory[0] = newCoords.x;
 		coordsInMemory[1] = newCoords.y;
 		coordsInMemory[2] = newCoords.z;
+
+		// second camera
+		lookInMemory = reinterpret_cast<float*>(g_camera2StructAddress + LOOK_DATA_IN_CAMERA2_STRUCT_OFFSET);
+		lookInMemory[0] = qAsFloat4.x;
+		lookInMemory[1] = qAsFloat4.y;
+		lookInMemory[2] = qAsFloat4.z;
+		lookInMemory[3] = qAsFloat4.w;
+
+		// Coords
+		coordsInMemory = reinterpret_cast<float*>(g_camera2StructAddress + CAMERA2_COORDS_IN_CAMERA_STRUCT_OFFSET);
+		coordsInMemory[0] = newCoords.x;
+		coordsInMemory[1] = newCoords.y;
+		coordsInMemory[2] = newCoords.z;
 	}
 
 
@@ -166,6 +180,8 @@ namespace IGCS::GameSpecific::CameraManipulator
 #ifdef _DEBUG
 		cout << "Camera struct address: " << hex << (void*)g_cameraStructAddress << endl;
 #endif
+		g_camera2StructAddress = hostImageAddress + CAMERA2_STRUCT_OFFSET_IN_IMAGE;
+		InterceptorHelper::initializeCamera2Addresses(g_camera2StructAddress);
 	}
 
 
@@ -174,6 +190,12 @@ namespace IGCS::GameSpecific::CameraManipulator
 	{
 		float* lookInMemory = reinterpret_cast<float*>(g_cameraStructAddress + LOOK_DATA_IN_CAMERA_STRUCT_OFFSET);
 		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
+		memcpy(lookInMemory, _originalLookData, 4 * sizeof(float));
+		memcpy(coordsInMemory, _originalCoordsData, 3 * sizeof(float));
+
+		// second camera 
+		lookInMemory = reinterpret_cast<float*>(g_camera2StructAddress + LOOK_DATA_IN_CAMERA2_STRUCT_OFFSET);
+		coordsInMemory = reinterpret_cast<float*>(g_camera2StructAddress + CAMERA2_COORDS_IN_CAMERA_STRUCT_OFFSET);
 		memcpy(lookInMemory, _originalLookData, 4 * sizeof(float));
 		memcpy(coordsInMemory, _originalCoordsData, 3 * sizeof(float));
 	}

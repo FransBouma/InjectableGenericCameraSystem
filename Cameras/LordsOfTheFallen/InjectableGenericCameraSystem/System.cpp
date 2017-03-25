@@ -167,11 +167,6 @@ namespace IGCS
 			toggleHUDState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
-		if (!g_cameraEnabled)
-		{
-			// camera is disabled. We simply disable all input to the camera movement, by returning now.
-			return;
-		}
 		if (Input::keyDown(IGCS_KEY_FOV_RESET))
 		{
 			CameraManipulator::resetFoV();
@@ -183,6 +178,11 @@ namespace IGCS
 		if (Input::keyDown(IGCS_KEY_FOV_INCREASE))
 		{
 			CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
+		}
+		if (!g_cameraEnabled)
+		{
+			// camera is disabled. We simply disable all input to the camera movement, by returning now.
+			return;
 		}
 		if (Input::keyDown(IGCS_KEY_BLOCK_INPUT))
 		{
