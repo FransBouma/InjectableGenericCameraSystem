@@ -37,6 +37,7 @@ automatically when you clone the repo. The camera uses DirectXMath for the 3D ma
 * Lords of the Fallen: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/LordsOfTheFallen
 * Tomb Raider 2013: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Tombraider
 * Watch_Dogs: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Watch_Dogs
+* Watch_Dogs2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Watch_Dogs2
 
 ## Acknowledgements
 Some camera code uses [MinHook](https://github.com/TsudaKageyu/minhook) by Tsuda Kageyu.
