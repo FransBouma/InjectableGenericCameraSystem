@@ -40,6 +40,7 @@ extern "C" {
 	void cameraStructInterceptor();
 	void cameraWriteInterceptor();
 	void gamespeedStructInterceptor();
+	void todStructInterceptor();
 }
 
 // external addresses used in asm.
@@ -49,6 +50,8 @@ extern "C" {
 	LPBYTE _cameraWriteInterceptionContinue = nullptr;
 	// the continue address for continuing execution after gamespeed address interception. 
 	LPBYTE _gamespeedStructInterceptorContinue = nullptr;
+	// the continue address for continuing execution after tod address interception. 
+	LPBYTE _todStructInterceptorContinue = nullptr;
 }
 
 
@@ -59,6 +62,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "48 8B 44 24 20 48 89 43 70 8B 44 24 28 89 43 78 F3 0F 11 73 7C 8B 83 DC 15 00 00", 1);
 		aobBlocks[CAMERA_WRITE_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT_KEY, "41 89 00 8B 42 04 41 89 40 04 8B 42 08 41 89 40 08 48 8B 0D", 1);
 		aobBlocks[GAMESPEED_ADDRESS_INTERCEPT_KEY] = new AOBBlock(GAMESPEED_ADDRESS_INTERCEPT_KEY, "F2 0F 10 93 80 00 00 00 66 0F 2F CA 72 03 0F 28 CA", 1);
+		aobBlocks[TOD_ADDRESS_INTERCEPT_KEY] = new AOBBlock(TOD_ADDRESS_INTERCEPT_KEY, "48 8B 08 48 8D 54 24 50 48 89 4C 24 20 48 8D 4C 24 20", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -87,5 +91,6 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	{
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE_INTERCEPT_KEY], 0x11, &_cameraWriteInterceptionContinue, &cameraWriteInterceptor);
 		GameImageHooker::setHook(aobBlocks[GAMESPEED_ADDRESS_INTERCEPT_KEY], 0x11, &_gamespeedStructInterceptorContinue, &gamespeedStructInterceptor);
+		GameImageHooker::setHook(aobBlocks[TOD_ADDRESS_INTERCEPT_KEY], 0x12, &_todStructInterceptorContinue, &todStructInterceptor);
 	}
 }

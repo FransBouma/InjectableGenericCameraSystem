@@ -59,6 +59,9 @@ namespace IGCS
 	#define IGCS_KEY_BLOCK_INPUT		VK_DECIMAL
 	#define IGCS_KEY_DECREASE_GAMESPEED	VK_OEM_4		// [{
 	#define IGCS_KEY_INCREASE_GAMESPEED VK_OEM_6		// ]}
+	#define IGCS_KEY_INCREASE_TOD		VK_PRIOR		// pgup
+	#define IGCS_KEY_DECREASE_TOD		VK_NEXT			// pgdown
+
 
 	#define IGCS_BUTTON_FOV_DECREASE	Gamepad::button_t::UP
 	#define IGCS_BUTTON_FOV_INCREASE	Gamepad::button_t::DOWN

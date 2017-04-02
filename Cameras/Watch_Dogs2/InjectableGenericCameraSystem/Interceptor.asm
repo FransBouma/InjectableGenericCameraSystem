@@ -34,6 +34,7 @@
 PUBLIC cameraStructInterceptor
 PUBLIC cameraWriteInterceptor
 PUBLIC gamespeedStructInterceptor
+PUBLIC todStructInterceptor
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -42,6 +43,7 @@ PUBLIC gamespeedStructInterceptor
 EXTERN g_cameraEnabled: byte
 EXTERN g_cameraStructAddress: qword
 EXTERN g_gamespeedStructAddress: qword
+EXTERN g_todStructAddress: qword
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -49,6 +51,7 @@ EXTERN g_gamespeedStructAddress: qword
 EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _cameraWriteInterceptionContinue: qword
 EXTERN _gamespeedStructInterceptorContinue: qword
+EXTERN _todStructInterceptorContinue: qword
 
 .data
 
@@ -67,6 +70,22 @@ EXTERN _gamespeedStructInterceptorContinue: qword
 ;Disrupt_64.dll+50C5FC9 - 8B 83 DC150000        - mov eax,[rbx+000015DC]
 ;Disrupt_64.dll+50C5FCF - 89 43 58              - mov [rbx+58],eax
 ;Disrupt_64.dll+50C5FD2 - 8B 83 E0150000        - mov eax,[rbx+000015E0]
+
+; TOD
+;Disrupt_64.dll+667B705 - 49 8B 86 F0040000     - mov rax,[r14+000004F0]
+;Disrupt_64.dll+667B70C - 45 88 FC              - mov r12l,r15l
+;Disrupt_64.dll+667B70F - 44 89 65 40           - mov [rbp+40],r12d
+;Disrupt_64.dll+667B713 - F3 0F10 80 C0030000   - movss xmm0,[rax+000003C0]			<< READ HERE
+;Disrupt_64.dll+667B71B - 0F2F 81 C0040000      - comiss xmm0,[rcx+000004C0]
+;Disrupt_64.dll+667B722 - 72 13                 - jb Disrupt_64.dll+667B737
+;
+; Alternative read
+;Disrupt_64.dll+6676742 - 48 8B 8F E8040000     - mov rcx,[rdi+000004E8]
+;Disrupt_64.dll+6676749 - 48 8B 87 F0040000     - mov rax,[rdi+000004F0]
+;Disrupt_64.dll+6676750 - F3 0F10 89 04040000   - movss xmm1,[rcx+00000404]
+;Disrupt_64.dll+6676758 - F3 0F10 90 C0030000   - movss xmm2,[rax+000003C0]			<< READ HERE
+;Disrupt_64.dll+6676760 - F3 0F10 81 08040000   - movss xmm0,[rcx+00000408]
+;
 ;---------------------------------------------------------------
 .code
 
@@ -158,5 +177,24 @@ gamespeedStructInterceptor PROC
 exit:
 	jmp qword ptr [_gamespeedStructInterceptorContinue]	; jmp back into the original game code, which is the location after the original statements above.
 gamespeedStructInterceptor ENDP
+
+todStructInterceptor PROC
+;Disrupt_64.dll+590DC79 - 4C 8D 4C 24 58        - lea r9,[rsp+58]
+;Disrupt_64.dll+590DC7E - 4C 8D 44 24 48        - lea r8,[rsp+48]
+;Disrupt_64.dll+590DC83 - 48 8B 08              - mov rcx,[rax]					<<< INTERCEPT HERE. TOD READ
+;Disrupt_64.dll+590DC86 - 48 8D 54 24 50        - lea rdx,[rsp+50]
+;Disrupt_64.dll+590DC8B - 48 89 4C 24 20        - mov [rsp+20],rcx
+;Disrupt_64.dll+590DC90 - 48 8D 4C 24 20        - lea rcx,[rsp+20]
+;Disrupt_64.dll+590DC95 - E8 8950D500           - call Disrupt_64.dll+6662D23   << CONTINUE HERE
+;
+	mov [g_todStructAddress], rax
+originalCode:
+	mov rcx,[rax]		
+	lea rdx,[rsp+50h]
+	mov [rsp+20h],rcx
+	lea rcx,[rsp+20h]
+exit:
+	jmp qword ptr [_todStructInterceptorContinue]	; jmp back into the original game code, which is the location after the original statements above.
+todStructInterceptor ENDP
 
 END

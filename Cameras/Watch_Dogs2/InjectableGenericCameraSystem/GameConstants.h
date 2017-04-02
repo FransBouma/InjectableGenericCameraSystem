@@ -44,7 +44,7 @@ namespace IGCS::GameSpecific
 	#define DEFAULT_MOVEMENT_SPEED						0.02f
 	#define DEFAULT_ROTATION_SPEED						0.015f
 	#define DEFAULT_FOV_RADIANS							1.2217f		// 70 degrees, is the default.
-	#define DEFAULT_FOV_SPEED							0.01f
+	#define DEFAULT_FOV_SPEED							0.003f
 	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f
 	#define DEFAULT_GAME_SPEED							1.449990034f
 	#define DEFAULT_MIN_GAME_SPEED						0.0000f
@@ -55,10 +55,12 @@ namespace IGCS::GameSpecific
 	#define CAMERA_ADDRESS_INTERCEPT_KEY				"AOB_CAMERA_ADDRESS_INTERCEPT"
 	#define CAMERA_WRITE_INTERCEPT_KEY					"AOB_CAMERA_WRITE_INTERCEPT"
 	#define GAMESPEED_ADDRESS_INTERCEPT_KEY				"AOB_GAMESPEED_ADDRESS_INTERCEPT"
+	#define TOD_ADDRESS_INTERCEPT_KEY					"AOB_TOD_ADDRESS_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
 	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0x64
 	#define LOOK_DATA_IN_CAMERA_STRUCT_OFFSET			0x70					// Rotation around X, Y and Z, in 2PI rad. 		
 	#define FOV_IN_CAMERA_STRUCT_OFFSET					0x7C
 	#define GAMESPEED_IN_STRUCT_OFFSET					0x84					// offset in code is 80, but it writes a double. We write a float.
+	#define TOD_IN_STRUCT_OFFSET						0x0
 }

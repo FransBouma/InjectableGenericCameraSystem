@@ -37,6 +37,7 @@ using namespace std;
 extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
 	LPBYTE g_gamespeedStructAddress = nullptr;
+	LPBYTE g_todStructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -75,7 +76,17 @@ namespace IGCS::GameSpecific::CameraManipulator
 		*gamespeedAddress = newValue;
 		Console::WriteLine("Game speed is now set to: " + to_string(newValue));
 	}
-	
+
+
+	void modifyTimeOfDay(bool decrease, bool faster)
+	{
+		float *todAddress = reinterpret_cast<float*>(g_todStructAddress + TOD_IN_STRUCT_OFFSET);
+		float newValue = *todAddress;
+		float delta = faster ? 100.0f : 10.0f;
+		newValue += decrease ? -delta : delta;
+		*todAddress = newValue;
+	}
+
 
 	// Resets the FOV to the default
 	void resetFoV()

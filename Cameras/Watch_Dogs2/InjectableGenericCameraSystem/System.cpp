@@ -152,6 +152,15 @@ namespace IGCS
 			modifyGameSpeed(false);
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
+		if (Input::keyDown(IGCS_KEY_DECREASE_TOD))
+		{
+			CameraManipulator::modifyTimeOfDay(true, altPressed);
+		}
+		if (Input::keyDown(IGCS_KEY_INCREASE_TOD))
+		{
+			CameraManipulator::modifyTimeOfDay(false, altPressed);
+		}
+
 		if (!g_cameraEnabled)
 		{
 			// camera is disabled. We simply disable all input to the camera movement, by returning now.
@@ -403,6 +412,10 @@ namespace IGCS
 		Console::WriteLine("Numpad 0                              : Toggle game pause");
 		Console::WriteLine("[                                     : Decrease game speed (during game pause)");
 		Console::WriteLine("]                                     : Increase game speed (during game pause)");
+		Console::WriteLine("Page Up                               : Increase Time of Day");
+		Console::WriteLine("Page Down                             : Decrease Time of Day");
+		Console::WriteLine("ALT + Page Up                         : Faster increase Time of Day");
+		Console::WriteLine("ALT + Page Down                       : Faster decrease Time of Day");
 		Console::WriteLine("DEL or controller Left Bumper         : Toggle HUD");
 		Console::WriteLine("ALT+H                                 : This help");
 		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);

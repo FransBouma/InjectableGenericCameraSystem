@@ -41,4 +41,5 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void setGamespeedFreezeValue(byte newValue);
 	void resetFoV();
 	void changeFoV(float amount);
+	void modifyTimeOfDay(bool decrease, bool faster);
 }
