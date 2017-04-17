@@ -111,75 +111,76 @@ namespace IGCS::Input
 		bool toReturn = false;
 		switch (lpMsg->message)
 		{
-		case WM_INPUT:
-		{
-			// handle mouse
-			RAWINPUT *pRI = NULL;
+			case WM_INPUT:
+			{
+				// handle mouse
+				RAWINPUT *pRI = NULL;
 
-			// Determine how big the buffer should be
-			UINT iBuffer;
-			GetRawInputData((HRAWINPUT)lpMsg->lParam, RID_INPUT, NULL, &iBuffer, sizeof(RAWINPUTHEADER));
-			// Allocate a buffer with enough size to hold the raw input data
-			LPBYTE lpb = new BYTE[iBuffer];
-			if (lpb == NULL)
-			{
-				return false;
-			}
-			// Get the raw input data
-			UINT readSize = GetRawInputData((HRAWINPUT)lpMsg->lParam, RID_INPUT, lpb, &iBuffer, sizeof(RAWINPUTHEADER));
-			if (readSize == iBuffer)
-			{
-				pRI = (RAWINPUT*)lpb;
-				// Process the Mouse Messages
-				if (pRI->header.dwType == RIM_TYPEMOUSE)
+				// Determine how big the buffer should be
+				UINT iBuffer;
+				GetRawInputData((HRAWINPUT)lpMsg->lParam, RID_INPUT, NULL, &iBuffer, sizeof(RAWINPUTHEADER));
+				// Allocate a buffer with enough size to hold the raw input data
+				LPBYTE lpb = new BYTE[iBuffer];
+				if (lpb == NULL)
 				{
-					processRawMouseData(&pRI->data.mouse);
+					return false;
 				}
+				// Get the raw input data
+				UINT readSize = GetRawInputData((HRAWINPUT)lpMsg->lParam, RID_INPUT, lpb, &iBuffer, sizeof(RAWINPUTHEADER));
+				if (readSize == iBuffer)
+				{
+					pRI = (RAWINPUT*)lpb;
+					// Process the Mouse Messages
+					if (pRI->header.dwType == RIM_TYPEMOUSE)
+					{
+						processRawMouseData(&pRI->data.mouse);
+					}
+				}
+				delete lpb;
+				toReturn = true;
 			}
-			delete lpb;
-			toReturn = true;
-		}
-		break;
-		// simply return true for all messages related to mouse / keyboard so they won't reach the message pump of the main window. 
-		case WM_KEYDOWN:
-		case WM_KEYUP:
-		case WM_CAPTURECHANGED:
-		case WM_LBUTTONDBLCLK:
-		case WM_LBUTTONDOWN:
-		case WM_MBUTTONDBLCLK:
-		case WM_MBUTTONDOWN:
-		case WM_MBUTTONUP:
-		case WM_MOUSEACTIVATE:
-		case WM_MOUSEHOVER:
-		case WM_MOUSEHWHEEL:
-		case WM_MOUSEMOVE:
-		case WM_MOUSELEAVE:
-		case WM_MOUSEWHEEL:
-		case WM_NCHITTEST:
-		case WM_NCLBUTTONDBLCLK:
-		case WM_NCLBUTTONDOWN:
-		case WM_NCLBUTTONUP:
-		case WM_NCMBUTTONDBLCLK:
-		case WM_NCMBUTTONDOWN:
-		case WM_NCMBUTTONUP:
-		case WM_NCMOUSEHOVER:
-		case WM_NCMOUSELEAVE:
-		case WM_NCMOUSEMOVE:
-		case WM_NCRBUTTONDBLCLK:
-		case WM_NCRBUTTONDOWN:
-		case WM_NCRBUTTONUP:
-		case WM_NCXBUTTONDBLCLK:
-		case WM_NCXBUTTONDOWN:
-		case WM_NCXBUTTONUP:
-		case WM_RBUTTONDBLCLK:
-		case WM_RBUTTONDOWN:
-		case WM_RBUTTONUP:
-		case WM_XBUTTONDBLCLK:
-		case WM_XBUTTONDOWN:
-		case WM_XBUTTONUP:
-		case WM_LBUTTONUP:
-			// say we handled it, so the host won't see it
-			toReturn = true;
+			break;
+			// simply return true for all messages related to mouse / keyboard so they won't reach the message pump of the main window. 
+			case WM_KEYDOWN:
+			case WM_KEYUP:
+			case WM_CAPTURECHANGED:
+			case WM_LBUTTONDBLCLK:
+			case WM_LBUTTONDOWN:
+			case WM_MBUTTONDBLCLK:
+			case WM_MBUTTONDOWN:
+			case WM_MBUTTONUP:
+			case WM_MOUSEACTIVATE:
+			case WM_MOUSEHOVER:
+			case WM_MOUSEHWHEEL:
+			case WM_MOUSEMOVE:
+			case WM_MOUSELEAVE:
+			case WM_MOUSEWHEEL:
+			case WM_NCHITTEST:
+			case WM_NCLBUTTONDBLCLK:
+			case WM_NCLBUTTONDOWN:
+			case WM_NCLBUTTONUP:
+			case WM_NCMBUTTONDBLCLK:
+			case WM_NCMBUTTONDOWN:
+			case WM_NCMBUTTONUP:
+			case WM_NCMOUSEHOVER:
+			case WM_NCMOUSELEAVE:
+			case WM_NCMOUSEMOVE:
+			case WM_NCRBUTTONDBLCLK:
+			case WM_NCRBUTTONDOWN:
+			case WM_NCRBUTTONUP:
+			case WM_NCXBUTTONDBLCLK:
+			case WM_NCXBUTTONDOWN:
+			case WM_NCXBUTTONUP:
+			case WM_RBUTTONDBLCLK:
+			case WM_RBUTTONDOWN:
+			case WM_RBUTTONUP:
+			case WM_XBUTTONDBLCLK:
+			case WM_XBUTTONDOWN:
+			case WM_XBUTTONUP:
+			case WM_LBUTTONUP:
+				// say we handled it, so the host won't see it
+				toReturn = true;
+				break;
 			break;
 		}
 		return toReturn;

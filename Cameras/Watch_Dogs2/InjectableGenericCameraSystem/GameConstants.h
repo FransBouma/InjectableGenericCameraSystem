@@ -30,8 +30,8 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Watch_Dogs 2 (v1.011.174+)"
-	#define CAMERA_VERSION								"1.0.0"
+	#define GAME_NAME									"Watch_Dogs 2 (v1.013)"
+	#define CAMERA_VERSION								"1.0.1"
 	#define CAMERA_CREDITS								"Otis_Inf"
 	#define GAME_WINDOW_TITLE							"Watch_Dogs 2"
 	#define INITIAL_PITCH_RADIANS						0.0f	// World has X right, Z up, Y into the screen.
@@ -41,10 +41,10 @@ namespace IGCS::GameSpecific
 	#define FASTER_MULTIPLIER							10.0f
 	#define SLOWER_MULTIPLIER							0.1f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
-	#define DEFAULT_MOVEMENT_SPEED						0.02f
-	#define DEFAULT_ROTATION_SPEED						0.015f
+	#define DEFAULT_MOVEMENT_SPEED						0.015f
+	#define DEFAULT_ROTATION_SPEED						0.012f
 	#define DEFAULT_FOV_RADIANS							1.2217f		// 70 degrees, is the default.
-	#define DEFAULT_FOV_SPEED							0.003f
+	#define DEFAULT_FOV_SPEED							0.0025f
 	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f
 	#define DEFAULT_GAME_SPEED							1.449990034f
 	#define DEFAULT_MIN_GAME_SPEED						0.0000f

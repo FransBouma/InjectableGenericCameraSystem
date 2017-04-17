@@ -416,7 +416,6 @@ namespace IGCS
 		Console::WriteLine("Page Down                             : Decrease Time of Day");
 		Console::WriteLine("ALT + Page Up                         : Faster increase Time of Day");
 		Console::WriteLine("ALT + Page Down                       : Faster decrease Time of Day");
-		Console::WriteLine("DEL or controller Left Bumper         : Toggle HUD");
 		Console::WriteLine("ALT+H                                 : This help");
 		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
 		Console::WriteLine(" Please read the enclosed readme.txt for the answers to your questions :)");

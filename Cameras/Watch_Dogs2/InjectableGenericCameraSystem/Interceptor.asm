@@ -57,40 +57,27 @@ EXTERN _todStructInterceptorContinue: qword
 
 ;---------------------------------------------------------------
 ; Scratch pad
-; Additionally, after cutscene: Not really needed, as it's often convenient to have the camera reset after a cut scene. Nothing is really broken here either
-; user just has to reposition the camera. Which is OK. If things go out of hand (like cuts in a cutscene), we'll intercept writes here too.
-; Coords second write intercept can be found by starting a new game, run up the ladder, which starts a cutscene: track writes to coord location
-; second write will be shown then.
-;Disrupt_64.dll+50C5FAE - F3 0F10 0D 06682DFE   - movss xmm1,[Disrupt_64.dll+339C7BC] { [0.03] }
-;Disrupt_64.dll+50C5FB6 - 48 89 43 70           - mov [rbx+70],rax							<< X AXE (right). Also writes tilt (Y rotation)
-;Disrupt_64.dll+50C5FBA - 8B 44 24 28           - mov eax,[rsp+28]
-;Disrupt_64.dll+50C5FBE - 48 89 D9              - mov rcx,rbx
-;Disrupt_64.dll+50C5FC1 - 89 43 78              - mov [rbx+78],eax							<< Z rotation (into the scre)
-;Disrupt_64.dll+50C5FC4 - F3 0F11 73 7C         - movss [rbx+7C],xmm6						<< WRITES FOV
-;Disrupt_64.dll+50C5FC9 - 8B 83 DC150000        - mov eax,[rbx+000015DC]
-;Disrupt_64.dll+50C5FCF - 89 43 58              - mov [rbx+58],eax
-;Disrupt_64.dll+50C5FD2 - 8B 83 E0150000        - mov eax,[rbx+000015E0]
-
-; TOD
-;Disrupt_64.dll+667B705 - 49 8B 86 F0040000     - mov rax,[r14+000004F0]
-;Disrupt_64.dll+667B70C - 45 88 FC              - mov r12l,r15l
-;Disrupt_64.dll+667B70F - 44 89 65 40           - mov [rbp+40],r12d
-;Disrupt_64.dll+667B713 - F3 0F10 80 C0030000   - movss xmm0,[rax+000003C0]			<< READ HERE
-;Disrupt_64.dll+667B71B - 0F2F 81 C0040000      - comiss xmm0,[rcx+000004C0]
-;Disrupt_64.dll+667B722 - 72 13                 - jb Disrupt_64.dll+667B737
-;
-; Alternative read
-;Disrupt_64.dll+6676742 - 48 8B 8F E8040000     - mov rcx,[rdi+000004E8]
-;Disrupt_64.dll+6676749 - 48 8B 87 F0040000     - mov rax,[rdi+000004F0]
-;Disrupt_64.dll+6676750 - F3 0F10 89 04040000   - movss xmm1,[rcx+00000404]
-;Disrupt_64.dll+6676758 - F3 0F10 90 C0030000   - movss xmm2,[rax+000003C0]			<< READ HERE
-;Disrupt_64.dll+6676760 - F3 0F10 81 08040000   - movss xmm0,[rcx+00000408]
-;
 ;---------------------------------------------------------------
 .code
 
 
 cameraStructInterceptor PROC
+; v1.13
+;Disrupt_64.dll+51E03AF - F3 0F59 35 098727FE   - mulss xmm6,[Disrupt_64.dll+3458AC0] { [0.02] }
+;Disrupt_64.dll+51E03B7 - F3 0F11 40 D8         - movss [rax-28],xmm0
+;Disrupt_64.dll+51E03BC - F3 0F11 50 E0         - movss [rax-20],xmm2
+;Disrupt_64.dll+51E03C1 - E8 7516FF00           - call Disrupt_64.dll+61D1A3B
+;Disrupt_64.dll+51E03C6 - 48 8B 44 24 20        - mov rax,[rsp+20]					   <<< INTERCEPT HERE
+;Disrupt_64.dll+51E03CB - 48 89 43 70           - mov [rbx+70],rax					   	   <<< X -axe rotation. Writes 64bits, so also writes roll (y axe rotation)! Angles are 2PI rad.
+;Disrupt_64.dll+51E03CF - 8B 44 24 28           - mov eax,[rsp+28]
+;Disrupt_64.dll+51E03D3 - 89 43 78              - mov [rbx+78],eax					   		<<< Z axe rotation (UP)
+;Disrupt_64.dll+51E03D6 - F3 0F11 73 7C         - movss [rbx+7C],xmm6				   	    <<< FOV WRITE
+;Disrupt_64.dll+51E03DB - 8B 83 AC0D0000        - mov eax,[rbx+00000DAC]			   <<< CONTINUE HERE
+;Disrupt_64.dll+51E03E1 - 0F28 74 24 30         - movaps xmm6,[rsp+30]
+;Disrupt_64.dll+51E03E6 - 89 43 58              - mov [rbx+58],eax
+;Disrupt_64.dll+51E03E9 - 8B 83 B00D0000        - mov eax,[rbx+00000DB0]
+
+; v1.11
 ;Disrupt_64.dll+50E323C - F3 0F59 35 74952BFE   - mulss xmm6,[Disrupt_64.dll+339C7B8] { [0.02] }
 ;Disrupt_64.dll+50E3244 - F3 0F11 40 D8         - movss [rax-28],xmm0
 ;Disrupt_64.dll+50E3249 - F3 0F11 50 E0         - movss [rax-20],xmm2
@@ -119,6 +106,31 @@ exit:
 cameraStructInterceptor ENDP
 
 cameraWriteInterceptor PROC
+; v1.13
+;Disrupt_64.dll+61D1A3B - 48 83 EC 28           - sub rsp,28 { 40 }
+;Disrupt_64.dll+61D1A3F - 8B 02                 - mov eax,[rdx]
+;Disrupt_64.dll+61D1A41 - 4C 8D 41 64           - lea r8,[rcx+64]
+;Disrupt_64.dll+61D1A45 - 41 89 00              - mov [r8],eax								<<< INTERCEPT HERE		<<<< X WRITE
+;Disrupt_64.dll+61D1A48 - 8B 42 04              - mov eax,[rdx+04]
+;Disrupt_64.dll+61D1A4B - 41 89 40 04           - mov [r8+04],eax									<<<< Y WRITE
+;Disrupt_64.dll+61D1A4F - 8B 42 08              - mov eax,[rdx+08]
+;Disrupt_64.dll+61D1A52 - 41 89 40 08           - mov [r8+08],eax									<<<< Z WRITE
+;Disrupt_64.dll+61D1A56 - 48 8B 0D 7BB5D5FD     - mov rcx,[Disrupt_64.dll+3F2CFD8]			<<< CONTINUE HERE
+;Disrupt_64.dll+61D1A5D - 48 85 C9              - test rcx,rcx
+;Disrupt_64.dll+61D1A60 - 74 35                 - je Disrupt_64.dll+61D1A97
+;Disrupt_64.dll+61D1A62 - F3 0F10 05 22A134FD   - movss xmm0,[Disrupt_64.dll+351BB8C] 
+;Disrupt_64.dll+61D1A6A - F3 0F10 0D C2595CFD   - movss xmm1,[Disrupt_64.dll+3797434] 
+;Disrupt_64.dll+61D1A72 - F3 0F10 15 0EFC29FD   - movss xmm2,[Disrupt_64.dll+3471688] 
+;Disrupt_64.dll+61D1A7A - 4C 8D 4C 24 30        - lea r9,[rsp+30]
+;Disrupt_64.dll+61D1A7F - 48 83 C1 78           - add rcx,78 { 120 }
+;Disrupt_64.dll+61D1A83 - 4C 89 C2              - mov rdx,r8
+;Disrupt_64.dll+61D1A86 - F3 0F11 44 24 30      - movss [rsp+30],xmm0
+;Disrupt_64.dll+61D1A8C - F3 0F11 4C 24 34      - movss [rsp+34],xmm1
+;Disrupt_64.dll+61D1A92 - E8 89B02800           - call Disrupt_64.dll+645CB20
+;Disrupt_64.dll+61D1A97 - 48 83 C4 28           - add rsp,28 { 40 }
+;Disrupt_64.dll+61D1A9B - C3                    - ret 
+
+;v 1.11
 ;Disrupt_64.dll+62F6F30 - 48 83 EC 28           - sub rsp,28 { 40 }
 ;Disrupt_64.dll+62F6F34 - 8B 02                 - mov eax,[rdx]
 ;Disrupt_64.dll+62F6F36 - 4C 8D 41 64           - lea r8,[rcx+64]									
@@ -156,6 +168,22 @@ cameraWriteInterceptor ENDP
 
 
 gamespeedStructInterceptor PROC
+;v1.13
+;Disrupt_64.dll+49BE533 - F2 0F5C 4B 20         - subsd xmm1,[rbx+20]
+;Disrupt_64.dll+49BE538 - 74 0F                 - je Disrupt_64.dll+49BE549
+;Disrupt_64.dll+49BE53A - F2 0F10 0D FE51ABFE   - movsd xmm1,[Disrupt_64.dll+3473740]
+;Disrupt_64.dll+49BE542 - C6 83 9C000000 00     - mov byte ptr [rbx+0000009C],00
+;Disrupt_64.dll+49BE549 - 80 BB 9D000000 00     - cmp byte ptr [rbx+0000009D],00
+;Disrupt_64.dll+49BE550 - 75 11                 - jne Disrupt_64.dll+49BE563
+;Disrupt_64.dll+49BE552 - F2 0F10 93 80000000   - movsd xmm2,[rbx+00000080]						<<< INTERCEPT HERE	<<<< READ GAME SPEED HERE.
+;Disrupt_64.dll+49BE55A - 66 0F2F CA            - comisd xmm1,xmm2
+;Disrupt_64.dll+49BE55E - 72 03                 - jb Disrupt_64.dll+49BE563
+;Disrupt_64.dll+49BE560 - 0F28 CA               - movaps xmm1,xmm2
+;Disrupt_64.dll+49BE563 - 80 BB 91000000 00     - cmp byte ptr [rbx+00000091],00				<<< CONTINUE HERE
+;Disrupt_64.dll+49BE56A - F2 0F11 43 20         - movsd [rbx+20],xmm0
+;Disrupt_64.dll+49BE56F - 74 1A                 - je Disrupt_64.dll+49BE58B
+
+;v1.11
 ;Disrupt_64.dll+48E03B3 - F2 0F5C 4B 20         - subsd xmm1,[rbx+20]
 ;Disrupt_64.dll+48E03B8 - 74 0F                 - je Disrupt_64.dll+48E03C9
 ;Disrupt_64.dll+48E03BA - F2 0F10 0D 4E76ADFE   - movsd xmm1,[Disrupt_64.dll+33B7A10]
@@ -179,6 +207,16 @@ exit:
 gamespeedStructInterceptor ENDP
 
 todStructInterceptor PROC
+;v1.13
+;Disrupt_64.dll+5A1C23C - 4C 8D 4C 24 58        - lea r9,[rsp+58]
+;Disrupt_64.dll+5A1C241 - 4C 8D 44 24 48        - lea r8,[rsp+48]
+;Disrupt_64.dll+5A1C246 - 48 8B 08              - mov rcx,[rax]					<<< INTERCEPT HERE. TOD READ
+;Disrupt_64.dll+5A1C249 - 48 8D 54 24 50        - lea rdx,[rsp+50]
+;Disrupt_64.dll+5A1C24E - 48 89 4C 24 20        - mov [rsp+20],rcx
+;Disrupt_64.dll+5A1C253 - 48 8D 4C 24 20        - lea rcx,[rsp+20]
+;Disrupt_64.dll+5A1C258 - E8 0312B300           - call Disrupt_64.dll+654D460	<< CONTINUE HERE
+
+;v1.11
 ;Disrupt_64.dll+590DC79 - 4C 8D 4C 24 58        - lea r9,[rsp+58]
 ;Disrupt_64.dll+590DC7E - 4C 8D 44 24 48        - lea r8,[rsp+48]
 ;Disrupt_64.dll+590DC83 - 48 8B 08              - mov rcx,[rax]					<<< INTERCEPT HERE. TOD READ
