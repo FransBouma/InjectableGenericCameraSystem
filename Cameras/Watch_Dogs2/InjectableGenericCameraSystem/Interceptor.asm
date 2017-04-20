@@ -57,6 +57,28 @@ EXTERN _todStructInterceptorContinue: qword
 
 ;---------------------------------------------------------------
 ; Scratch pad
+; Thanks to DJH (DET) for this location: manipulate r14d & ebp to get bigger framebuffer for shots!
+; This is really nifty and simple. I looked at how to intercept the limiter code for the hotsampling, instead he simply manipulated the
+; values passed to the routine, no limiter disable needed. To find this, it was a matter of resizing the window and check where the resolution was stored, then check
+; which code this reads. I found that, but didn't think manipulating the values in the registers would bring me anything. 
+; 
+; To built this in: add keys to increase/decrease the scaling factor: 1, 2, 3, 4, 5, 6, 7, 8. 
+; Then build a toggle to enable / disable scaling with this factor. Simply multiply r14d and ebp dwords with the scaling factor. 
+; the intercepted code should check whether the toggle is enabled, and if so, it should read the multiply factor and multiply both r14d and ebp with the factor
+; otherwise simply skip it. Using a factor and a toggle is better, as you can set the factor to a value and simply toggle hotsampling on for a shot and off again, without
+; finetuning the factor. 
+;
+;Disrupt_64.dll+6AA914C - EB 0F                 - jmp Disrupt_64.dll+6AA915D
+;Disrupt_64.dll+6AA914E - 01 21                 - add [rcx],esp
+;Disrupt_64.dll+6AA9150 - 44 8B B3 70010000     - mov r14d,[rbx+00000170]			<<< WIDTH READ OF FRAMEBUFFER (DWORD values)
+;Disrupt_64.dll+6AA9157 - 8B AB 74010000        - mov ebp,[rbx+00000174]			<<< HEIGHT READ OF FRAMEBUFFER. 
+;Disrupt_64.dll+6AA915D - 48 8B 4E 08           - mov rcx,[rsi+08]
+;Disrupt_64.dll+6AA9161 - 48 85 C9              - test rcx,rcx
+;Disrupt_64.dll+6AA9164 - 0F84 44010000         - je Disrupt_64.dll+6AA92AE
+;Disrupt_64.dll+6AA916A - 48 8B 01              - mov rax,[rcx]
+;Disrupt_64.dll+6AA916D - 48 8D 54 24 30        - lea rdx,[rsp+30]
+;Disrupt_64.dll+6AA9172 - FF 50 60              - call qword ptr [rax+60]
+;
 ;---------------------------------------------------------------
 .code
 
