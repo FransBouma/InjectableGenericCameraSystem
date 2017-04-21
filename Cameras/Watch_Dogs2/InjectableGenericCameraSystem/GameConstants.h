@@ -30,9 +30,9 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Watch_Dogs 2 (v1.013)"
-	#define CAMERA_VERSION								"1.0.1"
-	#define CAMERA_CREDITS								"Otis_Inf"
+	#define GAME_NAME									"Watch_Dogs 2 (v1.013+)"
+	#define CAMERA_VERSION								"1.0.2"
+	#define CAMERA_CREDITS								"Otis_Inf. Hotsample code by DeadEndThrills"
 	#define GAME_WINDOW_TITLE							"Watch_Dogs 2"
 	#define INITIAL_PITCH_RADIANS						0.0f	// World has X right, Z up, Y into the screen.
 	#define INITIAL_YAW_RADIANS							0.0f	// around Z axis	(up)
@@ -49,6 +49,7 @@ namespace IGCS::GameSpecific
 	#define DEFAULT_GAME_SPEED							1.449990034f
 	#define DEFAULT_MIN_GAME_SPEED						0.0000f
 	#define DEFAULT_MAX_GAME_SPEED						5.0f
+	#define HOTSAMPLE_FACTOR_MAX						5
 	// End Mandatory constants
 
 	// AOB Keys for interceptor's AOB scanner
@@ -56,6 +57,7 @@ namespace IGCS::GameSpecific
 	#define CAMERA_WRITE_INTERCEPT_KEY					"AOB_CAMERA_WRITE_INTERCEPT"
 	#define GAMESPEED_ADDRESS_INTERCEPT_KEY				"AOB_GAMESPEED_ADDRESS_INTERCEPT"
 	#define TOD_ADDRESS_INTERCEPT_KEY					"AOB_TOD_ADDRESS_INTERCEPT"
+	#define HOTSAMPLE_CODE_INTERCEPT_KEY				"AOB_HOTSAMPLE_CODE_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
 	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0x64

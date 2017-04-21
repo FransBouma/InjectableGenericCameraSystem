@@ -31,7 +31,8 @@
 #include "Gamepad.h"
 
 extern "C" byte g_cameraEnabled;
-extern "C" byte g_hudVisible;
+extern "C" byte g_hotsampleEnabled;
+extern "C" DWORD g_hotsampleFactor;
 
 namespace IGCS
 {

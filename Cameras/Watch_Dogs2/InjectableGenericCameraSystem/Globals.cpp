@@ -33,7 +33,8 @@
 // MASM is rather tedious. 
 extern "C" {
 	byte g_cameraEnabled = 0;
-	byte g_hudVisible = 1;
+	byte g_hotsampleEnabled = 0;
+	DWORD g_hotsampleFactor = 1;
 }
 
 

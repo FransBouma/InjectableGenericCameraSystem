@@ -2,9 +2,9 @@ Injectable camera for Watch_Dogs 2
 ============================
 
 Current supported game version: v1.013+
-Camera version: 1.0.1  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/WD2_101    
-Credits: Otis_Inf
+Camera version: 1.0.2  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/WD2_102    
+Credits: Otis_Inf. Hotsample code by DeadEndThrills
 
 ### How to use
 Read the enclosed readme.txt for details. You need to switch off EAC on the game to make the camera work. 

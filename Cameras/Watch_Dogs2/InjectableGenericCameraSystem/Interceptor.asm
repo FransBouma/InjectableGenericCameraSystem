@@ -35,12 +35,15 @@ PUBLIC cameraStructInterceptor
 PUBLIC cameraWriteInterceptor
 PUBLIC gamespeedStructInterceptor
 PUBLIC todStructInterceptor
+PUBLIC hotsampleInterceptor
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
 ; Externs which are used and set by the system. Read / write these
 ; values in asm to communicate with the system
 EXTERN g_cameraEnabled: byte
+EXTERN g_hotsampleEnabled: byte
+EXTERN g_hotsampleFactor: dword
 EXTERN g_cameraStructAddress: qword
 EXTERN g_gamespeedStructAddress: qword
 EXTERN g_todStructAddress: qword
@@ -52,6 +55,7 @@ EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _cameraWriteInterceptionContinue: qword
 EXTERN _gamespeedStructInterceptorContinue: qword
 EXTERN _todStructInterceptorContinue: qword
+EXTERN _hotsampleInterceptorContinue: qword
 
 .data
 
@@ -256,5 +260,34 @@ originalCode:
 exit:
 	jmp qword ptr [_todStructInterceptorContinue]	; jmp back into the original game code, which is the location after the original statements above.
 todStructInterceptor ENDP
+
+
+hotsampleInterceptor PROC
+;Disrupt_64.dll+6AA914C - EB 0F                 - jmp Disrupt_64.dll+6AA915D
+;Disrupt_64.dll+6AA914E - 01 21                 - add [rcx],esp
+;Disrupt_64.dll+6AA9150 - 44 8B B3 70010000     - mov r14d,[rbx+00000170]			<<< INTERECEPT HERE <<< WIDTH READ OF FRAMEBUFFER (DWORD values)
+;Disrupt_64.dll+6AA9157 - 8B AB 74010000        - mov ebp,[rbx+00000174]			<<< HEIGHT READ OF FRAMEBUFFER. 
+;Disrupt_64.dll+6AA915D - 48 8B 4E 08           - mov rcx,[rsi+08]
+;Disrupt_64.dll+6AA9161 - 48 85 C9              - test rcx,rcx						<<< CONTINUE HERE
+;Disrupt_64.dll+6AA9164 - 0F84 44010000         - je Disrupt_64.dll+6AA92AE
+;Disrupt_64.dll+6AA916A - 48 8B 01              - mov rax,[rcx]
+;Disrupt_64.dll+6AA916D - 48 8D 54 24 30        - lea rdx,[rsp+30]
+;Disrupt_64.dll+6AA9172 - FF 50 60              - call qword ptr [rax+60]
+	push rax
+	mov eax, [g_hotsampleFactor]
+	mov r14d, dword ptr [rbx+00000170h]					; read width
+	mov ebp, dword ptr [rbx+00000174h]						; read height
+	cmp byte ptr [g_hotsampleEnabled], 1
+	jne originalCode				
+	; hotsampling enabled. Multiply both registers with factor, using integer math
+	imul r14d, eax
+	imul ebp, eax
+originalCode:
+	mov rcx, [rsi+08h]
+exit:
+	pop rax
+	jmp qword ptr [_hotsampleInterceptorContinue]	; jmp back into the original game code, which is the location after the original statements above.
+hotsampleInterceptor ENDP
+
 
 END

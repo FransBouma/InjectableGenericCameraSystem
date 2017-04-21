@@ -160,6 +160,21 @@ namespace IGCS
 		{
 			CameraManipulator::modifyTimeOfDay(false, altPressed);
 		}
+		if (Input::keyDown(IGCS_KEY_DECREASE_HOTSAMPLE_FACTOR))
+		{
+			modifyHotsampleFactor(true);
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
+		if (Input::keyDown(IGCS_KEY_INCREASE_HOTSAMPLE_FACTOR))
+		{
+			modifyHotsampleFactor(false);
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
+		if (Input::keyDown(IGCS_KEY_HOTSAMPLE_ENABLE))
+		{
+			toggleHotsampling();
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
 
 		if (!g_cameraEnabled)
 		{
@@ -388,6 +403,35 @@ namespace IGCS
 		CameraManipulator::modifyGameSpeed(decrease);
 	}
 
+
+	void System::modifyHotsampleFactor(bool decrease)
+	{
+		if (decrease && g_hotsampleFactor <= 1)
+		{
+			g_hotsampleFactor = 1;
+		}
+		else
+		{
+			if (!decrease && g_hotsampleFactor >= HOTSAMPLE_FACTOR_MAX)
+			{
+				g_hotsampleFactor = HOTSAMPLE_FACTOR_MAX;
+			}
+			else
+			{
+				g_hotsampleFactor = decrease ? g_hotsampleFactor - 1 : g_hotsampleFactor + 1;
+			}
+		}
+		Console::WriteLine("Hotsample resize factor is now: " + to_string(g_hotsampleFactor));
+	}
+
+
+	void System::toggleHotsampling()
+	{
+		g_hotsampleEnabled = !g_hotsampleEnabled;
+		Console::WriteLine(g_hotsampleEnabled ? "Hotsampling using resize factor is now enabled" : "Hotsampling using resize factor is now disabled");
+	}
+	
+
 	void System::displayHelp()
 	{
 						  //0         1         2         3         4         5         6         7
@@ -416,6 +460,9 @@ namespace IGCS
 		Console::WriteLine("Page Down                             : Decrease Time of Day");
 		Console::WriteLine("ALT + Page Up                         : Faster increase Time of Day");
 		Console::WriteLine("ALT + Page Down                       : Faster decrease Time of Day");
+		Console::WriteLine("DEL                                   : Toggle hotsampling w/ resize factor");
+		Console::WriteLine(";                                     : Decrease hotsample resize factor");
+		Console::WriteLine("'                                     : Increase hotsample resize factor");
 		Console::WriteLine("ALT+H                                 : This help");
 		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
 		Console::WriteLine(" Please read the enclosed readme.txt for the answers to your questions :)");
