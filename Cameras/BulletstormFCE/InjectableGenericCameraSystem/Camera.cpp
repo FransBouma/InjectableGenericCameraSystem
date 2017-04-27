@@ -52,7 +52,7 @@ namespace IGCS
 		XMVECTOR yQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), -_pitch);
 		XMVECTOR zQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), _yaw);
 
-		XMVECTOR tmpQ = XMQuaternionMultiply(yQ, zQ);
+		XMVECTOR tmpQ = XMQuaternionMultiply(zQ, yQ);
 		XMVECTOR qToReturn = XMQuaternionMultiply(xQ, tmpQ);
 		XMQuaternionNormalize(qToReturn);
 		return qToReturn;
