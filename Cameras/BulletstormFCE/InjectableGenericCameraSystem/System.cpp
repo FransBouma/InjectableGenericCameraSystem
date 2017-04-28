@@ -91,17 +91,11 @@ namespace IGCS
 			return;
 		}
 
-		// calculate new camera values. 2 cameras (main and cinematics)
+		// calculate new camera values.
 		XMVECTOR newLookQuaternion = _camera.calculateLookQuaternion();
-		// main camera
-		XMFLOAT3 currentCoords = GameSpecific::CameraManipulator::getCurrentCameraCoords(true);
+		XMFLOAT3 currentCoords = GameSpecific::CameraManipulator::getCurrentCameraCoords();
 		XMFLOAT3 newCoords = _camera.calculateNewCoords(currentCoords, newLookQuaternion);
-		GameSpecific::CameraManipulator::writeNewCameraValuesToGameData(newCoords, _camera.getPitch(), _camera.getYaw(), _camera.getRoll(), true);
-
-		// cinematics. Pass false
-		currentCoords = GameSpecific::CameraManipulator::getCurrentCameraCoords(false);
-		newCoords = _camera.calculateNewCoords(currentCoords, newLookQuaternion);
-		GameSpecific::CameraManipulator::writeNewCameraValuesToGameData(newCoords, _camera.getPitch(), _camera.getYaw(), _camera.getRoll(), false);
+		GameSpecific::CameraManipulator::writeNewCameraValuesToGameData(newCoords, _camera.getPitch(), _camera.getYaw(), _camera.getRoll());
 	}
 
 

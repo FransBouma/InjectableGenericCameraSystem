@@ -93,10 +93,6 @@ exit:
 cameraAddressInterceptor ENDP
 
 fovWriteInterceptor PROC
-;Disrupt_b64.dll+862220 - 44 89 41 3C           - mov [rcx+3C],r8d				<<<< INTERCEPT HERE
-;Disrupt_b64.dll+862224 - F3 0F11 49 24         - movss [rcx+24],xmm1			<<<< FOV Write
-;Disrupt_b64.dll+862229 - F3 0F11 49 28         - movss [rcx+28],xmm1
-;Disrupt_b64.dll+86222E - C3                    - ret							<<<< CONTINUE
 	mov [rcx+3Ch], r8d
 	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je noFovWrite												; our own camera is enabled, just skip the writes

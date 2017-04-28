@@ -32,11 +32,11 @@ using namespace DirectX;
 
 namespace IGCS::GameSpecific::CameraManipulator
 {
-	void writeNewCameraValuesToGameData(XMFLOAT3 newCoords, float pitch, float yaw, float roll, bool mainCamera);
+	void writeNewCameraValuesToGameData(XMFLOAT3 newCoords, float pitch, float yaw, float roll);
 	void waitForCameraStructAddresses(LPBYTE hostImageAddress);
 	void restoreOriginalCameraValues();
 	void cacheOriginalCameraValues();
-	XMFLOAT3 getCurrentCameraCoords(bool mainCamera);
+	XMFLOAT3 getCurrentCameraCoords();
 	void resetFoV();
 	void changeFoV(float amount);
 }

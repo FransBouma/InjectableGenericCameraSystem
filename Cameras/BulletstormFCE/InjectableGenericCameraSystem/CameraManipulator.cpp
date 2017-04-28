@@ -30,13 +30,15 @@
 #include "GameConstants.h"
 #include "Console.h"
 #include "InterceptorHelper.h"
+#include "Globals.h"
 
 using namespace DirectX;
 using namespace std;
 
 extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
-	LPBYTE g_cinematicsCameraStructAddress = nullptr;
+	LPBYTE g_ownCoordinates = nullptr;
+	LPBYTE g_ownAngles = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -45,13 +47,15 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static float _originalCoordsData[3];
 	static DWORD _originalCinematicsLookData[3];	// game uses 3 shorts, aligned on dword addresses. 
 	static float _originalCinematicsCoordsData[3];
+	static DWORD _ownLookData[3];
+	static float _ownCoordsData[3];
 
 	// Resets the FOV to the default
 	void resetFoV()
 	{
 		float* fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_CAMERA_STRUCT_OFFSET);
-		float* defaultFov = reinterpret_cast<float*>(g_cameraStructAddress + FOV_DEFAULT_IN_CAMERA_STRUCT_OFFSET);
-		*fovInMemory = *defaultFov;
+		*fovInMemory = DEFAULT_FOV_DEGREES;
+		g_fovValue = DEFAULT_FOV_DEGREES;
 	}
 
 
@@ -60,31 +64,31 @@ namespace IGCS::GameSpecific::CameraManipulator
 	{
 		float* fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_CAMERA_STRUCT_OFFSET);
 		*fovInMemory += amount;
+		g_fovValue += amount;
 	}
 
 
-	XMFLOAT3 getCurrentCameraCoords(bool mainCamera)
+	XMFLOAT3 getCurrentCameraCoords()
 	{
-		float* coordsInMemory = reinterpret_cast<float*>((mainCamera ? g_cameraStructAddress : g_cinematicsCameraStructAddress) + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-		XMFLOAT3 currentCoords = XMFLOAT3(coordsInMemory);
-		return currentCoords;
+		// read from our own struct.
+		return XMFLOAT3(_ownCoordsData[0], _ownCoordsData[1], _ownCoordsData[2]);
 	}
 	
 
 	// newCoords are the new coordinates for the camera in worldspace. Angles given are the rotation angles stored in the camera struct
-	void writeNewCameraValuesToGameData(XMFLOAT3 newCoords, float pitch, float yaw, float roll, bool mainCamera)
+	void writeNewCameraValuesToGameData(XMFLOAT3 newCoords, float pitch, float yaw, float roll)
 	{
-		// this camera is stored as 3 coords (floats) and 3 angles (ushorts, aligned on dword addresses). 
-		float* coordsInMemory = reinterpret_cast<float*>((mainCamera ? g_cameraStructAddress : g_cinematicsCameraStructAddress) + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-		coordsInMemory[0] = newCoords.x;
-		coordsInMemory[1] = newCoords.y;
-		coordsInMemory[2] = newCoords.z;
+		g_ownCoordinates = (byte*)(float*)_ownCoordsData;
+		g_ownAngles = (byte*)(DWORD*)_ownLookData;
+
+		_ownCoordsData[0] = newCoords.x;
+		_ownCoordsData[1] = newCoords.y;
+		_ownCoordsData[2] = newCoords.z;
 
 		// angles in the game are a ushort. Angles in our camera are 0-2PI. So 2PI is 0x65535. They're aligned on DWORD boundaries. 
-		DWORD* anglesInMemory = (DWORD*)((mainCamera ? g_cameraStructAddress : g_cinematicsCameraStructAddress) + LOOK_DATA_IN_CAMERA_STRUCT_OFFSET);
-		anglesInMemory[0] = DWORD(((pitch / XM_2PI) * 65535.0f) + 0.5) & 0x0000FFFF;
-		anglesInMemory[1] = DWORD(((yaw / XM_2PI) * 65535.0f) + 0.5) & 0x0000FFFF;
-		anglesInMemory[2] = DWORD(((roll / XM_2PI) * 65535.0f) + 0.5) & 0x0000FFFF;
+		_ownLookData[0] = DWORD(((pitch / XM_2PI) * 65535.0f) + 0.5) & 0x0000FFFF;
+		_ownLookData[1] = DWORD(((yaw / XM_2PI) * 65535.0f) + 0.5) & 0x0000FFFF;
+		_ownLookData[2] = DWORD(((roll / XM_2PI) * 65535.0f) + 0.5) & 0x0000FFFF;
 	}
 
 
@@ -111,11 +115,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
 		memcpy(lookInMemory, _originalLookData, 3 * sizeof(DWORD));
 		memcpy(coordsInMemory, _originalCoordsData, 3 * sizeof(float));
-
-		lookInMemory = (DWORD*)(g_cinematicsCameraStructAddress + LOOK_DATA_IN_CAMERA_STRUCT_OFFSET);
-		coordsInMemory = reinterpret_cast<float*>(g_cinematicsCameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-		memcpy(lookInMemory, _originalCinematicsLookData, 3 * sizeof(DWORD));
-		memcpy(coordsInMemory, _originalCinematicsCoordsData, 3 * sizeof(float));
 	}
 
 
@@ -125,10 +124,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
 		memcpy(_originalLookData, lookInMemory, 3 * sizeof(DWORD));
 		memcpy(_originalCoordsData, coordsInMemory, 3 * sizeof(float));
-
-		lookInMemory = (DWORD*)(g_cinematicsCameraStructAddress + LOOK_DATA_IN_CAMERA_STRUCT_OFFSET);
-		coordsInMemory = reinterpret_cast<float*>(g_cinematicsCameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-		memcpy(_originalCinematicsLookData, lookInMemory, 3 * sizeof(DWORD));
-		memcpy(_originalCinematicsCoordsData, coordsInMemory, 3 * sizeof(float));
+		// copy the coordinates also in our own coordinates struct as we're going to read / write to that, not to main mem.
+		memcpy(_ownCoordsData, coordsInMemory, 3 * sizeof(float));
 	}
 }
