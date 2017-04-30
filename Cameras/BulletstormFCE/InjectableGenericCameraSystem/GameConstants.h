@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Bulletstorm Full Clip Edition (v1.1+)"
-	#define CAMERA_VERSION								"1.0.1"
+	#define CAMERA_VERSION								"1.0.2"
 	#define CAMERA_CREDITS								"Otis_Inf."
 	#define GAME_WINDOW_TITLE							"Bulletstorm: Full Clip Edition (64-bit, DX11)"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
@@ -51,6 +51,8 @@ namespace IGCS::GameSpecific
 	// AOB Keys for interceptor's AOB scanner
 	#define CAMERA_ADDRESS_INTERCEPT_KEY				"AOB_CAMERA_ADDRESS_INTERCEPT"
 	#define FOV_INTERCEPT_KEY							"AOB_FOV_INTERCEPT"
+	#define CROSSHAIR_INTERCEPT_KEY						"AOB_CROSSHAIR_INTERCEPT"
+	#define WIDGET_RENDER_INTERCEPT_KEY					"AOB_WIDGET_RENDER_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
 	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0x41c

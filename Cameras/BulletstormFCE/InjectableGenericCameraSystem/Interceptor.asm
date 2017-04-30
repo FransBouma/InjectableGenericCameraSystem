@@ -33,6 +33,7 @@
 ; Public definitions so the linker knows which names are present in this file
 PUBLIC cameraStructInterceptor
 PUBLIC fovWriteInterceptor
+PUBLIC widgetRenderInterceptor 
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -49,10 +50,29 @@ EXTERN g_fovValue: dword
 ; Own externs, defined in InterceptorHelper.cpp
 EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _fovWriteInterceptionContinue : qword
+EXTERN _crossHairRenderInterceptionContinue: qword
+EXTERN _widgetRenderInterceptionContinue: qword
 .data
 
 ;---------------------------------------------------------------
 ; Scratch pad
+; The following function renders widgets. To replace the first statement with a ret, no widgets are rendered, effectively a hud toggle.
+; 0000000140D90CE0 Export ABSHUD::DrawStandardWidgets 
+;StormGame-Win64-Shipping.exe+D90CE0 - 48 8B C4              - mov rax,rsp							<< REPLACE WITH 'ret' (c9) to disable widgets.
+;StormGame-Win64-Shipping.exe+D90CE3 - 41 54                 - push r12
+;StormGame-Win64-Shipping.exe+D90CE5 - 41 56                 - push r14
+;StormGame-Win64-Shipping.exe+D90CE7 - 41 57                 - push r15
+;StormGame-Win64-Shipping.exe+D90CE9 - 48 83 EC 30           - sub rsp,30 { 00000030 }
+;StormGame-Win64-Shipping.exe+D90CED - 48 C7 40 E0 FEFFFFFF  - mov [rax-20],FFFFFFFE { -2 }
+;StormGame-Win64-Shipping.exe+D90CF5 - 48 89 58 08           - mov [rax+08],rbx
+;StormGame-Win64-Shipping.exe+D90CF9 - 48 89 68 10           - mov [rax+10],rbp
+;StormGame-Win64-Shipping.exe+D90CFD - 48 89 70 18           - mov [rax+18],rsi
+;StormGame-Win64-Shipping.exe+D90D01 - 48 89 78 20           - mov [rax+20],rdi
+;StormGame-Win64-Shipping.exe+D90D05 - 45 8B F9              - mov r15d,r9d
+;StormGame-Win64-Shipping.exe+D90D08 - 45 8B F0              - mov r14d,r8d
+;StormGame-Win64-Shipping.exe+D90D0B - 4C 8B E2              - mov r12,rdx
+;StormGame-Win64-Shipping.exe+D90D0E - 48 8B F9              - mov rdi,rcx
+;StormGame-Win64-Shipping.exe+D90D11 - C7 40 D8 00000000     - mov [rax-28],00000000 { 0 }
 ;---------------------------------------------------------------
 .code
 
@@ -152,5 +172,63 @@ originalCode:
 exit:
 	jmp qword ptr [_fovWriteInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 fovWriteInterceptor ENDP
+
+
+crossHairRenderInterceptor PROC
+; The following code tests whether to render the crosshair. By simply returning 0 in eax, the crosshair is hidden. It will return 1 or 0 but returning 0 w/o
+; going through the whole function is easier. 
+;StormGame-Win64-Shipping.exe+73250E0 - 53                    - push rbx							<< INTERCEPT HERE
+;StormGame-Win64-Shipping.exe+73250E1 - 48 83 EC 20           - sub rsp,20 { 00000020 }
+;StormGame-Win64-Shipping.exe+73250E5 - 48 89 CB              - mov rbx,rcx
+;StormGame-Win64-Shipping.exe+73250E8 - 41 B9 01000000        - mov r9d,00000001 { 1 }
+;StormGame-Win64-Shipping.exe+73250EE - 48 8D 15 93981CFA     - lea rdx,[StormGame-Win64-Shipping.exe+14EE988]		<<< CONTINUE HERE
+;StormGame-Win64-Shipping.exe+73250F5 - 48 8D 4C 24 30        - lea rcx,[rsp+30]
+;StormGame-Win64-Shipping.exe+73250FA - 45 89 C8              - mov r8d,r9d
+	cmp byte ptr [g_cameraEnabled], 1						; check if the user enabled the camera. 
+	jne originalCode
+noCrossHair:
+	; simply load eax with 0, then do an explit return, so the intercepted function 'ABSPawn::ShouldDrawCrosshair' function effectively ends here
+	xor eax, eax
+	ret
+originalCode:
+	push rbx		
+	sub rsp,20h
+	mov rbx,rcx
+	mov r9d,00000001h
+exit:
+	jmp qword ptr [_crossHairRenderInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+crossHairRenderInterceptor ENDP
+
+widgetRenderInterceptor PROC
+; The following function renders widgets. To replace the first statement with a ret, no widgets are rendered, effectively a hud toggle.
+; 0000000140D90CE0 Export ABSHUD::DrawStandardWidgets 
+;StormGame-Win64-Shipping.exe+D90CE0 - 48 8B C4              - mov rax,rsp				 << INTERCEPT HERE	<< REPLACE WITH 'ret' (c9) to disable widgets.
+;StormGame-Win64-Shipping.exe+D90CE3 - 41 54                 - push r12
+;StormGame-Win64-Shipping.exe+D90CE5 - 41 56                 - push r14
+;StormGame-Win64-Shipping.exe+D90CE7 - 41 57                 - push r15
+;StormGame-Win64-Shipping.exe+D90CE9 - 48 83 EC 30           - sub rsp,30 { 00000030 }
+;StormGame-Win64-Shipping.exe+D90CED - 48 C7 40 E0 FEFFFFFF  - mov [rax-20],FFFFFFFE { -2 }
+;StormGame-Win64-Shipping.exe+D90CF5 - 48 89 58 08           - mov [rax+08],rbx			<< CONTINUE HERE
+;StormGame-Win64-Shipping.exe+D90CF9 - 48 89 68 10           - mov [rax+10],rbp
+;StormGame-Win64-Shipping.exe+D90CFD - 48 89 70 18           - mov [rax+18],rsi
+;StormGame-Win64-Shipping.exe+D90D01 - 48 89 78 20           - mov [rax+20],rdi
+;StormGame-Win64-Shipping.exe+D90D05 - 45 8B F9              - mov r15d,r9d
+;StormGame-Win64-Shipping.exe+D90D08 - 45 8B F0              - mov r14d,r8d
+	cmp byte ptr [g_cameraEnabled], 1						; check if the user enabled the camera. 
+	jne originalCode
+noWidgets:
+	; simply do an explit return, so the intercepted function 'ABSHUD::DrawStandardWidgets' function effectively ends here
+	ret
+originalCode:
+	mov rax,rsp			
+	push r12
+	push r14
+	push r15
+	sub rsp,30h
+	mov dword ptr [rax-20h],0FFFFFFFEh
+exit:
+	jmp qword ptr [_widgetRenderInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+widgetRenderInterceptor ENDP
+
 
 END
