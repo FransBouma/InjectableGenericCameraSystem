@@ -35,8 +35,6 @@ PUBLIC cameraStructInterceptor
 PUBLIC cameraWrite1Interceptor
 PUBLIC cameraWrite2Interceptor
 PUBLIC cameraWrite3Interceptor
-PUBLIC cameraWrite4Interceptor
-PUBLIC cameraWrite5Interceptor
 PUBLIC fovReadInterceptor
 ;---------------------------------------------------------------
 
@@ -54,8 +52,6 @@ EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _cameraWrite1InterceptionContinue: qword
 EXTERN _cameraWrite2InterceptionContinue: qword
 EXTERN _cameraWrite3InterceptionContinue: qword
-EXTERN _cameraWrite4InterceptionContinue: qword
-EXTERN _cameraWrite5InterceptionContinue: qword
 EXTERN _fovReadInterceptionContinue : qword
 .data
 
@@ -87,23 +83,6 @@ EXTERN _fovReadInterceptionContinue : qword
 ;Prey.AK::Monitor::PostCode+24A707 - F3 0F59 F2            - mulss xmm6,xmm2									<< CONTINUE HERE
 
 
-;//////////////
-; These writes are needed for camera functioning: coords are otherwise resulting in 0. it can be just 1 is OK, but at least one.
-;// coords write (coords write not really needed)
-;Prey.AK::Monitor::PostCode+24EAC5 - F3 0F58 4B 04         - addss xmm1,[rbx+04]
-;Prey.AK::Monitor::PostCode+24EACA - F3 0F11 13            - movss [rbx],xmm2			// coords
-;Prey.AK::Monitor::PostCode+24EACE - F3 0F11 4B 04         - movss [rbx+04],xmm1
-;Prey.AK::Monitor::PostCode+24EAD3 - F3 0F11 43 08         - movss [rbx+08],xmm0
-;Prey.AK::Monitor::PostCode+24EAD8 - F3 0F10 53 10         - movss xmm2,[rbx+10]
-;Prey.AK::Monitor::PostCode+24EADD - F3 0F10 43 0C         - movss xmm0,[rbx+0C]
-; and
-;Prey.AK::Monitor::PostCode+24A218 - F3 0F58 4F 6C         - addss xmm1,[rdi+6C]
-;Prey.AK::Monitor::PostCode+24A21D - F3 0F58 47 70         - addss xmm0,[rdi+70]
-;Prey.AK::Monitor::PostCode+24A222 - F3 0F11 57 1C         - movss [rdi+1C],xmm2			// coords
-;Prey.AK::Monitor::PostCode+24A227 - F3 0F11 4F 20         - movss [rdi+20],xmm1
-;Prey.AK::Monitor::PostCode+24A22C - F3 0F11 47 24         - movss [rdi+24],xmm0
-;Prey.AK::Monitor::PostCode+24A231 - 4D 85 F6              - test r14,r14
-;;---------------------------------------------------------------
 .code
 
 
@@ -207,48 +186,9 @@ exit:
 cameraWrite3Interceptor ENDP
 
 
-cameraWrite4Interceptor PROC
-;Prey.AK::Monitor::PostCode+24EAC5 - F3 0F58 4B 04         - addss xmm1,[rbx+04]			<< INTERCEPT HERE
-;Prey.AK::Monitor::PostCode+24EACA - F3 0F11 13            - movss [rbx],xmm2				; coords write	
-;Prey.AK::Monitor::PostCode+24EACE - F3 0F11 4B 04         - movss [rbx+04],xmm1
-;Prey.AK::Monitor::PostCode+24EAD3 - F3 0F11 43 08         - movss [rbx+08],xmm0
-;Prey.AK::Monitor::PostCode+24EAD8 - F3 0F10 53 10         - movss xmm2,[rbx+10]			<< CONTINUE HERE
-;Prey.AK::Monitor::PostCode+24EADD - F3 0F10 43 0C         - movss xmm0,[rbx+0C]
-	addss xmm1, dword ptr [rbx+04h]
-	cmp byte ptr [g_cameraEnabled], 1						; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
-	je exit													; our own camera is enabled, just skip the writes
-originalCode:
-	movss dword ptr [rbx],xmm2	
-	movss dword ptr [rbx+04h],xmm1
-	movss dword ptr [rbx+08h],xmm0
-exit:
-	jmp qword ptr [_cameraWrite4InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
-cameraWrite4Interceptor ENDP
-
-
-cameraWrite5Interceptor PROC
-;Prey.AK::Monitor::PostCode+24A218 - F3 0F58 4F 6C         - addss xmm1,[rdi+6C]			<< INTERCEPT HERE
-;Prey.AK::Monitor::PostCode+24A21D - F3 0F58 47 70         - addss xmm0,[rdi+70]
-;Prey.AK::Monitor::PostCode+24A222 - F3 0F11 57 1C         - movss [rdi+1C],xmm2			// coords
-;Prey.AK::Monitor::PostCode+24A227 - F3 0F11 4F 20         - movss [rdi+20],xmm1
-;Prey.AK::Monitor::PostCode+24A22C - F3 0F11 47 24         - movss [rdi+24],xmm0
-;Prey.AK::Monitor::PostCode+24A231 - 4D 85 F6              - test r14,r14					<< CONTINUE HERE
-	addss xmm1,dword ptr [rdi+6Ch]
-	addss xmm0,dword ptr [rdi+70h]
-	cmp byte ptr [g_cameraEnabled], 1						; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
-	je exit													; our own camera is enabled, just skip the writes
-originalCode:
-	movss dword ptr [rdi+1Ch],xmm2
-	movss dword ptr [rdi+20h],xmm1
-	movss dword ptr [rdi+24h],xmm0
-exit:
-	jmp qword ptr [_cameraWrite5InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
-cameraWrite5Interceptor ENDP
-
-
 fovReadInterceptor PROC
-;Prey.AK::Monitor::PostCode+11EB4CA - 48 8B 05 4F510E01     - mov rax,[Prey.AmdPowerXpressRequestHighPerformance+860E0] <<<< INTERCEP HERE
-;Prey.AK::Monitor::PostCode+11EB4D1 - F3 0F10 53 0C         - movss xmm2,[rbx+0C]
+;Prey.AK::Monitor::PostCode+11EB4CA - 48 8B 05 4F510E01     - mov rax,[Prey.AmdPowerXpressRequestHighPerformance+860E0] 
+;Prey.AK::Monitor::PostCode+11EB4D1 - F3 0F10 53 0C         - movss xmm2,[rbx+0C]										<<<< INTERCEP HERE
 ;Prey.AK::Monitor::PostCode+11EB4D6 - 0F28 D8               - movaps xmm3,xmm0
 ;Prey.AK::Monitor::PostCode+11EB4D9 - F3 0F10 48 08         - movss xmm1,[rax+08]							<< Read FOV. 
 ;Prey.AK::Monitor::PostCode+11EB4DE - 0F2E CA               - ucomiss xmm1,xmm2

@@ -137,12 +137,6 @@ namespace IGCS
 			displayCameraState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
-
-		if (!g_cameraEnabled)
-		{
-			// camera is disabled. We simply disable all input to the camera movement, by returning now.
-			return;
-		}
 		if (Input::keyDown(IGCS_KEY_FOV_RESET))
 		{
 			CameraManipulator::resetFoV();
@@ -154,6 +148,11 @@ namespace IGCS
 		if (Input::keyDown(IGCS_KEY_FOV_INCREASE))
 		{
 			CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
+		}
+		if (!g_cameraEnabled)
+		{
+			// camera is disabled. We simply disable all input to the camera movement, by returning now.
+			return;
 		}
 		if (Input::keyDown(IGCS_KEY_BLOCK_INPUT))
 		{
@@ -365,8 +364,8 @@ namespace IGCS
 		Console::WriteLine("Numpad 4/Numpad 6 or l-stick          : Move camera left / right");
 		Console::WriteLine("Numpad 7/Numpad 9 or l/r-trigger      : Move camera up / down");
 		Console::WriteLine("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
-		Console::WriteLine("Numpad +/- or d-pad up/down           : Increase / decrease FoV (w/ freecam)");
-		Console::WriteLine("Numpad * or controller B-button       : Reset FoV (w/ freecam)");
+		Console::WriteLine("Numpad +/- or d-pad up/down           : Increase / decrease FoV");
+		Console::WriteLine("Numpad * or controller B-button       : Reset FoV");
 		Console::WriteLine("Numpad /                              : Toggle Y look direction");
 		Console::WriteLine("Numpad . or controller Right Bumper   : Toggle input to game");
 		Console::WriteLine("ALT+H                                 : This help");
