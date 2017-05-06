@@ -44,6 +44,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 {
 	static float _originalCoordsData[3];
 	static float _originalLookData[4];
+	static float _currentCameraCoords[3];
 
 	// Resets the FOV to the default
 	void resetFoV()
@@ -63,9 +64,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 
 	XMFLOAT3 getCurrentCameraCoords()
 	{
-		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress+CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-		// read from our own struct.
-		return XMFLOAT3(coordsInMemory[0], coordsInMemory[1], coordsInMemory[2]);
+		return XMFLOAT3(_currentCameraCoords[0], _currentCameraCoords[1], _currentCameraCoords[2]);
 	}
 	
 
@@ -85,6 +84,10 @@ namespace IGCS::GameSpecific::CameraManipulator
 		lookQInMemory[1] = qAsFloat4.y;
 		lookQInMemory[2] = qAsFloat4.z;
 		lookQInMemory[3] = qAsFloat4.w;
+
+		_currentCameraCoords[0] = newCoords.x;
+		_currentCameraCoords[1] = newCoords.y;
+		_currentCameraCoords[2] = newCoords.z;
 	}
 
 
@@ -118,6 +121,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 	{
 		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
 		memcpy(_originalCoordsData, coordsInMemory, 3 * sizeof(float));
+		memcpy(_currentCameraCoords, coordsInMemory, 3 * sizeof(float));
 		float* lookQInMemory = reinterpret_cast<float*>(g_cameraStructAddress + LOOK_DATA_IN_CAMERA_STRUCT_OFFSET);
 		memcpy(_originalLookData, lookQInMemory, 4 * sizeof(float));
 	}

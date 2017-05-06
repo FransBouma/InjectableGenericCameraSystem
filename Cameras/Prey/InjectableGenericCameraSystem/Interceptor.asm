@@ -153,6 +153,7 @@ cameraWrite1Interceptor PROC
 	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
+	mov eax,[rdx]
 	mov [rcx],eax	
 	mov eax,[rdx+04h]
 	mov [rcx+04h],eax
