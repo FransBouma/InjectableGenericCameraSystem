@@ -149,6 +149,27 @@ namespace IGCS
 		{
 			CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
 		}
+		if (Input::keyDown(IGCS_KEY_TIMESTOP))
+		{
+			toggleTimestopState();
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
+		if (Input::keyDown(IGCS_KEY_DECREASE_HOTSAMPLE_FACTOR))
+		{
+			modifyHotsampleFactor(true);
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
+		if (Input::keyDown(IGCS_KEY_INCREASE_HOTSAMPLE_FACTOR))
+		{
+			modifyHotsampleFactor(false);
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
+		if (Input::keyDown(IGCS_KEY_HOTSAMPLE_ENABLE))
+		{
+			toggleHotsampling();
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
+
 		if (!g_cameraEnabled)
 		{
 			// camera is disabled. We simply disable all input to the camera movement, by returning now.
@@ -345,6 +366,48 @@ namespace IGCS
 		_camera.toggleLookDirectionInverter();
 		Console::WriteLine(_camera.lookDirectionInverter() < 0 ? "Y look direction is inverted" : "Y look direction is normal");
 	}
+	
+
+	void System::toggleTimestopState()
+	{
+		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
+		Console::WriteLine(_timeStopped ? "Game paused" : "Game unpaused");
+		CameraManipulator::setTimeStopValue(_timeStopped);
+	}
+	
+
+	void System::modifyHotsampleFactor(bool decrease)
+	{
+		byte currentValue = _hotsamplingFactor;
+		if (decrease && _hotsamplingFactor <= 1)
+		{
+			_hotsamplingFactor = 1;
+		}
+		else
+		{
+			if (!decrease && _hotsamplingFactor >= HOTSAMPLE_FACTOR_MAX)
+			{
+				_hotsamplingFactor = HOTSAMPLE_FACTOR_MAX;
+			}
+			else
+			{
+				_hotsamplingFactor = decrease ? _hotsamplingFactor - 1 : _hotsamplingFactor + 1;
+			}
+		}
+		Console::WriteLine("Supersampling resize factor is now: " + to_string(_hotsamplingFactor));
+		if (currentValue != _hotsamplingFactor)
+		{
+			CameraManipulator::setSupersamplingFactor(_hostImageAddress, _hotsamplingEnabled ? _hotsamplingFactor : (byte)1);
+		}
+	}
+
+
+	void System::toggleHotsampling()
+	{
+		_hotsamplingEnabled = !_hotsamplingEnabled;
+		Console::WriteLine(_hotsamplingEnabled ? "Supersampling using resize factor is now enabled" : "Supersampling using resize factor is now disabled");
+		CameraManipulator::setSupersamplingFactor(_hostImageAddress, _hotsamplingEnabled ? _hotsamplingFactor : (byte)1);
+	}
 
 
 	void System::displayHelp()
@@ -368,6 +431,10 @@ namespace IGCS
 		Console::WriteLine("Numpad * or controller B-button       : Reset FoV");
 		Console::WriteLine("Numpad /                              : Toggle Y look direction");
 		Console::WriteLine("Numpad . or controller Right Bumper   : Toggle input to game");
+		Console::WriteLine("Numpad 0                              : Toggle game pause");
+		Console::WriteLine("DEL                                   : Toggle supersampling w/ resize factor");
+		Console::WriteLine("[                                     : Decrease supersample resize factor");
+		Console::WriteLine("]                                     : Increase supersample resize factor");
 		Console::WriteLine("ALT+H                                 : This help");
 		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
 		Console::WriteLine(" Please read the enclosed readme.txt for the answers to your questions :)");

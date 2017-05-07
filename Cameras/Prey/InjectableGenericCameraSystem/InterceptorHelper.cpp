@@ -41,6 +41,7 @@ extern "C" {
 	void cameraWrite1Interceptor();
 	void cameraWrite2Interceptor();
 	void cameraWrite3Interceptor();
+	void timestopInterceptor();
 	void fovReadInterceptor();
 }
 
@@ -50,6 +51,7 @@ extern "C" {
 	LPBYTE _cameraWrite1InterceptionContinue = nullptr;
 	LPBYTE _cameraWrite2InterceptionContinue = nullptr;
 	LPBYTE _cameraWrite3InterceptionContinue = nullptr;
+	LPBYTE _timestopInterceptionContinue = nullptr;
 	LPBYTE _fovReadInterceptionContinue = nullptr;
 }
 
@@ -63,7 +65,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE1_INTERCEPT_KEY, "8B 02 89 01 8B 42 04 89 41 04 8B 42 08 89 41 08 8B 42 0C 89 41 0C 8B 42 10 89 41 10 8B 42 14 89 41 14 8B 42 18 89 41 18 8B 42 1C 89 41 1C 8B 42 20 89 41 20 8B 42 24 89 41 24 8B 42 28 89 41 28 8B 42 2C 89 41 2C 8B 42 30 89 41 30 0F B6", 1);
 		aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE2_INTERCEPT_KEY, "F3 44 0F 58 68 04 F3 44 0F 58 20 F3 44 0F 58 70 08 F3 44 0F 11 67 1C F3 44 0F 11 6F 20", 1);
 		aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE3_INTERCEPT_KEY, "F3 44 0F 11 77 24 F3 0F 10 8D 88 00 00 00 48 8D 4F 1C", 1);
-
+		aobBlocks[TIMESTOP_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_INTERCEPT_KEY, "48 89 5C 24 10 48 89 6C 24 18 48 89 74 24 20 57 41 54 41 55 41 56 41 57 48 83 EC 40 48 8B B1", 1);
+		
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
 		for (it = aobBlocks.begin(); it != aobBlocks.end(); it++)
@@ -93,5 +96,6 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY], 0x28, &_cameraWrite1InterceptionContinue, &cameraWrite1Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY], 0x1D, &_cameraWrite2InterceptionContinue, &cameraWrite2Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY], 0x12, &_cameraWrite3InterceptionContinue, &cameraWrite3Interceptor);
+		GameImageHooker::setHook(aobBlocks[TIMESTOP_INTERCEPT_KEY], 0xF, &_timestopInterceptionContinue, &timestopInterceptor);
 	}
 }

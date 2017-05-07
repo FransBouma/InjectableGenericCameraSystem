@@ -46,6 +46,7 @@ namespace IGCS::GameSpecific
 	#define DEFAULT_FOV_DEGREES							80.0f
 	#define DEFAULT_FOV_SPEED							0.1f
 	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f
+	#define HOTSAMPLE_FACTOR_MAX						5
 	// End Mandatory constants
 
 	// AOB Keys for interceptor's AOB scanner
@@ -54,9 +55,13 @@ namespace IGCS::GameSpecific
 	#define CAMERA_WRITE2_INTERCEPT_KEY					"AOB_CAMERA_WRITE2_INTERCEPT"
 	#define CAMERA_WRITE3_INTERCEPT_KEY					"AOB_CAMERA_WRITE3_INTERCEPT"
 	#define FOV_INTERCEPT_KEY							"AOB_FOV_INTERCEPT"
+	#define TIMESTOP_INTERCEPT_KEY						"AOB_TIMESTOP_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
 	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0x0
 	#define LOOK_DATA_IN_CAMERA_STRUCT_OFFSET			0xC
 	#define FOV_IN_STRUCT_OFFSET						0x8
+	#define TIMESTOP_IN_STRUCT_OFFSET					0x8
+
+	#define SUPERSAMPLING_FACTOR_IN_IMAGE_OFFSET		0x24B174C			// hack. 
 }

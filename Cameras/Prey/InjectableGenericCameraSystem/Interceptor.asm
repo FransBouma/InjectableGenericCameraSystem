@@ -44,6 +44,7 @@ PUBLIC fovReadInterceptor
 EXTERN g_cameraEnabled: byte
 EXTERN g_cameraStructAddress: qword
 EXTERN g_fovConstructAddress: qword
+EXTERN g_timestopStructAddress: qword
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -52,7 +53,8 @@ EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _cameraWrite1InterceptionContinue: qword
 EXTERN _cameraWrite2InterceptionContinue: qword
 EXTERN _cameraWrite3InterceptionContinue: qword
-EXTERN _fovReadInterceptionContinue : qword
+EXTERN _fovReadInterceptionContinue: qword
+EXTERN _timestopInterceptionContinue: qword
 .data
 
 ;---------------------------------------------------------------
@@ -82,6 +84,29 @@ EXTERN _fovReadInterceptionContinue : qword
 ;Prey.AK::Monitor::PostCode+24A700 - F3 45 0F11 44 24 2C   - movss [r12+2C],xmm8			// write z
 ;Prey.AK::Monitor::PostCode+24A707 - F3 0F59 F2            - mulss xmm6,xmm2									<< CONTINUE HERE
 
+; Supersampling read
+;Prey.exe+FC3530 - 41 F7 F8              - idiv r8d
+;Prey.exe+FC3533 - 44 8B C0              - mov r8d,eax
+;Prey.exe+FC3536 - 8B C1                 - mov eax,ecx
+;Prey.exe+FC3538 - 8B 0D 0EE24E01        - mov ecx,[Prey.exe+24B174C] { [00000003] }		<<< r_Supersampling read.
+;Prey.exe+FC353E - 99                    - cdq 
+;Prey.exe+FC353F - F7 FF                 - idiv edi
+;Prey.exe+FC3541 - 44 3B C0              - cmp r8d,eax
+;Prey.exe+FC3544 - 41 0F4C C0            - cmovl eax,r8d
+;Prey.exe+FC3548 - 83 F9 01              - cmp ecx,01 { 1 }
+;Prey.exe+FC354B - 7D 07                 - jnl Prey.exe+FC3554
+;Prey.exe+FC354D - B8 01000000           - mov eax,00000001 { 1 }
+;Prey.exe+FC3552 - EB 05                 - jmp Prey.exe+FC3559
+;Prey.exe+FC3554 - 3B C8                 - cmp ecx,eax
+;Prey.exe+FC3556 - 0F4C C1               - cmovl eax,ecx
+;Prey.exe+FC3559 - 39 83 F4F30000        - cmp [rbx+0000F3F4],eax
+;Prey.exe+FC355F - 74 13                 - je Prey.exe+FC3574
+;Prey.exe+FC3561 - 89 83 F4F30000        - mov [rbx+0000F3F4],eax
+;Prey.exe+FC3567 - B0 01                 - mov al,01 { 1 }
+;Prey.exe+FC3569 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
+;Prey.exe+FC356E - 48 83 C4 20           - add rsp,20 { 32 }
+;Prey.exe+FC3572 - 5F                    - pop rdi
+;Prey.exe+FC3573 - C3                    - ret 
 
 .code
 
@@ -184,6 +209,32 @@ noWrite:
 exit:
 	jmp qword ptr [_cameraWrite3InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite3Interceptor ENDP
+
+
+timestopInterceptor PROC
+; start of function which contains timestop read. Contains CryAction instance (with m_pause) in rcx
+;Prey.exe+5D6AD0 - 48 89 5C 24 10        - mov [rsp+10],rbx					<<< INTERCEPT HERE
+;Prey.exe+5D6AD5 - 48 89 6C 24 18        - mov [rsp+18],rbp
+;Prey.exe+5D6ADA - 48 89 74 24 20        - mov [rsp+20],rsi
+;Prey.exe+5D6ADF - 57                    - push rdi							<<< CONTINUE HERE
+;Prey.exe+5D6AE0 - 41 54                 - push r12
+;Prey.exe+5D6AE2 - 41 55                 - push r13
+;Prey.exe+5D6AE4 - 41 56                 - push r14
+;Prey.exe+5D6AE6 - 41 57                 - push r15
+;...
+;Prey.exe+5D6C99 - 74 09                 - je Prey.exe+5D6CA4
+;Prey.exe+5D6C9B - 44 38 6B 08           - cmp [rbx+08],r13l				<<< TImestop read
+;Prey.exe+5D6C9F - 75 03                 - jne Prey.exe+5D6CA4
+;Prey.exe+5D6CA1 - 45 8B FD              - mov r15d,r13d
+;
+	mov [g_timestopStructAddress], rcx
+originalCode:
+	mov [rsp+10h],rbx
+	mov [rsp+18h],rbp
+	mov [rsp+20h],rsi
+exit:
+	jmp qword ptr [_timestopInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+timestopInterceptor ENDP
 
 
 fovReadInterceptor PROC

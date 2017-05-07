@@ -38,6 +38,8 @@ using namespace std;
 extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
 	LPBYTE g_fovConstructAddress = nullptr;
+	LPBYTE g_timestopStructAddress = nullptr;
+	LPBYTE g_superSamplingStructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -45,10 +47,35 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static float _originalCoordsData[3];
 	static float _originalLookData[4];
 	static float _currentCameraCoords[3];
+	
+
+	void setSupersamplingFactor(LPBYTE hostImageAddress, byte newValue)
+	{
+		if (nullptr == hostImageAddress)
+		{
+			return;
+		}
+		*(hostImageAddress + SUPERSAMPLING_FACTOR_IN_IMAGE_OFFSET) = newValue;
+	}
+
+
+	// newValue: 1 == time should be frozen, 0 == normal gameplay
+	void setTimeStopValue(byte newValue)
+	{
+		if (nullptr == g_timestopStructAddress)
+		{
+			return;
+		}
+		*(g_timestopStructAddress + TIMESTOP_IN_STRUCT_OFFSET) = newValue;
+	}
 
 	// Resets the FOV to the default
 	void resetFoV()
 	{
+		if (nullptr == g_fovConstructAddress)
+		{
+			return;
+		}
 		float* fovInMemory = reinterpret_cast<float*>(g_fovConstructAddress + FOV_IN_STRUCT_OFFSET);
 		*fovInMemory = DEFAULT_FOV_DEGREES;
 	}
@@ -57,6 +84,10 @@ namespace IGCS::GameSpecific::CameraManipulator
 	// changes the FoV with the specified amount
 	void changeFoV(float amount)
 	{
+		if (nullptr == g_fovConstructAddress)
+		{
+			return;
+		}
 		float* fovInMemory = reinterpret_cast<float*>(g_fovConstructAddress + FOV_IN_STRUCT_OFFSET);
 		*fovInMemory += amount;
 	}
@@ -72,10 +103,15 @@ namespace IGCS::GameSpecific::CameraManipulator
 	// newCoords are the new coordinates for the camera in worldspace.
 	void writeNewCameraValuesToGameData(XMFLOAT3 newCoords, XMVECTOR newLookQuaternion)
 	{
+		if (nullptr == g_cameraStructAddress)
+		{
+			return;
+		}
+
 		XMFLOAT4 qAsFloat4;
 		XMStoreFloat4(&qAsFloat4, newLookQuaternion);
 
-		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress+CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
+		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
 		coordsInMemory[0] = newCoords.x;
 		coordsInMemory[1] = newCoords.y;
 		coordsInMemory[2] = newCoords.z;
