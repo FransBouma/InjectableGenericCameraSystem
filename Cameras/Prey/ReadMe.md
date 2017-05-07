@@ -1,9 +1,9 @@
-Injectable camera for Bulletstorm Full Clip Edition
+Injectable camera for Prey 2017
 ============================
 
-Current supported game version: v1.1+
-Camera version: 1.0.2  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/BSFCE_102   
+Current supported game version: v1.0+
+Camera version: 1.0.0  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/Prey_100   
 Credits: Otis_Inf. 
 
 ### How to use
