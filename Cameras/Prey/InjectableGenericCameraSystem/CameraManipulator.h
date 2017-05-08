@@ -37,6 +37,8 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void restoreOriginalCameraValues();
 	void cacheOriginalCameraValues();
 	void setTimeStopValue(byte newValue);
+	void toggleHud(LPBYTE hostImageAddress, byte newValue);
+	void toggleHud(LPBYTE hostImageAddress);
 	void setSupersamplingFactor(LPBYTE hostImageAddress, byte newValue);
 	XMFLOAT3 getCurrentCameraCoords();
 	void resetFoV();

@@ -31,8 +31,8 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Prey 2017"
-	#define CAMERA_VERSION								"1.0.0"
-	#define CAMERA_CREDITS								"Otis_Inf."
+	#define CAMERA_VERSION								"1.0.1"
+	#define CAMERA_CREDITS								"Otis_Inf. HUD toggle by Jonas Beckman & SunBeam"
 	#define GAME_WINDOW_TITLE							"Prey"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
 	#define INITIAL_YAW_RADIANS							0.0f	// around Y axis	(into the screen)
@@ -63,5 +63,6 @@ namespace IGCS::GameSpecific
 	#define FOV_IN_STRUCT_OFFSET						0x8
 	#define TIMESTOP_IN_STRUCT_OFFSET					0x8
 
-	#define SUPERSAMPLING_FACTOR_IN_IMAGE_OFFSET		0x24B174C			// hack. 
+	#define SUPERSAMPLING_FACTOR_IN_IMAGE_OFFSET		0x24B174C			// hack. Not AOB read. 
+	#define HUD_TOGGLE_IN_IMAGE							0x238A39C			// hack. Not AOB read. sys_flash var.
 }

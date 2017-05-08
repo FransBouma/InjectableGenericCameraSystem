@@ -126,12 +126,14 @@ namespace IGCS
 				// it's going to be disabled, make sure things are alright when we give it back to the host
 				CameraManipulator::restoreOriginalCameraValues();
 				toggleCameraMovementLockState(false);
+				CameraManipulator::toggleHud(_hostImageAddress, (byte)1);		// hud should be ON, so pass 1
 			}
 			else
 			{
 				// it's going to be enabled, so cache the original values before we enable it so we can restore it afterwards
 				CameraManipulator::cacheOriginalCameraValues();
 				_camera.resetAngles();
+				CameraManipulator::toggleHud(_hostImageAddress, (byte)0);		// hud should be OFF so pass 0
 			}
 			g_cameraEnabled = g_cameraEnabled == 0 ? (byte)1 : (byte)0;
 			displayCameraState();
@@ -167,6 +169,12 @@ namespace IGCS
 		if (Input::keyDown(IGCS_KEY_HOTSAMPLE_ENABLE))
 		{
 			toggleHotsampling();
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
+		
+		if (Input::keyDown(IGCS_KEY_TOGGLE_HUD))
+		{
+			CameraManipulator::toggleHud(_hostImageAddress);
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
 
@@ -432,6 +440,7 @@ namespace IGCS
 		Console::WriteLine("Numpad /                              : Toggle Y look direction");
 		Console::WriteLine("Numpad . or controller Right Bumper   : Toggle input to game");
 		Console::WriteLine("Numpad 0                              : Toggle game pause");
+		Console::WriteLine("END                                   : Toggle HUD");
 		Console::WriteLine("DEL                                   : Toggle supersampling w/ resize factor");
 		Console::WriteLine("[                                     : Decrease supersample resize factor");
 		Console::WriteLine("]                                     : Increase supersample resize factor");

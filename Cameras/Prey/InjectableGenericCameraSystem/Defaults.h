@@ -60,6 +60,7 @@ namespace IGCS
 	#define IGCS_KEY_DECREASE_HOTSAMPLE_FACTOR		VK_OEM_4		// [{
 	#define IGCS_KEY_INCREASE_HOTSAMPLE_FACTOR		VK_OEM_6		// ]}
 	#define IGCS_KEY_HOTSAMPLE_ENABLE				VK_DELETE
+	#define IGCS_KEY_TOGGLE_HUD						VK_END
 
 	#define IGCS_BUTTON_FOV_DECREASE	Gamepad::button_t::UP
 	#define IGCS_BUTTON_FOV_INCREASE	Gamepad::button_t::DOWN

@@ -48,6 +48,27 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static float _originalLookData[4];
 	static float _currentCameraCoords[3];
 	
+	
+	void toggleHud(LPBYTE hostImageAddress)
+	{
+		if (nullptr == hostImageAddress)
+		{
+			return;
+		}
+		byte currentValue = *(hostImageAddress + HUD_TOGGLE_IN_IMAGE);
+		toggleHud(hostImageAddress, currentValue == 0 ? (byte)1 : (byte)0);
+	}
+
+
+	void toggleHud(LPBYTE hostImageAddress, byte newValue)
+	{
+		if (nullptr == hostImageAddress)
+		{
+			return;
+		}
+		*(hostImageAddress + HUD_TOGGLE_IN_IMAGE) = newValue;
+	}
+
 
 	void setSupersamplingFactor(LPBYTE hostImageAddress, byte newValue)
 	{
