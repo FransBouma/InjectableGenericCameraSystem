@@ -85,42 +85,66 @@ EXTERN _timestopInterceptionContinue: qword
 ;Prey.AK::Monitor::PostCode+24A707 - F3 0F59 F2            - mulss xmm6,xmm2									<< CONTINUE HERE
 
 ; Supersampling read
-;Prey.exe+FC3530 - 41 F7 F8              - idiv r8d
-;Prey.exe+FC3533 - 44 8B C0              - mov r8d,eax
-;Prey.exe+FC3536 - 8B C1                 - mov eax,ecx
-;Prey.exe+FC3538 - 8B 0D 0EE24E01        - mov ecx,[Prey.exe+24B174C] { [00000003] }		<<< r_Supersampling read.
-;Prey.exe+FC353E - 99                    - cdq 
-;Prey.exe+FC353F - F7 FF                 - idiv edi
-;Prey.exe+FC3541 - 44 3B C0              - cmp r8d,eax
-;Prey.exe+FC3544 - 41 0F4C C0            - cmovl eax,r8d
-;Prey.exe+FC3548 - 83 F9 01              - cmp ecx,01 { 1 }
-;Prey.exe+FC354B - 7D 07                 - jnl Prey.exe+FC3554
-;Prey.exe+FC354D - B8 01000000           - mov eax,00000001 { 1 }
-;Prey.exe+FC3552 - EB 05                 - jmp Prey.exe+FC3559
-;Prey.exe+FC3554 - 3B C8                 - cmp ecx,eax
-;Prey.exe+FC3556 - 0F4C C1               - cmovl eax,ecx
-;Prey.exe+FC3559 - 39 83 F4F30000        - cmp [rbx+0000F3F4],eax
-;Prey.exe+FC355F - 74 13                 - je Prey.exe+FC3574
-;Prey.exe+FC3561 - 89 83 F4F30000        - mov [rbx+0000F3F4],eax
-;Prey.exe+FC3567 - B0 01                 - mov al,01 { 1 }
-;Prey.exe+FC3569 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
-;Prey.exe+FC356E - 48 83 C4 20           - add rsp,20 { 32 }
-;Prey.exe+FC3572 - 5F                    - pop rdi
-;Prey.exe+FC3573 - C3                    - ret 
+; patch v1.0.2
+;0000000140FC3CD0 | 41 F7 F8                 | idiv r8d                         
+;0000000140FC3CD3 | 44 8B C0                 | mov r8d,eax                      
+;0000000140FC3CD6 | 8B C1                    | mov eax,ecx                      
+;0000000140FC3CD8 | 8B 0D 6E D9 4E 01        | mov ecx,dword ptr ds:[1424B164C]			<<< r_Supersampling read
+;0000000140FC3CDE | 99                       | cdq                              
+;0000000140FC3CDF | F7 FF                    | idiv edi                         
+;0000000140FC3CE1 | 44 3B C0                 | cmp r8d,eax                      
+;0000000140FC3CE4 | 41 0F 4C C0              | cmovl eax,r8d                    
+;0000000140FC3CE8 | 83 F9 01                 | cmp ecx,1                        
+;0000000140FC3CEB | 7D 07                    | jge prey_dump.140FC3CF4          
+;0000000140FC3CED | B8 01 00 00 00           | mov eax,1                        
+;0000000140FC3CF2 | EB 05                    | jmp prey_dump.140FC3CF9          
+;0000000140FC3CF4 | 3B C8                    | cmp ecx,eax                      
+;0000000140FC3CF6 | 0F 4C C1                 | cmovl eax,ecx                    
+;0000000140FC3CF9 | 39 83 F4 F3 00 00        | cmp dword ptr ds:[rbx+F3F4],eax  
+;0000000140FC3CFF | 74 13                    | je prey_dump.140FC3D14           
+;0000000140FC3D01 | 89 83 F4 F3 00 00        | mov dword ptr ds:[rbx+F3F4],eax  
+;0000000140FC3D07 | B0 01                    | mov al,1                         
+;0000000140FC3D09 | 48 8B 5C 24 30           | mov rbx,qword ptr ss:[rsp+30]    
+;0000000140FC3D0E | 48 83 C4 20              | add rsp,20                       
+;0000000140FC3D12 | 5F                       | pop rdi                          
+;0000000140FC3D13 | C3                       | ret                              
+;0000000140FC3D14 | 32 C0                    | xor al,al                        
+;0000000140FC3D16 | 48 8B 5C 24 30           | mov rbx,qword ptr ss:[rsp+30]    
+;0000000140FC3D1B | 48 83 C4 20              | add rsp,20                       
+;0000000140FC3D1F | 5F                       | pop rdi                          
+;0000000140FC3D20 | C3                       | ret                              
+
+
+; sys_flash cvar read (for hud toggle)
+;Prey.exe+6B0399D - 41 B9 73B44A16        - mov r9d,164AB473 { [0] }
+;Prey.exe+6B039A3 - 41 81 E9 7B6C02FC     - sub r9d,FC026C7B { [0] }
+;Prey.exe+6B039AA - 0F82 941481FC         - jb Prey.exe+3314E44
+;Prey.exe+6B039B0 - 48 89 74 24 10        - mov [rsp+10],rsi
+;Prey.exe+6B039B5 - 57                    - push rdi
+;Prey.exe+6B039B6 - 48 83 EC 20           - sub rsp,20 { 32 }
+;Prey.exe+6B039BA - 83 3D AB6988FB 00     - cmp dword ptr [Prey.exe+238A36C],00 { [00000001] }			<< sys_flash cvar read.
+;Prey.exe+6B039C1 - 0FB6 F2               - movzx esi,dl
+;Prey.exe+6B039C4 - 48 89 CF              - mov rdi,rcx
+;Prey.exe+6B039C7 - 74 2E                 - je Prey.exe+6B039F7
+;Prey.exe+6B039C9 - 48 8B 81 C8000000     - mov rax,[rcx+000000C8]
+;Prey.exe+6B039D0 - 48 89 5C 24 30        - mov [rsp+30],rbx
+;Prey.exe+6B039D5 - 48 8B 58 38           - mov rbx,[rax+38]
+;Prey.exe+6B039D9 - 48 8B 01              - mov rax,[rcx]
 
 .code
 
 
 cameraStructInterceptor PROC
 ; Struct interceptor is also a write interceptor for coords/quaternion
-;Prey.AK::Monitor::PostCode+13D1168 - F3 0F11 4E 0C         - movss [rsi+0C],xmm1		// quaternion						<< intercept here
-;Prey.AK::Monitor::PostCode+13D116D - F3 0F11 56 10         - movss [rsi+10],xmm2
-;Prey.AK::Monitor::PostCode+13D1172 - F3 0F11 5E 14         - movss [rsi+14],xmm3
-;Prey.AK::Monitor::PostCode+13D1177 - F3 0F11 46 18         - movss [rsi+18],xmm0
-;Prey.AK::Monitor::PostCode+13D117C - F3 0F11 3E            - movss [rsi],xmm7			// coords
-;Prey.AK::Monitor::PostCode+13D1180 - F3 0F11 76 04         - movss [rsi+04],xmm6
-;Prey.AK::Monitor::PostCode+13D1185 - F3 44 0F11 46 08      - movss [rsi+08],xmm8
-;Prey.AK::Monitor::PostCode+13D118B - E8 503FD5FF           - call Prey.AK::Monitor::PostCode+11250E0						<< continue here
+; patch 1.0.2
+;Prey.exe+150E5DF - F3 0F11 4E 0C         - movss [rsi+0C],xmm1		// quaternion						<< intercept here
+;Prey.exe+150E5E4 - F3 0F11 56 10         - movss [rsi+10],xmm2
+;Prey.exe+150E5E9 - F3 0F11 5E 14         - movss [rsi+14],xmm3
+;Prey.exe+150E5EE - F3 0F11 46 18         - movss [rsi+18],xmm0
+;Prey.exe+150E5F3 - F3 0F11 3E            - movss [rsi],xmm7   		// coords
+;Prey.exe+150E5F7 - F3 0F11 76 04         - movss [rsi+04],xmm6
+;Prey.exe+150E5FC - F3 44 0F11 46 08      - movss [rsi+08],xmm8
+;Prey.exe+150E602 - E8 8946D5FF           - call Prey.exe+1262C90					<< continue here
 ; This function intercepts the camera address and also blocks the writes by reading from our own two structs. 
 	mov [g_cameraStructAddress], rsi
 	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
@@ -139,21 +163,39 @@ cameraStructInterceptor ENDP
 
 
 cameraWrite1Interceptor PROC
-;Prey.AK::Monitor::PostCode+2494E0 - 8B 02                 - mov eax,[rdx]								<<< INTERCEPT HERE
-;Prey.AK::Monitor::PostCode+2494E2 - 89 01                 - mov [rcx],eax				// coords			
-;Prey.AK::Monitor::PostCode+2494E4 - 8B 42 04              - mov eax,[rdx+04]
-;Prey.AK::Monitor::PostCode+2494E7 - 89 41 04              - mov [rcx+04],eax
-;Prey.AK::Monitor::PostCode+2494EA - 8B 42 08              - mov eax,[rdx+08]
-;Prey.AK::Monitor::PostCode+2494ED - 89 41 08              - mov [rcx+08],eax
-;Prey.AK::Monitor::PostCode+2494F0 - 8B 42 0C              - mov eax,[rdx+0C]
-;Prey.AK::Monitor::PostCode+2494F3 - 89 41 0C              - mov [rcx+0C],eax			// qx
-;Prey.AK::Monitor::PostCode+2494F6 - 8B 42 10              - mov eax,[rdx+10]
-;Prey.AK::Monitor::PostCode+2494F9 - 89 41 10              - mov [rcx+10],eax
-;Prey.AK::Monitor::PostCode+2494FC - 8B 42 14              - mov eax,[rdx+14]
-;Prey.AK::Monitor::PostCode+2494FF - 89 41 14              - mov [rcx+14],eax
-;Prey.AK::Monitor::PostCode+249502 - 8B 42 18              - mov eax,[rdx+18]
-;Prey.AK::Monitor::PostCode+249505 - 89 41 18              - mov [rcx+18],eax			// qw
-;Prey.AK::Monitor::PostCode+249508 - 8B 42 1C              - mov eax,[rdx+1C]								<<<< CONTINUE HERE
+; patch 1.0.2
+;Prey.exe+386A10 - 8B 02                 - mov eax,[rdx]						<< INTERCEPT HERE
+;Prey.exe+386A12 - 89 01                 - mov [rcx],eax						// coords
+;Prey.exe+386A14 - 8B 42 04              - mov eax,[rdx+04]
+;Prey.exe+386A17 - 89 41 04              - mov [rcx+04],eax
+;Prey.exe+386A1A - 8B 42 08              - mov eax,[rdx+08]
+;Prey.exe+386A1D - 89 41 08              - mov [rcx+08],eax
+;Prey.exe+386A20 - 8B 42 0C              - mov eax,[rdx+0C]
+;Prey.exe+386A23 - 89 41 0C              - mov [rcx+0C],eax						// qX
+;Prey.exe+386A26 - 8B 42 10              - mov eax,[rdx+10]
+;Prey.exe+386A29 - 89 41 10              - mov [rcx+10],eax
+;Prey.exe+386A2C - 8B 42 14              - mov eax,[rdx+14]
+;Prey.exe+386A2F - 89 41 14              - mov [rcx+14],eax
+;Prey.exe+386A32 - 8B 42 18              - mov eax,[rdx+18]
+;Prey.exe+386A35 - 89 41 18              - mov [rcx+18],eax						// qW
+;Prey.exe+386A38 - 8B 42 1C              - mov eax,[rdx+1C]
+;Prey.exe+386A3B - 89 41 1C              - mov [rcx+1C],eax						<< CONTINUE HERE
+;Prey.exe+386A3E - 8B 42 20              - mov eax,[rdx+20]
+;Prey.exe+386A41 - 89 41 20              - mov [rcx+20],eax
+;Prey.exe+386A44 - 8B 42 24              - mov eax,[rdx+24]
+;Prey.exe+386A47 - 89 41 24              - mov [rcx+24],eax
+;Prey.exe+386A4A - 8B 42 28              - mov eax,[rdx+28]
+;Prey.exe+386A4D - 89 41 28              - mov [rcx+28],eax
+;Prey.exe+386A50 - 8B 42 2C              - mov eax,[rdx+2C]
+;Prey.exe+386A53 - 89 41 2C              - mov [rcx+2C],eax
+;Prey.exe+386A56 - 8B 42 30              - mov eax,[rdx+30]
+;Prey.exe+386A59 - 89 41 30              - mov [rcx+30],eax
+;Prey.exe+386A5C - 8B 42 34              - mov eax,[rdx+34]
+;Prey.exe+386A5F - 89 41 34              - mov [rcx+34],eax
+;Prey.exe+386A62 - 0FB6 42 38            - movzx eax,byte ptr [rdx+38]
+;Prey.exe+386A66 - 88 41 38              - mov [rcx+38],al
+;Prey.exe+386A69 - 0FB6 42 39            - movzx eax,byte ptr [rdx+39]
+;Prey.exe+386A6D - 88 41 39              - mov [rcx+39],al
 	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
