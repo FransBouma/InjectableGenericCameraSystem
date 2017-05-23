@@ -85,52 +85,60 @@ EXTERN _timestopInterceptionContinue: qword
 ;Prey.AK::Monitor::PostCode+24A707 - F3 0F59 F2            - mulss xmm6,xmm2									<< CONTINUE HERE
 
 ; Supersampling read
-; patch v1.0.2
-;0000000140FC3CD0 | 41 F7 F8                 | idiv r8d                         
-;0000000140FC3CD3 | 44 8B C0                 | mov r8d,eax                      
-;0000000140FC3CD6 | 8B C1                    | mov eax,ecx                      
-;0000000140FC3CD8 | 8B 0D 6E D9 4E 01        | mov ecx,dword ptr ds:[1424B164C]			<<< r_Supersampling read
-;0000000140FC3CDE | 99                       | cdq                              
-;0000000140FC3CDF | F7 FF                    | idiv edi                         
-;0000000140FC3CE1 | 44 3B C0                 | cmp r8d,eax                      
-;0000000140FC3CE4 | 41 0F 4C C0              | cmovl eax,r8d                    
-;0000000140FC3CE8 | 83 F9 01                 | cmp ecx,1                        
-;0000000140FC3CEB | 7D 07                    | jge prey_dump.140FC3CF4          
-;0000000140FC3CED | B8 01 00 00 00           | mov eax,1                        
-;0000000140FC3CF2 | EB 05                    | jmp prey_dump.140FC3CF9          
-;0000000140FC3CF4 | 3B C8                    | cmp ecx,eax                      
-;0000000140FC3CF6 | 0F 4C C1                 | cmovl eax,ecx                    
-;0000000140FC3CF9 | 39 83 F4 F3 00 00        | cmp dword ptr ds:[rbx+F3F4],eax  
-;0000000140FC3CFF | 74 13                    | je prey_dump.140FC3D14           
-;0000000140FC3D01 | 89 83 F4 F3 00 00        | mov dword ptr ds:[rbx+F3F4],eax  
-;0000000140FC3D07 | B0 01                    | mov al,1                         
-;0000000140FC3D09 | 48 8B 5C 24 30           | mov rbx,qword ptr ss:[rsp+30]    
-;0000000140FC3D0E | 48 83 C4 20              | add rsp,20                       
-;0000000140FC3D12 | 5F                       | pop rdi                          
-;0000000140FC3D13 | C3                       | ret                              
-;0000000140FC3D14 | 32 C0                    | xor al,al                        
-;0000000140FC3D16 | 48 8B 5C 24 30           | mov rbx,qword ptr ss:[rsp+30]    
-;0000000140FC3D1B | 48 83 C4 20              | add rsp,20                       
-;0000000140FC3D1F | 5F                       | pop rdi                          
-;0000000140FC3D20 | C3                       | ret                              
-
-
+; patch v1.0.3
+;0000000140FC3FF0 | 41 F7 F8                 | idiv r8d                        
+;0000000140FC3FF3 | 44 8B C0                 | mov r8d,eax                     
+;0000000140FC3FF6 | 8B C1                    | mov eax,ecx                     
+;0000000140FC3FF8 | 8B 0D 7A E7 4E 01        | mov ecx,dword ptr ds:[1424B2778]				<< Supersampling read
+;0000000140FC3FFE | 99                       | cdq                             
+;0000000140FC3FFF | F7 FF                    | idiv edi                        
+;0000000140FC4001 | 44 3B C0                 | cmp r8d,eax                     
+;0000000140FC4004 | 41 0F 4C C0              | cmovl eax,r8d                   
+;0000000140FC4008 | 83 F9 01                 | cmp ecx,1                       
+;0000000140FC400B | 7D 07                    | jge prey_dump.140FC4014         
+;0000000140FC400D | B8 01 00 00 00           | mov eax,1                       
+;0000000140FC4012 | EB 05                    | jmp prey_dump.140FC4019         
+;0000000140FC4014 | 3B C8                    | cmp ecx,eax                     
+;0000000140FC4016 | 0F 4C C1                 | cmovl eax,ecx                   
+;0000000140FC4019 | 39 83 F4 F3 00 00        | cmp dword ptr ds:[rbx+F3F4],eax 
+;0000000140FC401F | 74 13                    | je prey_dump.140FC4034          
+;0000000140FC4021 | 89 83 F4 F3 00 00        | mov dword ptr ds:[rbx+F3F4],eax 
+;0000000140FC4027 | B0 01                    | mov al,1                        
+;0000000140FC4029 | 48 8B 5C 24 30           | mov rbx,qword ptr ss:[rsp+30]   
+;0000000140FC402E | 48 83 C4 20              | add rsp,20                      
+;0000000140FC4032 | 5F                       | pop rdi                         
+;0000000140FC4033 | C3                       | ret                             
+;0000000140FC4034 | 32 C0                    | xor al,al                       
+;0000000140FC4036 | 48 8B 5C 24 30           | mov rbx,qword ptr ss:[rsp+30]   
+;0000000140FC403B | 48 83 C4 20              | add rsp,20                      
+;0000000140FC403F | 5F                       | pop rdi                         
+;0000000140FC4040 | C3                       | ret                             
+;
 ; sys_flash cvar read (for hud toggle)
-;Prey.exe+6B0399D - 41 B9 73B44A16        - mov r9d,164AB473 { [0] }
-;Prey.exe+6B039A3 - 41 81 E9 7B6C02FC     - sub r9d,FC026C7B { [0] }
-;Prey.exe+6B039AA - 0F82 941481FC         - jb Prey.exe+3314E44
-;Prey.exe+6B039B0 - 48 89 74 24 10        - mov [rsp+10],rsi
-;Prey.exe+6B039B5 - 57                    - push rdi
-;Prey.exe+6B039B6 - 48 83 EC 20           - sub rsp,20 { 32 }
-;Prey.exe+6B039BA - 83 3D AB6988FB 00     - cmp dword ptr [Prey.exe+238A36C],00 { [00000001] }			<< sys_flash cvar read.
-;Prey.exe+6B039C1 - 0FB6 F2               - movzx esi,dl
-;Prey.exe+6B039C4 - 48 89 CF              - mov rdi,rcx
-;Prey.exe+6B039C7 - 74 2E                 - je Prey.exe+6B039F7
-;Prey.exe+6B039C9 - 48 8B 81 C8000000     - mov rax,[rcx+000000C8]
-;Prey.exe+6B039D0 - 48 89 5C 24 30        - mov [rsp+30],rbx
-;Prey.exe+6B039D5 - 48 8B 58 38           - mov rbx,[rax+38]
-;Prey.exe+6B039D9 - 48 8B 01              - mov rax,[rcx]
-
+; v1.0.3
+;0000000146F06D30 | 48 89 74 24 10           | mov qword ptr ss:[rsp+10],rsi 
+;0000000146F06D35 | 57                       | push rdi                      
+;0000000146F06D36 | 48 83 EC 20              | sub rsp,20                    
+;0000000146F06D3A | 83 3D 2B 46 48 FB 00     | cmp dword ptr ds:[14238B36C],0				<< sys_flash read
+;0000000146F06D41 | 0F B6 F2                 | movzx esi,dl                  
+;0000000146F06D44 | 48 89 CF                 | mov rdi,rcx                   
+;0000000146F06D47 | 74 2E                    | je prey_dump.146F06D77        
+;0000000146F06D49 | 48 8B 81 C8 00 00 00     | mov rax,qword ptr ds:[rcx+C8] 
+;0000000146F06D50 | 48 89 5C 24 30           | mov qword ptr ss:[rsp+30],rbx 
+;0000000146F06D55 | 48 8B 58 38              | mov rbx,qword ptr ds:[rax+38] 
+;0000000146F06D59 | 48 8B 01                 | mov rax,qword ptr ds:[rcx]    
+;0000000146F06D5C | FF 10                    | call qword ptr ds:[rax]       
+;0000000146F06D5E | 48 8B 03                 | mov rax,qword ptr ds:[rbx]    
+;0000000146F06D61 | 48 8D 57 08              | lea rdx,qword ptr ds:[rdi+8]  
+;0000000146F06D65 | 44 0F B6 C6              | movzx r8d,sil                 
+;0000000146F06D69 | 48 89 D9                 | mov rcx,rbx                   
+;0000000146F06D6C | FF 90 68 03 00 00        | call qword ptr ds:[rax+368]   
+;0000000146F06D72 | 48 8B 5C 24 30           | mov rbx,qword ptr ss:[rsp+30] 
+;0000000146F06D77 | 48 8B 74 24 38           | mov rsi,qword ptr ss:[rsp+38] 
+;0000000146F06D7C | 48 83 C4 20              | add rsp,20                    
+;0000000146F06D80 | 5F                       | pop rdi                       
+;0000000146F06D81 | C3                       | ret                           
+;
 .code
 
 
