@@ -1,9 +1,9 @@
 Injectable camera for Prey 2017
 ============================
 
-Current supported game version: v1.02+
-Camera version: 1.0.2  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/Prey_102   
+Current supported game version: v1.0.3+
+Camera version: 1.0.3  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/Prey_103   
 Credits: Otis_Inf. HUD toggle by Jonas Beckman & SunBeam
 
 ### How to use
