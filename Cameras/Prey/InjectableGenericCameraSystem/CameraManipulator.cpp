@@ -47,36 +47,54 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static float _originalCoordsData[3];
 	static float _originalLookData[4];
 	static float _currentCameraCoords[3];
-	
-	
-	void toggleHud(LPBYTE hostImageAddress)
+	static LPBYTE _supersamplingVarAddress = nullptr;
+	static LPBYTE _hudToggleVarAddress = nullptr;
+
+
+	void setSupersamplingVarAddress(LPBYTE supersamplingVarAddress)
 	{
-		if (nullptr == hostImageAddress)
+#ifdef _DEBUG
+		cout << "Supersampling var absolute address: " << (hex) << (void*)supersamplingVarAddress << endl;
+#endif // DEBUG
+		_supersamplingVarAddress = supersamplingVarAddress;
+	}
+
+	void setHudToggleVarAddress(LPBYTE hudToggleVarAddress)
+	{
+#ifdef _DEBUG
+		cout << "hud toggle var absolute address: " << (hex) << (void*)hudToggleVarAddress << endl;
+#endif // DEBUG
+		_hudToggleVarAddress = hudToggleVarAddress;
+	}
+
+	void toggleHud()
+	{
+		if (nullptr == _hudToggleVarAddress)
 		{
 			return;
 		}
-		byte currentValue = *(hostImageAddress + HUD_TOGGLE_IN_IMAGE);
-		toggleHud(hostImageAddress, currentValue == 0 ? (byte)1 : (byte)0);
+		byte currentValue = *_hudToggleVarAddress;
+		toggleHud(currentValue == 0 ? (byte)1 : (byte)0);
 	}
 
 
-	void toggleHud(LPBYTE hostImageAddress, byte newValue)
+	void toggleHud(byte newValue)
 	{
-		if (nullptr == hostImageAddress)
+		if (nullptr == _hudToggleVarAddress)
 		{
 			return;
 		}
-		*(hostImageAddress + HUD_TOGGLE_IN_IMAGE) = newValue;
+		*_hudToggleVarAddress = newValue;
 	}
 
 
-	void setSupersamplingFactor(LPBYTE hostImageAddress, byte newValue)
+	void setSupersamplingFactor(byte newValue)
 	{
-		if (nullptr == hostImageAddress)
+		if (nullptr == _supersamplingVarAddress)
 		{
 			return;
 		}
-		*(hostImageAddress + SUPERSAMPLING_FACTOR_IN_IMAGE_OFFSET) = newValue;
+		*_supersamplingVarAddress = newValue;
 	}
 
 

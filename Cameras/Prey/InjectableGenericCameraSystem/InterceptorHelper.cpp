@@ -66,6 +66,9 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE2_INTERCEPT_KEY, "F3 44 0F 58 68 04 F3 44 0F 58 20 F3 44 0F 58 70 08 F3 44 0F 11 67 1C F3 44 0F 11 6F 20", 1);
 		aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE3_INTERCEPT_KEY, "F3 44 0F 11 77 24 F3 0F 10 8D 88 00 00 00 48 8D 4F 1C", 1);
 		aobBlocks[TIMESTOP_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_INTERCEPT_KEY, "48 89 5C 24 10 48 89 6C 24 18 48 89 74 24 20 57 41 54 41 55 41 56 41 57 48 83 EC 40 48 8B B1", 1);
+		// the following 2 blocks are obtained from code which isn't intercepted; these AOB scans are used to obtain a RIP relative DWord offset, see interceptor.asm for details.
+		aobBlocks[SUPERSAMPLING_KEY] = new AOBBlock(SUPERSAMPLING_KEY, "41 F7 F8 44 8B C0 8B C1  8B 0D | ?? ?? ?? ?? 99  F7 FF 44 3B C0 41 0F 4C C0", 1);
+		aobBlocks[HUD_TOGGLE_KEY] = new AOBBlock(HUD_TOGGLE_KEY, "83 3D | ?? ?? ?? ?? 00 0F B6 F2 48 89 CF 74 ?? 48 8B 81 C8 00 00 00 48 89 5C 24", 1);
 		
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;

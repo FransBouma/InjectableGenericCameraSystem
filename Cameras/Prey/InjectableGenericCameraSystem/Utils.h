@@ -50,4 +50,5 @@ namespace IGCS::Utils
 	MODULEINFO getModuleInfoOfDll(LPCWSTR libraryName);
 	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, AOBBlock* const toScanFor);
 	BYTE CharToByte(char c);
+	LPBYTE calculateAbsoluteAddress(AOBBlock* locationData, int nextOpCodeOffset);
 }

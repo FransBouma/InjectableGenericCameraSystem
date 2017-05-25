@@ -60,33 +60,12 @@ EXTERN _timestopInterceptionContinue: qword
 ;---------------------------------------------------------------
 ; Scratch pad
 ; player intercept. Is matrix (3x4, where the the coords are the lower row, write like this:
-;matrixInMemory[0] = rotationMatrix._11;
-;matrixInMemory[1] = rotationMatrix._21;
-;matrixInMemory[2] = rotationMatrix._31;
-;matrixInMemory[3] = newCoords.x;
-;matrixInMemory[4] = rotationMatrix._12;
-;matrixInMemory[5] = rotationMatrix._22;
-;matrixInMemory[6] = rotationMatrix._32;
-;matrixInMemory[7] = newCoords.y;
-;matrixInMemory[8] = rotationMatrix._13;
-;matrixInMemory[9] = rotationMatrix._23;
-;matrixInMemory[10] = rotationMatrix._33;
-;matrixInMemory[11] = newCoords.z;
-;
-;Prey.AK::Monitor::PostCode+24A6D9 - F3 45 0F11 7C 24 0C   - movss [r12+0C],xmm15			// write x			<< INTERCEPT HERE
-;Prey.AK::Monitor::PostCode+24A6E0 - F3 45 0F11 74 24 1C   - movss [r12+1C],xmm14			// write y
-;Prey.AK::Monitor::PostCode+24A6E7 - F3 0F59 C1            - mulss xmm0,xmm1
-;Prey.AK::Monitor::PostCode+24A6EB - F3 0F59 E9            - mulss xmm5,xmm1
-;Prey.AK::Monitor::PostCode+24A6EF - F3 44 0F59 E3         - mulss xmm12,xmm3
-;Prey.AK::Monitor::PostCode+24A6F4 - 41 0F28 CB            - movaps xmm1,xmm11
-;Prey.AK::Monitor::PostCode+24A6F8 - 41 0F28 F2            - movaps xmm6,xmm10
-;Prey.AK::Monitor::PostCode+24A6FC - F3 0F5C F8            - subss xmm7,xmm0
-;Prey.AK::Monitor::PostCode+24A700 - F3 45 0F11 44 24 2C   - movss [r12+2C],xmm8			// write z
-;Prey.AK::Monitor::PostCode+24A707 - F3 0F59 F2            - mulss xmm6,xmm2									<< CONTINUE HERE
 
+;---------------------------------------------------------------
+; Blocks used by camera tools, not by this .asm file, blocks are used in AOB scans to obtain RIP relative addresses (see commments below)
 ; Supersampling read
 ; patch v1.0.3
-;0000000140FC3FF0 | 41 F7 F8                 | idiv r8d                        
+;0000000140FC3FF0 | 41 F7 F8                 | idiv r8d										<< START OF AOB BLOCK
 ;0000000140FC3FF3 | 44 8B C0                 | mov r8d,eax                     
 ;0000000140FC3FF6 | 8B C1                    | mov eax,ecx                     
 ;0000000140FC3FF8 | 8B 0D 7A E7 4E 01        | mov ecx,dword ptr ds:[1424B2778]				<< Supersampling read
@@ -119,7 +98,7 @@ EXTERN _timestopInterceptionContinue: qword
 ;0000000146F06D30 | 48 89 74 24 10           | mov qword ptr ss:[rsp+10],rsi 
 ;0000000146F06D35 | 57                       | push rdi                      
 ;0000000146F06D36 | 48 83 EC 20              | sub rsp,20                    
-;0000000146F06D3A | 83 3D 2B 46 48 FB 00     | cmp dword ptr ds:[14238B36C],0				<< sys_flash read
+;0000000146F06D3A | 83 3D 2B 46 48 FB 00     | cmp dword ptr ds:[14238B36C],0				<< sys_flash read		<< START OF AOB BLOCK
 ;0000000146F06D41 | 0F B6 F2                 | movzx esi,dl                  
 ;0000000146F06D44 | 48 89 CF                 | mov rdi,rcx                   
 ;0000000146F06D47 | 74 2E                    | je prey_dump.146F06D77        

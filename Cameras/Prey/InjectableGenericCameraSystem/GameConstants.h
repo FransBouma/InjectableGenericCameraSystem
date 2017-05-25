@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Prey 2017 1.0.3+"
-	#define CAMERA_VERSION								"1.0.3"
+	#define CAMERA_VERSION								"1.0.4"
 	#define CAMERA_CREDITS								"Otis_Inf. HUD toggle by Jonas Beckman & SunBeam"
 	#define GAME_WINDOW_TITLE							"Prey"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
@@ -56,13 +56,12 @@ namespace IGCS::GameSpecific
 	#define CAMERA_WRITE3_INTERCEPT_KEY					"AOB_CAMERA_WRITE3_INTERCEPT"
 	#define FOV_INTERCEPT_KEY							"AOB_FOV_INTERCEPT"
 	#define TIMESTOP_INTERCEPT_KEY						"AOB_TIMESTOP_INTERCEPT"
+	#define SUPERSAMPLING_KEY							"AOB_SUPERSAMPLING_ADDRESS"
+	#define HUD_TOGGLE_KEY								"AOB_HUD_TOGGLE_ADDRESS"
 
 	// Indices in the structures read by interceptors 
 	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0x0
 	#define LOOK_DATA_IN_CAMERA_STRUCT_OFFSET			0xC
 	#define FOV_IN_STRUCT_OFFSET						0x8
 	#define TIMESTOP_IN_STRUCT_OFFSET					0x8
-
-	#define SUPERSAMPLING_FACTOR_IN_IMAGE_OFFSET		0x24B2778			// hack. Not AOB read. 
-	#define HUD_TOGGLE_IN_IMAGE							0x238B36C			// hack. Not AOB read. sys_flash var.
 }
