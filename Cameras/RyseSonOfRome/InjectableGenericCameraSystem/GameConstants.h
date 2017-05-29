@@ -44,7 +44,7 @@ namespace IGCS::GameSpecific
 	#define DEFAULT_MOVEMENT_SPEED						0.05f
 	#define DEFAULT_ROTATION_SPEED						0.01f
 	#define DEFAULT_FOV_RADIANS							1.0f
-	#define DEFAULT_FOV_SPEED							0.01f
+	#define DEFAULT_FOV_SPEED							0.005f
 	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f
 	#define SUPERSAMPLE_FACTOR_MAX						5.0f
 	// End Mandatory constants

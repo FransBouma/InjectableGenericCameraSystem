@@ -75,6 +75,7 @@ EXTERN _timestopInterceptionContinue: qword
 
 cameraStructInterceptor PROC
 ; Struct interceptor is also a write interceptor for coords/quaternion
+; 138531AE4
 ;Ryse.exe+1531AE4 - 89 06                 - mov [rsi],eax				<< INTERCEPT HERE << WRITE X
 ;Ryse.exe+1531AE6 - 8B 44 24 54           - mov eax,[rsp+54]
 ;Ryse.exe+1531AEA - F3 0F59 F0            - mulss xmm6,xmm0
@@ -124,6 +125,7 @@ cameraStructInterceptor ENDP
 
 
 cameraWrite1Interceptor PROC
+;137346C07
 ;Ryse.exe+346C07 - 89 06                 - mov [rsi],eax				<< INTERCEPT HERE	<< WRITE X
 ;Ryse.exe+346C09 - F3 44 0F11 5C 24 44   - movss [rsp+44],xmm11
 ;Ryse.exe+346C10 - F3 44 0F11 44 24 48   - movss [rsp+48],xmm8
@@ -154,6 +156,7 @@ cameraWrite1Interceptor ENDP
 
 
 cameraWrite2Interceptor PROC
+;137347D20
 ;Ryse.exe+347D20 - 89 03                 - mov [rbx],eax				<<INTERCEPT HERE	<< WRITE X
 ;Ryse.exe+347D22 - 8B 45 AB              - mov eax,[rbp-55]
 ;Ryse.exe+347D25 - 89 43 04              - mov [rbx+04],eax
@@ -180,6 +183,7 @@ exit:
 cameraWrite2Interceptor ENDP
 
 cameraWrite3Interceptor PROC
+;137342EA2
 ;Ryse.exe+342EA2 - 89 01                 - mov [rcx],eax				<< INTERCEPT HERE << WRITE X
 ;Ryse.exe+342EA4 - 8B 42 04              - mov eax,[rdx+04]
 ;Ryse.exe+342EA7 - 89 41 04              - mov [rcx+04],eax
@@ -252,6 +256,7 @@ cameraWrite3Interceptor ENDP
 
 
 cameraWrite4Interceptor PROC
+;138531C28
 ;Ryse.exe+1531C28 - F3 44 0F11 46 18      - movss [rsi+18],xmm8						<< INTERCEPT HERE // qW
 ;Ryse.exe+1531C2E - 0F28 CF               - movaps xmm1,xmm7
 ;Ryse.exe+1531C31 - 0F28 D5               - movaps xmm2,xmm5
@@ -365,6 +370,7 @@ cameraWrite4Interceptor ENDP
 
 
 cameraWrite5Interceptor PROC
+;137346A6A
 ;Ryse.exe+346A6A - 89 07                 - mov [rdi],eax						<< INTERCEPT HERE	// qX
 ;Ryse.exe+346A6C - F3 0F11 4C 24 44      - movss [rsp+44],xmm1
 ;Ryse.exe+346A72 - F3 41 0F58 D1         - addss xmm2,xmm9
@@ -397,6 +403,7 @@ exit:
 cameraWrite5Interceptor ENDP
 
 cameraWrite6Interceptor PROC
+;137346AED
 ;Ryse.exe+346AED - F3 44 0F11 57 0C      - movss [rdi+0C],xmm10					<< INTERCEPT HERE
 ;Ryse.exe+346AF3 - F3 0F11 17            - movss [rdi],xmm2						// qX
 ;Ryse.exe+346AF7 - F3 0F11 5F 04         - movss [rdi+04],xmm3	
@@ -418,6 +425,7 @@ exit:
 cameraWrite6Interceptor ENDP
 
 cameraWrite7Interceptor PROC
+;137347EA0
 ;Ryse.exe+347EA0 - 89 43 0C              - mov [rbx+0C],eax						<< INTERCEPT HERE// qX
 ;Ryse.exe+347EA3 - 44 0F28 8C 24 90000000  - movaps xmm9,[rsp+00000090]
 ;Ryse.exe+347EAC - 44 0F28 84 24 A0000000  - movaps xmm8,[rsp+000000A0]
@@ -453,6 +461,7 @@ exit:
 cameraWrite7Interceptor ENDP
 
 cameraWrite8Interceptor PROC
+;137346989
 ;Ryse.exe+346989 - F3 44 0F5C D2         - subss xmm10,xmm2					<< INTERCEPT HERE
 ;Ryse.exe+34698E - F3 44 0F11 57 0C      - movss [rdi+0C],xmm10					// qW
 ;Ryse.exe+346994 - 8B 43 54              - mov eax,[rbx+54]
@@ -472,6 +481,7 @@ exit:
 cameraWrite8Interceptor ENDP
 
 cameraWrite9Interceptor PROC
+;137347D98
 ;Ryse.exe+347D98 - F3 0F5C DA            - subss xmm3,xmm2					<< INTERCEPT HERE
 ;Ryse.exe+347D9C - F3 0F11 5B 18         - movss [rbx+18],xmm3					// qW
 ;Ryse.exe+347DA1 - 8B 83 94000000        - mov eax,[rbx+00000094]
@@ -491,20 +501,30 @@ exit:
 cameraWrite9Interceptor ENDP
 
 timestopInterceptor PROC
-;Ryse.exe+EFBD8A - 44 0F28 54 24 50      - movaps xmm10,[rsp+50]					<< INTERCEPT HERE
-;Ryse.exe+EFBD90 - 44 0F28 4C 24 60      - movaps xmm9,[rsp+60]
-;Ryse.exe+EFBD96 - 80 BF 9C020000 00     - cmp byte ptr [rdi+0000029C],00 { 0 }				<< READ TIMESTOP
-;Ryse.exe+EFBD9D - F2 0F10 15 2B1B0E01   - movsd xmm2,[Ryse.exe+1FDD8D0] { [1.00] }	<< CONTINUE HERE
+; rdi contains the struct pointer in which timestop (m_pause) is located (at offset 0x29c, a byte). We intercept this block as it's not a block with 
+; a jump into it, the cmp on the timestop higher up in this function however does have a jmp to it, so we can't intercept it there. 
+;0000000137EFBDB5 | F2 48 0F 2A 47 40        | cvtsi2sd xmm0,qword ptr ds:[rdi+40]		<< INTERCEPT HERE
+;0000000137EFBDBB | F2 0F 5E D0              | divsd xmm2,xmm0                    
+;0000000137EFBDBF | 66 0F EF C0              | pxor xmm0,xmm0                     
+;0000000137EFBDC3 | F2 48 0F 2A C1           | cvtsi2sd xmm0,rcx                  
+;0000000137EFBDC8 | F2 0F 59 C2              | mulsd xmm0,xmm2                    
+;0000000137EFBDCC | F2 0F 5A C8              | cvtsd2ss xmm1,xmm0                 
+;0000000137EFBDD0 | F3 0F 59 CB              | mulss xmm1,xmm3							<< CONTINUE HERE
 	mov [g_timestopStructAddress], rdi
 originalCode:
-	movaps xmm10,[rsp+50h]		
-	movaps xmm9,[rsp+60h]
-	cmp byte ptr [rdi+0000029Ch],00
+	cvtsi2sd xmm0,qword ptr [rdi+40h]	
+	divsd xmm2,xmm0                    
+	pxor xmm0,xmm0                     
+	cvtsi2sd xmm0,rcx                  
+	mulsd xmm0,xmm2                    
+	cvtsd2ss xmm1,xmm0                 
+	mulss xmm1,xmm3						
 exit:
 	jmp qword ptr [_timestopInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 timestopInterceptor ENDP
 
 fovWriteInterceptor PROC
+;137347ED4
 ;Ryse.exe+347ED4 - 88 83 A9000000        - mov [rbx+000000A9],al				<< INTERCEPT HERE
 ;Ryse.exe+347EDA - F3 0F58 83 A4000000   - addss xmm0,[rbx+000000A4]
 ;Ryse.exe+347EE2 - F3 0F11 43 30         - movss [rbx+30],xmm0					// FOV
