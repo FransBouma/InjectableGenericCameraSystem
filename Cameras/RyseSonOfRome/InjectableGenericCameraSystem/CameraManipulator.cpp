@@ -37,7 +37,8 @@ using namespace std;
 
 extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
-	LPBYTE g_timestopStructAddress = nullptr;
+	LPBYTE g_timestop1StructAddress = nullptr;
+	LPBYTE g_timestop2StructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -72,11 +73,14 @@ namespace IGCS::GameSpecific::CameraManipulator
 	// newValue: 1 == time should be frozen, 0 == normal gameplay
 	void setTimeStopValue(byte newValue)
 	{
-		if (nullptr == g_timestopStructAddress)
+		if (nullptr != g_timestop1StructAddress)
 		{
-			return;
+			*(g_timestop1StructAddress + TIMESTOP1_IN_STRUCT_OFFSET) = newValue;
 		}
-		*(g_timestopStructAddress + TIMESTOP_IN_STRUCT_OFFSET) = newValue;
+		if (nullptr != g_timestop2StructAddress)
+		{
+			*(g_timestop2StructAddress + TIMESTOP2_IN_STRUCT_OFFSET) = newValue;
+		}
 	}
 
 	// Resets the FOV to the default

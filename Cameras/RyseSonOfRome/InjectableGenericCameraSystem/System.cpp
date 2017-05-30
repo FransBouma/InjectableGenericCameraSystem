@@ -133,7 +133,7 @@ namespace IGCS
 				// it's going to be enabled, so cache the original values before we enable it so we can restore it afterwards
 				CameraManipulator::cacheOriginalCameraValues();
 				_camera.resetAngles();
-				CameraManipulator::toggleHud((byte)0);		// hud should be OFF so pass 0
+				CameraManipulator::toggleHud(_hostImageAddress, (byte)0);		// hud should be OFF so pass 0
 			}
 			g_cameraEnabled = g_cameraEnabled == 0 ? (byte)1 : (byte)0;
 			displayCameraState();

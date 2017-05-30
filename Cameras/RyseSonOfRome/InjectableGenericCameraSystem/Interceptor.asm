@@ -42,6 +42,8 @@ PUBLIC cameraWrite7Interceptor
 PUBLIC cameraWrite8Interceptor
 PUBLIC cameraWrite9Interceptor
 PUBLIC fovWriteInterceptor
+PUBLIC timestop1Interceptor
+PUBLIC timestop2Interceptor
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -49,7 +51,8 @@ PUBLIC fovWriteInterceptor
 ; values in asm to communicate with the system
 EXTERN g_cameraEnabled: byte
 EXTERN g_cameraStructAddress: qword
-EXTERN g_timestopStructAddress: qword
+EXTERN g_timestop1StructAddress: qword
+EXTERN g_timestop2StructAddress: qword
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -65,7 +68,8 @@ EXTERN _cameraWrite7InterceptionContinue: qword
 EXTERN _cameraWrite8InterceptionContinue: qword
 EXTERN _cameraWrite9InterceptionContinue: qword
 EXTERN _fovWriteInterceptionContinue: qword
-EXTERN _timestopInterceptionContinue: qword
+EXTERN _timestop1InterceptionContinue: qword
+EXTERN _timestop2InterceptionContinue: qword
 .data
 
 ;---------------------------------------------------------------
@@ -500,7 +504,7 @@ exit:
 	jmp qword ptr [_cameraWrite9InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite9Interceptor ENDP
 
-timestopInterceptor PROC
+timestop1Interceptor PROC
 ; rdi contains the struct pointer in which timestop (m_pause) is located (at offset 0x29c, a byte). We intercept this block as it's not a block with 
 ; a jump into it, the cmp on the timestop higher up in this function however does have a jmp to it, so we can't intercept it there. 
 ;0000000137EFBDB5 | F2 48 0F 2A 47 40        | cvtsi2sd xmm0,qword ptr ds:[rdi+40]		<< INTERCEPT HERE
@@ -510,7 +514,7 @@ timestopInterceptor PROC
 ;0000000137EFBDC8 | F2 0F 59 C2              | mulsd xmm0,xmm2                    
 ;0000000137EFBDCC | F2 0F 5A C8              | cvtsd2ss xmm1,xmm0                 
 ;0000000137EFBDD0 | F3 0F 59 CB              | mulss xmm1,xmm3							<< CONTINUE HERE
-	mov [g_timestopStructAddress], rdi
+	mov [g_timestop1StructAddress], rdi
 originalCode:
 	cvtsi2sd xmm0,qword ptr [rdi+40h]	
 	divsd xmm2,xmm0                    
@@ -520,8 +524,26 @@ originalCode:
 	cvtsd2ss xmm1,xmm0                 
 	mulss xmm1,xmm3						
 exit:
-	jmp qword ptr [_timestopInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
-timestopInterceptor ENDP
+	jmp qword ptr [_timestop1InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+timestop1Interceptor ENDP
+
+timestop2Interceptor PROC
+; CryEngine apparently uses another timestop for cutscene progress. This is that timestop. 
+;Ryse.exe+A8913A - F3 0F11 75 D7         - movss [rbp-29],xmm6			<< INTERCEPT HERE
+;Ryse.exe+A8913F - F3 0F11 75 EB         - movss [rbp-15],xmm6
+;Ryse.exe+A89144 - 0F28 F9               - movaps xmm7,xmm1
+;Ryse.exe+A89147 - 40 38 B9 89000000     - cmp [rcx+00000089],dil		<< read here
+;Ryse.exe+A8914E - 0F85 0A040000         - jne Ryse.exe+A8955E			<< CONTINUE HERE
+	mov [g_timestop2StructAddress], rcx
+originalCode:
+	movss dword ptr [rbp-29h],xmm6
+	movss dword ptr [rbp-15h],xmm6
+	movaps xmm7,xmm1                
+	cmp byte ptr [rcx+89h],dil    
+exit:
+	jmp qword ptr [_timestop2InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+timestop2Interceptor ENDP
+
 
 fovWriteInterceptor PROC
 ;137347ED4

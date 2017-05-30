@@ -41,10 +41,10 @@ namespace IGCS::GameSpecific
 	#define FASTER_MULTIPLIER							10.0f
 	#define SLOWER_MULTIPLIER							0.1f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
-	#define DEFAULT_MOVEMENT_SPEED						0.05f
-	#define DEFAULT_ROTATION_SPEED						0.01f
+	#define DEFAULT_MOVEMENT_SPEED						0.045f
+	#define DEFAULT_ROTATION_SPEED						0.012f
 	#define DEFAULT_FOV_RADIANS							1.0f
-	#define DEFAULT_FOV_SPEED							0.005f
+	#define DEFAULT_FOV_SPEED							0.001f
 	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f
 	#define SUPERSAMPLE_FACTOR_MAX						5.0f
 	// End Mandatory constants
@@ -61,13 +61,15 @@ namespace IGCS::GameSpecific
 	#define CAMERA_WRITE8_INTERCEPT_KEY					"AOB_CAMERA_WRITE8_INTERCEPT"
 	#define CAMERA_WRITE9_INTERCEPT_KEY					"AOB_CAMERA_WRITE9_INTERCEPT"
 	#define FOV_INTERCEPT_KEY							"AOB_FOV_INTERCEPT"
-	#define TIMESTOP_INTERCEPT_KEY						"AOB_TIMESTOP_INTERCEPT"
+	#define TIMESTOP1_INTERCEPT_KEY						"AOB_TIMESTOP1_INTERCEPT"
+	#define TIMESTOP2_INTERCEPT_KEY						"AOB_TIMESTOP2_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
 	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0x0
 	#define LOOK_DATA_IN_CAMERA_STRUCT_OFFSET			0xC
 	#define FOV_IN_STRUCT_OFFSET						0x30			// in camera struct
-	#define TIMESTOP_IN_STRUCT_OFFSET					0x29C
+	#define TIMESTOP1_IN_STRUCT_OFFSET					0x29C
+	#define TIMESTOP2_IN_STRUCT_OFFSET					0x89			// different struct!
 
 	#define SUPERSAMPLING_VAR_IN_IMAGE_OFFSET			0x22BA55C
 	#define HUD_TOGGLE_VAR_IN_IMAGE_OFFSET				0x2E0B4C4
