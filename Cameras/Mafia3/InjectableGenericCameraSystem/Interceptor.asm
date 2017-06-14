@@ -58,6 +58,19 @@ EXTERN _cameraWrite4InterceptionContinue: qword
 
 ;---------------------------------------------------------------
 ; Scratch pad
+; Timestop address is read from here:
+; AOB Scan: 53 48 83 EC ?? 48 8B D9 48 8B 0D | ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 75 ?? E8 ?? ?? ?? ??.
+; This address isn't intercepted, blocks are used in AOB scan to obtain RIP relative addresses
+;mafia3.exe+3621116 - 53                    - push rbx												<< START OF FUNCTION
+;mafia3.exe+3621117 - 48 83 EC 20           - sub rsp,20 { 32 }
+;mafia3.exe+362111B - 48 8B D9              - mov rbx,rcx
+;mafia3.exe+362111E - 48 8B 0D 63B4BA02     - mov rcx,[mafia3.exe+61CC588] { [DC5929CBF0] }			<<<< TIMESTOP is at this address + 4
+;mafia3.exe+3621125 - E8 F6DA0AFE           - call mafia3.exe+16CEC20
+;mafia3.exe+362112A - 84 C0                 - test al,al
+;mafia3.exe+362112C - 75 16                 - jne mafia3.exe+3621144
+;mafia3.exe+362112E - E8 6D9B08FE           - call mafia3.exe+16AACA0
+;
+
 .code
 
 

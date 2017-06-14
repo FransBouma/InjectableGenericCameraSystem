@@ -44,19 +44,27 @@ namespace IGCS::GameSpecific::CameraManipulator
 {
 	static float _originalMatrixData[12];
 	static float _currentCameraCoords[3];
+	static LPBYTE _timestopAddress = nullptr;
 
 
 	// newValue: 1 == time should be frozen, 0 == normal gameplay
 	void setTimeStopValue(byte newValue)
 	{
-		//if (nullptr != g_timestop1StructAddress)
-		//{
-		//	*(g_timestop1StructAddress + TIMESTOP1_IN_STRUCT_OFFSET) = newValue;
-		//}
-		//if (nullptr != g_timestop2StructAddress)
-		//{
-		//	*(g_timestop2StructAddress + TIMESTOP2_IN_STRUCT_OFFSET) = newValue;
-		//}
+		if (nullptr != _timestopAddress)
+		{
+			*(_timestopAddress + TIMESTOP_IN_STRUCT_OFFSET) = newValue;
+		}
+	}
+
+	void setTimestopAddress(LPBYTE timestopAddress)
+	{
+		DWORD64 addressToUse = ((DWORD64*)timestopAddress)[0];
+
+#ifdef _DEBUG
+		cout << "timestop var absolute address source: " << (hex) << (void*)timestopAddress << endl;
+		cout << "timestop var absolute address: " << (hex) << (void*)addressToUse << endl;
+#endif // DEBUG
+		_timestopAddress = reinterpret_cast<LPBYTE>(addressToUse);
 	}
 
 	// Resets the FOV to the default

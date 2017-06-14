@@ -307,6 +307,7 @@ namespace IGCS
 		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);
 		GameSpecific::CameraManipulator::waitForCameraStructAddresses(_hostImageAddress);		// blocks till camera is found.
 		GameSpecific::InterceptorHelper::setPostCameraStructHooks(_aobBlocks);
+		GameSpecific::CameraManipulator::setTimestopAddress(Utils::calculateAbsoluteAddress(_aobBlocks[TIMESTOP_KEY], 4));
 
 		// camera struct found, init our own camera object now and hook into game code which uses camera.
 		_cameraStructFound = true;
@@ -381,7 +382,7 @@ namespace IGCS
 		Console::WriteLine("Numpad * or controller B-button       : Reset FoV (with freecam)");
 		Console::WriteLine("Numpad /                              : Toggle Y look direction");
 		Console::WriteLine("Numpad . or controller Right Bumper   : Toggle input to game");
-		//Console::WriteLine("Numpad 0                              : Toggle game pause");
+		Console::WriteLine("Numpad 0                              : Toggle game pause");
 		Console::WriteLine("ALT+H                                 : This help");
 		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
 		Console::WriteLine(" Please read the enclosed readme.txt for the answers to your questions :)");
