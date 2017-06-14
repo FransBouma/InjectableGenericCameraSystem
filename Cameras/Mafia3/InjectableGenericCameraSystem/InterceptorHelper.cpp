@@ -42,6 +42,7 @@ extern "C" {
 	void cameraWrite2Interceptor();
 	void cameraWrite3Interceptor();
 	void cameraWrite4Interceptor();
+	void hudToggleInterceptor();
 }
 
 // external addresses used in asm.
@@ -51,6 +52,7 @@ extern "C" {
 	LPBYTE _cameraWrite2InterceptionContinue = nullptr;
 	LPBYTE _cameraWrite3InterceptionContinue = nullptr;
 	LPBYTE _cameraWrite4InterceptionContinue = nullptr;
+	LPBYTE _hudToggleInterceptionContinue = nullptr;
 }
 
 
@@ -63,6 +65,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE2_INTERCEPT_KEY, "8B 06 | 89 47 04 8B 46 04 89 47 14 8B 46 08 89 47 24 F3 0F 10 6B 04 F3 0F 10 33 0F 28 DD F3 0F 10 7B 08 0F 28 C6 F3 44 0F 10 46 04", 1);
 		aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE3_INTERCEPT_KEY, "F3 0F 59 F2 F3 0F 59 EA F3 0F 59 FA | F3 0F 11 77 08 F3 0F 11 6F 18 F3 0F 11 7F 28 F3 0F 10 5E 04 F3 0F 10 66 08 0F 28 D3 F3 0F 10 0E 0F 28 C4", 1);
 		aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE4_INTERCEPT_KEY, "89 47 50 8B 44 24 ?? 89 47 5C 8B 44 24 ?? 41 89 40 08 F3 44 0F 11 47 70 | F3 44 0F 11 4F 6C 8B 47 48 89 47 24 8B 47 4C 89 47 34 8B 47 50", 1);
+		aobBlocks[HUD_TOGGLE_INTERCEPT_KEY] = new AOBBlock(HUD_TOGGLE_INTERCEPT_KEY, "48 8B 43 20 4C 8D 73 60 44 0F B6 38 45 3A 3E 0F 84 ?? ?? ?? ?? 48 8B 7B 28", 1);
+		
 		// the following block is obtained from code which isn't intercepted; these AOB scans are used to obtain a RIP relative DWord offset, see interceptor.asm for details.
 		aobBlocks[TIMESTOP_KEY] = new AOBBlock(TIMESTOP_KEY, "53 48 83 EC ?? 48 8B D9 48 8B 0D | ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 75 ?? E8 ?? ?? ?? ??", 1);
 
@@ -95,5 +99,6 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY], 0x0F, &_cameraWrite2InterceptionContinue, &cameraWrite2Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY], 0x0F, &_cameraWrite3InterceptionContinue, &cameraWrite3Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY], 0x18, &_cameraWrite4InterceptionContinue, &cameraWrite4Interceptor);
+		GameImageHooker::setHook(aobBlocks[HUD_TOGGLE_INTERCEPT_KEY], 0x0F, &_hudToggleInterceptionContinue, &hudToggleInterceptor);
 	}
 }

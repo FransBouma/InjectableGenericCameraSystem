@@ -57,6 +57,7 @@ namespace IGCS
 	#define IGCS_KEY_INVERT_Y_LOOK					VK_DIVIDE
 	#define IGCS_KEY_BLOCK_INPUT					VK_DECIMAL
 	#define IGCS_KEY_TIMESTOP						VK_NUMPAD0
+	#define IGCS_KEY_TOGGLE_HUD						VK_END
 
 	#define IGCS_BUTTON_FOV_DECREASE	Gamepad::button_t::UP
 	#define IGCS_BUTTON_FOV_INCREASE	Gamepad::button_t::DOWN

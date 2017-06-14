@@ -38,6 +38,7 @@ using namespace std;
 extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
 	LPBYTE g_cameraMatrixAddress = nullptr;
+	LPBYTE g_hudToggleAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -65,6 +66,32 @@ namespace IGCS::GameSpecific::CameraManipulator
 		cout << "timestop var absolute address: " << (hex) << (void*)addressToUse << endl;
 #endif // DEBUG
 		_timestopAddress = reinterpret_cast<LPBYTE>(addressToUse);
+	}
+	
+	void toggleHud()
+	{
+		byte currentValue = *(g_hudToggleAddress);
+		toggleHud(currentValue == 0 ? (byte)1 : (byte)0);
+	}
+
+	void toggleHud(byte newValue)
+	{
+		if (nullptr == g_hudToggleAddress)
+		{
+			return;
+		}
+		// g_hudToggleAddress is a byte array with bit flags (1 per byte). It hides hud parts. We have to set each element individually. 
+		g_hudToggleAddress[0] = newValue;
+		g_hudToggleAddress[1] = newValue;
+		g_hudToggleAddress[3] = newValue;
+		g_hudToggleAddress[6] = newValue;
+		g_hudToggleAddress[7] = newValue;
+		g_hudToggleAddress[8] = newValue;
+		g_hudToggleAddress[9] = newValue;
+		g_hudToggleAddress[10] = newValue;
+		g_hudToggleAddress[13] = newValue;
+		g_hudToggleAddress[20] = newValue;
+		g_hudToggleAddress[23] = newValue;
 	}
 
 	// Resets the FOV to the default

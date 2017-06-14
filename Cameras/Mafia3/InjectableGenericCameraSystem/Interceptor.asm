@@ -44,6 +44,7 @@ PUBLIC cameraWrite4Interceptor
 EXTERN g_cameraEnabled: byte
 EXTERN g_cameraStructAddress: qword
 EXTERN g_cameraMatrixAddress: qword
+EXTERN g_hudToggleAddress: qword
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -53,6 +54,7 @@ EXTERN _cameraWrite1InterceptionContinue: qword
 EXTERN _cameraWrite2InterceptionContinue: qword
 EXTERN _cameraWrite3InterceptionContinue: qword
 EXTERN _cameraWrite4InterceptionContinue: qword
+EXTERN _hudToggleInterceptionContinue: qword
 
 .data
 
@@ -208,5 +210,37 @@ originalCode:
 exit:
 	jmp qword ptr [_cameraWrite4InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite4Interceptor ENDP
+
+
+hudToggleInterceptor PROC
+;mafia3.exe+2994D51 - 48 8B 43 20           - mov rax,[rbx+20]						<< INTERCEPT HERE
+;mafia3.exe+2994D55 - 4C 8D 73 60           - lea r14,[rbx+60]
+;mafia3.exe+2994D59 - 44 0FB6 38            - movzx r15d,byte ptr [rax]				<< HUD Toggle var read
+;mafia3.exe+2994D5D - 45 3A 3E              - cmp r15l,[r14]
+;mafia3.exe+2994D60 - 0F84 A5000000         - je mafia3.exe+2994E0B					<< CONTINUE HERE
+;mafia3.exe+2994D66 - 48 8B 7B 28           - mov rdi,[rbx+28]
+;mafia3.exe+2994D6A - C7 44 24 40 01000000  - mov [rsp+40],00000001 { 1 }
+;mafia3.exe+2994D72 - 48 89 44 24 48        - mov [rsp+48],rax
+;mafia3.exe+2994D77 - C7 44 24 50 01000000  - mov [rsp+50],00000001 { 1 }
+;mafia3.exe+2994D7F - 4C 89 74 24 58        - mov [rsp+58],r14
+
+; The original code is used to check an array of bytes with either 1 or 0. We need the first byte, so we'll check whether
+; the pointer in rax is smaller than the one we already have. If so, use it, otherwise skip it. 
+preambleOriginalCode:
+	mov rax, [rbx+20h]
+	cmp qword ptr [g_hudToggleAddress], 0
+	je setAddress
+	cmp qword ptr rax, [g_hudToggleAddress]
+	jg originalCode
+setAddress:
+	mov [g_hudToggleAddress], rax				
+originalCode:
+	lea r14, [rbx+60h]
+	movzx r15d, byte ptr [rax]
+	cmp r15b,[r14]
+exit:
+	jmp qword ptr [_hudToggleInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+hudToggleInterceptor ENDP
+
 
 END

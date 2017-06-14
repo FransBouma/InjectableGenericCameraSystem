@@ -32,7 +32,7 @@ namespace IGCS::GameSpecific
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Mafia III"
 	#define CAMERA_VERSION								"1.0.0"
-	#define CAMERA_CREDITS								"Otis_Inf"
+	#define CAMERA_CREDITS								"Otis_Inf. HUD toggle by Hodgedogs"
 	#define GAME_WINDOW_TITLE							"Mafia III"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
 	#define INITIAL_YAW_RADIANS							0.0f	// around Y axis	(into the screen)
@@ -55,6 +55,7 @@ namespace IGCS::GameSpecific
 	#define CAMERA_WRITE3_INTERCEPT_KEY					"AOB_CAMERA_WRITE3_INTERCEPT"
 	#define CAMERA_WRITE4_INTERCEPT_KEY					"AOB_CAMERA_WRITE4_INTERCEPT"
 	#define TIMESTOP_KEY								"AOB_TIMESTOP_ADDRESS"
+	#define HUD_TOGGLE_INTERCEPT_KEY					"AOB_HUD_TOGGLE_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
 	#define MATRIX_IN_CAMERA_STRUCT						0x18
