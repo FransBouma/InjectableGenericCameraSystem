@@ -1,9 +1,9 @@
-Injectable camera for Ryse: Son of Rome
+Injectable camera for Mafia III
 ============================
 
-Current supported game version: v1.0.0.153+
+Current supported game version: 
 Camera version: 1.0.0  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/Ryse_100  
+Camera release binaries: 
 Credits: Otis_Inf.
 
 ### How to use
