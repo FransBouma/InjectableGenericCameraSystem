@@ -37,11 +37,13 @@ using namespace std;
 
 extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
+	LPBYTE g_cameraMatrixAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
 {
 	static float _originalMatrixData[12];
+	static float _currentCameraCoords[3];
 
 
 	// newValue: 1 == time should be frozen, 0 == normal gameplay
@@ -83,9 +85,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 
 	XMFLOAT3 getCurrentCameraCoords()
 	{
-		// This particular game uses 2 camera buffers, to which we write the same data. So we pick the first as it doesn't matter. 
-		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_CAMERA_STRUCT);
-		return XMFLOAT3(coordsInMemory);
+		return XMFLOAT3(_currentCameraCoords[0], _currentCameraCoords[1], _currentCameraCoords[2]);
 	}
 
 
@@ -103,7 +103,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 		XMFLOAT4X4 rotationMatrix;
 		XMStoreFloat4x4(&rotationMatrix, rotationMatrixPacked);
 
-		float* matrixInMemory = reinterpret_cast<float*>(g_cameraStructAddress + MATRIX_IN_CAMERA_STRUCT);
+		float* matrixInMemory = reinterpret_cast<float*>(g_cameraMatrixAddress);
 		matrixInMemory[0] = rotationMatrix._11;
 		matrixInMemory[1] = rotationMatrix._21;
 		matrixInMemory[2] = rotationMatrix._31;
@@ -116,6 +116,10 @@ namespace IGCS::GameSpecific::CameraManipulator
 		matrixInMemory[9] = rotationMatrix._23;
 		matrixInMemory[10] = rotationMatrix._33;
 		matrixInMemory[11] = newCoords.z;
+
+		_currentCameraCoords[0] = newCoords.x;
+		_currentCameraCoords[1] = newCoords.y;
+		_currentCameraCoords[2] = newCoords.z;
 	}
 
 
@@ -129,8 +133,12 @@ namespace IGCS::GameSpecific::CameraManipulator
 		}
 		Console::WriteLine("Camera found.");
 
+		// also store the matrix address for checks in the intercepted asm.
+		g_cameraMatrixAddress = g_cameraStructAddress + MATRIX_IN_CAMERA_STRUCT;
+
 #ifdef _DEBUG
 		cout << "Camera struct address: " << hex << (void*)g_cameraStructAddress << endl;
+		cout << "Camera matrix address: " << hex << (void*)g_cameraMatrixAddress << endl;
 #endif
 	}
 
@@ -138,14 +146,16 @@ namespace IGCS::GameSpecific::CameraManipulator
 	// should restore the camera values in the camera structures to the cached values. This assures the free camera is always enabled at the original camera location.
 	void restoreOriginalCameraValues()
 	{
-		float* matrixInMemory = reinterpret_cast<float*>(g_cameraStructAddress+MATRIX_IN_CAMERA_STRUCT);
+		float* matrixInMemory = reinterpret_cast<float*>(g_cameraMatrixAddress);
 		memcpy(matrixInMemory, _originalMatrixData, 12 * sizeof(float));
 	}
 
 
 	void cacheOriginalCameraValues()
 	{
-		float* matrixInMemory = reinterpret_cast<float*>(g_cameraStructAddress + MATRIX_IN_CAMERA_STRUCT);
+		float* matrixInMemory = reinterpret_cast<float*>(g_cameraMatrixAddress);
 		memcpy(_originalMatrixData, matrixInMemory, 12 * sizeof(float));
+		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_CAMERA_STRUCT);
+		memcpy(_currentCameraCoords, coordsInMemory, 3 * sizeof(float));
 	}
 }

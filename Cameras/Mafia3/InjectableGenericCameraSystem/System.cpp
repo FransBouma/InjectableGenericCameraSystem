@@ -381,11 +381,7 @@ namespace IGCS
 		Console::WriteLine("Numpad * or controller B-button       : Reset FoV (with freecam)");
 		Console::WriteLine("Numpad /                              : Toggle Y look direction");
 		Console::WriteLine("Numpad . or controller Right Bumper   : Toggle input to game");
-		Console::WriteLine("Numpad 0                              : Toggle game pause");
-		Console::WriteLine("END                                   : Toggle HUD");
-		Console::WriteLine("DEL                                   : Toggle supersampling w/ resize factor");
-		Console::WriteLine("[                                     : Decrease supersample resize factor");
-		Console::WriteLine("]                                     : Increase supersample resize factor");
+		//Console::WriteLine("Numpad 0                              : Toggle game pause");
 		Console::WriteLine("ALT+H                                 : This help");
 		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
 		Console::WriteLine(" Please read the enclosed readme.txt for the answers to your questions :)");

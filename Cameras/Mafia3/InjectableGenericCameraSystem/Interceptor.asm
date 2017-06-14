@@ -43,6 +43,7 @@ PUBLIC cameraWrite4Interceptor
 ; values in asm to communicate with the system
 EXTERN g_cameraEnabled: byte
 EXTERN g_cameraStructAddress: qword
+EXTERN g_cameraMatrixAddress: qword
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -99,9 +100,8 @@ cameraWrite1Interceptor PROC
 ;mafia3.exe+963D38 - 5F                    - pop rdi
 	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	jne originalCode									; our own camera is enabled, just skip the writes
-	jmp exit
-	;cmp qword ptr rdi, [g_cameraStructAddress]
-	;je exit												; destination is the matrix we're after, do skip everything
+	cmp qword ptr rdi, [g_cameraMatrixAddress]
+	je exit												; destination is the matrix we're after, do skip everything
 originalCode:
 	movss dword ptr [rdi],xmm2	
 	subss xmm1,xmm3     
@@ -128,9 +128,8 @@ cameraWrite2Interceptor PROC
 ;mafia3.exe+963B6E - 0F28 CF               - movaps xmm1,xmm7
 	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	jne originalCode									; our own camera is enabled, just skip the writes
-	jmp exit
-	;cmp qword ptr rdi, [g_cameraStructAddress]
-	;je exit												; destination is the matrix we're after, do skip everything
+	cmp qword ptr rdi, [g_cameraMatrixAddress]
+	je exit												; destination is the matrix we're after, do skip everything
 originalCode:
 	mov [rdi+04h],eax	
 	mov eax,[rsi+04h]
@@ -155,8 +154,7 @@ cameraWrite3Interceptor PROC
 ;mafia3.exe+963CEA - 0F28 C4               - movaps xmm0,xmm4
 	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	jne originalCode									; our own camera is enabled, just skip the writes
-	jmp exit
-	cmp qword ptr rdi, [g_cameraStructAddress]
+	cmp qword ptr rdi, [g_cameraMatrixAddress]
 	je exit												; destination is the matrix we're after, do skip everything
 originalCode:
 	movss dword ptr [rdi+08h],xmm6
@@ -184,9 +182,8 @@ cameraWrite4Interceptor PROC
 ;mafia3.exe+9666E4 - F3 0F5C 47 48         - subss xmm0,[rdi+48]
 	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	jne originalCode									; our own camera is enabled, just skip the writes
-	jmp exit
-	;cmp qword ptr rdi, [g_cameraStructAddress]
-	;je exit												; destination is the matrix we're after, do skip everything
+	cmp qword ptr rdi, [g_cameraStructAddress]
+	je exit												; destination is the matrix we're after, do skip everything
 originalCode:
 	movss dword ptr [rdi+6Ch],xmm9								; write fov
 	mov eax,[rdi+48h]	
