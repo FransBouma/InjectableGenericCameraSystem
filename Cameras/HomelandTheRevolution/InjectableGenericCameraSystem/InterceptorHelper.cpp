@@ -60,7 +60,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 {
 	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, map<string, AOBBlock*> &aobBlocks)
 	{
-		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "F3 0F 11 43 08 F3 0F 10 46 0C F3 0F 11 44 24 30 F3 0F 10 46 2C F3 0F 11 44 24 38", 1);	
+		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "F3 0F 10 4B 0C F3 0F 10 43 1C F3 0F 11 4D 24 F3 0F 10 4B 2C F3 0F 11 45 28 8B 45 24 89 87 2C 01 00 00", 1);	
 		aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE1_INTERCEPT_KEY, "F3 0F 11 43 18 F3 0F 10 44 24 40 F3 0F 11 53 08 F3 0F 10 54 24 38 F3 0F 5C E7 F3 41 0F 58 F0 F3 0F 11 53 1C F3 0F 11 2B F3 0F 11 5B 04", 1);
 		aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE3_INTERCEPT_KEY, "F3 0F 11 4C 24 3C F3 0F 58 C3 F3 0F 11 5C 24 20 F3 44 0F11 5B 0C F3 0F11 44 24 40", 1);
 		aobBlocks[TIMESTOP_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_INTERCEPT_KEY, "66 0F EF C0 F2 48 0F 2A 47 40 F2 0F 5E D0 66 0F EF C0 F2 48 0F 2A C1", 1);
@@ -84,7 +84,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 
 	void setCameraStructInterceptorHook(map<string, AOBBlock*> &aobBlocks)
 	{
-		GameImageHooker::setHook(aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY], 0x15, &_cameraStructInterceptionContinue, &cameraStructInterceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY], 0x14, &_cameraStructInterceptionContinue, &cameraStructInterceptor);
 	}
 
 

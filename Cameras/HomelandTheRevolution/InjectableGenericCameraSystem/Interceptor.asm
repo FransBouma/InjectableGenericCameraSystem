@@ -62,21 +62,20 @@ EXTERN _timestopInterceptionContinue: qword
 
 
 cameraStructInterceptor PROC
-; Struct interceptor is also a write interceptor for coords / matrix / fov
-;Homefront2_Release.exe+A7A934 - F3 0F58 05 C44A8301   - addss xmm0,[Homefront2_Release.exe+22AF400] { [3E4CCCCD] }
-;Homefront2_Release.exe+A7A93C - F3 0F11 43 08         - movss [rbx+08],xmm0					<< INTERCEPT HERE
-;Homefront2_Release.exe+A7A941 - F3 0F10 46 0C         - movss xmm0,[rsi+0C]
-;Homefront2_Release.exe+A7A946 - F3 0F11 44 24 30      - movss [rsp+30],xmm0
-;Homefront2_Release.exe+A7A94C - F3 0F10 46 2C         - movss xmm0,[rsi+2C]					<< READ OF Z
-;Homefront2_Release.exe+A7A951 - F3 0F11 44 24 38      - movss [rsp+38],xmm0					<< CONTINUE HERE
-;Homefront2_Release.exe+A7A957 - 48 8B 01              - mov rax,[rcx]
-;Homefront2_Release.exe+A7A95A - FF 90 68010000        - call qword ptr [rax+00000168]
-	mov [g_cameraStructAddress], rsi
+;Homefront2_Release.exe+AD5D7D - F3 0F10 4B 0C         - movss xmm1,[rbx+0C]				<< INTERCEPT HERE << Z READ
+;Homefront2_Release.exe+AD5D82 - F3 0F10 43 1C         - movss xmm0,[rbx+1C]
+;Homefront2_Release.exe+AD5D87 - F3 0F11 4D 24         - movss [rbp+24],xmm1
+;Homefront2_Release.exe+AD5D8C - F3 0F10 4B 2C         - movss xmm1,[rbx+2C]
+;Homefront2_Release.exe+AD5D91 - F3 0F11 45 28         - movss [rbp+28],xmm0				<< CONTINUE HERE
+;Homefront2_Release.exe+AD5D96 - 8B 45 24              - mov eax,[rbp+24]
+;Homefront2_Release.exe+AD5D99 - 89 87 2C010000        - mov [rdi+0000012C],eax
+;Homefront2_Release.exe+AD5D9F - 8B 45 28              - mov eax,[rbp+28]
+	mov [g_cameraStructAddress], rbx
 originalCode:
-	movss dword ptr [rbx+08h],xmm0
-	movss xmm0, dword ptr [rsi+0Ch]
-	movss dword ptr [rsp+30h],xmm0
-	movss xmm0,dword ptr [rsi+2Ch]
+	movss xmm1, dword ptr [rbx+0Ch]
+	movss xmm0, dword ptr [rbx+1Ch]
+	movss dword ptr [rbp+24h],xmm1
+	movss xmm1, dword ptr [rbx+2Ch]
 exit:
 	jmp qword ptr [_cameraStructInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraStructInterceptor ENDP
@@ -237,7 +236,7 @@ timestopInterceptor PROC
 	mov [g_timestopStructAddress], rdi
 originalCode:
 	pxor xmm0,xmm0                     
-	cvtsi2sd xmm0,qword ptr [rdi+40]
+	cvtsi2sd xmm0,qword ptr [rdi+40h]
 	divsd xmm2,xmm0                    
 	pxor xmm0,xmm0                     
 	cvtsi2sd xmm0,rcx                  
