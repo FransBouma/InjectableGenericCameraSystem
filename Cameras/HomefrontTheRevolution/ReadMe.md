@@ -1,4 +1,4 @@
-Injectable camera for Homeland: The Revolution
+Injectable camera for Homefront: The Revolution
 ============================
 
 Current supported game version: v1.0.0.1+
