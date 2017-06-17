@@ -71,7 +71,8 @@ namespace IGCS::GameSpecific::CameraManipulator
 			return;
 		}
 		float* fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
-		*fovInMemory = DEFAULT_FOV_RADIANS;
+		// the default fov is next to the fov address (so at address+4). 
+		*fovInMemory = *(fovInMemory+sizeof(float));
 	}
 
 

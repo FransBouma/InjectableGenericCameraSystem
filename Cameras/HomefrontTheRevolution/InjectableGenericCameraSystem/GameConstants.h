@@ -43,8 +43,8 @@ namespace IGCS::GameSpecific
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
 	#define DEFAULT_MOVEMENT_SPEED						0.05f
 	#define DEFAULT_ROTATION_SPEED						0.01f
-	#define DEFAULT_FOV_RADIANS							1.14f
-	#define DEFAULT_FOV_SPEED							0.001f
+	#define DEFAULT_FOV_DEGREES							60.0f
+	#define DEFAULT_FOV_SPEED							0.1f
 	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f
 	#define SUPERSAMPLE_FACTOR_MAX						5.0f
 	// End Mandatory constants
@@ -59,14 +59,12 @@ namespace IGCS::GameSpecific
 	// hard-coded offsets for non-AOB scannable stuff
 	#define CAMERA_WRITE_INTERCEPT2_START_OFFSET		0x72D90
 	#define CAMERA_WRITE_INTERCEPT2_BLOCK_LENGTH 		0x46
-	#define FOV_WRITE1_INTERCEPT_START_OFFSET			0x94D116
-	#define FOV_WRITE1_INTERCEPT_BLOCK_LENGTH			0x12
-	#define FOV_WRITE2_RANGE_START_OFFSET				0x948EDA
-	#define FOV_WRITE3_RANGE_START_OFFSET				0x93F351
+	#define FOV_WRITE_INTERCEPT_START_OFFSET			0x90C3E7
+	#define FOV_WRITE_INTERCEPT_BLOCK_LENGTH			0x0F
 
 	// Indices in the structures read by interceptors 
 	#define MATRIX_IN_STRUCT_OFFSET						0x0
-	#define FOV_IN_STRUCT_OFFSET						0x58
+	#define FOV_IN_STRUCT_OFFSET						0x0
 	#define TIMESTOP_IN_STRUCT_OFFSET					0x234
 	#define SUPERSAMPLING_IN_IMAGE_OFFSET				0x3996CA0
 }

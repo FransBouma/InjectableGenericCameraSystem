@@ -54,38 +54,11 @@ EXTERN _cameraWrite1InterceptionContinue: qword
 EXTERN _cameraWrite2InterceptionContinue: qword
 EXTERN _cameraWrite3InterceptionContinue: qword
 EXTERN _timestopInterceptionContinue: qword
-EXTERN _fovWriteInterceptionContinue: qword
+EXTERN _fovReadInterceptionContinue: qword
 
 .data
 ;---------------------------------------------------------------
 ; Scratch pad
-; Better fov: 
-; write 1
-;Homefront2_Release.exe+948ED2 - F3 0F59 05 4A5F6601   - mulss xmm0,[Homefront2_Release.exe+1FAEE24] { [0.02] }
-;Homefront2_Release.exe+948EDA - F3 0F11 42 58         - movss [rdx+58],xmm0			<< WRITE FOV
-;Homefront2_Release.exe+948EDF - E9 948BFFFF           - jmp Homefront2_Release.exe+941A78
-;Homefront2_Release.exe+948EE4 - 48 8B C4              - mov rax,rsp
-;
-; write 2
-;Homefront2_Release.exe+93F341 - F3 0F59 05 DBFA6601   - mulss xmm0,[Homefront2_Release.exe+1FAEE24] { [0.02] }
-;Homefront2_Release.exe+93F349 - F3 0F59 82 EC0A0000   - mulss xmm0,[rdx+00000AEC]
-;Homefront2_Release.exe+93F351 - F3 41 0F11 40 58      - movss [r8+58],xmm0
-;Homefront2_Release.exe+93F357 - 48 8B 02              - mov rax,[rdx]
-;Homefront2_Release.exe+93F35A - FF 90 28020000        - call qword ptr [rax+00000228]
-;
-; write 3
-;Homefront2_Release.exe+94D110 - 8B 42 54              - mov eax,[rdx+54]
-;Homefront2_Release.exe+94D113 - 89 41 54              - mov [rcx+54],eax
-;Homefront2_Release.exe+94D116 - 8B 42 58              - mov eax,[rdx+58]
-;Homefront2_Release.exe+94D119 - 89 41 58              - mov [rcx+58],eax
-;Homefront2_Release.exe+94D11C - 8B 42 5C              - mov eax,[rdx+5C]
-;Homefront2_Release.exe+94D11F - 89 41 5C              - mov [rcx+5C],eax
-;Homefront2_Release.exe+94D122 - 8B 42 60              - mov eax,[rdx+60]
-;Homefront2_Release.exe+94D125 - 89 41 60              - mov [rcx+60],eax
-;Homefront2_Release.exe+94D128 - 8A 42 64              - mov al,[rdx+64]
-;Homefront2_Release.exe+94D12B - 88 41 64              - mov [rcx+64],al
-;Homefront2_Release.exe+94D12E - 8A 42 65              - mov al,[rdx+65]
-;
 .code
 
 
@@ -269,32 +242,23 @@ exit:
 	jmp qword ptr [_timestopInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 timestopInterceptor ENDP
 
-fovWriteInterceptor PROC
-; This function also intercepts the fov struct address and blocks one of the 3 writes. 
-;Homefront2_Release.exe+94D110 - 8B 42 54              - mov eax,[rdx+54]
-;Homefront2_Release.exe+94D113 - 89 41 54              - mov [rcx+54],eax		
-;Homefront2_Release.exe+94D116 - 8B 42 58              - mov eax,[rdx+58]				<< INTERCEPT HERE
-;Homefront2_Release.exe+94D119 - 89 41 58              - mov [rcx+58],eax				<< FOV WRITE
-;Homefront2_Release.exe+94D11C - 8B 42 5C              - mov eax,[rdx+5C]
-;Homefront2_Release.exe+94D11F - 89 41 5C              - mov [rcx+5C],eax
-;Homefront2_Release.exe+94D122 - 8B 42 60              - mov eax,[rdx+60]
-;Homefront2_Release.exe+94D125 - 89 41 60              - mov [rcx+60],eax
-;Homefront2_Release.exe+94D128 - 8A 42 64              - mov al,[rdx+64]				<< CONTINUE HERE
-;Homefront2_Release.exe+94D12B - 88 41 64              - mov [rcx+64],al
-;Homefront2_Release.exe+94D12E - 8A 42 65              - mov al,[rdx+65]
-	mov [g_fovStructAddress], rcx
-	cmp byte ptr [g_cameraEnabled], 1						; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
-	je originalCode											; camera enabled, skip fov write.
-fovWrite:
-	mov eax,[rdx+58h]
-	mov [rcx+58h],eax
+fovReadInterceptor PROC
+;Homefront2_Release.exe+90C3D8 - F3 0F10 50 1C         - movss xmm2,[rax+1C]
+;Homefront2_Release.exe+90C3DD - F3 0F10 78 30         - movss xmm7,[rax+30]
+;Homefront2_Release.exe+90C3E2 - 33 DB                 - xor ebx,ebx
+;Homefront2_Release.exe+90C3E4 - 44 8B FB              - mov r15d,ebx
+;Homefront2_Release.exe+90C3E7 - F3 0F10 0A            - movss xmm1,[rdx]							<<< INTERCEPT HERE <<< FOV READ
+;Homefront2_Release.exe+90C3EB - F3 0F11 44 24 20      - movss [rsp+20],xmm0
+;Homefront2_Release.exe+90C3F1 - F3 0F10 40 2C         - movss xmm0,[rax+2C]						
+;Homefront2_Release.exe+90C3F6 - 8B C3                 - mov eax,ebx								<< CONTINUE HERE
+;Homefront2_Release.exe+90C3F8 - F3 0F59 0D 242A6A01   - mulss xmm1,[Homefront2_Release.exe+1FAEE24]
+	mov [g_fovStructAddress], rdx
 originalCode:
-	mov eax,[rdx+5Ch]
-	mov [rcx+5Ch],eax
-	mov eax,[rdx+60h]
-	mov [rcx+60h],eax
+	movss xmm1, dword ptr [rdx]	
+	movss dword ptr [rsp+20h],xmm0
+	movss xmm0, dword ptr [rax+2Ch]
 exit:
-	jmp qword ptr [_fovWriteInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
-fovWriteInterceptor ENDP
+	jmp qword ptr [_fovReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+fovReadInterceptor ENDP
 
 END
