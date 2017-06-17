@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Homefront: The Revolution v1.0.0.1+"
-	#define CAMERA_VERSION								"1.0.0"
+	#define CAMERA_VERSION								"1.0.1"
 	#define CAMERA_CREDITS								"Otis_Inf and One3rd"
 	#define GAME_WINDOW_TITLE							"Homefront: The Revolution"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
@@ -58,11 +58,15 @@ namespace IGCS::GameSpecific
 
 	// hard-coded offsets for non-AOB scannable stuff
 	#define CAMERA_WRITE_INTERCEPT2_START_OFFSET		0x72D90
-	#define CAMERA_WRITE_INTERCEPT2_BLOCK_LENGTH 		0x4F
+	#define CAMERA_WRITE_INTERCEPT2_BLOCK_LENGTH 		0x46
+	#define FOV_WRITE1_INTERCEPT_START_OFFSET			0x94D116
+	#define FOV_WRITE1_INTERCEPT_BLOCK_LENGTH			0x12
+	#define FOV_WRITE2_RANGE_START_OFFSET				0x948EDA
+	#define FOV_WRITE3_RANGE_START_OFFSET				0x93F351
 
 	// Indices in the structures read by interceptors 
 	#define MATRIX_IN_STRUCT_OFFSET						0x0
-	#define FOV_IN_STRUCT_OFFSET						0x30
+	#define FOV_IN_STRUCT_OFFSET						0x58
 	#define TIMESTOP_IN_STRUCT_OFFSET					0x234
 	#define SUPERSAMPLING_IN_IMAGE_OFFSET				0x3996CA0
 }

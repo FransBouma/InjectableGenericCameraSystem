@@ -126,10 +126,12 @@ namespace IGCS
 				// it's going to be disabled, make sure things are alright when we give it back to the host
 				CameraManipulator::restoreOriginalCameraValues();
 				toggleCameraMovementLockState(false);
+				InterceptorHelper::enableFoVWrites(_hostImageAddress);
 			}
 			else
 			{
 				// it's going to be enabled, so cache the original values before we enable it so we can restore it afterwards
+				InterceptorHelper::disableFoVWrites(_hostImageAddress);
 				CameraManipulator::cacheOriginalCameraValues();
 				_camera.resetAngles();
 			}

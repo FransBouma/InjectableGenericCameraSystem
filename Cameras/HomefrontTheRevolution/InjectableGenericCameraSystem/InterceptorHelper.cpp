@@ -42,7 +42,7 @@ extern "C" {
 	void cameraWrite2Interceptor();
 	void cameraWrite3Interceptor();
 	void timestopInterceptor();
-	void fovReadInterceptor();
+	void fovWriteInterceptor();
 }
 
 // external addresses used in asm.
@@ -52,7 +52,7 @@ extern "C" {
 	LPBYTE _cameraWrite2InterceptionContinue = nullptr;
 	LPBYTE _cameraWrite3InterceptionContinue = nullptr;
 	LPBYTE _timestopInterceptionContinue = nullptr;
-	LPBYTE _fovReadInterceptionContinue = nullptr;
+	LPBYTE _fovWriteInterceptionContinue = nullptr;
 }
 
 
@@ -95,5 +95,39 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[TIMESTOP_INTERCEPT_KEY], 0x17, &_timestopInterceptionContinue, &timestopInterceptor);
 		// for Write2 we'll use the good old hardcoded offsets, as it's a generic routine which is in the code many times so AOB scanning that is undoable, sadly. 
 		GameImageHooker::setHook(hostImageAddress, CAMERA_WRITE_INTERCEPT2_START_OFFSET, CAMERA_WRITE_INTERCEPT2_BLOCK_LENGTH, &_cameraWrite2InterceptionContinue, &cameraWrite2Interceptor);
+		GameImageHooker::setHook(hostImageAddress, FOV_WRITE1_INTERCEPT_START_OFFSET, FOV_WRITE1_INTERCEPT_BLOCK_LENGTH, &_fovWriteInterceptionContinue, &fovWriteInterceptor);
+	}
+
+	void disableFoVWrites(LPBYTE hostImageAddress)
+	{
+		// Dirty hack, but it's not possible to intercept the write as it's surrounded by RIP relative reads.
+		// simply NOP the write opcodes
+		// Write 1
+		// Homefront2_Release.exe + 948ED2 - F3 0F59 05 4A5F6601 - mulss xmm0, [Homefront2_Release.exe + 1FAEE24]
+		// Homefront2_Release.exe + 948EDA - F3 0F11 42 58		 - movss[rdx + 58], xmm0								<< WRITE FOV
+		// Homefront2_Release.exe + 948EDF - E9 948BFFFF		 - jmp Homefront2_Release.exe + 941A78
+		// Homefront2_Release.exe + 948EE4 - 48 8B C4			 - mov rax, rsp
+		// 
+		// Write 2
+		// Homefront2_Release.exe + 93F341 - F3 0F59 05 DBFA6601 - mulss xmm0, [Homefront2_Release.exe + 1FAEE24]
+		// Homefront2_Release.exe + 93F349 - F3 0F59 82 EC0A0000 - mulss xmm0, [rdx + 00000AEC]
+		// Homefront2_Release.exe + 93F351 - F3 41 0F11 40 58	 - movss[r8 + 58], xmm0									<< WRITE FOV
+		// Homefront2_Release.exe + 93F357 - 48 8B 02			 - mov rax, [rdx]
+		// Homefront2_Release.exe + 93F35A - FF 90 28020000		 - call qword ptr[rax + 00000228]
+		GameImageHooker::nopRange(hostImageAddress + FOV_WRITE2_RANGE_START_OFFSET, 5);
+		GameImageHooker::nopRange(hostImageAddress + FOV_WRITE3_RANGE_START_OFFSET, 6);
+	}
+
+	void enableFoVWrites(LPBYTE hostImageAddress)
+	{
+		// Dirty hack, but it's not possible to intercept the write as it's surrounded by RIP relative reads.
+		// simply restore the write opcodes. See disableFoVWrites for details, above.
+		// first instruction:  Homefront2_Release.exe + 948EDA - F3 0F11 42 58		 - movss[rdx + 58], xmm0								<< WRITE FOV
+		byte instruction1[5] = { 0xF3, 0x0F, 0x11, 0x42, 0x58 };
+		GameImageHooker::writeRange(hostImageAddress + FOV_WRITE2_RANGE_START_OFFSET, &instruction1[0], 5);
+
+		// second instruction: Homefront2_Release.exe + 93F351 - F3 41 0F11 40 58	 - movss[r8 + 58], xmm0									<< WRITE FOV
+		byte instruction2[6] = { 0xF3, 0x41, 0x0F, 0x11, 0x40, 0x58 };
+		GameImageHooker::writeRange(hostImageAddress + FOV_WRITE3_RANGE_START_OFFSET, &instruction2[0], 6);
 	}
 }

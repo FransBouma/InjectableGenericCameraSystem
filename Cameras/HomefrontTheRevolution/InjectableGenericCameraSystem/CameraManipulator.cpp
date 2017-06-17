@@ -38,7 +38,7 @@ using namespace std;
 extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
 	LPBYTE g_timestopStructAddress = nullptr;
-	LPBYTE g_superSamplingStructAddress = nullptr;
+	LPBYTE g_fovStructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -66,11 +66,11 @@ namespace IGCS::GameSpecific::CameraManipulator
 	// Resets the FOV to the default
 	void resetFoV()
 	{
-		if (nullptr == g_cameraStructAddress)
+		if (nullptr == g_fovStructAddress)
 		{
 			return;
 		}
-		float* fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
+		float* fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
 		*fovInMemory = DEFAULT_FOV_RADIANS;
 	}
 
@@ -78,11 +78,11 @@ namespace IGCS::GameSpecific::CameraManipulator
 	// changes the FoV with the specified amount
 	void changeFoV(float amount)
 	{
-		if (nullptr == g_cameraStructAddress)
+		if (nullptr == g_fovStructAddress)
 		{
 			return;
 		}
-		float* fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
+		float* fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
 		*fovInMemory += amount;
 	}
 
