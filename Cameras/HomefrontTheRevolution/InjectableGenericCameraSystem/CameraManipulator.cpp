@@ -45,6 +45,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 {
 	static float _originalMatrixData[12];
 	static float _currentCameraCoords[3];
+	static float _originalFov;
 
 	void setSupersamplingFactor(LPBYTE hostImageAddress, float newValue)
 	{
@@ -63,7 +64,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 		*(g_timestopStructAddress + TIMESTOP_IN_STRUCT_OFFSET) = newValue;
 	}
 
-	// Resets the FOV to the default
+	// Resets the FOV to the one it got when we enabled the camera
 	void resetFoV()
 	{
 		if (nullptr == g_fovStructAddress)
@@ -71,8 +72,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 			return;
 		}
 		float* fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
-		// the default fov is next to the fov address (so at address+4). 
-		*fovInMemory = *(fovInMemory+sizeof(float));
+		*fovInMemory = _originalFov;
 	}
 
 
@@ -148,6 +148,8 @@ namespace IGCS::GameSpecific::CameraManipulator
 	{
 		float* matrixInMemory = reinterpret_cast<float*>(g_cameraStructAddress+ MATRIX_IN_STRUCT_OFFSET);
 		memcpy(matrixInMemory, _originalMatrixData, 12 * sizeof(float));
+		float* fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
+		*fovInMemory = _originalFov;
 	}
 
 
@@ -158,5 +160,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 		_currentCameraCoords[0] = _originalMatrixData[3];		// x
 		_currentCameraCoords[1] = _originalMatrixData[7];		// y
 		_currentCameraCoords[2] = _originalMatrixData[11];		// z
+		float* fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
+		_originalFov = *fovInMemory;
 	}
 }
