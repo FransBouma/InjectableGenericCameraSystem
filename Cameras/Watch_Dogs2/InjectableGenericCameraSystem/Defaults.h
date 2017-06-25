@@ -76,4 +76,11 @@ namespace IGCS
 	#define IGCS_BUTTON_BLOCK_INPUT		Gamepad::button_t::RB
 
 	static const byte jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]
+
+	enum InputBlockType
+	{
+		KeyboardMouse = 1,
+		Controller = 2,
+		All = KeyboardMouse | Controller
+	};
 }

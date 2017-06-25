@@ -195,7 +195,19 @@ namespace IGCS
 		}
 		if (Input::keyDown(IGCS_KEY_BLOCK_INPUT))
 		{
-			toggleInputBlockState(!Globals::instance().inputBlocked());
+			InputBlockType blockType = All;
+			if (altPressed)
+			{
+				blockType = KeyboardMouse;
+			}
+			else
+			{
+				if (controlPressed)
+				{
+					blockType = Controller;
+				}
+			}
+			toggleInputBlockState(blockType);
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
 
@@ -257,7 +269,7 @@ namespace IGCS
 			}
 			if (gamePad.isButtonPressed(IGCS_BUTTON_BLOCK_INPUT))
 			{
-				toggleInputBlockState(!Globals::instance().inputBlocked());
+				toggleInputBlockState(All);
 				Sleep(350);				// wait for 350ms to avoid fast hammering
 			}
 		}
@@ -349,15 +361,11 @@ namespace IGCS
 	}
 	
 
-	void System::toggleInputBlockState(bool newValue)
+	void System::toggleInputBlockState(InputBlockType blockType)
 	{
-		if (Globals::instance().inputBlocked() == newValue)
-		{
-			// already in this state. Ignore
-			return;
-		}
-		Globals::instance().inputBlocked(newValue);
-		Console::WriteLine(newValue ? "Input to game blocked" : "Input to game enabled");
+		Globals::instance().toggleInputBlocked(blockType);
+		Console::WriteLine(Globals::instance().kbmInputBlocked() ? "Keyboard / mouse input to game blocked" : "Keyboard / mouse input to game enabled");
+		Console::WriteLine(Globals::instance().controllerInputBlocked() ? "Controller input to game blocked" : "Controller input to game enabled");
 	}
 
 
@@ -452,7 +460,9 @@ namespace IGCS
 		Console::WriteLine("Numpad +/- or d-pad up/down           : Increase / decrease FoV (w/ freecam)");
 		Console::WriteLine("Numpad * or controller B-button       : Reset FoV (w/ freecam)");
 		Console::WriteLine("Numpad /                              : Toggle Y look direction");
-		Console::WriteLine("Numpad . or controller Right Bumper   : Toggle input to game");
+		Console::WriteLine("Numpad . or controller Right Bumper   : Toggle block of all input to game");
+		Console::WriteLine("ALT + Numpad .                        : Toggle block of KB/mouse input to game");
+		Console::WriteLine("Right-CTRL + Numpad .                 : Toggle block of controller input to game");
 		Console::WriteLine("Numpad 0                              : Toggle game pause");
 		Console::WriteLine("[                                     : Decrease game speed (during game pause)");
 		Console::WriteLine("]                                     : Increase game speed (during game pause)");

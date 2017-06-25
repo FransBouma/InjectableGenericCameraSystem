@@ -84,7 +84,7 @@ namespace IGCS::InputHooker
 		if (g_cameraEnabled && pState != Globals::instance().gamePad().getState())
 		{
 			// check if input is blocked. If so, zero the state, so the host will see no input data
-			if (Globals::instance().inputBlocked())
+			if (Globals::instance().controllerInputBlocked())
 			{
 				ZeroMemory(pState, sizeof(XINPUT_STATE));
 			}
@@ -149,7 +149,7 @@ namespace IGCS::InputHooker
 		if (lpMsg->hwnd != nullptr /* && removeIfRequired */ && Input::handleMessage(lpMsg))
 		{
 			// message was handled by our code. This means it's a message we want to block if input blocking is enabled. 
-			if (Globals::instance().inputBlocked())
+			if (Globals::instance().kbmInputBlocked())
 			{
 				lpMsg->message = WM_NULL;	// reset to WM_NULL so the host will receive a dummy message instead.
 			}

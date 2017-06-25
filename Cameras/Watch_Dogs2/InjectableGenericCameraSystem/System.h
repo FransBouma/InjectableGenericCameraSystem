@@ -31,6 +31,7 @@
 #include "Gamepad.h"
 #include <map>
 #include "AOBBlock.h"
+#include "Defaults.h"
 
 namespace IGCS
 {
@@ -52,7 +53,7 @@ namespace IGCS
 		void toggleGamespeedStopState();
 		void toggleYLookDirectionState();
 		void toggleCameraMovementLockState(bool newValue);
-		void toggleInputBlockState(bool newValue);
+		void toggleInputBlockState(InputBlockType blockType);
 		void handleKeyboardCameraMovement(float multiplier);
 		void handleMouseCameraMovement(float multiplier);
 		void handleGamePadMovement(float multiplierBase);

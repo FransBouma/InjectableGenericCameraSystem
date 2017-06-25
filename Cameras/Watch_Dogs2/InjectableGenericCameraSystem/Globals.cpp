@@ -27,6 +27,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "Globals.h"
+#include "Defaults.h"
 
 //--------------------------------------------------------------------------------------------------------------------------------
 // data shared with asm functions. This is allocated here, 'C' style and not in some datastructure as passing that to 
@@ -54,5 +55,25 @@ namespace IGCS
 	{
 		static Globals theInstance;
 		return theInstance;
+	}
+
+
+	void Globals::toggleInputBlocked(InputBlockType blockType)
+	{
+		switch (blockType)
+		{
+		case KeyboardMouse:
+			_kbmInputBlocked = !_kbmInputBlocked;
+			break;
+		case Controller:
+			_controllerInputBlocked = !_controllerInputBlocked;
+			break;
+		case All:
+			// to prevent toggling one of the flags ON when you press Numpad . , we'll use the OR-ed value and set both to that value. 
+			bool newValue = !(_kbmInputBlocked | _controllerInputBlocked);
+			_kbmInputBlocked = newValue;
+			_controllerInputBlocked = newValue;
+			break;
+		}
 	}
 }
