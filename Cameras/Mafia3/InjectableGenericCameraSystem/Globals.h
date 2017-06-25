@@ -29,6 +29,7 @@
 #include "stdafx.h"
 #include "Console.h"
 #include "Gamepad.h"
+#include "Defaults.h"
 
 extern "C" byte g_cameraEnabled;
 
@@ -42,14 +43,16 @@ namespace IGCS
 
 		static Globals& instance();
 
-		bool inputBlocked() const { return _inputBlocked; }
-		void inputBlocked(bool value) { _inputBlocked = value; }
+		bool kbmInputBlocked() const { return _kbmInputBlocked; }
+		bool controllerInputBlocked() const { return _controllerInputBlocked; }
+		void toggleInputBlocked(InputBlockType blockType);
 		bool systemActive() const { return _systemActive; }
 		void systemActive(bool value) { _systemActive = value; }
 		Gamepad& gamePad() { return _gamePad; }
 
 	private:
-		bool _inputBlocked = false;
+		bool _kbmInputBlocked = false;
+		bool _controllerInputBlocked = false;
 		volatile bool _systemActive = false;
 		Gamepad _gamePad;
 	};
