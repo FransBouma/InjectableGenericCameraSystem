@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Mafia III"
-	#define CAMERA_VERSION								"1.0.1"
+	#define CAMERA_VERSION								"1.0.2"
 	#define CAMERA_CREDITS								"Otis_Inf. HUD toggle by Hodgedogs"
 	#define GAME_WINDOW_TITLE							"Mafia III"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)

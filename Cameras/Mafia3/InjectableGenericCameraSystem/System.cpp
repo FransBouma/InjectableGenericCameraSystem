@@ -133,21 +133,22 @@ namespace IGCS
 				// it's going to be enabled, so cache the original values before we enable it so we can restore it afterwards
 				CameraManipulator::cacheOriginalCameraValues();
 				_camera.resetAngles();
+				displayControlDeviceName();
 				CameraManipulator::toggleHud((byte)0);		// hud should be OFF so pass 0
 			}
 			g_cameraEnabled = g_cameraEnabled == 0 ? (byte)1 : (byte)0;
 			displayCameraState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
-		if (Input::keyDown(IGCS_KEY_FOV_RESET))
+		if (Input::keyDown(IGCS_KEY_FOV_RESET) && Globals::instance().keyboardMouseControlCamera())
 		{
 			CameraManipulator::resetFoV();
 		}
-		if (Input::keyDown(IGCS_KEY_FOV_DECREASE))
+		if (Input::keyDown(IGCS_KEY_FOV_DECREASE) && Globals::instance().keyboardMouseControlCamera())
 		{
 			CameraManipulator::changeFoV(-DEFAULT_FOV_SPEED);
 		}
-		if (Input::keyDown(IGCS_KEY_FOV_INCREASE))
+		if (Input::keyDown(IGCS_KEY_FOV_INCREASE) && Globals::instance().keyboardMouseControlCamera())
 		{
 			CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
 		}
@@ -166,21 +167,10 @@ namespace IGCS
 			// camera is disabled. We simply disable all input to the camera movement, by returning now.
 			return;
 		}
-		if (Input::keyDown(IGCS_KEY_BLOCK_INPUT))
+		if (Input::keyDown(IGCS_KEY_CYCLE_DEVICE))
 		{
-			InputBlockType blockType = All;
-			if (altPressed)
-			{
-				blockType = KeyboardMouse;
-			}
-			else
-			{
-				if (controlPressed)
-				{
-					blockType = Controller;
-				}
-			}
-			toggleInputBlockState(blockType);
+			Globals::instance().cycleToNextControlDevice();
+			displayControlDeviceName();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
 
@@ -209,40 +199,43 @@ namespace IGCS
 
 		if (gamePad.isConnected())
 		{
-			float  multiplier = gamePad.isButtonPressed(IGCS_BUTTON_FASTER) ? FASTER_MULTIPLIER : gamePad.isButtonPressed(IGCS_BUTTON_SLOWER) ? SLOWER_MULTIPLIER : multiplierBase;
+			if (Globals::instance().controllerControlsCamera())
+			{
+				float  multiplier = gamePad.isButtonPressed(IGCS_BUTTON_FASTER) ? FASTER_MULTIPLIER : gamePad.isButtonPressed(IGCS_BUTTON_SLOWER) ? SLOWER_MULTIPLIER : multiplierBase;
 
-			vec2 rightStickPosition = gamePad.getRStickPosition();
-			_camera.pitch(rightStickPosition.y * multiplier);
-			_camera.yaw(rightStickPosition.x * multiplier);
+				vec2 rightStickPosition = gamePad.getRStickPosition();
+				_camera.pitch(rightStickPosition.y * multiplier);
+				_camera.yaw(rightStickPosition.x * multiplier);
 
-			vec2 leftStickPosition = gamePad.getLStickPosition();
-			_camera.moveUp((gamePad.getLTrigger() - gamePad.getRTrigger()) * multiplier);
-			_camera.moveForward(leftStickPosition.y * multiplier);
-			_camera.moveRight(leftStickPosition.x * multiplier);
+				vec2 leftStickPosition = gamePad.getLStickPosition();
+				_camera.moveUp((gamePad.getLTrigger() - gamePad.getRTrigger()) * multiplier);
+				_camera.moveForward(leftStickPosition.y * multiplier);
+				_camera.moveRight(leftStickPosition.x * multiplier);
 
-			if (gamePad.isButtonPressed(IGCS_BUTTON_TILT_LEFT))
-			{
-				_camera.roll(multiplier);
+				if (gamePad.isButtonPressed(IGCS_BUTTON_TILT_LEFT))
+				{
+					_camera.roll(multiplier);
+				}
+				if (gamePad.isButtonPressed(IGCS_BUTTON_TILT_RIGHT))
+				{
+					_camera.roll(-multiplier);
+				}
+				if (gamePad.isButtonPressed(IGCS_BUTTON_RESET_FOV))
+				{
+					CameraManipulator::resetFoV();
+				}
+				if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_DECREASE))
+				{
+					CameraManipulator::changeFoV(-DEFAULT_FOV_SPEED);
+				}
+				if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_INCREASE))
+				{
+					CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
+				}
 			}
-			if (gamePad.isButtonPressed(IGCS_BUTTON_TILT_RIGHT))
+			if (gamePad.isButtonPressed(IGCS_BUTTON_CYCLE_DEVICE))
 			{
-				_camera.roll(-multiplier);
-			}
-			if (gamePad.isButtonPressed(IGCS_BUTTON_RESET_FOV))
-			{
-				CameraManipulator::resetFoV();
-			}
-			if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_DECREASE))
-			{
-				CameraManipulator::changeFoV(-DEFAULT_FOV_SPEED);
-			}
-			if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_INCREASE))
-			{
-				CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
-			}
-			if (gamePad.isButtonPressed(IGCS_BUTTON_BLOCK_INPUT))
-			{
-				toggleInputBlockState(All);
+				Globals::instance().cycleToNextControlDevice();
 				Sleep(350);				// wait for 350ms to avoid fast hammering
 			}
 		}
@@ -251,6 +244,10 @@ namespace IGCS
 
 	void System::handleMouseCameraMovement(float multiplier)
 	{
+		if (!Globals::instance().keyboardMouseControlCamera())
+		{
+			return;
+		}
 		long mouseDeltaX = Input::getMouseDeltaX();
 		long mouseDeltaY = Input::getMouseDeltaY();
 		if (abs(mouseDeltaY) > 1)
@@ -266,6 +263,10 @@ namespace IGCS
 
 	void System::handleKeyboardCameraMovement(float multiplier)
 	{
+		if (!Globals::instance().keyboardMouseControlCamera())
+		{
+			return;
+		}
 		if (Input::keyDown(IGCS_KEY_MOVE_FORWARD))
 		{
 			_camera.moveForward(multiplier);
@@ -334,14 +335,6 @@ namespace IGCS
 		_camera.setRoll(INITIAL_ROLL_RADIANS);
 		_camera.setYaw(INITIAL_YAW_RADIANS);
 	}
-	
-
-	void System::toggleInputBlockState(InputBlockType blockType)
-	{
-		Globals::instance().toggleInputBlocked(blockType);
-		Console::WriteLine(Globals::instance().kbmInputBlocked() ? "Keyboard / mouse input to game blocked" : "Keyboard / mouse input to game enabled");
-		Console::WriteLine(Globals::instance().controllerInputBlocked() ? "Controller input to game blocked" : "Controller input to game enabled");
-	}
 
 
 	void System::toggleCameraMovementLockState(bool newValue)
@@ -375,7 +368,27 @@ namespace IGCS
 		Console::WriteLine(_timeStopped ? "Game paused" : "Game unpaused");
 		CameraManipulator::setTimeStopValue(_timeStopped);
 	}
-	
+
+
+	void System::displayControlDeviceName()
+	{
+		string deviceName = "Unknown";
+		switch (Globals::instance().controlDevice())
+		{
+		case All:
+			deviceName = "Keyboard / Mouse or Controller";
+			break;
+		case KeyboardMouse:
+			deviceName = "Keyboard / Mouse";
+			break;
+		case Controller:
+			deviceName = "Controller";
+			break;
+		}
+		Console::WriteLine("Active camera controlling device: " + deviceName);
+	}
+
+
 	void System::displayHelp()
 	{
 						  //0         1         2         3         4         5         6         7
@@ -396,9 +409,7 @@ namespace IGCS
 		Console::WriteLine("Numpad +/- or d-pad up/down           : Increase / decrease FoV (with freecam)");
 		Console::WriteLine("Numpad * or controller B-button       : Reset FoV (with freecam)");
 		Console::WriteLine("Numpad /                              : Toggle Y look direction");
-		Console::WriteLine("Numpad . or controller Right Bumper   : Toggle block of all input to game");
-		Console::WriteLine("ALT + Numpad .                        : Toggle block of KB/mouse input to game");
-		Console::WriteLine("Right-CTRL + Numpad .                 : Toggle block of controller input to game");
+		Console::WriteLine("Numpad . or controller Right Bumper   : Cycle through camera control devices");
 		Console::WriteLine("Numpad 0                              : Toggle game pause");
 		Console::WriteLine("END                                   : Toggle HUD");
 		Console::WriteLine("ALT+H                                 : This help");
