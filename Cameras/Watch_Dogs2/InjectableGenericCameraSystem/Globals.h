@@ -45,16 +45,16 @@ namespace IGCS
 
 		static Globals& instance();
 
-		bool kbmInputBlocked() const { return _kbmInputBlocked; }
-		bool controllerInputBlocked() const { return _controllerInputBlocked; }
-		void toggleInputBlocked(InputBlockType blockType);
+		CameraControlDevice controlDevice() const { return _controlDevice; }
 		bool systemActive() const { return _systemActive; }
 		void systemActive(bool value) { _systemActive = value; }
 		Gamepad& gamePad() { return _gamePad; }
+		bool keyboardMouseControlCamera() const { return _controlDevice == All || _controlDevice == KeyboardMouse; }
+		bool controllerControlsCamera() const { return _controlDevice == All || _controlDevice == Controller; }
+		void cycleToNextControlDevice();
 
 	private:
-		bool _kbmInputBlocked = false;
-		bool _controllerInputBlocked = false;
+		CameraControlDevice _controlDevice = All;
 		volatile bool _systemActive = false;
 		Gamepad _gamePad;
 	};

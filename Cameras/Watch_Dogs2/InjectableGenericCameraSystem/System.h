@@ -53,13 +53,13 @@ namespace IGCS
 		void toggleGamespeedStopState();
 		void toggleYLookDirectionState();
 		void toggleCameraMovementLockState(bool newValue);
-		void toggleInputBlockState(InputBlockType blockType);
 		void handleKeyboardCameraMovement(float multiplier);
 		void handleMouseCameraMovement(float multiplier);
 		void handleGamePadMovement(float multiplierBase);
 		void modifyGameSpeed(bool decrease);
 		void modifyHotsampleFactor(bool decrease);
 		void toggleHotsampling();
+		void displayControlDeviceName();
 
 		Camera _camera;
 		LPBYTE _hostImageAddress;

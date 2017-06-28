@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Watch_Dogs 2 (v1.013+)"
-	#define CAMERA_VERSION								"1.0.3"
+	#define CAMERA_VERSION								"1.0.4"
 	#define CAMERA_CREDITS								"Otis_Inf. Hotsample code by DeadEndThrills"
 	#define GAME_WINDOW_TITLE							"Watch_Dogs 2"
 	#define INITIAL_PITCH_RADIANS						0.0f	// World has X right, Z up, Y into the screen.

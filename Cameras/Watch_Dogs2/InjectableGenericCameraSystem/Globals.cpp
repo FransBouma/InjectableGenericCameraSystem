@@ -58,22 +58,22 @@ namespace IGCS
 	}
 
 
-	void Globals::toggleInputBlocked(InputBlockType blockType)
+	void Globals::cycleToNextControlDevice()
 	{
-		switch (blockType)
+		CameraControlDevice nextDevice = All;
+		// All -> KeyboardMouse -> Controller -> All
+		switch (_controlDevice)
 		{
+		case All:
+			nextDevice = KeyboardMouse;
+			break;
 		case KeyboardMouse:
-			_kbmInputBlocked = !_kbmInputBlocked;
+			nextDevice = Controller;
 			break;
 		case Controller:
-			_controllerInputBlocked = !_controllerInputBlocked;
-			break;
-		case All:
-			// to prevent toggling one of the flags ON when you press Numpad . , we'll use the OR-ed value and set both to that value. 
-			bool newValue = !(_kbmInputBlocked | _controllerInputBlocked);
-			_kbmInputBlocked = newValue;
-			_controllerInputBlocked = newValue;
+			nextDevice = All;
 			break;
 		}
+		_controlDevice = nextDevice;
 	}
 }
