@@ -135,6 +135,12 @@ originalCode:
 gameSpeedInterceptor ENDP
 
 hudToggleInterceptor PROC
+;0000000144309CF0 | 80 79 20 00              | cmp byte ptr ds:[rcx+20],0			<< INTERCEPT HERE
+;0000000144309CF4 | 74 06                    | je dxmd_dump.144309CFC           
+;0000000144309CF6 | F3 0F 10 41 24           | movss xmm0,dword ptr ds:[rcx+24] 
+;0000000144309CFB | C3                       | ret                              
+;0000000144309CFC | F3 0F 10 41 28           | movss xmm0,dword ptr ds:[rcx+28] 
+;0000000144309D01 | C3                       | ret									<< CONTINUE HERE
 ; v1.17 introduced 4 alignment bytes between the two statements. 
 ;DXMD.exe+4312BC0 - 80 79 20 00           - cmp byte ptr [rcx+20],00 { 0 }		<< INTERCEPT HERE
 ;DXMD.exe+4312BC4 - 74 0A                 - je DXMD.exe+4312BD0					(second return)

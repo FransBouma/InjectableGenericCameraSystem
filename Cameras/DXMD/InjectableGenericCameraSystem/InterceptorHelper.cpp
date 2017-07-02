@@ -99,7 +99,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 
 	void setHudToggleInterceptorHook(map<string, AOBBlock*> &aobBlocks)
 	{
-		GameImageHooker::setHook(aobBlocks[HUD_TOGGLE_ADDRESS_INTERCEPT_KEY], 0x15, &_hudToggleInterceptorContinue, &hudToggleInterceptor);
+		GameImageHooker::setHook(aobBlocks[HUD_TOGGLE_ADDRESS_INTERCEPT_KEY], 0x11, &_hudToggleInterceptorContinue, &hudToggleInterceptor);
 	}
 
 	void toggleFoVWriteState(map<string, AOBBlock*> &aobBlocks, bool enabled)
