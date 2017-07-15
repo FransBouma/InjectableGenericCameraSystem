@@ -85,7 +85,7 @@ namespace IGCS::Input
 		rid[0].usUsagePage = 0x01;
 		rid[0].usUsage = 0x02;
 		rid[0].dwFlags = 0;
-		rid[0].hwndTarget = Utils::findMainWindow(GetCurrentProcessId());
+		rid[0].hwndTarget = Globals::instance().mainWindowHandle();
 
 		if (RegisterRawInputDevices(rid, 1, sizeof(rid[0])) == FALSE)
 		{

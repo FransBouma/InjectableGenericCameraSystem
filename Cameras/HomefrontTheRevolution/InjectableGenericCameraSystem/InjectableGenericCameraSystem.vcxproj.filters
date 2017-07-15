@@ -17,6 +17,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="Overlay">
+      <UniqueIdentifier>{33b050ad-7f49-4380-a143-158cd71fb461}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -67,6 +70,30 @@
     <ClInclude Include="AOBBlock.h">
       <Filter>Hooking</Filter>
     </ClInclude>
+    <ClInclude Include="UniversalD3D11Hook.h">
+      <Filter>Hooking</Filter>
+    </ClInclude>
+    <ClInclude Include="Overlay\imconfig.h">
+      <Filter>Overlay</Filter>
+    </ClInclude>
+    <ClInclude Include="Overlay\imgui.h">
+      <Filter>Overlay</Filter>
+    </ClInclude>
+    <ClInclude Include="Overlay\imgui_internal.h">
+      <Filter>Overlay</Filter>
+    </ClInclude>
+    <ClInclude Include="Overlay\stb_textedit.h">
+      <Filter>Overlay</Filter>
+    </ClInclude>
+    <ClInclude Include="Overlay\stb_truetype.h">
+      <Filter>Overlay</Filter>
+    </ClInclude>
+    <ClInclude Include="Overlay\imgui_impl_dx11.h">
+      <Filter>Overlay</Filter>
+    </ClInclude>
+    <ClInclude Include="Overlay\stb_rect_pack.h">
+      <Filter>Overlay</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InterceptorHelper.cpp">
@@ -110,6 +137,21 @@
     </ClCompile>
     <ClCompile Include="AOBBlock.cpp">
       <Filter>Hooking</Filter>
+    </ClCompile>
+    <ClCompile Include="UniversalD3D11Hook.cpp">
+      <Filter>Hooking</Filter>
+    </ClCompile>
+    <ClCompile Include="Overlay\imgui.cpp">
+      <Filter>Overlay</Filter>
+    </ClCompile>
+    <ClCompile Include="Overlay\imgui_demo.cpp">
+      <Filter>Overlay</Filter>
+    </ClCompile>
+    <ClCompile Include="Overlay\imgui_draw.cpp">
+      <Filter>Overlay</Filter>
+    </ClCompile>
+    <ClCompile Include="Overlay\imgui_impl_dx11.cpp">
+      <Filter>Overlay</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

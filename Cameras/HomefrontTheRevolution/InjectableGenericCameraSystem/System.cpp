@@ -37,6 +37,7 @@
 #include "input.h"
 #include "CameraManipulator.h"
 #include "GameImageHooker.h"
+#include "UniversalD3D11Hook.h"
 
 namespace IGCS
 {
@@ -317,8 +318,12 @@ namespace IGCS
 	// Initializes system. Will block till camera struct is found.
 	void System::initialize()
 	{
+		Globals::instance().mainWindowHandle(Utils::findMainWindow(GetCurrentProcessId()));
 		InputHooker::setInputHooks();
 		Input::registerRawInput();
+
+		InitializeHook();
+
 		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
 		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);
 		GameSpecific::CameraManipulator::waitForCameraStructAddresses(_hostImageAddress);		// blocks till camera is found.
@@ -326,6 +331,7 @@ namespace IGCS
 		//GameSpecific::CameraManipulator::setSupersamplingVarAddress(Utils::calculateAbsoluteAddress(_aobBlocks[SUPERSAMPLING_KEY], 4));
 		// we have to pass 4+1 as the offset to the next instruction here, as the rip relative value is followed by a 0 byte before the next op code starts
 		//GameSpecific::CameraManipulator::setHudToggleVarAddress(Utils::calculateAbsoluteAddress(_aobBlocks[HUD_TOGGLE_KEY], 4+1));
+
 
 		// camera struct found, init our own camera object now and hook into game code which uses camera.
 		_cameraStructFound = true;

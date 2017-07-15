@@ -46,11 +46,14 @@ namespace IGCS
 		void inputBlocked(bool value) { _inputBlocked = value; }
 		bool systemActive() const { return _systemActive; }
 		void systemActive(bool value) { _systemActive = value; }
+		HWND mainWindowHandle() const { return _mainWindowHandle; }
+		void mainWindowHandle(HWND handle) { _mainWindowHandle = handle; }
 		Gamepad& gamePad() { return _gamePad; }
 
 	private:
 		bool _inputBlocked = false;
 		volatile bool _systemActive = false;
 		Gamepad _gamePad;
+		HWND _mainWindowHandle;
 	};
 }
