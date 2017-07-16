@@ -52,25 +52,24 @@ HRESULT __stdcall hookD3D11Present(IDXGISwapChain* pSwapChain, UINT SyncInterval
 				{
 					cout << "pContext: " << (hex) << (void*)pContext << endl;
 				}
+				DXGI_SWAP_CHAIN_DESC sd;
+				pSwapChain->GetDesc(&sd);
 
+				//////// RE-CREATE RENDERTARGET WHEN RESIZE / REINIT HAPPENS. NOT NEEDED EVERY FRAME.
+				// Create the render target
+				ID3D11Texture2D* pBackBuffer;
+				D3D11_RENDER_TARGET_VIEW_DESC render_target_view_desc;
+				ZeroMemory(&render_target_view_desc, sizeof(render_target_view_desc));
+				render_target_view_desc.Format = sd.BufferDesc.Format;
+				render_target_view_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+				pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+				pDevice->CreateRenderTargetView(pBackBuffer, &render_target_view_desc, &g_mainRenderTargetView);
 				firstTime = false;
 				IGCS::Console::WriteLine("Hello from hookD3DPresent");
 				ImGui_ImplDX11_Init(IGCS::Globals::instance().mainWindowHandle(), pDevice, pContext);
+				pBackBuffer->Release();
 			}
-			DXGI_SWAP_CHAIN_DESC sd;
-			pSwapChain->GetDesc(&sd);
-
-//////// RE-CREATE RENDERTARGET WHEN RESIZE / REINIT HAPPENS. NOT NEEDED EVERY FRAME.
-			// Create the render target
-			ID3D11Texture2D* pBackBuffer;
-			D3D11_RENDER_TARGET_VIEW_DESC render_target_view_desc;
-			ZeroMemory(&render_target_view_desc, sizeof(render_target_view_desc));
-			render_target_view_desc.Format = sd.BufferDesc.Format;
-			render_target_view_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-			pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-			pDevice->CreateRenderTargetView(pBackBuffer, &render_target_view_desc, &g_mainRenderTargetView);
 			pContext->OMSetRenderTargets(1, &g_mainRenderTargetView, NULL);
-			pBackBuffer->Release();
 
 			ImGui_ImplDX11_NewFrame();
 			ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiSetCond_FirstUseEver);     // Normally user code doesn't need/want to call it because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
