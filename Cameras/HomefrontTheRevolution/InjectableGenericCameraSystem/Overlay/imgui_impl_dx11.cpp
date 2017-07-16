@@ -590,6 +590,12 @@ void ImGui_ImplDX11_NewFrame()
     io.KeyShift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
     io.KeyAlt = (GetKeyState(VK_MENU) & 0x8000) != 0;
     io.KeySuper = false;
+	io.MouseDrawCursor = true;
+	POINT mouseLocation;
+	GetCursorPos(&mouseLocation);
+	ScreenToClient(g_hWnd, &mouseLocation);
+	io.MousePos = ImVec2(static_cast<float>(mouseLocation.x), static_cast<float>(mouseLocation.y));
+	io.MouseDown[0] = (GetKeyState(VK_LBUTTON) & 0x100) != 0;
     // io.KeysDown : filled by WM_KEYDOWN/WM_KEYUP events
     // io.MousePos : filled by WM_MOUSEMOVE events
     // io.MouseDown : filled by WM_*BUTTON* events

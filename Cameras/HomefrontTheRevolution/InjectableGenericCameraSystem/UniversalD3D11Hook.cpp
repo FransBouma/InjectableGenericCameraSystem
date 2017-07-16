@@ -60,6 +60,7 @@ HRESULT __stdcall hookD3D11Present(IDXGISwapChain* pSwapChain, UINT SyncInterval
 			DXGI_SWAP_CHAIN_DESC sd;
 			pSwapChain->GetDesc(&sd);
 
+//////// RE-CREATE RENDERTARGET WHEN RESIZE / REINIT HAPPENS. NOT NEEDED EVERY FRAME.
 			// Create the render target
 			ID3D11Texture2D* pBackBuffer;
 			D3D11_RENDER_TARGET_VIEW_DESC render_target_view_desc;
@@ -70,6 +71,7 @@ HRESULT __stdcall hookD3D11Present(IDXGISwapChain* pSwapChain, UINT SyncInterval
 			pDevice->CreateRenderTargetView(pBackBuffer, &render_target_view_desc, &g_mainRenderTargetView);
 			pContext->OMSetRenderTargets(1, &g_mainRenderTargetView, NULL);
 			pBackBuffer->Release();
+
 			ImGui_ImplDX11_NewFrame();
 			ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiSetCond_FirstUseEver);     // Normally user code doesn't need/want to call it because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
 			ImGui::ShowTestWindow(&showTestWindow);
