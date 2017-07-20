@@ -28,9 +28,9 @@
 #include "stdafx.h"
 #include "CameraManipulator.h"
 #include "GameConstants.h"
-#include "Console.h"
 #include "InterceptorHelper.h"
 #include "Globals.h"
+#include "OverlayConsole.h"
 
 using namespace DirectX;
 using namespace std;
@@ -127,21 +127,17 @@ namespace IGCS::GameSpecific::CameraManipulator
 	}
 
 
-	// Waits for the interceptor to pick up the camera struct address. Should only return if address is found 
-	void waitForCameraStructAddresses(LPBYTE hostImageAddress)
+	bool isCameraFound()
 	{
-		Console::WriteLine("Waiting for camera struct interception...");
-		while (nullptr == g_cameraStructAddress)
-		{
-			Sleep(100);
-		}
-		Console::WriteLine("Camera found.");
-
-#ifdef _DEBUG
-		cout << "Camera struct address: " << hex << (void*)g_cameraStructAddress << endl;
-#endif
+		return nullptr != g_cameraStructAddress;
 	}
 
+
+	void displayCameraStructAddress()
+	{
+		OverlayConsole::instance().logDebug("Camera struct address: %p", (void*)g_cameraStructAddress);
+	}
+	
 
 	// should restore the camera values in the camera structures to the cached values. This assures the free camera is always enabled at the original camera location.
 	void restoreOriginalCameraValues()

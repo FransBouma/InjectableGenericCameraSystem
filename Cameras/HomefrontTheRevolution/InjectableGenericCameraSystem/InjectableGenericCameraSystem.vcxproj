@@ -172,6 +172,8 @@
     <ClInclude Include="InputHooker.h" />
     <ClInclude Include="InterceptorHelper.h" />
     <ClInclude Include="GameConstants.h" />
+    <ClInclude Include="OverlayConsole.h" />
+    <ClInclude Include="OverlayControl.h" />
     <ClInclude Include="Overlay\imconfig.h" />
     <ClInclude Include="Overlay\imgui.h" />
     <ClInclude Include="Overlay\imgui_impl_dx11.h" />
@@ -210,6 +212,8 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="InputHooker.cpp" />
     <ClCompile Include="InterceptorHelper.cpp" />
+    <ClCompile Include="OverlayConsole.cpp" />
+    <ClCompile Include="OverlayControl.cpp" />
     <ClCompile Include="Overlay\imgui.cpp" />
     <ClCompile Include="Overlay\imgui_demo.cpp" />
     <ClCompile Include="Overlay\imgui_draw.cpp" />

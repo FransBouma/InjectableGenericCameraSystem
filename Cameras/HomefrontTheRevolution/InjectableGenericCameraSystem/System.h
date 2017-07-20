@@ -58,6 +58,7 @@ namespace IGCS
 		void toggleTimestopState();
 		void modifySuperSamplingFactor(bool decrease);
 		void toggleSuperSampling();
+		void waitForCameraStructAddresses();
 
 		Camera _camera;
 		LPBYTE _hostImageAddress;

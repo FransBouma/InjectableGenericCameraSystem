@@ -29,6 +29,7 @@
 #include "GameImageHooker.h"
 #include "Defaults.h"
 #include "Console.h"
+#include "OverlayConsole.h"
 
 namespace IGCS::GameImageHooker
 {
@@ -59,14 +60,11 @@ namespace IGCS::GameImageHooker
 		BOOL result = WriteProcessMemory(OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_WRITE, FALSE, GetCurrentProcessId()), startOfHookAddress, instruction, sizeof(instruction), &noBytesWritten);
 		if (result)
 		{
-#ifdef _DEBUG
-			cout << "Hook set to address: " << hex << (void*)startOfHookAddress << endl;
-#endif
+			OverlayConsole::instance().logDebug("Hook set to address: %p", (void*)startOfHookAddress);
 		}
 		else
 		{
-			Console::WriteError("Couldn't write to process memory, so couldn't set hook.");
-			cout << "Error code: " << hex << GetLastError() << endl;
+			OverlayConsole::instance().logError("Couldn't write to process memory, so couldn't set hook. Error code: %010x", GetLastError());
 		}
 	}
 	

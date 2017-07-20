@@ -1,3 +1,4 @@
+#pragma once
 // ImGui Win32 + DirectX11 binding
 // In this binding, ImTextureID is used to store a 'ID3D11ShaderResourceView*' texture identifier. Read the FAQ about ImTextureID in imgui.cpp.
 
@@ -591,19 +592,8 @@ void ImGui_ImplDX11_NewFrame()
     io.KeyAlt = (GetKeyState(VK_MENU) & 0x8000) != 0;
     io.KeySuper = false;
 	io.MouseDrawCursor = true;
-	POINT mouseLocation;
-	GetCursorPos(&mouseLocation);
-	ScreenToClient(g_hWnd, &mouseLocation);
-	io.MousePos = ImVec2(static_cast<float>(mouseLocation.x), static_cast<float>(mouseLocation.y));
-	io.MouseDown[0] = (GetKeyState(VK_LBUTTON) & 0x100) != 0;
-    // io.KeysDown : filled by WM_KEYDOWN/WM_KEYUP events
-    // io.MousePos : filled by WM_MOUSEMOVE events
-    // io.MouseDown : filled by WM_*BUTTON* events
-    // io.MouseWheel : filled by WM_MOUSEWHEEL events
-
     // Hide OS mouse cursor if ImGui is drawing it
-    if (io.MouseDrawCursor)
-        SetCursor(NULL);
+    SetCursor(NULL);
 
     // Start the frame
     ImGui::NewFrame();

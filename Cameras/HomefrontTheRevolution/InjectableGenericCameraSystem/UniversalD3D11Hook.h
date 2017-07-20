@@ -1,5 +1,9 @@
 #pragma once
 
 #include "stdafx.h"
+#include <d3d11.h> 
 
-void InitializeHook();
+namespace IGCS::DX11Hooker
+{
+	void initializeHook();
+}

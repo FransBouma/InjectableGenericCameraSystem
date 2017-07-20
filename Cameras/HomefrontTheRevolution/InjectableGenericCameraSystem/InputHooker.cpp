@@ -31,6 +31,7 @@
 #include "Gamepad.h"
 #include "Globals.h"
 #include "input.h"
+#include "OverlayConsole.h"
 
 using namespace std;
 
@@ -164,49 +165,42 @@ namespace IGCS::InputHooker
 		MH_Initialize();
 		if (MH_CreateHookApiEx(L"xinput9_1_0", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
 		{
-			Console::WriteError("Hooking XInput9_1_0 failed!");
+			OverlayConsole::instance().logError("Hooking XInput9_1_0 failed!");
 		}
-#ifdef _DEBUG
-		Console::WriteLine("Hook set to XInputSetState");
-#endif
+		OverlayConsole::instance().logDebug("Hook set to XInputSetState");
 
 		if (MH_CreateHookApiEx(L"user32", "GetMessageA", &detourGetMessageA, &hookedGetMessageA) != MH_OK)
 		{
-			Console::WriteError("Hooking GetMessageA failed!");
+			OverlayConsole::instance().logError("Hooking GetMessageA failed!");
 		}
-#ifdef _DEBUG
-		Console::WriteLine("Hook set to GetMessageA");
-#endif
+		OverlayConsole::instance().logDebug("Hook set to GetMessageA");
+
 		if (MH_CreateHookApiEx(L"user32", "GetMessageW", &detourGetMessageW, &hookedGetMessageW) != MH_OK)
 		{
-			Console::WriteError("Hooking GetMessageW failed!");
+			OverlayConsole::instance().logError("Hooking GetMessageW failed!");
 		}
-#ifdef _DEBUG
-		Console::WriteLine("Hook set to GetMessageW");
-#endif
+		OverlayConsole::instance().logDebug("Hook set to GetMessageW");
+
 		if (MH_CreateHookApiEx(L"user32", "PeekMessageA", &detourPeekMessageA, &hookedPeekMessageA) != MH_OK)
 		{
-			Console::WriteError("Hooking PeekMessageA failed!");
+			OverlayConsole::instance().logError("Hooking PeekMessageA failed!");
 		}
-#ifdef _DEBUG
-		Console::WriteLine("Hook set to PeekMessageA");
-#endif
+		OverlayConsole::instance().logDebug("Hook set to PeekMessageA");
+
 		if (MH_CreateHookApiEx(L"user32", "PeekMessageW", &detourPeekMessageW, &hookedPeekMessageW) != MH_OK)
 		{
-			Console::WriteError("Hooking PeekMessageW failed!");
+			OverlayConsole::instance().logError("Hooking PeekMessageW failed!");
 		}
-#ifdef _DEBUG
-		Console::WriteLine("Hook set to PeekMessageW");
-#endif
+		OverlayConsole::instance().logDebug("Hook set to PeekMessageW");
 
 		// Enable all hooks
 		if (MH_EnableHook(MH_ALL_HOOKS) == MH_OK)
 		{
-			Console::WriteLine("All hooks enabled.");
+			OverlayConsole::instance().logLine("All hooks enabled.");
 		}
 		else
 		{
-			Console::WriteError("Enabling hooks failed.");
+			OverlayConsole::instance().logError("Enabling hooks failed.");
 		}
 	}
 }
