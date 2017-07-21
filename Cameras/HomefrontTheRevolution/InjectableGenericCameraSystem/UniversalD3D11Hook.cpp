@@ -20,12 +20,13 @@ namespace IGCS::DX11Hooker
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Forward declarations
 	void createRenderTarget(IDXGISwapChain* pSwapChain);
+	void cleanupRenderTarget();
 	void initImGui();
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Typedefs of functions to hook
 	typedef HRESULT(__stdcall *D3D11PresentHook) (IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
-	typedef HRESULT(__stdcall *D3D11ResizeBuffersHook) (IDXGISwapChain* pSwapChain, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags);
+	typedef HRESULT(__stdcall *D3D11ResizeBuffersHook) (IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags);
 
 	static ID3D11Device* _device = nullptr;
 	static ID3D11DeviceContext* _context = nullptr;
@@ -38,21 +39,28 @@ namespace IGCS::DX11Hooker
 
 	static bool _tmpSwapChainInitialized = false;
 	static bool _showWindow = true;
-	static bool _initializeDeviceAndContext = true;
+	static bool _imGuiInitializing = false;
 
-	HRESULT __stdcall detourD3D11ResizeBuffers(IDXGISwapChain* pSwapChain, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags)
+	HRESULT __stdcall detourD3D11ResizeBuffers(IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags)
 	{
-		_initializeDeviceAndContext = true;
-		return hookedD3D11ResizeBuffers(pSwapChain, width, height, newFormat, swapChainFlags);
+		_imGuiInitializing = true;
+		ImGui_ImplDX11_InvalidateDeviceObjects();
+		cleanupRenderTarget();
+		HRESULT toReturn = hookedD3D11ResizeBuffers(pSwapChain, bufferCount, width, height, newFormat, swapChainFlags);
+		createRenderTarget(pSwapChain);
+		ImGui_ImplDX11_CreateDeviceObjects();
+		_imGuiInitializing = false;
+		return toReturn;
 	}
 
 
 	HRESULT __stdcall detourD3D11Present(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 	{
-		
+		static bool _initializeDeviceAndContext = true;
+
 		if (_tmpSwapChainInitialized)
 		{
-			if (!(Flags & DXGI_PRESENT_TEST))
+			if (!(Flags & DXGI_PRESENT_TEST) && !_imGuiInitializing)
 			{
 				if (_initializeDeviceAndContext)
 				{
@@ -133,14 +141,14 @@ namespace IGCS::DX11Hooker
 
 		OverlayConsole::instance().logDebug("ResizeBuffers Address: %p", (__int64*)pSwapChainVtable[DXGI_RESIZEBUFFERS_INDEX]);
 
-		//if (MH_CreateHook((LPBYTE)pSwapChainVtable[DXGI_RESIZEBUFFERS_INDEX], &detourD3D11ResizeBuffers, reinterpret_cast<LPVOID*>(&hookedD3D11ResizeBuffers)) != MH_OK)
-		//{
-		//	IGCS::Console::WriteError("Hooking ResizeBuffers failed!");
-		//}
-		//if (MH_EnableHook((LPBYTE)pSwapChainVtable[DXGI_RESIZEBUFFERS_INDEX]) != MH_OK)
-		//{
-		//	IGCS::Console::WriteError("Enabling of ResizeBuffers hook failed!");
-		//}
+		if (MH_CreateHook((LPBYTE)pSwapChainVtable[DXGI_RESIZEBUFFERS_INDEX], &detourD3D11ResizeBuffers, reinterpret_cast<LPVOID*>(&hookedD3D11ResizeBuffers)) != MH_OK)
+		{
+			IGCS::Console::WriteError("Hooking ResizeBuffers failed!");
+		}
+		if (MH_EnableHook((LPBYTE)pSwapChainVtable[DXGI_RESIZEBUFFERS_INDEX]) != MH_OK)
+		{
+			IGCS::Console::WriteError("Enabling of ResizeBuffers hook failed!");
+		}
 
 		pTmpDevice->Release();
 		pTmpContext->Release();
@@ -163,6 +171,16 @@ namespace IGCS::DX11Hooker
 		pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
 		_device->CreateRenderTargetView(pBackBuffer, &render_target_view_desc, &_mainRenderTargetView);
 		pBackBuffer->Release();
+	}
+
+
+	void cleanupRenderTarget()
+	{
+		if (nullptr != _mainRenderTargetView)
+		{
+			_mainRenderTargetView->Release();
+			_mainRenderTargetView = nullptr;
+		}
 	}
 
 

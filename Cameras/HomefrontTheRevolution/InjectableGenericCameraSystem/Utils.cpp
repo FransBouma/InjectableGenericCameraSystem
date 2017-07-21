@@ -30,6 +30,7 @@
 #include "GameConstants.h"
 #include "AOBBlock.h"
 #include "OverlayConsole.h"
+#include <comdef.h>
 
 using namespace std;
 
@@ -45,7 +46,10 @@ namespace IGCS::Utils
 			LPWSTR title = new WCHAR[bufsize];
 			GetWindowText(handle, title, bufsize);
 			toReturn &= (_wcsicmp(title, TEXT(GAME_WINDOW_TITLE)) == 0);
-			OverlayConsole::instance().logDebug("Window found with title: '%s'", title);
+			// convert title to char* so we can display it
+			_bstr_t titleAsBstr(title);
+			const char* titleAsChar = titleAsBstr;		// char conversion copy
+			OverlayConsole::instance().logDebug("Window found with title: '%s'", titleAsChar);
 		}
 		return toReturn;
 	}
