@@ -49,9 +49,6 @@
     <ClInclude Include="Camera.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="Console.h">
-      <Filter>Main</Filter>
-    </ClInclude>
     <ClInclude Include="Defaults.h">
       <Filter>Main</Filter>
     </ClInclude>
@@ -103,6 +100,9 @@
     <ClInclude Include="OverlayControl.h">
       <Filter>Overlay</Filter>
     </ClInclude>
+    <ClInclude Include="Console.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InterceptorHelper.cpp">
@@ -116,9 +116,6 @@
     </ClCompile>
     <ClCompile Include="Gamepad.cpp">
       <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Console.cpp">
-      <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Main</Filter>
@@ -167,6 +164,9 @@
     </ClCompile>
     <ClCompile Include="OverlayControl.cpp">
       <Filter>Overlay</Filter>
+    </ClCompile>
+    <ClCompile Include="Console.cpp">
+      <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

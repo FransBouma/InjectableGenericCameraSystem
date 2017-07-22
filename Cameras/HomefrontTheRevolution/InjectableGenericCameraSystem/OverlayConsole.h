@@ -16,11 +16,11 @@ namespace IGCS
 			return instance;
 		}
 
-		void    clear() { _buf.clear(); _lineOffsets.clear(); }
-		void	logDebug(const char* fmt, ...) IM_PRINTFARGS(2);
-		void	logError(const char* fmt, ...) IM_PRINTFARGS(2);
-		void    logLine(const char* fmt, ...)  IM_PRINTFARGS(2);
-		void    draw(const char* title, bool* p_open = NULL);
+		void clear() { _buf.clear(); _lineOffsets.clear(); }
+		void logDebug(const char* fmt, ...) IM_PRINTFARGS(2);
+		void logError(const char* fmt, ...) IM_PRINTFARGS(2);
+		void logLine(const char* fmt, ...)  IM_PRINTFARGS(2);
+		void draw();
 
 		OverlayConsole(OverlayConsole const&) = delete;			// see: https://stackoverflow.com/a/1008289/44991
 		void operator=(OverlayConsole const&) = delete;

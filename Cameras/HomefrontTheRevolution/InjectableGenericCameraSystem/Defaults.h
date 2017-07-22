@@ -35,6 +35,7 @@ namespace IGCS
 	// System defaults
 	#define FRAME_SLEEP								8		// in milliseconds
 	#define IGCS_OVERLAY_INI_FILENAME				"IGCS_overlay.ini"
+	#define IGCS_SPLASH_DURATION					4.0f	// in seconds
 
 	// Keyboard system control
 	#define IGCS_KEY_TOGGLE_OVERLAY					VK_INSERT		// With control
@@ -55,7 +56,6 @@ namespace IGCS
 	#define IGCS_KEY_FOV_RESET						VK_MULTIPLY
 	#define IGCS_KEY_FOV_INCREASE					VK_ADD
 	#define IGCS_KEY_FOV_DECREASE					VK_SUBTRACT
-	#define IGCS_KEY_HELP							0x48			// H
 	#define IGCS_KEY_INVERT_Y_LOOK					VK_DIVIDE
 	#define IGCS_KEY_BLOCK_INPUT					VK_DECIMAL
 	#define IGCS_KEY_TIMESTOP						VK_NUMPAD0

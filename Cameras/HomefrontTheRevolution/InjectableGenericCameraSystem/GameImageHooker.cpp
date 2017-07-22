@@ -28,7 +28,6 @@
 #include "stdafx.h"
 #include "GameImageHooker.h"
 #include "Defaults.h"
-#include "Console.h"
 #include "OverlayConsole.h"
 
 namespace IGCS::GameImageHooker

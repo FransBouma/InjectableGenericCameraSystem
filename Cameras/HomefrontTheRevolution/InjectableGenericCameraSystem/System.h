@@ -47,7 +47,6 @@ namespace IGCS
 		void updateFrame();
 		void handleUserInput();
 		void writeNewCameraValuesToCameraStructs();
-		void displayHelp();
 		void displayCameraState();
 		void toggleYLookDirectionState();
 		void toggleCameraMovementLockState(bool newValue);

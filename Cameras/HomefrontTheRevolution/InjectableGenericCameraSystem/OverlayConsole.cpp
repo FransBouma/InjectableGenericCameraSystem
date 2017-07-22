@@ -63,10 +63,8 @@ namespace IGCS
 	}
 
 
-	void OverlayConsole::draw(const char* title, bool* p_open)
+	void OverlayConsole::draw()
 	{
-		ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiSetCond_FirstUseEver);
-		ImGui::Begin(title, p_open);
 		if (ImGui::Button("Clear"))
 		{
 			clear();
@@ -110,6 +108,5 @@ namespace IGCS
 		}
 		_scrollToBottom = false;
 		ImGui::EndChild();
-		ImGui::End();
 	}
 }
