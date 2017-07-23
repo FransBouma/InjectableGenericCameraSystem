@@ -115,14 +115,14 @@ namespace IGCS
 			// we're done now. 
 			return;
 		}
-		if (Input::keyDown(IGCS_KEY_INVERT_Y_LOOK))
-		{
-			toggleYLookDirectionState();
-			Sleep(350);		// wait for 350ms to avoid fast keyboard hammering
-		}
 		if (!_cameraStructFound)
 		{
 			// camera not found yet, can't proceed.
+			return;
+		}
+		if (OverlayControl::isMainMenuVisible())
+		{
+			// stop here, so keys used in the camera system won't affect anything of the camera
 			return;
 		}
 		if (Input::keyDown(IGCS_KEY_CAMERA_ENABLE))
@@ -149,11 +149,11 @@ namespace IGCS
 		}
 		if (Input::keyDown(IGCS_KEY_FOV_DECREASE))
 		{
-			CameraManipulator::changeFoV(-DEFAULT_FOV_SPEED);
+			CameraManipulator::changeFoV(-Globals::instance().settings().fovChangeSpeed);
 		}
 		if (Input::keyDown(IGCS_KEY_FOV_INCREASE))
 		{
-			CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
+			CameraManipulator::changeFoV(Globals::instance().settings().fovChangeSpeed);
 		}
 		if (Input::keyDown(IGCS_KEY_TIMESTOP))
 		{
@@ -188,7 +188,8 @@ namespace IGCS
 		}
 
 		_camera.resetMovement();
-		float multiplier = altPressed ? FASTER_MULTIPLIER : rcontrolPressed ? SLOWER_MULTIPLIER : 1.0f;
+		Settings& settings = Globals::instance().settings();
+		float multiplier = altPressed ? settings.fastMovementMultiplier : rcontrolPressed ? settings.slowMovementMultiplier : 1.0f;
 		if (Input::keyDown(IGCS_KEY_CAMERA_LOCK))
 		{
 			toggleCameraMovementLockState(!_cameraMovementLocked);
@@ -212,8 +213,9 @@ namespace IGCS
 
 		if (gamePad.isConnected())
 		{
-			float  multiplier = gamePad.isButtonPressed(IGCS_BUTTON_FASTER) ? FASTER_MULTIPLIER : gamePad.isButtonPressed(IGCS_BUTTON_SLOWER) ? SLOWER_MULTIPLIER : multiplierBase;
-
+			Settings& settings = Globals::instance().settings();
+			float  multiplier = gamePad.isButtonPressed(IGCS_BUTTON_FASTER) ? settings.fastMovementMultiplier 
+																			: gamePad.isButtonPressed(IGCS_BUTTON_SLOWER) ? settings.slowMovementMultiplier : multiplierBase;
 			vec2 rightStickPosition = gamePad.getRStickPosition();
 			_camera.pitch(rightStickPosition.y * multiplier);
 			_camera.yaw(rightStickPosition.x * multiplier);
@@ -237,11 +239,11 @@ namespace IGCS
 			}
 			if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_DECREASE))
 			{
-				CameraManipulator::changeFoV(-DEFAULT_FOV_SPEED);
+				CameraManipulator::changeFoV(-Globals::instance().settings().fovChangeSpeed);
 			}
 			if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_INCREASE))
 			{
-				CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
+				CameraManipulator::changeFoV(Globals::instance().settings().fovChangeSpeed);
 			}
 			if (gamePad.isButtonPressed(IGCS_BUTTON_BLOCK_INPUT))
 			{
@@ -385,13 +387,6 @@ namespace IGCS
 	}
 
 
-	void System::toggleYLookDirectionState()
-	{
-		_camera.toggleLookDirectionInverter();
-		OverlayControl::addNotification(_camera.lookDirectionInverter() < 0 ? "Y look direction is inverted" : "Y look direction is normal");
-	}
-	
-
 	void System::toggleTimestopState()
 	{
 		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
@@ -418,7 +413,7 @@ namespace IGCS
 				_superSamplingFactor = decrease ? _superSamplingFactor - 0.5f : _superSamplingFactor + 0.5f;
 			}
 		}
-		OverlayConsole::instance().logLine("Supersampling resize factor is now: %.1f", _superSamplingFactor);
+		OverlayControl::addNotification("Supersampling resize factor is now: " + to_string(_superSamplingFactor));
 		if (currentValue != _superSamplingFactor)
 		{
 			CameraManipulator::setSupersamplingFactor(_hostImageAddress, _superSamplingEnabled ? _superSamplingFactor : 1.0f);

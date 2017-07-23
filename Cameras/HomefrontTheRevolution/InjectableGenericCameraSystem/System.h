@@ -48,7 +48,6 @@ namespace IGCS
 		void handleUserInput();
 		void writeNewCameraValuesToCameraStructs();
 		void displayCameraState();
-		void toggleYLookDirectionState();
 		void toggleCameraMovementLockState(bool newValue);
 		void toggleInputBlockState(bool newValue);
 		void handleKeyboardCameraMovement(float multiplier);

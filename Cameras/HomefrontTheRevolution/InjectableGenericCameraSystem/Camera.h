@@ -65,8 +65,6 @@ namespace IGCS
 		float _pitch;
 		float _roll;
 		bool _movementOccurred;
-		float _movementSpeed;
-		float _rotationSpeed;
 		float _lookDirectionInverter;
 	};
 }

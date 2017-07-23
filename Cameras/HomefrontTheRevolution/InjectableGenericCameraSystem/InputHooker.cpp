@@ -32,6 +32,8 @@
 #include "Globals.h"
 #include "input.h"
 #include "OverlayConsole.h"
+#include "OverlayControl.h"
+#include <mutex>
 
 using namespace std;
 
@@ -56,6 +58,10 @@ namespace IGCS::InputHooker
 	static GETMESSAGEW hookedGetMessageW = nullptr;
 	static PEEKMESSAGEA hookedPeekMessageA = nullptr;
 	static PEEKMESSAGEW hookedPeekMessageW = nullptr;
+
+	//-----------------------------------------------
+	// statics
+	static mutex _lock;
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Implementations
@@ -147,14 +153,16 @@ namespace IGCS::InputHooker
 
 	void processMessage(LPMSG lpMsg, bool removeIfRequired)
 	{
-		if (lpMsg->hwnd != nullptr /* && removeIfRequired */ && Input::handleMessage(lpMsg))
-		{
-			// message was handled by our code. This means it's a message we want to block if input blocking is enabled. 
-			if (Globals::instance().inputBlocked())
+		_lock.lock();
+			if (lpMsg->hwnd != nullptr /* && removeIfRequired */ && Input::handleMessage(lpMsg))
 			{
-				lpMsg->message = WM_NULL;	// reset to WM_NULL so the host will receive a dummy message instead.
+				// message was handled by our code. This means it's a message we want to block if input blocking is enabled or the overlay / menu is shown
+				if (Globals::instance().inputBlocked() || OverlayControl::isMainMenuVisible())
+				{
+					lpMsg->message = WM_NULL;	// reset to WM_NULL so the host will receive a dummy message instead.
+				}
 			}
-		}
+		_lock.unlock();
 	}
 
 

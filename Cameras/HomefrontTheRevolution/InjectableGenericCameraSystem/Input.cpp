@@ -31,6 +31,7 @@
 #include "Globals.h"
 #include "imgui_impl_dx11.h"
 #include "OverlayConsole.h"
+#include "OverlayControl.h"
 
 namespace IGCS::Input
 {
@@ -109,9 +110,9 @@ namespace IGCS::Input
 
 		// first handle the message through the Imgui handler so we get an up to date IO structure for the overlay
 		ImGui_ImplDX11_WndProcHandler(lpMsg->hwnd, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
-		
-		// only process the message further if the camera is enabled, otherwise ignore it as the camera isn't controllable 
-		if(!g_cameraEnabled)
+
+		// Stop here if the camera isn't enabled as the camera isn't controllable in that situation. 
+		if(!g_cameraEnabled && !OverlayControl::isMainMenuVisible())
 		{
 			return false;
 		}

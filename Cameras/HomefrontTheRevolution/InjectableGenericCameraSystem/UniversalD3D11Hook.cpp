@@ -91,6 +91,7 @@ namespace IGCS::DX11Hooker
 				// render our own stuff
 				_context->OMSetRenderTargets(1, &_mainRenderTargetView, NULL);
 				OverlayControl::renderOverlay();
+				ImGui_ImpDX11_ResetKeyStates();
 			}
 		}
 		return hookedD3D11Present(pSwapChain, SyncInterval, Flags);
@@ -190,7 +191,6 @@ namespace IGCS::DX11Hooker
 		ImGui_ImplDX11_Init(IGCS::Globals::instance().mainWindowHandle(), _device, _context);
 		ImGuiIO& io = ImGui::GetIO();
 		io.IniFilename = IGCS_OVERLAY_INI_FILENAME;
-		io.FontAllowUserScaling = true;
 		initImGuiStyle();
 	}
 
@@ -200,38 +200,38 @@ namespace IGCS::DX11Hooker
 		ImGuiStyle& style = ImGui::GetStyle();
 
 		style.WindowRounding = 2.0f;
-		style.FrameRounding = 2.0f;
+		style.FrameRounding = 1.0f;
 		style.IndentSpacing = 25.0f;
 		style.ScrollbarSize = 16.0f;
-		style.ScrollbarRounding = 2.0f;
+		style.ScrollbarRounding = 1.0f;
 
-		style.Colors[ImGuiCol_Text] = ImVec4(0.80f, 0.80f, 0.83f, 1.00f);
-		style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg] = ImVec4(0.04f, 0.04f, 0.07f, 0.84f);
+		style.Colors[ImGuiCol_Text] = ImVec4(0.84f, 0.84f, 0.88f, 1.00f);
+		style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.24f, 0.29f, 1.00f);
+		style.Colors[ImGuiCol_WindowBg] = ImVec4(0.07f, 0.07f, 0.09f, 0.84f);
 		style.Colors[ImGuiCol_ChildWindowBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		style.Colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
 		style.Colors[ImGuiCol_Border] = ImVec4(0.80f, 0.80f, 0.83f, 0.88f);
 		style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);
 		style.Colors[ImGuiCol_FrameBg] = ImVec4(0.22f, 0.22f, 0.24f, 0.31f);
-		style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+		style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.24f, 0.24f, 0.25f, 1.00f);
 		style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.35f, 0.35f, 0.38f, 1.00f);
 		style.Colors[ImGuiCol_TitleBg] = ImVec4(0.27f, 0.27f, 0.33f, 0.37f);
 		style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.40f, 0.40f, 0.80f, 0.20f);
 		style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
-		style.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.40f, 0.40f, 0.47f, 0.44f);
+		style.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.37f, 0.37f, 0.42f, 0.42f);
 		style.Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.09f, 0.09f, 0.10f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.45f, 0.45f, 0.45f, 0.30f);
 		style.Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);
-		style.Colors[ImGuiCol_ComboBg] = ImVec4(0.19f, 0.18f, 0.21f, 1.00f);
-		style.Colors[ImGuiCol_CheckMark] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
-		style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.59f, 0.59f, 0.59f, 0.30f);
+		style.Colors[ImGuiCol_ComboBg] = ImVec4(0.13f, 0.13f, 0.16f, 1.00f);
+		style.Colors[ImGuiCol_CheckMark] = ImVec4(0.80f, 0.80f, 0.83f, 0.53f);
+		style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.65f, 0.31f, 0.00f, 0.71f);
 		style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);
-		style.Colors[ImGuiCol_Button] = ImVec4(0.24f, 0.24f, 0.27f, 0.69f);
-		style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.33f, 0.33f, 0.36f, 1.00f);
+		style.Colors[ImGuiCol_Button] = ImVec4(0.65f, 0.31f, 0.00f, 0.86f);
+		style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.80f, 0.41f, 0.00f, 1.00f);
 		style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
-		style.Colors[ImGuiCol_Header] = ImVec4(0.40f, 0.40f, 0.44f, 0.45f);
-		style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.40f, 0.40f, 0.44f, 1.00f);
+		style.Colors[ImGuiCol_Header] = ImVec4(0.50f, 0.50f, 0.53f, 0.49f);
+		style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.47f, 0.47f, 0.49f, 1.00f);
 		style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.40f, 0.40f, 0.44f, 0.31f);
 		style.Colors[ImGuiCol_Column] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
 		style.Colors[ImGuiCol_ColumnHovered] = ImVec4(0.23f, 0.23f, 0.24f, 1.00f);

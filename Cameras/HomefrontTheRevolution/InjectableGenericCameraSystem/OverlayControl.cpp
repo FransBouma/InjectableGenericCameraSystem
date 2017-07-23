@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <mutex>
 #include "Defaults.h"
+#include "Globals.h"
 
 using namespace std;
 
@@ -160,35 +161,87 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 	void renderHelp()
 	{
-		ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-		ImGui::TextUnformatted("Ctrl-INS                              : Show / Hide Camera tools main window");
-		ImGui::TextUnformatted("INS                                   : Enable/Disable camera");
-		ImGui::TextUnformatted("HOME                                  : Lock/unlock camera movement");
-		ImGui::TextUnformatted("ALT + rotate/move                     : Faster rotate / move");
-		ImGui::TextUnformatted("Right-CTRL + rotate/move              : Slower rotate / move");
-		ImGui::TextUnformatted("Controller Y-button + l/r-stick       : Faster rotate / move");
-		ImGui::TextUnformatted("Controller X-button + l/r-stick       : Slower rotate / move");
-		ImGui::TextUnformatted("Arrow up/down or mouse or r-stick     : Rotate camera up/down");
-		ImGui::TextUnformatted("Arrow left/right or mouse or r-stick  : Rotate camera left/right");
-		ImGui::TextUnformatted("Numpad 8/Numpad 5 or l-stick          : Move camera forward/backward");
-		ImGui::TextUnformatted("Numpad 4/Numpad 6 or l-stick          : Move camera left / right");
-		ImGui::TextUnformatted("Numpad 7/Numpad 9 or l/r-trigger      : Move camera up / down");
-		ImGui::TextUnformatted("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
-		ImGui::TextUnformatted("Numpad +/- or d-pad up/down           : Increase / decrease FoV");
-		ImGui::TextUnformatted("Numpad * or controller B-button       : Reset FoV");
-		ImGui::TextUnformatted("Numpad /                              : Toggle Y look direction");
-		ImGui::TextUnformatted("Numpad . or controller Right Bumper   : Toggle input to game");
-		ImGui::TextUnformatted("Numpad 0                              : Toggle game pause");
-		ImGui::TextUnformatted("DEL                                   : Toggle supersampling w/ resize factor");
-		ImGui::TextUnformatted("[                                     : Decrease supersample resize factor");
-		ImGui::TextUnformatted("]                                     : Increase supersample resize factor");
-		ImGui::EndChild();
+		if (ImGui::CollapsingHeader("General info"))
+		{
+			ImGui::PushTextWrapPos();
+			ImGui::TextUnformatted("* When the main window is open, all input of keyboard / mouse to the game is blocked and the camera is locked.");
+			ImGui::TextUnformatted("* All changes you make to the main window (position/size) are saved to a file in the game root folder.");
+			ImGui::TextUnformatted("* Any setting you change will make the settings to be saved to a file in the game root folder.");
+			ImGui::PopTextWrapPos();
+		}
+		if (ImGui::CollapsingHeader("Camera tools key-bindings"))
+		{
+			ImGui::TextUnformatted("Ctrl-INS                              : Show / Hide Camera tools main window");
+			ImGui::TextUnformatted("Ctrl + Mouse wheel                    : Resize font");
+			ImGui::TextUnformatted("INS                                   : Enable/Disable camera");
+			ImGui::TextUnformatted("HOME                                  : Lock/unlock camera movement");
+			ImGui::TextUnformatted("ALT + rotate/move                     : Faster rotate / move");
+			ImGui::TextUnformatted("Right-CTRL + rotate/move              : Slower rotate / move");
+			ImGui::TextUnformatted("Controller Y-button + l/r-stick       : Faster rotate / move");
+			ImGui::TextUnformatted("Controller X-button + l/r-stick       : Slower rotate / move");
+			ImGui::TextUnformatted("Arrow up/down or mouse or r-stick     : Rotate camera up/down");
+			ImGui::TextUnformatted("Arrow left/right or mouse or r-stick  : Rotate camera left/right");
+			ImGui::TextUnformatted("Numpad 8/Numpad 5 or l-stick          : Move camera forward/backward");
+			ImGui::TextUnformatted("Numpad 4/Numpad 6 or l-stick          : Move camera left / right");
+			ImGui::TextUnformatted("Numpad 7/Numpad 9 or l/r-trigger      : Move camera up / down");
+			ImGui::TextUnformatted("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
+			ImGui::TextUnformatted("Numpad +/- or d-pad up/down           : Increase / decrease FoV");
+			ImGui::TextUnformatted("Numpad * or controller B-button       : Reset FoV");
+			ImGui::TextUnformatted("Numpad . or controller Right Bumper   : Toggle input to game");
+			ImGui::TextUnformatted("Numpad 0                              : Toggle game pause");
+			ImGui::TextUnformatted("DEL                                   : Toggle supersampling w/ resize factor");
+			ImGui::TextUnformatted("[                                     : Decrease supersample resize factor");
+			ImGui::TextUnformatted("]                                     : Increase supersample resize factor");
+		}
+		if (ImGui::CollapsingHeader("Settings editor help"))
+		{
+			ImGui::PushTextWrapPos();
+			ImGui::TextUnformatted("* Click and drag on lower right corner to resize window.");
+			ImGui::TextUnformatted("* Click and drag on any empty space to move window.");
+			ImGui::TextUnformatted("* Mouse Wheel to scroll.");
+			ImGui::TextUnformatted("* TAB/SHIFT+TAB to cycle through keyboard editable fields.");
+			ImGui::TextUnformatted("* Click and drag on a text box to change its value.");
+			ImGui::TextUnformatted("* CTRL+Click on a slider or text box to input text.");
+			ImGui::TextUnformatted(
+				"* While editing text:\n"
+				"  - Hold SHIFT or use mouse to select text\n"
+				"  - CTRL+Left/Right to word jump\n"
+				"  - CTRL+A or double-click to select all\n"
+				"  - CTRL+X,CTRL+C,CTRL+V clipboard\n"
+				"  - CTRL+Z,CTRL+Y undo/redo\n"
+				"  - ESCAPE to revert\n"
+				"  - You can apply arithmetic operators +,*,/ on numerical values.\n"
+				"    Use +- to subtract.\n");
+			ImGui::PopTextWrapPos();
+		}
 	}
 
 
 	void renderSettings()
 	{
-		// to implement
+		Settings& currentSettings = Globals::instance().settings();
+		ImGui::PushItemWidth(70);
+		if (ImGui::Button("Reset to defaults"))
+		{
+			currentSettings.init();
+		}
+		if (ImGui::CollapsingHeader("Camera movement options", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::DragFloat("Fast movement multiplier", &currentSettings.fastMovementMultiplier, 0.1f, 1.0f, 100.0f, "%.3f");
+			ImGui::DragFloat("Slow movement multiplier", &currentSettings.slowMovementMultiplier, 0.001f, 0.01f, 1.0f, "%.3f");
+			ImGui::DragFloat("Up movement multiplier", &currentSettings.movementUpMultiplier, 0.1f, 0.1f, 10.0f, "%.3f");
+			ImGui::DragFloat("Movement speed", &currentSettings.movementSpeed, 0.001f, 0.01f, 1.0f, "%.3f");
+		}
+		if (ImGui::CollapsingHeader("Camera rotation options", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::DragFloat("Rotation speed", &currentSettings.rotationSpeed, 0.001f, 0.001f, 1.0f, "%.3f");
+			ImGui::Checkbox("Invert Y look direction", &currentSettings.invertY);
+		}
+		if (ImGui::CollapsingHeader("Misc. camera options", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::DragFloat("FoV zoom speed", &currentSettings.fovChangeSpeed, 0.001f, 0.01f, 1.0f, "%.3f");
+		}
+		ImGui::PopItemWidth();
 	}
 
 

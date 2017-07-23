@@ -28,11 +28,35 @@
 #pragma once
 #include "stdafx.h"
 #include "Gamepad.h"
+#include "GameConstants.h"
 
 extern "C" byte g_cameraEnabled;
 
 namespace IGCS
 {
+	struct Settings
+	{
+		bool invertY;
+		float fastMovementMultiplier;
+		float slowMovementMultiplier;
+		float movementUpMultiplier;
+		float movementSpeed;
+		float rotationSpeed;
+		float fovChangeSpeed;
+
+		void init()
+		{
+			invertY = CONTROLLER_Y_INVERT;
+			fastMovementMultiplier = FASTER_MULTIPLIER;
+			slowMovementMultiplier = SLOWER_MULTIPLIER;
+			movementUpMultiplier = DEFAULT_UP_MOVEMENT_MULTIPLIER;
+			movementSpeed = DEFAULT_MOVEMENT_SPEED;
+			rotationSpeed = DEFAULT_ROTATION_SPEED;
+			fovChangeSpeed = DEFAULT_FOV_SPEED;
+		}
+	};
+
+
 	class Globals
 	{
 	public:
@@ -48,11 +72,13 @@ namespace IGCS
 		HWND mainWindowHandle() const { return _mainWindowHandle; }
 		void mainWindowHandle(HWND handle) { _mainWindowHandle = handle; }
 		Gamepad& gamePad() { return _gamePad; }
+		Settings& settings() { return _settings; }
 
 	private:
 		bool _inputBlocked = false;
 		volatile bool _systemActive = false;
 		Gamepad _gamePad;
 		HWND _mainWindowHandle;
+		Settings _settings;
 	};
 }
