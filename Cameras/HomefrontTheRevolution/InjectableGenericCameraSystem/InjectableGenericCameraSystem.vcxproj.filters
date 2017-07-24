@@ -103,6 +103,9 @@
     <ClInclude Include="Console.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="CDataFile.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InterceptorHelper.cpp">
@@ -166,6 +169,9 @@
       <Filter>Overlay</Filter>
     </ClCompile>
     <ClCompile Include="Console.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="CDataFile.cpp">
       <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>

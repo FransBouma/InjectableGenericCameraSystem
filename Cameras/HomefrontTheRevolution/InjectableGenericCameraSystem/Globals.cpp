@@ -42,6 +42,7 @@ namespace IGCS
 	Globals::Globals()
 	{
 		_settings.init();
+		_settings.loadFromFile();
 	}
 
 
@@ -54,5 +55,30 @@ namespace IGCS
 	{
 		static Globals theInstance;
 		return theInstance;
+	}
+
+
+	void Globals::saveSettingsIfRequired(float delta)
+	{
+		if (_settingsDirtyTimer <= 0.0f)
+		{
+			// nothing to do
+			return;
+		}
+		_settingsDirtyTimer -= delta;
+		if (_settingsDirtyTimer <= 0)
+		{
+			_settings.saveToFile();
+			_settingsDirtyTimer = 0.0f;
+		}
+	}
+
+
+	void Globals::markSettingsDirty()
+	{
+		if (_settingsDirtyTimer <= 0)
+		{
+			_settingsDirtyTimer = IGCS_SPLASH_DURATION;
+		}
 	}
 }

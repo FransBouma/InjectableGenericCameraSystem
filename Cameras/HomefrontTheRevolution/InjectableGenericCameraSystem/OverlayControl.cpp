@@ -60,6 +60,7 @@ namespace IGCS::OverlayControl
 	void renderOverlay()
 	{
 		ImGui_ImplDX11_NewFrame();
+		Globals::instance().saveSettingsIfRequired(ImGui::GetIO().DeltaTime);
 		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiSetCond_FirstUseEver);     // Normally user code doesn't need/want to call it because positions are saved in .ini file anyway. 
 		renderMainWindow();
 		//ImGui::ShowTestWindow(&_showMainWindow);
@@ -155,6 +156,14 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.)");
 		}
+		if (ImGui::CollapsingHeader("Miscellaneous"))
+		{
+			ImGui::TextUnformatted(R"(Uses CDataFile by Gary McNickle for ini file processing.
+
+Special thanks to: 
+* Crosire, for creating and opening the Reshade sourcecode. It was a great help with ImGui.
+* The users of my camera's, you all are a great inspiration to make the best camera tools possible!)");
+		}
 		ImGui::PopTextWrapPos();
 	}
 
@@ -167,9 +176,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 			ImGui::TextUnformatted("* When the main window is open, all input of keyboard / mouse to the game is blocked and the camera is locked.");
 			ImGui::TextUnformatted("* All changes you make to the main window (position/size) are saved to a file in the game root folder.");
 			ImGui::TextUnformatted("* Any setting you change will make the settings to be saved to a file in the game root folder.");
+			ImGui::TextUnformatted("* To block input to the game when the camera is enabled, you have to press 'Numpad .' just once. Next time you enable the camera, input is blocked automatically.");
+			ImGui::TextUnformatted("* You'll get a notification in the top left corner when you change something with the keyboard, like enable/disable the camera.");
 			ImGui::PopTextWrapPos();
 		}
-		if (ImGui::CollapsingHeader("Camera tools key-bindings"))
+		if (ImGui::CollapsingHeader("Camera tools controls"))
 		{
 			ImGui::TextUnformatted("Ctrl-INS                              : Show / Hide Camera tools main window");
 			ImGui::TextUnformatted("Ctrl + Mouse wheel                    : Resize font");
@@ -187,7 +198,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 			ImGui::TextUnformatted("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
 			ImGui::TextUnformatted("Numpad +/- or d-pad up/down           : Increase / decrease FoV");
 			ImGui::TextUnformatted("Numpad * or controller B-button       : Reset FoV");
-			ImGui::TextUnformatted("Numpad . or controller Right Bumper   : Toggle input to game");
+			ImGui::TextUnformatted("Numpad . or controller Right Bumper   : Block / allow input to game");
 			ImGui::TextUnformatted("Numpad 0                              : Toggle game pause");
 			ImGui::TextUnformatted("DEL                                   : Toggle supersampling w/ resize factor");
 			ImGui::TextUnformatted("[                                     : Decrease supersample resize factor");
@@ -220,28 +231,35 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	void renderSettings()
 	{
 		Settings& currentSettings = Globals::instance().settings();
-		ImGui::PushItemWidth(70);
+		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.2f);
+		bool settingsChanged = false;
 		if (ImGui::Button("Reset to defaults"))
 		{
 			currentSettings.init();
+			settingsChanged = true;
 		}
 		if (ImGui::CollapsingHeader("Camera movement options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			ImGui::DragFloat("Fast movement multiplier", &currentSettings.fastMovementMultiplier, 0.1f, 1.0f, 100.0f, "%.3f");
-			ImGui::DragFloat("Slow movement multiplier", &currentSettings.slowMovementMultiplier, 0.001f, 0.01f, 1.0f, "%.3f");
-			ImGui::DragFloat("Up movement multiplier", &currentSettings.movementUpMultiplier, 0.1f, 0.1f, 10.0f, "%.3f");
-			ImGui::DragFloat("Movement speed", &currentSettings.movementSpeed, 0.001f, 0.01f, 1.0f, "%.3f");
+			settingsChanged |= ImGui::SliderFloat("Fast movement multiplier", &currentSettings.fastMovementMultiplier, 0.1f, 100.0f, "%.3f");
+			settingsChanged |= ImGui::SliderFloat("Slow movement multiplier", &currentSettings.slowMovementMultiplier, 0.001f, 1.0f, "%.3f");
+			settingsChanged |= ImGui::SliderFloat("Up movement multiplier", &currentSettings.movementUpMultiplier, 0.1f, 10.0f, "%.3f");
+			settingsChanged |= ImGui::SliderFloat("Movement speed", &currentSettings.movementSpeed, 0.001f, 0.5f, "%.3f");
 		}
 		if (ImGui::CollapsingHeader("Camera rotation options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			ImGui::DragFloat("Rotation speed", &currentSettings.rotationSpeed, 0.001f, 0.001f, 1.0f, "%.3f");
-			ImGui::Checkbox("Invert Y look direction", &currentSettings.invertY);
+			settingsChanged |= ImGui::SliderFloat("Rotation speed", &currentSettings.rotationSpeed, 0.001f, 0.1f, "%.3f");
+			ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.2f)-11.0f);
+			settingsChanged |= ImGui::Checkbox("Invert Y look direction", &currentSettings.invertY);
 		}
 		if (ImGui::CollapsingHeader("Misc. camera options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			ImGui::DragFloat("FoV zoom speed", &currentSettings.fovChangeSpeed, 0.001f, 0.01f, 1.0f, "%.3f");
+			settingsChanged |= ImGui::SliderFloat("FoV zoom speed", &currentSettings.fovChangeSpeed, 0.001f, 1.0f, "%.3f");
 		}
 		ImGui::PopItemWidth();
+		if (settingsChanged)
+		{
+			Globals::instance().markSettingsDirty();
+		}
 	}
 
 
