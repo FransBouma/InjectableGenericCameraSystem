@@ -28,8 +28,6 @@
 #pragma once
 #include "stdafx.h"
 
-using namespace std;
-
 namespace IGCS
 {
 	// forward declaration to avoid cyclic dependency.
@@ -51,4 +49,6 @@ namespace IGCS::Utils
 	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, AOBBlock* const toScanFor);
 	BYTE CharToByte(char c);
 	LPBYTE calculateAbsoluteAddress(AOBBlock* locationData, int nextOpCodeOffset);
+	std::string formatString(const char *fmt, va_list args);
+	bool stringStartsWith(const char *a, const char *b);
 }

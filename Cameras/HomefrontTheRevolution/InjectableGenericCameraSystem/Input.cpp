@@ -28,8 +28,10 @@
 #include "stdafx.h"
 #include "input.h"
 #include "Utils.h"
-#include "Console.h"
 #include "Globals.h"
+#include "imgui_impl_dx11.h"
+#include "OverlayConsole.h"
+#include "OverlayControl.h"
 
 namespace IGCS::Input
 {
@@ -85,17 +87,15 @@ namespace IGCS::Input
 		rid[0].usUsagePage = 0x01;
 		rid[0].usUsage = 0x02;
 		rid[0].dwFlags = 0;
-		rid[0].hwndTarget = Utils::findMainWindow(GetCurrentProcessId());
+		rid[0].hwndTarget = Globals::instance().mainWindowHandle();
 
 		if (RegisterRawInputDevices(rid, 1, sizeof(rid[0])) == FALSE)
 		{
-			Console::WriteError("Couldn't register raw input. Error code: " + to_string(GetLastError()));
+			OverlayConsole::instance().logError("Couldn't register raw input. Error code: %010x", GetLastError());
 		}
 		else
 		{
-#ifdef _DEBUG
-			Console::WriteLine("Raw input registered");
-#endif
+			OverlayConsole::instance().logDebug("Raw input registered");
 		}
 	}
 
@@ -103,8 +103,16 @@ namespace IGCS::Input
 	// returns true if the message was handled by this method, otherwise false.
 	bool handleMessage(LPMSG lpMsg)
 	{
-		// only handle the message if the camera is enabled, otherwise ignore it as the camera isn't controllable 
-		if (lpMsg == nullptr || lpMsg->hwnd == nullptr || !g_cameraEnabled)
+		if (lpMsg == nullptr || lpMsg->hwnd == nullptr)
+		{
+			return false;
+		}
+
+		// first handle the message through the Imgui handler so we get an up to date IO structure for the overlay
+		ImGui_ImplDX11_WndProcHandler(lpMsg->hwnd, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
+
+		// Stop here if the camera isn't enabled as the camera isn't controllable in that situation. 
+		if(!g_cameraEnabled && !OverlayControl::isMainMenuVisible())
 		{
 			return false;
 		}

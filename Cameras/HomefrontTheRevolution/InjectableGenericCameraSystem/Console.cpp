@@ -33,39 +33,50 @@ using namespace std;
 
 namespace IGCS::Console
 {
-	void Release()
+	#define CONSOLE_WHITE	15
+	#define CONSOLE_NORMAL  7
+
+	static bool _consoleInitialized = false;
+	void Init();
+
+
+	void EnsureConsole()
 	{
-		FreeConsole();
+		if (_consoleInitialized)
+		{
+			return;
+		}
+		Init();
 	}
 
-	void WriteHeader()
+
+	void Release()
 	{
-		SetColor(CONSOLE_WHITE);
-		cout << "Injectable camera tools v" << CAMERA_VERSION << " for " << GAME_NAME << endl;
-		WriteLine("Powered by Injectable Generic Camera System by Otis_Inf");
-		WriteLine("Get your copy at: https://github.com/FransBouma/InjectableGenericCameraSystem");
-		cout << "Camera credits: " << CAMERA_CREDITS << endl;
-		SetColor(9);
-		WriteLine("-----------------------------------------------------------------------------");
-		SetColor(CONSOLE_NORMAL);
+		if (_consoleInitialized)
+		{
+			FreeConsole();
+			_consoleInitialized = false;
+		}
 	}
 
 	void WriteLine(const string& toWrite, int color)
 	{
+		EnsureConsole();
 		SetColor(color);
 		WriteLine(toWrite);
 		SetColor(CONSOLE_NORMAL);
 	}
 
-
 	void WriteLine(const string& toWrite)
 	{
+		EnsureConsole();
 		cout << toWrite << endl;
 	}
 
 
 	void WriteError(const string& error)
 	{
+		EnsureConsole();
 		cerr << error << endl;
 	}
 
@@ -75,9 +86,8 @@ namespace IGCS::Console
 		AllocConsole();
 		AttachConsole(GetCurrentProcessId());
 
-		// Redirect the CRT standard input, output, and error handles to the console
+		// Redirect the CRT standard output, and error handles to the console
 		FILE *fp;
-		freopen_s(&fp, "CONIN$", "r", stdin);
 		freopen_s(&fp, "CONOUT$", "w", stdout);
 		freopen_s(&fp, "CONOUT$", "w", stderr);
 
@@ -91,6 +101,7 @@ namespace IGCS::Console
 
 		SetColor(15);
 		SetConsoleTextAttribute(GetStdHandle(STD_ERROR_HANDLE), 12);
+		_consoleInitialized = true;
 	}
 
 

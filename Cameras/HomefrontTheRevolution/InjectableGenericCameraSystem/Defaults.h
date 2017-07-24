@@ -33,9 +33,14 @@
 namespace IGCS
 {
 	// System defaults
-	#define FRAME_SLEEP				8		// in milliseconds
+	#define FRAME_SLEEP								8		// in milliseconds
+	#define IGCS_OVERLAY_INI_FILENAME				"IGCS_overlay.ini"
+	#define IGCS_SETTINGS_INI_FILENAME				"IGCS_settings.ini"
+	#define IGCS_SETTINGS_SAVE_DELAY				5.0f	// in seconds
+	#define IGCS_SPLASH_DURATION					2.0f	// in seconds
 
-	// Keyboard camera control
+	// Keyboard system control
+	#define IGCS_KEY_TOGGLE_OVERLAY					VK_INSERT		// With control
 	#define IGCS_KEY_CAMERA_ENABLE					VK_INSERT
 	#define IGCS_KEY_CAMERA_LOCK					VK_HOME
 	#define IGCS_KEY_ROTATE_RIGHT					VK_RIGHT		// yaw
@@ -53,8 +58,6 @@ namespace IGCS
 	#define IGCS_KEY_FOV_RESET						VK_MULTIPLY
 	#define IGCS_KEY_FOV_INCREASE					VK_ADD
 	#define IGCS_KEY_FOV_DECREASE					VK_SUBTRACT
-	#define IGCS_KEY_HELP							0x48			// H
-	#define IGCS_KEY_INVERT_Y_LOOK					VK_DIVIDE
 	#define IGCS_KEY_BLOCK_INPUT					VK_DECIMAL
 	#define IGCS_KEY_TIMESTOP						VK_NUMPAD0
 	#define IGCS_KEY_DECREASE_HOTSAMPLE_FACTOR		VK_OEM_4		// [{

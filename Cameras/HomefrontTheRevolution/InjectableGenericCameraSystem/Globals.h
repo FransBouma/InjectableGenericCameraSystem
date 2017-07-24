@@ -27,13 +27,74 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "stdafx.h"
-#include "Console.h"
 #include "Gamepad.h"
+#include "GameConstants.h"
+#include "Defaults.h"
+#include "CDataFile.h"
 
 extern "C" byte g_cameraEnabled;
 
 namespace IGCS
 {
+	struct Settings
+	{
+		bool invertY;
+		float fastMovementMultiplier;
+		float slowMovementMultiplier;
+		float movementUpMultiplier;
+		float movementSpeed;
+		float rotationSpeed;
+		float fovChangeSpeed;
+
+		float clampFloat(float value, float min, float default)
+		{
+			return value < min ? default : value;
+		}
+
+		void loadFromFile()
+		{
+			CDataFile iniFile;
+			if (!iniFile.Load(IGCS_SETTINGS_INI_FILENAME))
+			{
+				// doesn't exist
+				return;
+			}
+			invertY = iniFile.GetBool("invertY", "CameraSettings");
+			fastMovementMultiplier = clampFloat(iniFile.GetFloat("fastMovementMultiplier", "CameraSettings"), 0.0f, FASTER_MULTIPLIER);
+			slowMovementMultiplier = clampFloat(iniFile.GetFloat("slowMovementMultiplier", "CameraSettings"), 0.0f, SLOWER_MULTIPLIER);
+			movementUpMultiplier = clampFloat(iniFile.GetFloat("movementUpMultiplier", "CameraSettings"), 0.0f, DEFAULT_UP_MOVEMENT_MULTIPLIER);
+			movementSpeed = clampFloat(iniFile.GetFloat("movementSpeed", "CameraSettings"), 0.0f, DEFAULT_MOVEMENT_SPEED);
+			rotationSpeed = clampFloat(iniFile.GetFloat("rotationSpeed", "CameraSettings"), 0.0f, DEFAULT_ROTATION_SPEED);
+			fovChangeSpeed = clampFloat(iniFile.GetFloat("fovChangeSpeed", "CameraSettings"), 0.0f, DEFAULT_FOV_SPEED);
+		}
+
+		void saveToFile()
+		{
+			CDataFile iniFile;
+			iniFile.SetBool("invertY", invertY, "", "CameraSettings");
+			iniFile.SetFloat("fastMovementMultiplier", fastMovementMultiplier, "", "CameraSettings");
+			iniFile.SetFloat("slowMovementMultiplier", slowMovementMultiplier, "", "CameraSettings");
+			iniFile.SetFloat("movementUpMultiplier", movementUpMultiplier, "", "CameraSettings");
+			iniFile.SetFloat("movementSpeed", movementSpeed, "", "CameraSettings");
+			iniFile.SetFloat("rotationSpeed", rotationSpeed, "", "CameraSettings");
+			iniFile.SetFloat("fovChangeSpeed", fovChangeSpeed, "", "CameraSettings");
+			iniFile.SetFileName(IGCS_SETTINGS_INI_FILENAME);
+			iniFile.Save();
+		}
+
+		void init()
+		{
+			invertY = CONTROLLER_Y_INVERT;
+			fastMovementMultiplier = FASTER_MULTIPLIER;
+			slowMovementMultiplier = SLOWER_MULTIPLIER;
+			movementUpMultiplier = DEFAULT_UP_MOVEMENT_MULTIPLIER;
+			movementSpeed = DEFAULT_MOVEMENT_SPEED;
+			rotationSpeed = DEFAULT_ROTATION_SPEED;
+			fovChangeSpeed = DEFAULT_FOV_SPEED;
+		}
+	};
+
+
 	class Globals
 	{
 	public:
@@ -42,15 +103,24 @@ namespace IGCS
 
 		static Globals& instance();
 
+		void saveSettingsIfRequired(float delta);
+		void markSettingsDirty();
+
 		bool inputBlocked() const { return _inputBlocked; }
 		void inputBlocked(bool value) { _inputBlocked = value; }
 		bool systemActive() const { return _systemActive; }
 		void systemActive(bool value) { _systemActive = value; }
+		HWND mainWindowHandle() const { return _mainWindowHandle; }
+		void mainWindowHandle(HWND handle) { _mainWindowHandle = handle; }
 		Gamepad& gamePad() { return _gamePad; }
+		Settings& settings() { return _settings; }
 
 	private:
 		bool _inputBlocked = false;
 		volatile bool _systemActive = false;
 		Gamepad _gamePad;
+		HWND _mainWindowHandle;
+		Settings _settings;
+		float _settingsDirtyTimer=0.0f;			// when settings are marked dirty, this is set with a value > 0 and decremented each frame. If 0, settings are saved. In seconds.
 	};
 }

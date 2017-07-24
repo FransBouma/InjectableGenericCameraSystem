@@ -47,9 +47,7 @@ namespace IGCS
 		void updateFrame();
 		void handleUserInput();
 		void writeNewCameraValuesToCameraStructs();
-		void displayHelp();
 		void displayCameraState();
-		void toggleYLookDirectionState();
 		void toggleCameraMovementLockState(bool newValue);
 		void toggleInputBlockState(bool newValue);
 		void handleKeyboardCameraMovement(float multiplier);
@@ -58,6 +56,7 @@ namespace IGCS
 		void toggleTimestopState();
 		void modifySuperSamplingFactor(bool decrease);
 		void toggleSuperSampling();
+		void waitForCameraStructAddresses();
 
 		Camera _camera;
 		LPBYTE _hostImageAddress;

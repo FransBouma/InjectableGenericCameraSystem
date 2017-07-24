@@ -29,6 +29,8 @@
 #include "Utils.h"
 #include "GameConstants.h"
 #include "AOBBlock.h"
+#include "OverlayConsole.h"
+#include <comdef.h>
 
 using namespace std;
 
@@ -44,9 +46,10 @@ namespace IGCS::Utils
 			LPWSTR title = new WCHAR[bufsize];
 			GetWindowText(handle, title, bufsize);
 			toReturn &= (_wcsicmp(title, TEXT(GAME_WINDOW_TITLE)) == 0);
-#ifdef _DEBUG
-			wcout << "Window found with title: '" << title << "'" << endl;
-#endif
+			// convert title to char* so we can display it
+			_bstr_t titleAsBstr(title);
+			const char* titleAsChar = titleAsBstr;		// char conversion copy
+			OverlayConsole::instance().logDebug("Window found with title: '%s'", titleAsChar);
 		}
 		return toReturn;
 	}
@@ -208,5 +211,24 @@ namespace IGCS::Utils
 		// calculate from that rip relative value and its location the real absolute address it refers to. That address is returned.
 		LPBYTE ripRelativeValueAddress = locationData->locationInImage() + locationData->customOffset();
 		return  ripRelativeValueAddress + nextOpCodeOffset + *((__int32*)ripRelativeValueAddress);
+	}
+
+
+	string formatString(const char *fmt, va_list args)
+	{
+		va_list args_copy;
+		va_copy(args_copy, args);
+
+		int len = vsnprintf(NULL, 0, fmt, args_copy);
+		char* buffer = new char[len + 2];
+		vsnprintf(buffer, len+1, fmt, args_copy);
+		string toReturn(buffer, len+1);
+		return toReturn;
+	}
+
+
+	bool stringStartsWith(const char *a, const char *b)
+	{
+		return strncmp(a, b, strlen(b)) == 0 ? 1 : 0;
 	}
 }

@@ -37,6 +37,9 @@
 #include "input.h"
 #include "CameraManipulator.h"
 #include "GameImageHooker.h"
+#include "UniversalD3D11Hook.h"
+#include "OverlayConsole.h"
+#include "OverlayControl.h"
 
 namespace IGCS
 {
@@ -59,7 +62,6 @@ namespace IGCS
 		_hostImageSize = hostImageSize;
 		Globals::instance().gamePad().setInvertLStickY(CONTROLLER_Y_INVERT);
 		Globals::instance().gamePad().setInvertRStickY(CONTROLLER_Y_INVERT);
-		displayHelp();
 		initialize();		// will block till camera is found
 		mainLoop();
 	}
@@ -103,20 +105,24 @@ namespace IGCS
 	{
 		Globals::instance().gamePad().update();
 		bool altPressed = Input::keyDown(VK_LMENU) || Input::keyDown(VK_RMENU);
-		bool controlPressed = Input::keyDown(VK_RCONTROL);
+		bool rcontrolPressed = Input::keyDown(VK_RCONTROL);
+		bool lcontrolPressed = Input::keyDown(VK_LCONTROL);
 
-		if (Input::keyDown(IGCS_KEY_HELP) && altPressed)
+		if (Input::keyDown(IGCS_KEY_TOGGLE_OVERLAY) && (lcontrolPressed || rcontrolPressed))
 		{
-			displayHelp();
-		}
-		if (Input::keyDown(IGCS_KEY_INVERT_Y_LOOK))
-		{
-			toggleYLookDirectionState();
-			Sleep(350);		// wait for 350ms to avoid fast keyboard hammering
+			OverlayControl::toggleOverlay();
+			Sleep(350);		// wait 100ms to avoid fast keyboard hammering
+			// we're done now. 
+			return;
 		}
 		if (!_cameraStructFound)
 		{
 			// camera not found yet, can't proceed.
+			return;
+		}
+		if (OverlayControl::isMainMenuVisible())
+		{
+			// stop here, so keys used in the camera system won't affect anything of the camera
 			return;
 		}
 		if (Input::keyDown(IGCS_KEY_CAMERA_ENABLE))
@@ -143,11 +149,11 @@ namespace IGCS
 		}
 		if (Input::keyDown(IGCS_KEY_FOV_DECREASE))
 		{
-			CameraManipulator::changeFoV(-DEFAULT_FOV_SPEED);
+			CameraManipulator::changeFoV(-Globals::instance().settings().fovChangeSpeed);
 		}
 		if (Input::keyDown(IGCS_KEY_FOV_INCREASE))
 		{
-			CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
+			CameraManipulator::changeFoV(Globals::instance().settings().fovChangeSpeed);
 		}
 		if (Input::keyDown(IGCS_KEY_TIMESTOP))
 		{
@@ -182,7 +188,8 @@ namespace IGCS
 		}
 
 		_camera.resetMovement();
-		float multiplier = altPressed ? FASTER_MULTIPLIER : controlPressed ? SLOWER_MULTIPLIER : 1.0f;
+		Settings& settings = Globals::instance().settings();
+		float multiplier = altPressed ? settings.fastMovementMultiplier : rcontrolPressed ? settings.slowMovementMultiplier : 1.0f;
 		if (Input::keyDown(IGCS_KEY_CAMERA_LOCK))
 		{
 			toggleCameraMovementLockState(!_cameraMovementLocked);
@@ -206,8 +213,9 @@ namespace IGCS
 
 		if (gamePad.isConnected())
 		{
-			float  multiplier = gamePad.isButtonPressed(IGCS_BUTTON_FASTER) ? FASTER_MULTIPLIER : gamePad.isButtonPressed(IGCS_BUTTON_SLOWER) ? SLOWER_MULTIPLIER : multiplierBase;
-
+			Settings& settings = Globals::instance().settings();
+			float  multiplier = gamePad.isButtonPressed(IGCS_BUTTON_FASTER) ? settings.fastMovementMultiplier 
+																			: gamePad.isButtonPressed(IGCS_BUTTON_SLOWER) ? settings.slowMovementMultiplier : multiplierBase;
 			vec2 rightStickPosition = gamePad.getRStickPosition();
 			_camera.pitch(rightStickPosition.y * multiplier);
 			_camera.yaw(rightStickPosition.x * multiplier);
@@ -231,11 +239,11 @@ namespace IGCS
 			}
 			if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_DECREASE))
 			{
-				CameraManipulator::changeFoV(-DEFAULT_FOV_SPEED);
+				CameraManipulator::changeFoV(-Globals::instance().settings().fovChangeSpeed);
 			}
 			if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_INCREASE))
 			{
-				CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
+				CameraManipulator::changeFoV(Globals::instance().settings().fovChangeSpeed);
 			}
 			if (gamePad.isButtonPressed(IGCS_BUTTON_BLOCK_INPUT))
 			{
@@ -317,15 +325,15 @@ namespace IGCS
 	// Initializes system. Will block till camera struct is found.
 	void System::initialize()
 	{
+		Globals::instance().mainWindowHandle(Utils::findMainWindow(GetCurrentProcessId()));
 		InputHooker::setInputHooks();
+		DX11Hooker::initializeHook();
 		Input::registerRawInput();
+
 		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
 		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);
-		GameSpecific::CameraManipulator::waitForCameraStructAddresses(_hostImageAddress);		// blocks till camera is found.
+		waitForCameraStructAddresses();		// blocks till camera is found.
 		GameSpecific::InterceptorHelper::setPostCameraStructHooks(_aobBlocks, _hostImageAddress);
-		//GameSpecific::CameraManipulator::setSupersamplingVarAddress(Utils::calculateAbsoluteAddress(_aobBlocks[SUPERSAMPLING_KEY], 4));
-		// we have to pass 4+1 as the offset to the next instruction here, as the rip relative value is followed by a 0 byte before the next op code starts
-		//GameSpecific::CameraManipulator::setHudToggleVarAddress(Utils::calculateAbsoluteAddress(_aobBlocks[HUD_TOGGLE_KEY], 4+1));
 
 		// camera struct found, init our own camera object now and hook into game code which uses camera.
 		_cameraStructFound = true;
@@ -333,7 +341,21 @@ namespace IGCS
 		_camera.setRoll(INITIAL_ROLL_RADIANS);
 		_camera.setYaw(INITIAL_YAW_RADIANS);
 	}
-	
+
+
+	// Waits for the interceptor to pick up the camera struct address. Should only return if address is found 
+	void System::waitForCameraStructAddresses()
+	{
+		OverlayConsole::instance().logLine("Waiting for camera struct interception...");
+		while(!GameSpecific::CameraManipulator::isCameraFound())
+		{
+			handleUserInput();
+			Sleep(100);
+		}
+		OverlayControl::addNotification("Camera found.");
+		GameSpecific::CameraManipulator::displayCameraStructAddress();
+	}
+		
 
 	void System::toggleInputBlockState(bool newValue)
 	{
@@ -343,7 +365,7 @@ namespace IGCS
 			return;
 		}
 		Globals::instance().inputBlocked(newValue);
-		Console::WriteLine(newValue ? "Input to game blocked" : "Input to game enabled");
+		OverlayControl::addNotification(newValue ? "Input to game blocked" : "Input to game enabled");
 	}
 
 
@@ -355,27 +377,20 @@ namespace IGCS
 			return;
 		}
 		_cameraMovementLocked = newValue;
-		Console::WriteLine(_cameraMovementLocked ? "Camera movement is locked" : "Camera movement is unlocked");
+		OverlayControl::addNotification(_cameraMovementLocked ? "Camera movement is locked" : "Camera movement is unlocked");
 	}
 
 
 	void System::displayCameraState()
 	{
-		Console::WriteLine(g_cameraEnabled ? "Camera enabled" : "Camera disabled");
+		OverlayControl::addNotification(g_cameraEnabled ? "Camera enabled" : "Camera disabled");
 	}
 
-
-	void System::toggleYLookDirectionState()
-	{
-		_camera.toggleLookDirectionInverter();
-		Console::WriteLine(_camera.lookDirectionInverter() < 0 ? "Y look direction is inverted" : "Y look direction is normal");
-	}
-	
 
 	void System::toggleTimestopState()
 	{
 		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
-		Console::WriteLine(_timeStopped ? "Game paused" : "Game unpaused");
+		OverlayControl::addNotification(_timeStopped ? "Game paused" : "Game unpaused");
 		CameraManipulator::setTimeStopValue(_timeStopped);
 	}
 
@@ -398,7 +413,7 @@ namespace IGCS
 				_superSamplingFactor = decrease ? _superSamplingFactor - 0.5f : _superSamplingFactor + 0.5f;
 			}
 		}
-		Console::WriteLine("Supersampling resize factor is now: " + to_string(_superSamplingFactor));
+		OverlayControl::addNotification("Supersampling resize factor is now: " + to_string(_superSamplingFactor));
 		if (currentValue != _superSamplingFactor)
 		{
 			CameraManipulator::setSupersamplingFactor(_hostImageAddress, _superSamplingEnabled ? _superSamplingFactor : 1.0f);
@@ -409,41 +424,7 @@ namespace IGCS
 	void System::toggleSuperSampling()
 	{
 		_superSamplingEnabled = !_superSamplingEnabled;
-		Console::WriteLine(_superSamplingEnabled ? "Supersampling using resize factor is now enabled" : "Supersampling using resize factor is now disabled");
+		OverlayControl::addNotification(_superSamplingEnabled ? "Supersampling using resize factor is now enabled" : "Supersampling using resize factor is now disabled");
 		CameraManipulator::setSupersamplingFactor(_hostImageAddress, _superSamplingEnabled ? _superSamplingFactor : 1.0f);
-	}
-
-
-	void System::displayHelp()
-	{
-						  //0         1         2         3         4         5         6         7
-						  //01234567890123456789012345678901234567890123456789012345678901234567890123456789
-		Console::WriteLine("---[IGCS Help]-----------------------------------------------------------------", CONSOLE_WHITE);
-		Console::WriteLine("INS                                   : Enable/Disable camera");
-		Console::WriteLine("HOME                                  : Lock/unlock camera movement");
-		Console::WriteLine("ALT + rotate/move                     : Faster rotate / move");
-		Console::WriteLine("Right-CTRL + rotate/move              : Slower rotate / move");
-		Console::WriteLine("Controller Y-button + l/r-stick       : Faster rotate / move");
-		Console::WriteLine("Controller X-button + l/r-stick       : Slower rotate / move");
-		Console::WriteLine("Arrow up/down or mouse or r-stick     : Rotate camera up/down");
-		Console::WriteLine("Arrow left/right or mouse or r-stick  : Rotate camera left/right");
-		Console::WriteLine("Numpad 8/Numpad 5 or l-stick          : Move camera forward/backward");
-		Console::WriteLine("Numpad 4/Numpad 6 or l-stick          : Move camera left / right");
-		Console::WriteLine("Numpad 7/Numpad 9 or l/r-trigger      : Move camera up / down");
-		Console::WriteLine("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
-		Console::WriteLine("Numpad +/- or d-pad up/down           : Increase / decrease FoV");
-		Console::WriteLine("Numpad * or controller B-button       : Reset FoV");
-		Console::WriteLine("Numpad /                              : Toggle Y look direction");
-		Console::WriteLine("Numpad . or controller Right Bumper   : Toggle input to game");
-		Console::WriteLine("Numpad 0                              : Toggle game pause");
-		Console::WriteLine("DEL                                   : Toggle supersampling w/ resize factor");
-		Console::WriteLine("[                                     : Decrease supersample resize factor");
-		Console::WriteLine("]                                     : Increase supersample resize factor");
-		Console::WriteLine("ALT+H                                 : This help");
-		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
-		Console::WriteLine(" Please read the enclosed readme.txt for the answers to your questions :)");
-		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
-		// wait for 350ms to avoid fast keyboard hammering
-		Sleep(350);
 	}
 }
