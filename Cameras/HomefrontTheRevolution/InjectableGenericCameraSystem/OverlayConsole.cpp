@@ -79,7 +79,6 @@ namespace IGCS
 		{
 			ImGui::LogToClipboard();
 		}
-		auto& io = ImGui::GetIO();
 		const char* buf_begin = _buf.begin();
 		const char* line = buf_begin;
 		for (int line_no = 0; line != NULL; line_no++)
