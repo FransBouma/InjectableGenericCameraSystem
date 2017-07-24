@@ -263,20 +263,16 @@ todStructInterceptor ENDP
 
 
 hotsampleInterceptor PROC
-;Disrupt_64.dll+6AA914C - EB 0F                 - jmp Disrupt_64.dll+6AA915D
-;Disrupt_64.dll+6AA914E - 01 21                 - add [rcx],esp
-;Disrupt_64.dll+6AA9150 - 44 8B B3 70010000     - mov r14d,[rbx+00000170]			<<< INTERECEPT HERE <<< WIDTH READ OF FRAMEBUFFER (DWORD values)
-;Disrupt_64.dll+6AA9157 - 8B AB 74010000        - mov ebp,[rbx+00000174]			<<< HEIGHT READ OF FRAMEBUFFER. 
-;Disrupt_64.dll+6AA915D - 48 8B 4E 08           - mov rcx,[rsi+08]
-;Disrupt_64.dll+6AA9161 - 48 85 C9              - test rcx,rcx						<<< CONTINUE HERE
-;Disrupt_64.dll+6AA9164 - 0F84 44010000         - je Disrupt_64.dll+6AA92AE
-;Disrupt_64.dll+6AA916A - 48 8B 01              - mov rax,[rcx]
-;Disrupt_64.dll+6AA916D - 48 8D 54 24 30        - lea rdx,[rsp+30]
-;Disrupt_64.dll+6AA9172 - FF 50 60              - call qword ptr [rax+60]
+;Disrupt_64.dll+6F052F0 - 44 8B B3 A0010000     - mov r14d,[rbx+000001A0]			<<< INTERCEPT HERE <<< WIDTH READ OF FRAMEBUFFER (DWORD values)
+;Disrupt_64.dll+6F052F7 - 8B AB A4010000        - mov ebp,[rbx+000001A4]			<<< HEIGHT READ OF FRAMEBUFFER. 
+;Disrupt_64.dll+6F052FD - 48 8B 4E 08           - mov rcx,[rsi+08]
+;Disrupt_64.dll+6F05301 - 48 85 C9              - test rcx,rcx						<<< CONTINUE HERE
+;Disrupt_64.dll+6F05304 - 0F84 42010000         - je Disrupt_64.dll+6F0544C
+;Disrupt_64.dll+6F0530A - 48 8B 01              - mov rax,[rcx]
 	push rax
 	mov eax, [g_hotsampleFactor]
-	mov r14d, dword ptr [rbx+00000170h]					; read width
-	mov ebp, dword ptr [rbx+00000174h]						; read height
+	mov r14d, dword ptr [rbx+000001A0h]					; read width
+	mov ebp, dword ptr [rbx+000001A4h]						; read height
 	cmp byte ptr [g_hotsampleEnabled], 1
 	jne originalCode				
 	; hotsampling enabled. Multiply both registers with factor, using integer math
