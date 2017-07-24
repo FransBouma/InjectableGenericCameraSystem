@@ -30,8 +30,8 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Prey 2017 1.0.3+"
-	#define CAMERA_VERSION								"1.0.4"
+	#define GAME_NAME									"Prey 2017 1.0.4+"
+	#define CAMERA_VERSION								"1.0.5"
 	#define CAMERA_CREDITS								"Otis_Inf. HUD toggle by Jonas Beckman & SunBeam"
 	#define GAME_WINDOW_TITLE							"Prey"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)

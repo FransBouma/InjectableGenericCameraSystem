@@ -267,22 +267,25 @@ timestopInterceptor ENDP
 
 
 fovReadInterceptor PROC
-;Prey.AK::Monitor::PostCode+11EB4CA - 48 8B 05 4F510E01     - mov rax,[Prey.AmdPowerXpressRequestHighPerformance+860E0] 
-;Prey.AK::Monitor::PostCode+11EB4D1 - F3 0F10 53 0C         - movss xmm2,[rbx+0C]										<<<< INTERCEP HERE
-;Prey.AK::Monitor::PostCode+11EB4D6 - 0F28 D8               - movaps xmm3,xmm0
-;Prey.AK::Monitor::PostCode+11EB4D9 - F3 0F10 48 08         - movss xmm1,[rax+08]							<< Read FOV. 
-;Prey.AK::Monitor::PostCode+11EB4DE - 0F2E CA               - ucomiss xmm1,xmm2
-;Prey.AK::Monitor::PostCode+11EB4E1 - 75 09                 - jne Prey.AK::Monitor::PostCode+11EB4EC					<<< CONTINUE HERE
-;Prey.AK::Monitor::PostCode+11EB4E3 - 0F57 C0               - xorps xmm0,xmm0
-;Prey.AK::Monitor::PostCode+11EB4E6 - 48 83 C4 20           - add rsp,20 { 32 }
-;Prey.AK::Monitor::PostCode+11EB4EA - 5B                    - pop rbx
-;Prey.AK::Monitor::PostCode+11EB4EB - C3                    - ret 
+;Prey.exe+1511CAE - F3 0F10 4B 18         - movss xmm1,[rbx+18]
+;Prey.exe+1511CB3 - 48 8B 05 26D9EF00     - mov rax,[Prey.exe+240F5E0] { [2ED22CE0] }
+;Prey.exe+1511CBA - F3 0F5C C8            - subss xmm1,xmm0
+;Prey.exe+1511CBE - F3 0F10 05 F256AC00   - movss xmm0,[Prey.exe+1FD73B8] { [1.00] }
+;Prey.exe+1511CC6 - F3 0F58 48 08         - addss xmm1,[rax+08]						<< INTERCEPT HERE. FOV Read
+;Prey.exe+1511CCB - 0F2F C8               - comiss xmm1,xmm0
+;Prey.exe+1511CCE - 76 03                 - jna Prey.exe+1511CD3
+;Prey.exe+1511CD0 - 0F28 C1               - movaps xmm0,xmm1
+;Prey.exe+1511CD3 - 48 83 C4 20           - add rsp,20 { 32 }
+;Prey.exe+1511CD7 - 5B                    - pop rbx									<< CONTINUE HERE
+;Prey.exe+1511CD8 - C3                    - ret 
 	mov [g_fovConstructAddress], rax
 originalCode:
-	movss xmm2, dword ptr [rbx+0Ch]
-	movaps xmm3,xmm0
-	movss xmm1, dword ptr [rax+08h]
-	ucomiss xmm1,xmm2
+	addss xmm1, dword ptr [rax+08h]	
+	comiss xmm1,xmm0
+	jna noMove
+	movaps xmm0,xmm1
+noMove:
+	add rsp, 20h
 exit:
 	jmp qword ptr [_fovReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 fovReadInterceptor ENDP
