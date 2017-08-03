@@ -2,8 +2,8 @@ Injectable camera for Homefront: The Revolution
 ============================
 
 Current supported game version: v1.0.0.1+
-Camera version: 1.0.3  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/HTR_103   
+Camera version: 1.0.4  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/HTR_104   
 Credits: Otis_Inf and One3rd
 
 ### How to use

@@ -11,10 +11,7 @@ The system is initially designed for 64bit hosts as all games are 64bit nowadays
 
 ## Folder structure description
 
-In the folder `Cameras` you'll several implementations of the system, adapted for specific games. The most up-to-date camera is currently the Hitman
-camera source. New cameras should be based on that source code. It might be you need coordinate calculations which differ from the one in the Hitman
-camera as the Hitman engine seems to use a non-conventional coordinate system. Use one of the other camera's calculations to make it work in your camera
-if the one in the Hitman camera doesn't work.
+In the folder `Cameras` you'll several implementations of the system, adapted for specific games. The most up-to-date camera is currently the Homefront: The Revolution camera source. New cameras should be based on that source code. 
 
 The cameras don't use a shared piece of code as in general cameras have to be adapted to a game pretty deeply and I didn't want to make a big
 configurable ball. Additionally, cameras are often written once and perhaps fixed once or twice when the game is updated, but that's it. Copying

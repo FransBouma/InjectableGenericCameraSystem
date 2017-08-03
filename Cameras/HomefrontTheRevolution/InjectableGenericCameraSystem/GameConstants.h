@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Homefront: The Revolution v1.0.0.1+"
-	#define CAMERA_VERSION								"1.0.3"
+	#define CAMERA_VERSION								"1.0.4"
 	#define CAMERA_CREDITS								"Otis_Inf and One3rd"
 	#define GAME_WINDOW_TITLE							"Homefront: The Revolution"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
