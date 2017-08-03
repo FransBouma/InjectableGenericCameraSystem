@@ -62,8 +62,9 @@ namespace IGCS::OverlayControl
 		ImGui_ImplDX11_NewFrame();
 		Globals::instance().saveSettingsIfRequired(ImGui::GetIO().DeltaTime);
 		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiSetCond_FirstUseEver);     // Normally user code doesn't need/want to call it because positions are saved in .ini file anyway. 
+		auto& io = ImGui::GetIO();
+		io.MouseDrawCursor = _showMainWindow;
 		renderMainWindow();
-		//ImGui::ShowTestWindow(&_showMainWindow);
 		renderSplash();
 		renderNotifications();
 		ImGui::Render();

@@ -601,7 +601,6 @@ void ImGui_ImplDX11_NewFrame()
 	io.KeyShift = io.KeysDown[VK_SHIFT] == 1;
 	io.KeyAlt = io.KeysDown[VK_MENU] == 1;
     io.KeySuper = false;
-	io.MouseDrawCursor = true;
 	if (io.KeyCtrl)
 	{
 		// Change global font scale if user presses the control key and moves the mouse wheel
@@ -618,8 +617,6 @@ void ImGui_ImplDX11_NewFrame()
 		}
 	}
 	g_keyStateMutex.unlock();
-    // Hide OS mouse cursor if ImGui is drawing it
-    SetCursor(NULL);
 
     // Start the frame
     ImGui::NewFrame();
