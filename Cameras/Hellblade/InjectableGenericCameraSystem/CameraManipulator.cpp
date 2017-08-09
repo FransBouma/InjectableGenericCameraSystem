@@ -38,8 +38,6 @@ using namespace std;
 extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
 	LPBYTE g_timestopStructAddress = nullptr;
-	LPBYTE g_fovStructAddress = nullptr;
-
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -47,50 +45,50 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static float _originalCoords[3];
 	static float _originalAngles[3];
 	static float _currentCameraCoords[3];
-	static float _originalFov;
-
-
+	
 	// Resets the FOV to the one it got when we enabled the camera
 	void resetFoV()
 	{
-		if (nullptr == g_fovStructAddress)
+		if (nullptr == g_cameraStructAddress)
 		{
 			return;
 		}
 		// there are two offsets, one is the regular game fov, the other is the photomode offset. If the photomode offset isn't bigger than 0, we write
 		// the regular fov offset, otherwise we'll write the photomode offset
-		float* fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOVPM_IN_STRUCT_OFFSET);
+		float* fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOVPM_IN_STRUCT_OFFSET);
 		if (*fovInMemory > 0.0f)
 		{
-			*fovInMemory = _originalFov;
+			*fovInMemory = DEFAULT_FOV_DEGREES;
 		}
 		else
 		{
-			fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
-			*fovInMemory = _originalFov;
+			fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
+			*fovInMemory = DEFAULT_FOV_DEGREES;
 		}
+		g_fovValue = DEFAULT_FOV_DEGREES;
 	}
 
 
 	// changes the FoV with the specified amount
 	void changeFoV(float amount)
 	{
-		if (nullptr == g_fovStructAddress)
+		if (nullptr == g_cameraStructAddress)
 		{
 			return;
 		}
 		// there are two offsets, one is the regular game fov, the other is the photomode offset. If the photomode offset isn't bigger than 0, we write
 		// the regular fov offset, otherwise we'll write the photomode offset
-		float* fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOVPM_IN_STRUCT_OFFSET);
+		float* fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOVPM_IN_STRUCT_OFFSET);
 		if (*fovInMemory > 0.0f)
 		{
 			*fovInMemory += amount;
 		}
 		else
 		{
-			fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
+			fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
 			*fovInMemory += amount;
 		}
+		g_fovValue += amount;
 	}
 
 
@@ -144,8 +142,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 		memcpy(coordsInMemory, _originalCoords, 3 * sizeof(float));
 		float* anglesInMemory = reinterpret_cast<float*>(g_cameraStructAddress + ANGLES_IN_STRUCT_OFFSET);
 		memcpy(anglesInMemory, _originalAngles, 3 * sizeof(float));
-		float* fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
-		*fovInMemory = _originalFov;
 	}
 
 
@@ -158,7 +154,5 @@ namespace IGCS::GameSpecific::CameraManipulator
 		_currentCameraCoords[2] = _originalCoords[2];		// z
 		float* anglesInMemory = reinterpret_cast<float*>(g_cameraStructAddress + ANGLES_IN_STRUCT_OFFSET);
 		memcpy(_originalAngles, anglesInMemory, 3 * sizeof(float));
-		float* fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
-		_originalFov = *fovInMemory;
 	}
 }

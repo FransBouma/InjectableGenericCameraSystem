@@ -453,8 +453,8 @@ bool CDataFile::GetBool(t_Str szKey, t_Str szSection)
 	t_Str szValue = GetValue(szKey, szSection);
 
 	if ( szValue.find("1") == 0 
-		|| CompareNoCase(szValue, "true") 
-		|| CompareNoCase(szValue, "yes") )
+		|| CompareNoCase(szValue, "true") == 0
+		|| CompareNoCase(szValue, "yes") == 0 )
 	{
 		bValue = true;
 	}

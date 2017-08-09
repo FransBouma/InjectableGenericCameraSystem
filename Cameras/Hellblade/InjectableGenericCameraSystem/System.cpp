@@ -215,10 +215,6 @@ namespace IGCS
 			{
 				_camera.roll(-multiplier);
 			}
-			if (gamePad.isButtonPressed(IGCS_BUTTON_RESET_FOV))
-			{
-				CameraManipulator::resetFoV();
-			}
 			if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_DECREASE))
 			{
 				CameraManipulator::changeFoV(-Globals::instance().settings().fovChangeSpeed);
@@ -226,11 +222,6 @@ namespace IGCS
 			if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_INCREASE))
 			{
 				CameraManipulator::changeFoV(Globals::instance().settings().fovChangeSpeed);
-			}
-			if (gamePad.isButtonPressed(IGCS_BUTTON_BLOCK_INPUT))
-			{
-				toggleInputBlockState(!Globals::instance().inputBlocked());
-				Sleep(350);				// wait for 350ms to avoid fast hammering
 			}
 		}
 	}

@@ -62,12 +62,10 @@ namespace IGCS
 
 	#define IGCS_BUTTON_FOV_DECREASE	Gamepad::button_t::UP
 	#define IGCS_BUTTON_FOV_INCREASE	Gamepad::button_t::DOWN
-	#define IGCS_BUTTON_RESET_FOV		Gamepad::button_t::B
 	#define IGCS_BUTTON_TILT_LEFT		Gamepad::button_t::LEFT
 	#define IGCS_BUTTON_TILT_RIGHT		Gamepad::button_t::RIGHT
 	#define IGCS_BUTTON_FASTER			Gamepad::button_t::Y
 	#define IGCS_BUTTON_SLOWER			Gamepad::button_t::X
-	#define IGCS_BUTTON_BLOCK_INPUT		Gamepad::button_t::RB
 
 	static const byte jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]
 }

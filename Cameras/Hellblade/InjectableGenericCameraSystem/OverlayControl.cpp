@@ -174,6 +174,9 @@ Special thanks to:
 		if (ImGui::CollapsingHeader("General info"))
 		{
 			ImGui::PushTextWrapPos();
+			ImGui::TextUnformatted("* These camera tools are designed to be used with the in-game photomode, and the controls are adjusted to that.");
+			ImGui::TextUnformatted("* To use the tools properly with a controller, for camera movement / fov / roll, select the 'Movement' tab on the photomode UI. For the rest of the photomode UI use mouse / keyboard.");
+			ImGui::TextUnformatted("* In the in-game photomode and the camera is enabled, it can't be rotated with the mouse if the photomode menu is up, in that case you have to use the cursorkeys or a controller, or hide the photomode menu first.");
 			ImGui::TextUnformatted("* When the main window is open, all input of keyboard / mouse to the game is blocked and the camera is locked.");
 			ImGui::TextUnformatted("* All changes you make to the main window (position/size) are saved to a file in the game root folder.");
 			ImGui::TextUnformatted("* Any setting you change will make the settings to be saved to a file in the game root folder.");
@@ -191,15 +194,15 @@ Special thanks to:
 			ImGui::TextUnformatted("Right-CTRL + rotate/move              : Slower rotate / move");
 			ImGui::TextUnformatted("Controller Y-button + l/r-stick       : Faster rotate / move");
 			ImGui::TextUnformatted("Controller X-button + l/r-stick       : Slower rotate / move");
-			ImGui::TextUnformatted("Arrow up/down or mouse or r-stick     : Rotate camera up/down");
-			ImGui::TextUnformatted("Arrow left/right or mouse or r-stick  : Rotate camera left/right");
+			ImGui::TextUnformatted("Arrow up/down or r-stick              : Rotate camera up/down");
+			ImGui::TextUnformatted("Arrow left/right or r-stick           : Rotate camera left/right");
 			ImGui::TextUnformatted("Numpad 8/Numpad 5 or l-stick          : Move camera forward/backward");
 			ImGui::TextUnformatted("Numpad 4/Numpad 6 or l-stick          : Move camera left / right");
 			ImGui::TextUnformatted("Numpad 7/Numpad 9 or l/r-trigger      : Move camera up / down");
 			ImGui::TextUnformatted("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
 			ImGui::TextUnformatted("Numpad +/- or d-pad up/down           : Increase / decrease FoV");
-			ImGui::TextUnformatted("Numpad * or controller B-button       : Reset FoV");
-			ImGui::TextUnformatted("Numpad . or controller Right Bumper   : Block / allow input to game");
+			ImGui::TextUnformatted("Numpad *                              : Reset FoV");
+			ImGui::TextUnformatted("Numpad .                              : Block / allow input to game");
 		}
 		if (ImGui::CollapsingHeader("Settings editor help"))
 		{
