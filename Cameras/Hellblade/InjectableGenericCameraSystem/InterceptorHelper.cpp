@@ -39,12 +39,14 @@ using namespace std;
 extern "C" {
 	void cameraStructInterceptor();
 	void fovReadInterceptor();
+	void cameraWriteInterceptor();
 }
 
 // external addresses used in asm.
 extern "C" {
 	LPBYTE _cameraStructInterceptionContinue = nullptr;
 	LPBYTE _fovReadInterceptionContinue = nullptr;
+	LPBYTE _cameraWriteInterceptionContinue = nullptr;
 }
 
 
@@ -52,9 +54,10 @@ namespace IGCS::GameSpecific::InterceptorHelper
 {
 	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, map<string, AOBBlock*> &aobBlocks)
 	{
-		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "F2 0F 11 87 ?? ?? ?? ?? F2 0F 10 44 24 ?? F2 0F 11 87 ?? ?? ?? ?? 0F10 44 24 ?? 89 87 ?? ?? ?? ?? 8B 44 24 ?? 89 87 ?? ?? ?? ?? 8B 44 24 ?? ", 1);	
+		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "F2 0F 11 87 ?? ?? ?? ?? F2 0F 10 44 24 ?? F2 0F 11 87 ?? ?? ?? ?? 0F10 44 24 ?? 89 87 ?? ?? ?? ?? 8B 44 24 ?? 89 87 ?? ?? ?? ?? 8B 44 24 ??", 1);	
 		aobBlocks[FOV_INTERCEPT_KEY] = new AOBBlock(FOV_INTERCEPT_KEY, "F3 0F10 81 14 04 00 00 0F 57 C9 0F 2F C1 77 08 F3 0F 10 81", 1);
-		
+		aobBlocks[CAMERA_WRITE_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT_KEY, "F2 0F 11 83 ?? ?? ?? ?? F2 0F 10 44 24 ?? F2 0F 11 83 ?? ?? ?? ?? 0F 10 44 24", 1);
+
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
 		for (it = aobBlocks.begin(); it != aobBlocks.end(); it++)
@@ -81,5 +84,6 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void setPostCameraStructHooks(map<string, AOBBlock*> &aobBlocks, LPBYTE hostImageAddress)
 	{
 		GameImageHooker::setHook(aobBlocks[FOV_INTERCEPT_KEY], 0x18, &_fovReadInterceptionContinue, &fovReadInterceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE_INTERCEPT_KEY], 0x2B, &_cameraWriteInterceptionContinue, &cameraWriteInterceptor);
 	}
 }

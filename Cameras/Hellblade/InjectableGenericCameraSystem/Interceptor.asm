@@ -32,6 +32,7 @@
 ;---------------------------------------------------------------
 ; Public definitions so the linker knows which names are present in this file
 PUBLIC cameraStructInterceptor
+PUBLIC cameraWriteInterceptor
 PUBLIC fovReadInterceptor
 ;---------------------------------------------------------------
 
@@ -47,7 +48,7 @@ EXTERN g_fovValue: dword
 ; Own externs, defined in InterceptorHelper.cpp
 EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _fovReadInterceptionContinue: qword
-
+EXTERN _cameraWriteInterceptionContinue: qword
 .data
 ;---------------------------------------------------------------
 ; Scratch pad
@@ -92,6 +93,34 @@ originalCode:
 exit:
 	jmp qword ptr [_cameraStructInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraStructInterceptor ENDP
+
+cameraWriteInterceptor PROC
+; Menu camera block write. We'll block it out when camera is enabled. 
+;HellbladeGame-Win64-Shipping.exe+1959211 - F2 0F11 83 80040000   - movsd [rbx+00000480],xmm0			<< INTERCEPT HERE
+;HellbladeGame-Win64-Shipping.exe+1959219 - F2 0F10 44 24 2C      - movsd xmm0,[rsp+2C]
+;HellbladeGame-Win64-Shipping.exe+195921F - F2 0F11 83 8C040000   - movsd [rbx+0000048C],xmm0
+;HellbladeGame-Win64-Shipping.exe+1959227 - 0F10 44 24 38         - movups xmm0,[rsp+38]
+;HellbladeGame-Win64-Shipping.exe+195922C - 89 83 88040000        - mov [rbx+00000488],eax
+;HellbladeGame-Win64-Shipping.exe+1959232 - 8B 44 24 34           - mov eax,[rsp+34]
+;HellbladeGame-Win64-Shipping.exe+1959236 - 89 83 94040000        - mov [rbx+00000494],eax
+;HellbladeGame-Win64-Shipping.exe+195923C - 8B 44 24 4C           - mov eax,[rsp+4C]					<<< CONTINUE HERE
+;HellbladeGame-Win64-Shipping.exe+1959240 - 0F11 83 98040000      - movups [rbx+00000498],xmm0			
+;HellbladeGame-Win64-Shipping.exe+1959247 - 83 E0 03              - and eax,03 { 3 }
+;HellbladeGame-Win64-Shipping.exe+195924A - F3 0F10 44 24 48      - movss xmm0,[rsp+48]
+	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
+	je exit
+originalCode:
+	movsd qword ptr [rbx+00000480h],xmm0
+	movsd xmm0, qword ptr [rsp+2Ch]
+	movsd qword ptr [rbx+0000048Ch],xmm0
+	movups xmm0, xmmword ptr [rsp+38h]
+	mov dword ptr [rbx+00000488h],eax
+	mov eax, dword ptr [rsp+34h]
+	mov dword ptr [rbx+00000494h],eax
+exit:
+	jmp qword ptr [_cameraWriteInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+cameraWriteInterceptor ENDP
+
 
 
 fovReadInterceptor PROC
