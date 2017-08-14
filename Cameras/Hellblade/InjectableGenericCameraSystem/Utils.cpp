@@ -45,7 +45,8 @@ namespace IGCS::Utils
 			int bufsize = GetWindowTextLength(handle) + 1;
 			LPWSTR title = new WCHAR[bufsize];
 			GetWindowText(handle, title, bufsize);
-			toReturn &= (_wcsicmp(title, TEXT(GAME_WINDOW_TITLE)) == 0);
+			// trick to do a 'startswith' compare. Will only return 0 if the string actually starts with the fragment we want to compare with
+			toReturn &= (wcsncmp(title, TEXT(GAME_WINDOW_TITLE), strlen(GAME_WINDOW_TITLE))==0);
 			// convert title to char* so we can display it
 			_bstr_t titleAsBstr(title);
 			const char* titleAsChar = titleAsBstr;		// char conversion copy

@@ -33,7 +33,7 @@ namespace IGCS::GameSpecific
 	#define GAME_NAME									"Hellblade: Senua's Sacrifice v1.0"
 	#define CAMERA_VERSION								"1.0.0"
 	#define CAMERA_CREDITS								"Otis_Inf"
-	#define GAME_WINDOW_TITLE							"Hellblade: Senua's Sacrifice "
+	#define GAME_WINDOW_TITLE							"Hellblade"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
 	#define INITIAL_YAW_RADIANS							0.0f	// around Y axis	(into the screen)
 	#define INITIAL_ROLL_RADIANS						0.0f	// aruond Z axis	(up)
