@@ -200,6 +200,7 @@ Special thanks to:
 			ImGui::TextUnformatted("Numpad 4/Numpad 6 or l-stick          : Move camera left / right");
 			ImGui::TextUnformatted("Numpad 7/Numpad 9 or l/r-trigger      : Move camera up / down");
 			ImGui::TextUnformatted("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
+			ImGui::TextUnformatted("Numpad 0                              : Toggle game pause");
 			ImGui::TextUnformatted("Numpad +/- or d-pad up/down           : Increase / decrease FoV");
 			ImGui::TextUnformatted("Numpad *                              : Reset FoV");
 			ImGui::TextUnformatted("Numpad .                              : Block / allow input to game");
