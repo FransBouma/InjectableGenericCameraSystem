@@ -146,6 +146,12 @@ namespace IGCS
 			displayCameraState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
+		if (Input::keyDown(IGCS_KEY_TIMESTOP))
+		{
+			g_gamePaused = g_gamePaused == 0 ? (byte)1 : (byte)0;
+			displayGamePauseState();
+			Sleep(350);
+		}
 		if (Input::keyDown(IGCS_KEY_FOV_RESET))
 		{
 			CameraManipulator::resetFoV();
@@ -358,5 +364,11 @@ namespace IGCS
 	void System::displayCameraState()
 	{
 		OverlayControl::addNotification(g_cameraEnabled ? "Camera enabled" : "Camera disabled");
+	}
+
+
+	void System::displayGamePauseState()
+	{
+		OverlayControl::addNotification(g_gamePaused ? "Game paused" : "Game unpaused");
 	}
 }

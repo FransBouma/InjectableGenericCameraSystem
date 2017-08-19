@@ -34,12 +34,14 @@
 PUBLIC cameraStructInterceptor
 PUBLIC cameraWriteInterceptor
 PUBLIC fovReadInterceptor
+PUBLIC timestopInterceptor
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
 ; Externs which are used and set by the system. Read / write these
 ; values in asm to communicate with the system
 EXTERN g_cameraEnabled: byte
+EXTERN g_gamePaused: byte
 EXTERN g_cameraStructAddress: qword
 EXTERN g_fovValue: dword
 ;---------------------------------------------------------------
@@ -49,6 +51,7 @@ EXTERN g_fovValue: dword
 EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _fovReadInterceptionContinue: qword
 EXTERN _cameraWriteInterceptionContinue: qword
+EXTERN _timestopInterceptionContinue: qword
 .data
 ;---------------------------------------------------------------
 ; Scratch pad
@@ -149,5 +152,71 @@ originalCode:
 exit:
 	jmp qword ptr [_fovReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 fovReadInterceptor ENDP
+
+
+timestopInterceptor PROC
+; UE4 doesn't use a byte to signal a paused game, though the cheat manager could in theory be used for that, it's not always available
+; In the engine it calls this function, which will return 1 for a paused game, or 0 if not. 
+; We'll intercept the start, and simply return 1 in al if the user pressed numpad 0 and return immediately, or continue the original code if the 
+; user hasn't paused the game. The complete code is given below for future reference of timestop in UE powered games.
+;hellbladeGame-Win64-Shipping.exe+1801AE0 - 40 53                 - push rbx												<<< INTERCEPT HERE
+;HellbladeGame-Win64-Shipping.exe+1801AE2 - 48 83 EC 20           - sub rsp,20 { 32 }
+;HellbladeGame-Win64-Shipping.exe+1801AE6 - 41 B0 01              - mov r8l,01 { 1 }
+;HellbladeGame-Win64-Shipping.exe+1801AE9 - 33 D2                 - xor edx,edx
+;HellbladeGame-Win64-Shipping.exe+1801AEB - 48 8B D9              - mov rbx,rcx
+;HellbladeGame-Win64-Shipping.exe+1801AEE - E8 3D972B00           - call HellbladeGame-Win64-Shipping.exe+1ABB230			<<< CONTINUE HERE
+;HellbladeGame-Win64-Shipping.exe+1801AF3 - 48 85 C0              - test rax,rax
+;HellbladeGame-Win64-Shipping.exe+1801AF6 - 74 1B                 - je HellbladeGame-Win64-Shipping.exe+1801B13
+;HellbladeGame-Win64-Shipping.exe+1801AF8 - 48 83 B8 70050000 00  - cmp qword ptr [rax+00000570],00 { 0 }
+;HellbladeGame-Win64-Shipping.exe+1801B00 - 74 11                 - je HellbladeGame-Win64-Shipping.exe+1801B13
+;HellbladeGame-Win64-Shipping.exe+1801B02 - F3 0F10 83 0C090000   - movss xmm0,[rbx+0000090C]
+;HellbladeGame-Win64-Shipping.exe+1801B0A - 0F2F 83 F8080000      - comiss xmm0,[rbx+000008F8]
+;HellbladeGame-Win64-Shipping.exe+1801B11 - 76 5E                 - jna HellbladeGame-Win64-Shipping.exe+1801B71
+;HellbladeGame-Win64-Shipping.exe+1801B13 - F6 83 A0090000 08     - test byte ptr [rbx+000009A0],08 { 8 }
+;HellbladeGame-Win64-Shipping.exe+1801B1A - 74 0D                 - je HellbladeGame-Win64-Shipping.exe+1801B29
+;HellbladeGame-Win64-Shipping.exe+1801B1C - 48 8B CB              - mov rcx,rbx
+;HellbladeGame-Win64-Shipping.exe+1801B1F - E8 2CAF2B00           - call HellbladeGame-Win64-Shipping.exe+1ABCA50
+;HellbladeGame-Win64-Shipping.exe+1801B24 - 83 F8 03              - cmp eax,03 { 3 }
+;HellbladeGame-Win64-Shipping.exe+1801B27 - 74 48                 - je HellbladeGame-Win64-Shipping.exe+1801B71
+;HellbladeGame-Win64-Shipping.exe+1801B29 - 48 8B 0D A87C0E02     - mov rcx,[HellbladeGame-Win64-Shipping.exe+38E97D8] { [DDD130100] }
+;HellbladeGame-Win64-Shipping.exe+1801B30 - 48 8B D3              - mov rdx,rbx
+;HellbladeGame-Win64-Shipping.exe+1801B33 - E8 08292800           - call HellbladeGame-Win64-Shipping.exe+1A84440
+;HellbladeGame-Win64-Shipping.exe+1801B38 - 84 C0                 - test al,al
+;HellbladeGame-Win64-Shipping.exe+1801B3A - 75 35                 - jne HellbladeGame-Win64-Shipping.exe+1801B71
+;HellbladeGame-Win64-Shipping.exe+1801B3C - F7 83 A0090000 00000200 - test [rbx+000009A0],20000 { 131072 }
+;HellbladeGame-Win64-Shipping.exe+1801B46 - 75 29                 - jne HellbladeGame-Win64-Shipping.exe+1801B71
+;HellbladeGame-Win64-Shipping.exe+1801B48 - E8 3332F5FF           - call HellbladeGame-Win64-Shipping.exe+1754D80
+;HellbladeGame-Win64-Shipping.exe+1801B4D - 85 C0                 - test eax,eax
+;HellbladeGame-Win64-Shipping.exe+1801B4F - 75 20                 - jne HellbladeGame-Win64-Shipping.exe+1801B71
+;HellbladeGame-Win64-Shipping.exe+1801B51 - 48 8B CB              - mov rcx,rbx
+;HellbladeGame-Win64-Shipping.exe+1801B54 - E8 57B02B00           - call HellbladeGame-Win64-Shipping.exe+1ABCBB0
+;HellbladeGame-Win64-Shipping.exe+1801B59 - 84 C0                 - test al,al
+;HellbladeGame-Win64-Shipping.exe+1801B5B - 74 0C                 - je HellbladeGame-Win64-Shipping.exe+1801B69
+;HellbladeGame-Win64-Shipping.exe+1801B5D - F7 83 A0090000 00100000 - test [rbx+000009A0],1000 { 4096 }
+;HellbladeGame-Win64-Shipping.exe+1801B67 - 75 08                 - jne HellbladeGame-Win64-Shipping.exe+1801B71
+;HellbladeGame-Win64-Shipping.exe+1801B69 - 32 C0                 - xor al,al											<<<< return 0, game isn't paused
+;HellbladeGame-Win64-Shipping.exe+1801B6B - 48 83 C4 20           - add rsp,20 { 32 }
+;HellbladeGame-Win64-Shipping.exe+1801B6F - 5B                    - pop rbx
+;HellbladeGame-Win64-Shipping.exe+1801B70 - C3                    - ret 
+;HellbladeGame-Win64-Shipping.exe+1801B71 - B0 01                 - mov al,01 { 1 }										<<<< return 1, game is paused.
+;HellbladeGame-Win64-Shipping.exe+1801B73 - 48 83 C4 20           - add rsp,20 { 32 }
+;HellbladeGame-Win64-Shipping.exe+1801B77 - 5B                    - pop rbx
+;HellbladeGame-Win64-Shipping.exe+1801B78 - C3                    - ret 
+
+	cmp byte ptr [g_gamePaused], 0
+	je originalCode						; game not paused, continue as if nothing happened
+gamePaused:
+	; simply return 1 in al and return, as we have to return the call here not in the original code
+	mov al, 01h
+	ret
+originalCode:
+	push rbx					
+	sub rsp,20h
+	mov r8b,01h
+	xor edx,edx
+	mov rbx,rcx
+exit:
+	jmp qword ptr [_timestopInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+timestopInterceptor ENDP
 
 END

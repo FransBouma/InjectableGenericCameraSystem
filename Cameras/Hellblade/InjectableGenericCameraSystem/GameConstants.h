@@ -30,8 +30,8 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Hellblade: Senua's Sacrifice v1.0"
-	#define CAMERA_VERSION								"1.0.1"
+	#define GAME_NAME									"Hellblade: Senua's Sacrifice v1.0+"
+	#define CAMERA_VERSION								"1.0.2"
 	#define CAMERA_CREDITS								"Otis_Inf"
 	#define GAME_WINDOW_TITLE							"Hellblade"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
@@ -52,6 +52,7 @@ namespace IGCS::GameSpecific
 	#define CAMERA_ADDRESS_INTERCEPT_KEY				"AOB_CAMERA_ADDRESS_INTERCEPT"
 	#define FOV_INTERCEPT_KEY							"AOB_FOV_INTERCEPT"
 	#define CAMERA_WRITE_INTERCEPT_KEY					"AOB_CAMERA_WRITE_INTERCEPT"
+	#define TIMESTOP_INTERCEPT_KEY						"AOB_TIMESTOP_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
 	#define COORDS_IN_STRUCT_OFFSET						0x480

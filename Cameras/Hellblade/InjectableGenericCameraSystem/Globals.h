@@ -34,6 +34,7 @@
 
 extern "C" byte g_cameraEnabled;
 extern "C" float g_fovValue;
+extern "C" byte g_gamePaused;
 
 namespace IGCS
 {
