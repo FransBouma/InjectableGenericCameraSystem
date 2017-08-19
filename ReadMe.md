@@ -11,7 +11,7 @@ The system is initially designed for 64bit hosts as all games are 64bit nowadays
 
 ## Folder structure description
 
-In the folder `Cameras` you'll several implementations of the system, adapted for specific games. The most up-to-date camera is currently the Homefront: The Revolution camera source. New cameras should be based on that source code. 
+In the folder `Cameras` you'll several implementations of the system, adapted for specific games. The most up-to-date camera is currently the Hellblade: Senua's Sacrifice camera source. New cameras should be based on that source code. 
 
 The cameras don't use a shared piece of code as in general cameras have to be adapted to a game pretty deeply and I didn't want to make a big
 configurable ball. Additionally, cameras are often written once and perhaps fixed once or twice when the game is updated, but that's it. Copying
@@ -31,6 +31,7 @@ automatically when you clone the repo. The camera uses DirectXMath for the 3D ma
 * Bulletstorm Full Clip Edition: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/BulletstormFCE
 * Deus Ex: Mankind Divided: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/DXMD
 * DOOM x64: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/DOOM
+* Hellblade: Senua's Sacrifice: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Hellblade
 * Hitman 2016: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Hitman2016
 * Homefront: The Revolution: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/HomefrontTheRevolution
 * Lords of the Fallen: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/LordsOfTheFallen
