@@ -36,27 +36,17 @@ using namespace std;
 // external asm functions
 extern "C" {
 	void cameraAddressInterceptor();
-	void cameraWriteInterceptor1();		// create as much interceptors for write interception as needed. In the example game, there are 4.
-	void cameraWriteInterceptor2();
-	void cameraWriteInterceptor3();
-	void gamespeedAddressInterceptor();
 	void fovInterceptor();
+	void timestopInterceptor();
 }
 
 // external addresses used in asm.
 extern "C" {
 	// The continue address for continuing execution after camera values address interception. 
 	LPBYTE _cameraStructInterceptionContinue = nullptr;
-	// the continue address for continuing execution after interception of the first block of code which writes to the camera values. 
-	LPBYTE _cameraWriteInterceptionContinue1 = nullptr;
-	// the continue address for continuing execution after interception of the second block of code which writes to the camera values. 
-	LPBYTE _cameraWriteInterceptionContinue2 = nullptr;
-	// the continue address for continuing execution after interception of the third block of code which writes to the camera values. 
-	LPBYTE _cameraWriteInterceptionContinue3 = nullptr;
-	// the continue address for the continuing execution after interception of the gamespeed block of code. 
-	LPBYTE _gamespeedInterceptionContinue = nullptr;
 	// the continue address for the continuing execution after interception of the FoV block of code
 	LPBYTE _fovInterceptorContinue = nullptr;
+	LPBYTE _timestopInterceptorContinue = nullptr;
 	// the base address of the host process. 
 	LPBYTE _hostBaseAddress = nullptr;
 }
@@ -79,8 +69,6 @@ namespace IGCS::GameSpecific::InterceptorHelper
 
 	void setTimestopInterceptorHook(LPBYTE hostImageAddress)
 	{
-		//GameImageHooker::setHook(hostImageAddress, GAMESPEED_ADDRESS_INTERCEPT_START_OFFSET, GAMESPEED_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_gamespeedInterceptionContinue, &gamespeedAddressInterceptor);
-		//GameImageHooker::setHook(hostImageAddress, TOD_ADDRESS_INTERCEPT_START_OFFSET, TOD_ADDRESS_INTERCEPT_CONTINUE_OFFSET, &_todAddressInterceptorContinue, &todAddressInterceptor);
+		GameImageHooker::setHook(hostImageAddress, TIMESTOP_INTERCEPT_START_OFFSET, TIMESTOP_INTERCEPT_CONTINUE_OFFSET, &_timestopInterceptorContinue, &timestopInterceptor);
 	}
-
 }

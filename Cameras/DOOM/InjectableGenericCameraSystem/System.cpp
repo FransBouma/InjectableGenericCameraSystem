@@ -141,10 +141,14 @@ namespace IGCS
 			toggleTimestopState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
-		if (Input::keyDown(IGCS_KEY_FOV_ENABLE))
+		if (!g_cameraEnabled)
 		{
-			toggleFoVOverrideState();
-			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+			// camera is disabled. We simply disable all input to the camera movement, by returning now.
+			return;
+		}
+		if (Input::keyDown(IGCS_KEY_FOV_RESET))
+		{
+			CameraManipulator::resetFOV();
 		}
 		if (Input::keyDown(IGCS_KEY_FOV_DECREASE))
 		{
@@ -153,11 +157,6 @@ namespace IGCS
 		if (Input::keyDown(IGCS_KEY_FOV_INCREASE))
 		{
 			CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
-		}
-		if (!g_cameraEnabled)
-		{
-			// camera is disabled. We simply disable all input to the camera movement, by returning now.
-			return;
 		}
 		if (Input::keyDown(IGCS_KEY_BLOCK_INPUT))
 		{
@@ -209,10 +208,9 @@ namespace IGCS
 			{
 				_camera.roll(-multiplier);
 			}
-			if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_ENABLE))
+			if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_RESET))
 			{
-				toggleFoVOverrideState();
-				Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+				CameraManipulator::resetFOV();
 			}
 			if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_DECREASE))
 			{
@@ -310,13 +308,6 @@ namespace IGCS
 		// initialize the writes after the camera has been found and initialized, as they rely on the camera struct address.
 		GameSpecific::InterceptorHelper::setFoVInterceptorHook(_hostImageAddress);
 	}
-	
-
-	void System::toggleFoVOverrideState()
-	{
-		g_fovOverrideEnabled = g_fovOverrideEnabled== 0 ? (byte)1 : (byte)0;
-		Console::WriteLine(g_fovOverrideEnabled ? "FoV override enabled" : "FoV override disabled");
-	}
 
 
 	void System::toggleInputBlockState(bool newValue)
@@ -347,7 +338,7 @@ namespace IGCS
 	{
 		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
 		Console::WriteLine(_timeStopped ? "Game paused" : "Game unpaused");
-		CameraManipulator::setTimeStopValue(_hostImageAddress, _timeStopped);
+		CameraManipulator::setTimeStopValue(_timeStopped);
 	}
 
 
@@ -381,8 +372,8 @@ namespace IGCS
 		Console::WriteLine("Numpad 4/Numpad 6 or l-stick          : Move camera left / right");
 		Console::WriteLine("Numpad 7/Numpad 9 or l/r-trigger      : Move camera up / down");
 		Console::WriteLine("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
-		Console::WriteLine("END or controller B-button            : Enable/Disable FoV override");
-		Console::WriteLine("PageUp/PageDown or d-pad up/down      : Increase / decrease FoV");
+		Console::WriteLine("Numpad +/- d-pad up/down              : Increase / decrease FoV (w/ freecam)");
+		Console::WriteLine("Numpad * or controller B-button       : Reset FoV (w/ freecam)");
 		Console::WriteLine("Numpad 0                              : Pause / Continue game");
 		Console::WriteLine("Numpad /                              : Toggle Y look direction");
 		Console::WriteLine("Numpad .                              : Block keyboard/mouse input to game");
