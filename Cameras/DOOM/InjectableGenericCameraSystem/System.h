@@ -53,7 +53,6 @@ namespace IGCS
 		void toggleYLookDirectionState();
 		void toggleCameraMovementLockState(bool newValue);
 		void toggleInputBlockState(bool newValue);
-		void toggleFoVOverrideState();
 		void handleKeyboardCameraMovement(float multiplier);
 		void handleMouseCameraMovement(float multiplier);
 		void handleGamePadMouseMovement(float multiplierBase);

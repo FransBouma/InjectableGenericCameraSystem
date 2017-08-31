@@ -36,7 +36,7 @@ using namespace std;
 
 extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
-	LPBYTE g_gamespeedStructAddress = nullptr;
+	LPBYTE g_timestopStructAddress = nullptr;
 	LPBYTE g_fovStructAddress = nullptr;
 }
 
@@ -44,12 +44,12 @@ namespace IGCS::GameSpecific::CameraManipulator
 {
 	static float _originalLookData[12];	// 3x3 matrix
 	static float _originalCoordsData[3];
+	static float _originalFoV;
 	static bool _timeHasBeenStopped = false;
 
 	// newValue: 1 == time should be frozen, 0 == normal gameplay
 	void setTimeStopValue(LPBYTE hostImageAddress, byte newValue)
 	{
-		// set flag so camera works during menu driven timestop
 		LPBYTE timestopAddress = hostImageAddress + TIMESTOP_IN_IMAGE_OFFSET;
 		*timestopAddress = newValue;
 	}
@@ -112,7 +112,19 @@ namespace IGCS::GameSpecific::CameraManipulator
 	// changes the FoV with the specified amount
 	void changeFoV(float amount)
 	{
-		g_ownFoVValue += amount;
+		if (g_fovStructAddress == nullptr)
+		{
+			return;
+		}
+		float* fovAddress = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
+		*fovAddress += amount;
+	}
+
+
+	void resetFOV()
+	{
+		float* fovAddress = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
+		*fovAddress = DEFAULT_FOV_DEGREES;
 	}
 
 
@@ -123,6 +135,8 @@ namespace IGCS::GameSpecific::CameraManipulator
 		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
 		memcpy(lookInMemory, _originalLookData, 12 * sizeof(float));
 		memcpy(coordsInMemory, _originalCoordsData, 3 * sizeof(float));
+		float *fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
+		*fovInMemory = _originalFoV;
 	}
 
 
@@ -132,5 +146,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
 		memcpy(_originalLookData, lookInMemory, 12 * sizeof(float));
 		memcpy(_originalCoordsData, coordsInMemory, 3 * sizeof(float));
+		float *fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
+		_originalFoV = *fovInMemory;
 	}
 }

@@ -39,4 +39,5 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void changeFoV(float amount);
 	XMFLOAT3 getCurrentCameraCoords();
 	void setTimeStopValue(LPBYTE hostImageAddress, byte newValue);
+	void resetFOV();
 }
