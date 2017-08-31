@@ -33,7 +33,6 @@
 ; Public definitions so the linker knows which names are present in this file
 PUBLIC cameraAddressInterceptor
 PUBLIC fovInterceptor
-PUBLIC timestopInterceptor
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -41,7 +40,6 @@ PUBLIC timestopInterceptor
 ; values in asm to communicate with the system
 EXTERN g_cameraStructAddress: qword
 EXTERN g_cameraEnabled: byte
-EXTERN g_timestopStructAddress: qword
 EXTERN g_fovStructAddress: qword
 ;---------------------------------------------------------------
 
@@ -50,10 +48,75 @@ EXTERN g_fovStructAddress: qword
 EXTERN _hostBaseAddress: qword
 EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _fovInterceptorContinue: qword
-EXTERN _timestopInterceptorContinue: qword
 
 ;---------------------------------------------------------------
 ; Scratch pad
+;
+; Timestop is tricky. They likely use some sort of function but couldn't find it. The timestop I found through the menu stops the engine environment and animations
+; but not the movement of the nps, so they'll slide along over the rails they're on. Not usable. 
+;DOOMx64.exe+1403D30 - 40 53                 - push rbx
+;DOOMx64.exe+1403D32 - 41 56                 - push r14
+;DOOMx64.exe+1403D34 - 48 83 EC 28           - sub rsp,28 { 40 }
+;DOOMx64.exe+1403D38 - 83 3D 912D2103 00     - cmp dword ptr [DOOMx64.exe+4616AD0],00 		// read timestop for photomode, which we'll use
+;DOOMx64.exe+1403D3F - 44 0FB6 F2            - movzx r14d,dl
+;DOOMx64.exe+1403D43 - 48 8B D9              - mov rbx,rcx
+;DOOMx64.exe+1403D46 - 74 0D                 - je DOOMx64.exe+1403D55
+;DOOMx64.exe+1403D48 - 83 3D F12C2103 00     - cmp dword ptr [DOOMx64.exe+4616A40],00 
+;DOOMx64.exe+1403D4F - 0F84 42010000         - je DOOMx64.exe+1403E97
+;DOOMx64.exe+1403D55 - 48 89 7C 24 50        - mov [rsp+50],rdi
+;DOOMx64.exe+1403D5A - 4C 89 7C 24 20        - mov [rsp+20],r15
+;DOOMx64.exe+1403D5F - 45 33 FF              - xor r15d,r15d
+;DOOMx64.exe+1403D62 - 4C 89 79 50           - mov [rcx+50],r15
+;DOOMx64.exe+1403D66 - 44 89 79 4C           - mov [rcx+4C],r15d
+;DOOMx64.exe+1403D6A - 44 88 79 58           - mov [rcx+58],r15l
+;
+; For reference, this is the timestop through the menu, but not usable:
+;DOOMx64.exe+118670 - 80 B9 2B010000 00     - cmp byte ptr [rcx+0000012B],00			<<<< INTERCEPT HERE. Read timestop flag
+;DOOMx64.exe+118677 - 75 28                 - jne DOOMx64.exe+1186A1
+;DOOMx64.exe+118679 - 48 8B 51 10           - mov rdx,[rcx+10]
+;DOOMx64.exe+11867D - 8B 42 0C              - mov eax,[rdx+0C]							
+;DOOMx64.exe+118680 - 89 42 10              - mov [rdx+10],eax
+;DOOMx64.exe+118683 - 48 8B 51 10           - mov rdx,[rcx+10]
+;DOOMx64.exe+118687 - 8B 42 04              - mov eax,[rdx+04]
+;DOOMx64.exe+11868A - 01 42 0C              - add [rdx+0C],eax
+;DOOMx64.exe+11868D - 48 8B 51 10           - mov rdx,[rcx+10]
+;DOOMx64.exe+118691 - 8B 42 30              - mov eax,[rdx+30]
+;DOOMx64.exe+118694 - 89 42 34              - mov [rdx+34],eax
+;DOOMx64.exe+118697 - 48 8B 49 10           - mov rcx,[rcx+10]
+;DOOMx64.exe+11869B - 8B 41 28              - mov eax,[rcx+28]
+;DOOMx64.exe+11869E - 01 41 30              - add [rcx+30],eax
+;DOOMx64.exe+1186A1 - F3 C3                 - repe ret									<<<< CONTINUE HERE. Whole function needed due to jne above.
+;
+; in-game DOF:
+;DOOMx64.exe+AE1819 - 83 3D 90594E03 00     - cmp dword ptr [DOOMx64.exe+3FC71B0],00			<<< DOF ENABLE/DISABLE
+;DOOMx64.exe+AE1820 - 74 50                 - je DOOMx64.exe+AE1872
+;DOOMx64.exe+AE1822 - 83 3D 175A4E03 00     - cmp dword ptr [DOOMx64.exe+3FC7240],00			<<< Unclear what this does.
+;DOOMx64.exe+AE1829 - 0F95 C0               - setne al
+;DOOMx64.exe+AE182C - 88 87 3C264B00        - mov [rdi+004B263C],al
+;DOOMx64.exe+AE1832 - F3 0F10 05 9A5A4E03   - movss xmm0,[DOOMx64.exe+3FC72D4] { [00000000] }
+;DOOMx64.exe+AE183A - F3 0F11 87 40264B00   - movss [rdi+004B2640],xmm0
+;DOOMx64.exe+AE1842 - F3 0F10 0D 1A5B4E03   - movss xmm1,[DOOMx64.exe+3FC7364] { [512.00] }		<<< FAR PLANE
+;DOOMx64.exe+AE184A - F3 0F11 8F 44264B00   - movss [rdi+004B2644],xmm1
+;DOOMx64.exe+AE1852 - F3 0F10 05 9A5B4E03   - movss xmm0,[DOOMx64.exe+3FC73F4] { [300.00] }	    <<< NEAR PLANE
+;DOOMx64.exe+AE185A - F3 0F11 87 48264B00   - movss [rdi+004B2648],xmm0
+;DOOMx64.exe+AE1862 - F3 0F10 0D 1A5C4E03   - movss xmm1,[DOOMx64.exe+3FC7484] { [1.00] }		<<< BLUR STRENGTH
+;DOOMx64.exe+AE186A - F3 0F11 8F 4C264B00   - movss [rdi+004B264C],xmm1
+;DOOMx64.exe+AE1872 - 48 8B 05 47503603     - mov rax,[DOOMx64.exe+3E468C0] { [FB184C9800] }
+;
+; HUD toggle
+;DOOMx64.exe+93FAD8 - 48 8B 88 B0000000     - mov rcx,[rax+000000B0]
+;DOOMx64.exe+93FADF - 83 79 30 00           - cmp dword ptr [rcx+30],00 { 0 }			<<< HUD Toggle read. 1 == hud visible. not all elements are hidden.
+;DOOMx64.exe+93FAE3 - 0F84 970F0000         - je DOOMx64.exe+940A80
+;DOOMx64.exe+93FAE9 - 41 8B 45 08           - mov eax,[r13+08]
+;DOOMx64.exe+93FAED - 4C 89 B4 24 E0080000  - mov [rsp+000008E0],r14
+;DOOMx64.exe+93FAF5 - 41 0B 45 00           - or eax,[r13+00]
+;DOOMx64.exe+93FAF9 - 41 0B 45 04           - or eax,[r13+04]
+;DOOMx64.exe+93FAFD - A9 FFFFFF7F           - test eax,7FFFFFFF { 2147483647 }
+;DOOMx64.exe+93FB02 - 0F84 5A140000         - je DOOMx64.exe+940F62
+;DOOMx64.exe+93FB08 - 4C 8B B5 48080000     - mov r14,[rbp+00000848]
+;DOOMx64.exe+93FB0F - 41 8B 06              - mov eax,[r14]
+;DOOMx64.exe+93FB12 - 41 0B 46 08           - or eax,[r14+08]
+;
 ;---------------------------------------------------------------
 .code
 
@@ -98,7 +161,7 @@ cameraAddressInterceptor ENDP
 
 
 fovInterceptor PROC
-	; Game jmps to this location due to the hook set in C function setFoVInterceptorHook
+; Game jmps to this location due to the hook set in C function setFoVInterceptorHook
 ; rdi contains the base address of the struct which contains the pointer to the fov value
 ; rdi + 0000CE74h is the fov struct address, which contains the fov at offset 10h. We have to write our
 ; fov to that address. Reset it with the value hostImageAddress + 3DA8064h as that's the setting's fov address.
@@ -125,43 +188,5 @@ originalCode:
 exit:
 	jmp qword ptr [_fovInterceptorContinue]
 fovInterceptor ENDP
-
-
-timestopInterceptor PROC
-;DOOMx64.exe+118670 - 80 B9 2B010000 00     - cmp byte ptr [rcx+0000012B],00			<<<< INTERCEPT HERE. Read timestop flag
-;DOOMx64.exe+118677 - 75 28                 - jne DOOMx64.exe+1186A1
-;DOOMx64.exe+118679 - 48 8B 51 10           - mov rdx,[rcx+10]
-;DOOMx64.exe+11867D - 8B 42 0C              - mov eax,[rdx+0C]							
-;DOOMx64.exe+118680 - 89 42 10              - mov [rdx+10],eax
-;DOOMx64.exe+118683 - 48 8B 51 10           - mov rdx,[rcx+10]
-;DOOMx64.exe+118687 - 8B 42 04              - mov eax,[rdx+04]
-;DOOMx64.exe+11868A - 01 42 0C              - add [rdx+0C],eax
-;DOOMx64.exe+11868D - 48 8B 51 10           - mov rdx,[rcx+10]
-;DOOMx64.exe+118691 - 8B 42 30              - mov eax,[rdx+30]
-;DOOMx64.exe+118694 - 89 42 34              - mov [rdx+34],eax
-;DOOMx64.exe+118697 - 48 8B 49 10           - mov rcx,[rcx+10]
-;DOOMx64.exe+11869B - 8B 41 28              - mov eax,[rcx+28]
-;DOOMx64.exe+11869E - 01 41 30              - add [rcx+30],eax
-;DOOMx64.exe+1186A1 - F3 C3                 - repe ret									<<<< CONTINUE HERE. Whole function needed due to jne above.
-	mov [g_timestopStructAddress], rcx
-	cmp byte ptr [rcx+0000012Bh],00h
-	jne exit
-originalCode:
-	mov rdx, qword ptr [rcx+10h]
-	mov eax, dword ptr [rdx+0Ch]				
-	mov [rdx+10h],eax
-	mov rdx, qword ptr [rcx+10h]
-	mov eax, dword ptr [rdx+04h]
-	add [rdx+0Ch],eax
-	mov rdx, qword ptr [rcx+10h]
-	mov eax, dword ptr [rdx+30h]
-	mov [rdx+34h],eax
-	mov rcx, qword ptr [rcx+10h]
-	mov eax, dword ptr [rcx+28h]
-	add [rcx+30h],eax
-exit:
-	jmp qword ptr [_timestopInterceptorContinue]
-timestopInterceptor ENDP
-
 
 END

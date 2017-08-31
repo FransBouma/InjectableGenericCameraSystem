@@ -48,10 +48,10 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static bool _timeHasBeenStopped = false;
 
 	// newValue: 1 == time should be frozen, 0 == normal gameplay
-	void setTimeStopValue(byte newValue)
+	void setTimeStopValue(LPBYTE hostImageAddress, byte newValue)
 	{
-		// set flag so camera works during menu driven timestop
-		*(g_timestopStructAddress + TIMESTOP_IN_STRUCT_OFFSET) = newValue;
+		LPBYTE timestopAddress = hostImageAddress + TIMESTOP_IN_IMAGE_OFFSET;
+		*timestopAddress = newValue;
 	}
 
 	XMFLOAT3 getCurrentCameraCoords()

@@ -298,7 +298,6 @@ namespace IGCS
 		InputHooker::setInputHooks();
 		Input::registerRawInput();
 		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_hostImageAddress);
-		GameSpecific::InterceptorHelper::setTimestopInterceptorHook(_hostImageAddress);
 		GameSpecific::CameraManipulator::waitForCameraStructAddresses();		// blocks till camera is found.
 		// camera struct found, init our own camera object now and hook into game code which uses camera.
 		_cameraStructFound = true;
@@ -338,7 +337,7 @@ namespace IGCS
 	{
 		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
 		Console::WriteLine(_timeStopped ? "Game paused" : "Game unpaused");
-		CameraManipulator::setTimeStopValue(_timeStopped);
+		CameraManipulator::setTimeStopValue(_hostImageAddress, _timeStopped);
 	}
 
 

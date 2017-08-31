@@ -37,7 +37,6 @@ using namespace std;
 extern "C" {
 	void cameraAddressInterceptor();
 	void fovInterceptor();
-	void timestopInterceptor();
 }
 
 // external addresses used in asm.
@@ -46,7 +45,6 @@ extern "C" {
 	LPBYTE _cameraStructInterceptionContinue = nullptr;
 	// the continue address for the continuing execution after interception of the FoV block of code
 	LPBYTE _fovInterceptorContinue = nullptr;
-	LPBYTE _timestopInterceptorContinue = nullptr;
 	// the base address of the host process. 
 	LPBYTE _hostBaseAddress = nullptr;
 }
@@ -64,11 +62,5 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	{
 		_hostBaseAddress = hostImageAddress;
 		GameImageHooker::setHook(hostImageAddress, FOV_INTERCEPT_START_OFFSET, FOV_INTERCEPT_CONTINUE_OFFSET, &_fovInterceptorContinue, &fovInterceptor);
-	}
-
-
-	void setTimestopInterceptorHook(LPBYTE hostImageAddress)
-	{
-		GameImageHooker::setHook(hostImageAddress, TIMESTOP_INTERCEPT_START_OFFSET, TIMESTOP_INTERCEPT_CONTINUE_OFFSET, &_timestopInterceptorContinue, &timestopInterceptor);
 	}
 }

@@ -31,5 +31,4 @@ namespace IGCS::GameSpecific::InterceptorHelper
 {
 	void setCameraStructInterceptorHook(LPBYTE hostImageAddress);
 	void setFoVInterceptorHook(LPBYTE hostImageAddress);
-	void setTimestopInterceptorHook(LPBYTE hostImageAddress);
 }

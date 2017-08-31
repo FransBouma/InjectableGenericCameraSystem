@@ -59,6 +59,6 @@ namespace IGCS::GameSpecific
 	// Indices in the structures read by interceptors 
 	#define LOOK_DATA_IN_CAMERA_STRUCT_OFFSET			0xCC		
 	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0xC0		
-	#define TIMESTOP_IN_STRUCT_OFFSET					0x12B
+	#define TIMESTOP_IN_IMAGE_OFFSET					0x4616AD0		// see scratchpad in asm
 	#define FOV_IN_STRUCT_OFFSET						0x10
 }
