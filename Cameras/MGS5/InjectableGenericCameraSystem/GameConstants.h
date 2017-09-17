@@ -32,7 +32,7 @@ namespace IGCS::GameSpecific
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Metal Gear Solid V: The Phantom Pain v1.0.12+"
 	#define CAMERA_VERSION								"1.0.0"
-	#define CAMERA_CREDITS								"Otis_Inf. Special thanks to Jan Schatter and Hodgedogs"
+	#define CAMERA_CREDITS								"Otis_Inf and Jan Schatter. Special thanks to tinmantex and Hodgedogs"
 	#define GAME_WINDOW_TITLE							"METAL GEAR SOLID V: THE PHANTOM PAIN"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
 	#define INITIAL_YAW_RADIANS							0.0f	// around Y axis	(into the screen)
@@ -41,10 +41,9 @@ namespace IGCS::GameSpecific
 	#define FASTER_MULTIPLIER							10.0f
 	#define SLOWER_MULTIPLIER							0.1f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
-	#define DEFAULT_MOVEMENT_SPEED						0.05f
-	#define DEFAULT_ROTATION_SPEED						0.01f
-	#define DEFAULT_FOV_DEGREES							60.0f
-	#define DEFAULT_FOV_SPEED							0.1f
+	#define DEFAULT_MOVEMENT_SPEED						0.04f
+	#define DEFAULT_ROTATION_SPEED						0.008f
+	#define DEFAULT_FOV_SPEED							0.12f
 	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f
 	#define SUPERSAMPLE_FACTOR_MAX						5.0f
 	// End Mandatory constants
@@ -55,12 +54,17 @@ namespace IGCS::GameSpecific
 	#define CAMERA_CUTSCENE_WRITE1_INTERCEPT_KEY		"AOB_CAMERA_CUTSCENE_WRITE1_INTERCEPT"
 	#define FOV_WRITE_INTERCEPT_KEY						"AOB_FOV_WRITE_INTERCEPT"
 	#define GAMESPEED_WRITE_INTERCEPT_KEY				"AOB_GAMESPEED_WRITE_INTERCEPT"
+	#define	TIMESTOP_READ_INTERCEPT_KEY					"AOB_TIMESTOP_READ_INTERCEPT"
+	#define FOV_WRITE1_CUTSCENE_INTERCEPT_KEY			"AOB_FOV_WRITE1_CUTSCENE_INTERCEPT"
+	#define FOV_WRITE2_CUTSCENE_INTERCEPT_KEY			"AOB_FOV_WRITE2_CUTSCENE_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
-	#define COORDS_IN_STRUCT_OFFSET						0x100
 	#define QUATERNION_IN_STRUCT_OFFSET					0xF0
+	#define COORDS_IN_STRUCT_OFFSET						0x100
+	#define QUATERNION_CUTSCENE_IN_STRUCT_OFFSET		0x120
 	#define COORDS_CUTSCENE_IN_STRUCT_OFFSET			0x130
-	#define QUATERNION_CUTSCENE_IN_STRUCT_OFFSET		0xF0
 	#define FOV_IN_STRUCT_OFFSET						0xC
+	#define FOV_CUTSCENE_IN_STRUCT_OFFSET				0x3C
 	#define GAMESPEED_IN_STRUCT_OFFSET					0xC
+	#define TIMESTOP_IN_STRUCT_OFFSET					0x38
 }

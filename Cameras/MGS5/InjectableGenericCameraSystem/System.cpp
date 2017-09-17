@@ -143,10 +143,12 @@ namespace IGCS
 				// it's going to be disabled, make sure things are alright when we give it back to the host
 				CameraManipulator::restoreOriginalCameraValues();
 				toggleCameraMovementLockState(false);
+				InterceptorHelper::toggleFoVCutsceneWriteState(_aobBlocks, true);	// enable writes
 			}
 			else
 			{
 				// it's going to be enabled, so cache the original values before we enable it so we can restore it afterwards
+				InterceptorHelper::toggleFoVCutsceneWriteState(_aobBlocks, false);	// disable writes
 				CameraManipulator::cacheOriginalCameraValues();
 				_camera.resetAngles();
 			}
@@ -154,21 +156,21 @@ namespace IGCS
 			displayCameraState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
-		if (Input::keyDown(IGCS_KEY_FOV_RESET))
+		if (Input::keyDown(IGCS_KEY_FOV_RESET) && Globals::instance().keyboardMouseControlCamera())
 		{
 			CameraManipulator::resetFoV();
 		}
-		if (Input::keyDown(IGCS_KEY_FOV_DECREASE))
+		if (Input::keyDown(IGCS_KEY_FOV_DECREASE) && Globals::instance().keyboardMouseControlCamera())
 		{
 			CameraManipulator::changeFoV(-Globals::instance().settings().fovChangeSpeed);
 		}
-		if (Input::keyDown(IGCS_KEY_FOV_INCREASE))
+		if (Input::keyDown(IGCS_KEY_FOV_INCREASE) && Globals::instance().keyboardMouseControlCamera())
 		{
 			CameraManipulator::changeFoV(Globals::instance().settings().fovChangeSpeed);
 		}
 		if (Input::keyDown(IGCS_KEY_TIMESTOP))
 		{
-			toggleTimestopState();
+			freezeGame();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
 
@@ -176,11 +178,6 @@ namespace IGCS
 		{
 			// camera is disabled. We simply disable all input to the camera movement, by returning now.
 			return;
-		}
-		if (Input::keyDown(IGCS_KEY_BLOCK_INPUT))
-		{
-			toggleInputBlockState(!Globals::instance().inputBlocked());
-			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
 
 		_camera.resetMovement();
@@ -205,6 +202,11 @@ namespace IGCS
 
 	void System::handleGamePadMovement(float multiplierBase)
 	{
+		if(!Globals::instance().controllerControlsCamera())
+		{
+			return;
+		}
+
 		auto gamePad = Globals::instance().gamePad();
 
 		if (gamePad.isConnected())
@@ -241,17 +243,16 @@ namespace IGCS
 			{
 				CameraManipulator::changeFoV(Globals::instance().settings().fovChangeSpeed);
 			}
-			if (gamePad.isButtonPressed(IGCS_BUTTON_BLOCK_INPUT))
-			{
-				toggleInputBlockState(!Globals::instance().inputBlocked());
-				Sleep(350);				// wait for 350ms to avoid fast hammering
-			}
 		}
 	}
 
 
 	void System::handleMouseCameraMovement(float multiplier)
 	{
+		if (!Globals::instance().keyboardMouseControlCamera())
+		{
+			return;
+		}
 		long mouseDeltaX = Input::getMouseDeltaX();
 		long mouseDeltaY = Input::getMouseDeltaY();
 		if (abs(mouseDeltaY) > 1)
@@ -267,6 +268,10 @@ namespace IGCS
 
 	void System::handleKeyboardCameraMovement(float multiplier)
 	{
+		if (!Globals::instance().keyboardMouseControlCamera())
+		{
+			return;
+		}
 		if (Input::keyDown(IGCS_KEY_MOVE_FORWARD))
 		{
 			_camera.moveForward(multiplier);
@@ -353,18 +358,6 @@ namespace IGCS
 	}
 		
 
-	void System::toggleInputBlockState(bool newValue)
-	{
-		if (Globals::instance().inputBlocked() == newValue)
-		{
-			// already in this state. Ignore
-			return;
-		}
-		Globals::instance().inputBlocked(newValue);
-		OverlayControl::addNotification(newValue ? "Input to game blocked" : "Input to game enabled");
-	}
-
-
 	void System::toggleCameraMovementLockState(bool newValue)
 	{
 		if (_cameraMovementLocked == newValue)
@@ -383,10 +376,13 @@ namespace IGCS
 	}
 
 
-	void System::toggleTimestopState()
+	// Freezes the game by using the menu timestop.
+	void System::freezeGame()
 	{
-		g_gamePaused = g_gamePaused == 0 ? (byte)1 : (byte)0;
-		OverlayControl::addNotification(g_gamePaused ? "Game paused" : "Game unpaused");
-		CameraManipulator::setTimeStopValue(g_gamePaused);
+		bool gamePaused = CameraManipulator::setTimeStopValue(true);
+		if (gamePaused)
+		{
+			OverlayControl::addNotification("Game paused. Unpause with the menu by pressing ESC twice.");
+		}
 	}
 }

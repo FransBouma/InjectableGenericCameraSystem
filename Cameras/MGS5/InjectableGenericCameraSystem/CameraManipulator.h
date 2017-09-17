@@ -35,7 +35,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void writeNewCameraValuesToGameData(XMFLOAT3 newCoords, XMVECTOR newLookQuaternion, bool cutsceneCamera);
 	void restoreOriginalCameraValues();
 	void cacheOriginalCameraValues();
-	void setTimeStopValue(byte newValue);
+	bool setTimeStopValue(byte newValue);
 	XMFLOAT3 getCurrentCameraCoords();
 	XMFLOAT3 getCurrentCutsceneCameraCoords();
 	void resetFoV();

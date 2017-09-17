@@ -74,11 +74,9 @@ namespace IGCS::InputHooker
 	}
 
 	template <typename T>
-	inline MH_STATUS MH_CreateHookApiEx(
-		LPCWSTR pszModule, LPCSTR pszProcName, LPVOID pDetour, T** ppOriginal)
+	inline MH_STATUS MH_CreateHookApiEx(LPCWSTR pszModule, LPCSTR pszProcName, LPVOID pDetour, T** ppOriginal)
 	{
-		return MH_CreateHookApi(
-			pszModule, pszProcName, pDetour, reinterpret_cast<LPVOID*>(ppOriginal));
+		return MH_CreateHookApi(pszModule, pszProcName, pDetour, reinterpret_cast<LPVOID*>(ppOriginal));
 	}
 
 
@@ -91,7 +89,7 @@ namespace IGCS::InputHooker
 		if (g_cameraEnabled && pState != Globals::instance().gamePad().getState())
 		{
 			// check if input is blocked. If so, zero the state, so the host will see no input data
-			if (Globals::instance().inputBlocked())
+			if (Globals::instance().controllerControlsCamera())
 			{
 				ZeroMemory(pState, sizeof(XINPUT_STATE));
 			}
@@ -157,7 +155,7 @@ namespace IGCS::InputHooker
 			if (lpMsg->hwnd != nullptr /* && removeIfRequired */ && Input::handleMessage(lpMsg))
 			{
 				// message was handled by our code. This means it's a message we want to block if input blocking is enabled or the overlay / menu is shown
-				if (Globals::instance().inputBlocked() || OverlayControl::isMainMenuVisible())
+				if (Globals::instance().keyboardMouseControlCamera() || OverlayControl::isMainMenuVisible())
 				{
 					lpMsg->message = WM_NULL;	// reset to WM_NULL so the host will receive a dummy message instead.
 				}
@@ -171,7 +169,7 @@ namespace IGCS::InputHooker
 	void setInputHooks()
 	{
 		MH_Initialize();
-		if (MH_CreateHookApiEx(L"XINPUT1_3", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
+		if (MH_CreateHookApiEx(L"xinput1_3", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
 		{
 			OverlayConsole::instance().logError("Hooking XInput1_3 failed!");
 		}

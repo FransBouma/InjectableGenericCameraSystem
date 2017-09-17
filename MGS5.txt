@@ -101,3 +101,65 @@ mgsvtpp.exe+2B75BC8
 142EB385B - F2 0F59 C8            - mulsd xmm1,xmm0
 142EB385F - E8 0C55FAFF           - call 142E58D70
 
+
+// Fov cutscene write 1
+14329CEAD - 48 8B 83 80000000     - mov rax,[rbx+00000080]
+14329CEB4 - F3 0F10 44 24 40      - movss xmm0,[rsp+40]
+14329CEBA - F3 0F11 40 3C         - movss [rax+3C],xmm0						// fov write 
+14329CEBF - 48 89 F1              - mov rcx,rsi
+14329CEC2 - E8 09E08301           - call 144ADAED0
+14329CEC7 - 4C 8B AC 24 28010000  - mov r13,[rsp+00000128]
+14329CECF - 44 0F28 94 24 D0000000  - movaps xmm10,[rsp+000000D0]
+
+// Fov cutscene write 2
+14329D7D7 - 48 8B 81 80000000     - mov rax,[rcx+00000080]
+14329D7DE - F3 0F10 05 5AA38DFF   - movss xmm0,[142B77B40] { [0.00] }
+14329D7E6 - F3 0F58 40 3C         - addss xmm0,[rax+3C]
+14329D7EB - F3 0F11 40 3C         - movss [rax+3C],xmm0
+14329D7F0 - 0FB6 05 29A38DFF      - movzx eax,byte ptr [142B77B20] { [0.00] }
+14329D7F7 - A8 01                 - test al,01 { 1 }
+14329D7F9 - 74 48                 - je 14329D843
+
+// DOF focus distance
+1432A5F3F - 0F28 48 20            - movaps xmm1,[rax+20]
+1432A5F43 - 0F29 8F 90000000      - movaps [rdi+00000090],xmm1
+1432A5F4A - 0F28 40 30            - movaps xmm0,[rax+30]
+1432A5F4E - 0F29 87 A0000000      - movaps [rdi+000000A0],xmm0
+1432A5F55 - F3 41 0F10 4E 38      - movss xmm1,[r14+38]
+1432A5F5B - F3 0F11 8F 08010000   - movss [rdi+00000108],xmm1				<< Distance write.
+1432A5F63 - F3 41 0F10 56 4C      - movss xmm2,[r14+4C]
+1432A5F69 - F3 41 0F10 46 48      - movss xmm0,[r14+48]
+1432A5F6F - F3 0F11 87 68010000   - movss [rdi+00000168],xmm0
+1432A5F77 - F3 0F11 97 6C010000   - movss [rdi+0000016C],xmm2
+1432A5F7F - 4C 8D 4D 07           - lea r9,[rbp+07]
+1432A5F83 - 4C 8D 45 17           - lea r8,[rbp+17]
+1432A5F87 - 48 8D 55 A7           - lea rdx,[rbp-59]
+1432A5F8B - 4C 89 F1              - mov rcx,r14
+1432A5F8E - E8 2D7A0100           - call 1432BD9C0
+1432A5F93 - F3 0F10 45 A7         - movss xmm0,[rbp-59]
+
+// Dof aperture distance
+1432A5FA0 - F3 0F10 4D 17         - movss xmm1,[rbp+17]
+1432A5FA5 - F3 0F11 8F 10010000   - movss [rdi+00000110],xmm1				<< blur strength
+1432A5FAD - F3 0F10 45 07         - movss xmm0,[rbp+07]
+1432A5FB2 - F3 0F11 87 14010000   - movss [rdi+00000114],xmm0
+1432A5FBA - F3 41 0F10 4E 44      - movss xmm1,[r14+44]
+1432A5FC0 - F3 0F11 8F 24010000   - movss [rdi+00000124],xmm1				<< Aperture write.	(0.5-32)
+1432A5FC8 - F3 41 0F10 46 50      - movss xmm0,[r14+50]
+1432A5FCE - F3 0F11 87 28010000   - movss [rdi+00000128],xmm0
+1432A5FD6 - 41 80 BE E7000000 00  - cmp byte ptr [r14+000000E7],00 { 0 }
+1432A5FDE - 74 09                 - je 1432A5FE9
+1432A5FE0 - 83 8F 00010000 40     - or dword ptr [rdi+00000100],40 { 64 }
+
+// dof Enable:
+143004E20 - 48 89 5C 24 08        - mov [rsp+08],rbx
+143004E25 - 48 89 74 24 10        - mov [rsp+10],rsi
+143004E2A - 57                    - push rdi
+143004E2B - 48 83 EC 20           - sub rsp,20 { 32 }
+143004E2F - 80 79 50 00           - cmp byte ptr [rcx+50],00 				<< dof enable flag (1==enable/0==disable).
+143004E33 - 4C 89 C7              - mov rdi,r8
+143004E36 - 48 89 D6              - mov rsi,rdx
+143004E39 - 48 89 CB              - mov rbx,rcx
+143004E3C - 74 4E                 - je 143004E8C
+
+

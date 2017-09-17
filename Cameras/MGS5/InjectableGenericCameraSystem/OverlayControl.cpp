@@ -41,7 +41,7 @@ namespace IGCS::OverlayControl
 	void renderMainWindow();
 	void renderSplash();
 	void updateNotificationStore();
-
+	void ShowHelpMarker(const char* desc);
 
 	//-----------------------------------------------
 	// code
@@ -67,6 +67,7 @@ namespace IGCS::OverlayControl
 		renderMainWindow();
 		renderSplash();
 		renderNotifications();
+		ImGui::ShowTestWindow(&_showMainWindow);
 		ImGui::Render();
 	}
 
@@ -175,9 +176,10 @@ Special thanks to:
 		{
 			ImGui::PushTextWrapPos();
 			ImGui::TextUnformatted("* When the main window is open, all input of keyboard / mouse to the game is blocked and the camera is locked.");
+			ImGui::TextUnformatted("* The game's FoV is based on lens focal length so zooming in/out isn't linear.");
 			ImGui::TextUnformatted("* All changes you make to the main window (position/size) are saved to a file in the game root folder.");
-			ImGui::TextUnformatted("* Any setting you change will make the settings to be saved to a file in the game root folder.");
-			ImGui::TextUnformatted("* To block input to the game when the camera is enabled, you have to press 'Numpad .' just once. Next time you enable the camera, input is blocked automatically.");
+			ImGui::TextUnformatted("* Most settings you change will make the settings to be saved to a file in the game root folder.");
+			ImGui::TextUnformatted("* The device/devices chosen to control the camera are blocked from giving input to the game, all other devices are not.");
 			ImGui::TextUnformatted("* You'll get a notification in the top left corner when you change something with the keyboard, like enable/disable the camera.");
 			ImGui::PopTextWrapPos();
 		}
@@ -199,11 +201,7 @@ Special thanks to:
 			ImGui::TextUnformatted("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
 			ImGui::TextUnformatted("Numpad +/- or d-pad up/down           : Increase / decrease FoV");
 			ImGui::TextUnformatted("Numpad * or controller B-button       : Reset FoV");
-			ImGui::TextUnformatted("Numpad . or controller Right Bumper   : Block / allow input to game");
-			ImGui::TextUnformatted("Numpad 0                              : Toggle game pause");
-			ImGui::TextUnformatted("DEL                                   : Toggle supersampling w/ resize factor");
-			ImGui::TextUnformatted("[                                     : Decrease supersample resize factor");
-			ImGui::TextUnformatted("]                                     : Increase supersample resize factor");
+			ImGui::TextUnformatted("Numpad 0                              : Pause the game. Unpause with pressing ESC twice.");
 		}
 		if (ImGui::CollapsingHeader("Settings editor help"))
 		{
@@ -232,29 +230,40 @@ Special thanks to:
 	void renderSettings()
 	{
 		Settings& currentSettings = Globals::instance().settings();
-		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.2f);
+		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.3f);
 		bool settingsChanged = false;
 		if (ImGui::Button("Reset to defaults"))
 		{
 			currentSettings.init();
 			settingsChanged = true;
 		}
+		ImGui::TextUnformatted("Settings marked with a '*' are not persisted in the config file.");
 		if (ImGui::CollapsingHeader("Camera movement options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			settingsChanged |= ImGui::SliderFloat("Fast movement multiplier", &currentSettings.fastMovementMultiplier, 0.1f, 100.0f, "%.3f");
 			settingsChanged |= ImGui::SliderFloat("Slow movement multiplier", &currentSettings.slowMovementMultiplier, 0.001f, 1.0f, "%.3f");
 			settingsChanged |= ImGui::SliderFloat("Up movement multiplier", &currentSettings.movementUpMultiplier, 0.1f, 10.0f, "%.3f");
 			settingsChanged |= ImGui::SliderFloat("Movement speed", &currentSettings.movementSpeed, 0.001f, 0.5f, "%.3f");
+
+			ImGui::Combo("Camera control device *", &currentSettings.cameraControlDevice, "Keyboard & Mouse\0Gamepad\0Both\0\0");
+			ImGui::SameLine(); ShowHelpMarker("The camera control device chosen will be blocked for game input.\n");
 		}
 		if (ImGui::CollapsingHeader("Camera rotation options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			settingsChanged |= ImGui::SliderFloat("Rotation speed", &currentSettings.rotationSpeed, 0.001f, 0.1f, "%.3f");
-			ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.2f)-11.0f);
+			ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.3f)-11.0f);
 			settingsChanged |= ImGui::Checkbox("Invert Y look direction", &currentSettings.invertY);
 		}
 		if (ImGui::CollapsingHeader("Misc. camera options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			settingsChanged |= ImGui::SliderFloat("FoV zoom speed", &currentSettings.fovChangeSpeed, 0.001f, 1.0f, "%.3f");
+
+			// dof
+			ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.3f) - 11.0f);
+			ImGui::Checkbox("Enable Depth of Field (DoF) effect *", &currentSettings.enableDoF);
+			ImGui::DragFloat("DoF focus distance *", &currentSettings.dofDistance, 0.5f, 0.01f, 1000.0f, "%.03f");
+			ImGui::SliderFloat("DoF aperture *", &currentSettings.dofAperture, 0.5f, 32.0f, "%.1f");
+			ImGui::SameLine(); ShowHelpMarker("The game's DoF uses lens focal length (FoV)\ntogether with aperture for blur strength.\nLower aperture values means shallower focus area.\n");
 		}
 		ImGui::PopItemWidth();
 		if (settingsChanged)
@@ -360,6 +369,19 @@ Special thanks to:
 	bool isMainMenuVisible()
 	{
 		return _showMainWindow;
+	}
+
+	void ShowHelpMarker(const char* desc)
+	{
+		ImGui::TextDisabled("(?)");
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::PushTextWrapPos(450.0f);
+			ImGui::TextUnformatted(desc);
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
+		}
 	}
 }
 

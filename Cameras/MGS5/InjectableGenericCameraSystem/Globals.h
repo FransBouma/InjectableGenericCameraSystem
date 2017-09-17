@@ -39,6 +39,7 @@ namespace IGCS
 {
 	struct Settings
 	{
+		// settings written to config file
 		bool invertY;
 		float fastMovementMultiplier;
 		float slowMovementMultiplier;
@@ -46,6 +47,13 @@ namespace IGCS
 		float movementSpeed;
 		float rotationSpeed;
 		float fovChangeSpeed;
+
+		// settings not persisted to config file.
+		int cameraControlDevice;		// 0==keyboard/mouse, 1 == gamepad, 2 == both, see Defaults.h
+		bool enableDoF;
+		float dofDistance;				// 0-infinite
+		float dofBlurStrength;			// 0-100
+		float dofAperture;				// 0.5-32
 
 		float clampFloat(float value, float min, float default)
 		{
@@ -92,6 +100,11 @@ namespace IGCS
 			movementSpeed = DEFAULT_MOVEMENT_SPEED;
 			rotationSpeed = DEFAULT_ROTATION_SPEED;
 			fovChangeSpeed = DEFAULT_FOV_SPEED;
+			cameraControlDevice = DEVICE_ID_ALL;
+			enableDoF = true;
+			dofDistance = 1.0f;
+			dofBlurStrength = 20.0f;
+			dofAperture = 2.5;
 		}
 	};
 
@@ -115,6 +128,8 @@ namespace IGCS
 		void mainWindowHandle(HWND handle) { _mainWindowHandle = handle; }
 		Gamepad& gamePad() { return _gamePad; }
 		Settings& settings() { return _settings; }
+		bool keyboardMouseControlCamera() const { return _settings.cameraControlDevice == DEVICE_ID_KEYBOARD_MOUSE || _settings.cameraControlDevice == DEVICE_ID_ALL; }
+		bool controllerControlsCamera() const { return _settings.cameraControlDevice == DEVICE_ID_GAMEPAD || _settings.cameraControlDevice == DEVICE_ID_ALL; }
 
 	private:
 		bool _inputBlocked = false;

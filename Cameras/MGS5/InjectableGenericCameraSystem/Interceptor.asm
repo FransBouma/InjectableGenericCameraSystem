@@ -36,6 +36,10 @@ PUBLIC cameraCutsceneStructInterceptor
 PUBLIC cameraCutsceneWrite1Interceptor
 PUBLIC fovWriteInterceptor
 PUBLIC gamespeedWriteInterceptor
+PUBLIC timestopReadInterceptor
+PUBLIC dofStructInterceptor
+PUBLIC dofWriteInterceptor
+PUBLIC dofControlInterceptor
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -47,6 +51,8 @@ EXTERN g_cameraStructAddress: qword
 EXTERN g_cameraCutsceneStructAddress: qword
 EXTERN g_timestopStructAddress: qword
 EXTERN g_gamespeedStructAddress: qword
+EXTERN g_dofStructAddress: qword
+EXTERN g_dofControlStructAddress: qword
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -56,6 +62,10 @@ EXTERN _cameraCutsceneStructInterceptionContinue: qword
 EXTERN _cameraCutsceneWrite1InterceptionContinue: qword
 EXTERN _fovWriteInterceptionContinue: qword
 EXTERN _gamespeedInterceptionContinue: qword
+EXTERN _timestopInterceptionContinue: qword
+EXTERN _dofStructInterceptionContinue: qword
+EXTERN _dofWriteInterceptionContinue: qword
+EXTERN _dofControlInterceptionContinue: qword
 
 .data
 ;---------------------------------------------------------------
@@ -155,7 +165,7 @@ fovWriteInterceptor PROC
 ;mgsvtpp.exe+403C156 - A8 01                 - test al,01
 	mulss xmm1, dword ptr [rsi+000005B8h]
 	addss xmm1,xmm0
-	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
+	cmp byte ptr [g_cameraEnabled], 1					
 	je exit
 originalCode:
 	movss dword ptr [rcx+0Ch],xmm1		
@@ -189,5 +199,105 @@ exit:
 	jmp qword ptr [_gamespeedInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 gamespeedWriteInterceptor ENDP
 
+
+timestopReadInterceptor PROC
+;1433BA21C - 48 BA 2B151D5CE5A60000 - mov rdx,0000A6E55C1D152B				<< INTERCEPT HERE
+;1433BA226 - 49 8B 1E              - mov rbx,[r14]
+;1433BA229 - 4C 8B 08              - mov r9,[rax]
+;1433BA22C - 45 31 C0              - xor r8d,r8d
+;1433BA22F - 48 89 C1              - mov rcx,rax
+;1433BA232 - 41 FF 51 18           - call qword ptr [r9+18]					<< CONTINUE HERE
+;
+; timestop struct pointer is in rdi. The actual read is further down but we can't intercept it there so we do it higher up in the code path
+;
+; actual read:
+;1433BA301 - 8B 47 38              - mov eax,[rdi+38]					// timestop read.
+;1433BA304 - FF C8                 - dec eax
+;1433BA306 - 83 F8 3F              - cmp eax,3F { 63 }
+;1433BA309 - 77 2C                 - ja 1433BA337
+;1433BA30B - 48 B9 0180008000000080 - mov rcx,8000000080008001 { -2147450879 }
+;1433BA315 - 48 0FA3 C1            - bt rcx,rax
+;1433BA319 - 73 1C                 - jae 1433BA337
+;1433BA31B - 80 3D EEFB7EFF 00     - cmp byte ptr [142BA9F10],00 { [00000000] }
+;1433BA322 - 75 13                 - jne 1433BA337
+;1433BA324 - 48 8B 4F 40           - mov rcx,[rdi+40]
+;1433BA328 - 8B 01                 - mov eax,[rcx]
+;1433BA32A - C1 E8 1F              - shr eax,1F { 31 }
+	mov [g_timestopStructAddress], rdi
+originalCode:
+	mov rdx,0000A6E55C1D152Bh
+	mov rbx,[r14]
+	mov r9,[rax]
+	xor r8d,r8d
+	mov rcx,rax
+exit:
+	jmp qword ptr [_timestopInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+timestopReadInterceptor ENDP
+
+
+dofStructInterceptor PROC
+;1432A5F3F - 0F28 48 20            - movaps xmm1,[rax+20]
+;1432A5F43 - 0F29 8F 90000000      - movaps [rdi+00000090],xmm1
+;1432A5F4A - 0F28 40 30            - movaps xmm0,[rax+30]
+;1432A5F4E - 0F29 87 A0000000      - movaps [rdi+000000A0],xmm0
+;1432A5F55 - F3 41 0F10 4E 38      - movss xmm1,[r14+38]					<< INTERCEPT HERE
+;1432A5F5B - F3 0F11 8F 08010000   - movss [rdi+00000108],xmm1				<< Distance write.
+;1432A5F63 - F3 41 0F10 56 4C      - movss xmm2,[r14+4C]					<< CONTINUE HERE
+;1432A5F69 - F3 41 0F10 46 48      - movss xmm0,[r14+48]
+;1432A5F6F - F3 0F11 87 68010000   - movss [rdi+00000168],xmm0
+;1432A5F77 - F3 0F11 97 6C010000   - movss [rdi+0000016C],xmm2
+;1432A5F7F - 4C 8D 4D 07           - lea r9,[rbp+07]
+;1432A5F83 - 4C 8D 45 17           - lea r8,[rbp+17]
+	mov [g_dofStructAddress], rdi
+	movss xmm1, dword ptr [r14+38h]
+	cmp byte ptr [g_cameraEnabled], 1
+	je exit
+originalCode:
+	movss dword ptr [rdi+00000108h],xmm1
+exit:
+	jmp qword ptr [_dofStructInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+dofStructInterceptor ENDP
+
+
+dofWriteInterceptor PROC
+;1432A5FA0 - F3 0F10 4D 17         - movss xmm1,[rbp+17]					
+;1432A5FA5 - F3 0F11 8F 10010000   - movss [rdi+00000110],xmm1				<< focal length (FoV)
+;1432A5FAD - F3 0F10 45 07         - movss xmm0,[rbp+07]
+;1432A5FB2 - F3 0F11 87 14010000   - movss [rdi+00000114],xmm0				
+;1432A5FBA - F3 41 0F10 4E 44      - movss xmm1,[r14+44]					<< INTERCEPT HERE
+;1432A5FC0 - F3 0F11 8F 24010000   - movss [rdi+00000124],xmm1				<< Aperture write.	(0.5-32)
+;1432A5FC8 - F3 41 0F10 46 50      - movss xmm0,[r14+50]					<< CONTINUE HERE
+;1432A5FCE - F3 0F11 87 28010000   - movss [rdi+00000128],xmm0
+;1432A5FD6 - 41 80 BE E7000000 00  - cmp byte ptr [r14+000000E7],00 { 0 }
+	movss xmm1, dword ptr [r14+44h]
+	cmp byte ptr [g_cameraEnabled], 1
+	je exit
+originalCode:
+	movss dword ptr [rdi+00000124h],xmm1
+exit:
+	jmp qword ptr [_dofWriteInterceptionContinue]
+dofWriteInterceptor ENDP
+
+
+dofControlInterceptor PROC
+;143004E20 - 48 89 5C 24 08        - mov [rsp+08],rbx						<< INTERCEPT HERE
+;143004E25 - 48 89 74 24 10        - mov [rsp+10],rsi
+;143004E2A - 57                    - push rdi
+;143004E2B - 48 83 EC 20           - sub rsp,20 { 32 }
+;143004E2F - 80 79 50 00           - cmp byte ptr [rcx+50],00 				<< dof enable flag (1==enable/0==disable).
+;143004E33 - 4C 89 C7              - mov rdi,r8								<< CONTINUE HERE
+;143004E36 - 48 89 D6              - mov rsi,rdx
+;143004E39 - 48 89 CB              - mov rbx,rcx
+;143004E3C - 74 4E                 - je 143004E8C
+	mov [g_dofControlStructAddress], rcx
+originalCode:
+	mov [rsp+08h],rbx
+	mov [rsp+10h],rsi
+	push rdi
+	sub rsp,20h
+	cmp byte ptr [rcx+50h], 00
+exit:
+	jmp qword ptr [_dofControlInterceptionContinue]
+dofControlInterceptor ENDP
 
 END

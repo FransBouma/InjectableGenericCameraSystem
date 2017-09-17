@@ -49,11 +49,10 @@ namespace IGCS
 		void writeNewCameraValuesToCameraStructs();
 		void displayCameraState();
 		void toggleCameraMovementLockState(bool newValue);
-		void toggleInputBlockState(bool newValue);
 		void handleKeyboardCameraMovement(float multiplier);
 		void handleMouseCameraMovement(float multiplier);
 		void handleGamePadMovement(float multiplierBase);
-		void toggleTimestopState();
+		void freezeGame();
 		void waitForCameraStructAddresses();
 
 		Camera _camera;

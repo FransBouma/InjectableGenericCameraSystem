@@ -40,49 +40,66 @@ extern "C" {
 	LPBYTE g_cameraCutsceneStructAddress = nullptr;
 	LPBYTE g_timestopStructAddress = nullptr;
 	LPBYTE g_gamespeedStructAddress = nullptr;
+	LPBYTE g_dofStructAddress = nullptr;
+	LPBYTE g_dofControlStructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
 {
 	static float _originalQuaternion[4];
-	static float _originalQuaternionCutscene[4];
+	static float _originalCutsceneQuaternion[4];
 	static float _originalCoords[3];
 	static float _originalCutsceneCoords[3];
 	static float _originalFov;
+	static float _originalCutsceneFov;
 
 
 	// newValue: 1 == time should be frozen, 0 == normal gameplay
-	void setTimeStopValue(byte newValue)
+	// returns true if the game was stopped by this call, false if the game was either already stopped or the state didn't change.
+	bool setTimeStopValue(byte newValue)
 	{
-		if (nullptr == g_gamespeedStructAddress)
+		if (nullptr == g_timestopStructAddress)
 		{
-			return;
+			return false;
 		}
-		float* gamespeedAddress = reinterpret_cast<float*>(g_gamespeedStructAddress + GAMESPEED_IN_STRUCT_OFFSET);
-		*gamespeedAddress = newValue ? 0.00001f : 1.0f;
+		byte* timestopAddress = (g_timestopStructAddress + TIMESTOP_IN_STRUCT_OFFSET);
+		bool toReturn = *timestopAddress == (byte)0 && (newValue == (byte)1);
+		*timestopAddress = newValue;
+		return toReturn;
 	}
 
 	// Resets the FOV to the one it got when we enabled the camera
 	void resetFoV()
 	{
-		if (nullptr == g_cameraStructAddress)
+		float* fovInMemory = nullptr;
+		if (isCameraFound())
 		{
-			return;
+			fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
+			*fovInMemory = _originalFov;
 		}
-		float* fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
-		*fovInMemory = _originalFov;
+		if (isCutsceneCameraFound())
+		{
+			fovInMemory = reinterpret_cast<float*>(g_cameraCutsceneStructAddress + FOV_CUTSCENE_IN_STRUCT_OFFSET);
+			*fovInMemory = _originalCutsceneFov;
+		}
 	}
 
 
 	// changes the FoV with the specified amount
 	void changeFoV(float amount)
 	{
-		if (nullptr == g_cameraStructAddress)
+		// fov is in focal length, so the higher the number the more zoomed in, hence the negation of the value.
+		float* fovInMemory = nullptr;
+		if (isCameraFound())
 		{
-			return;
+			fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
+			*fovInMemory -= amount;
 		}
-		float* fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
-		*fovInMemory += amount;
+		if (isCutsceneCameraFound())
+		{
+			fovInMemory = reinterpret_cast<float*>(g_cameraCutsceneStructAddress + FOV_CUTSCENE_IN_STRUCT_OFFSET);
+			*fovInMemory -= amount;
+		}
 	}
 
 
@@ -95,7 +112,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 
 	XMFLOAT3 getCurrentCutsceneCameraCoords()
 	{
-		float* coordsInMemory = reinterpret_cast<float*>(g_cameraCutsceneStructAddress + COORDS_IN_STRUCT_OFFSET);
+		float* coordsInMemory = reinterpret_cast<float*>(g_cameraCutsceneStructAddress + COORDS_CUTSCENE_IN_STRUCT_OFFSET);
 		return XMFLOAT3(coordsInMemory[0], coordsInMemory[1], coordsInMemory[2]);
 	}
 
@@ -168,13 +185,14 @@ namespace IGCS::GameSpecific::CameraManipulator
 	{
 		float* coordsInMemory = nullptr;
 		float* quaternionInMemory = nullptr;
+		float* fovInMemory = nullptr;
 		if (isCameraFound())
 		{
 			coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET);
 			memcpy(coordsInMemory, _originalCoords, 3 * sizeof(float));
 			quaternionInMemory = reinterpret_cast<float*>(g_cameraStructAddress + QUATERNION_IN_STRUCT_OFFSET);
 			memcpy(quaternionInMemory, _originalQuaternion, 4 * sizeof(float));
-			float* fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
+			fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
 			*fovInMemory = _originalFov;
 		}
 		if (isCutsceneCameraFound())
@@ -182,11 +200,12 @@ namespace IGCS::GameSpecific::CameraManipulator
 			coordsInMemory = reinterpret_cast<float*>(g_cameraCutsceneStructAddress + COORDS_CUTSCENE_IN_STRUCT_OFFSET);
 			memcpy(coordsInMemory, _originalCutsceneCoords, 3 * sizeof(float));
 			quaternionInMemory = reinterpret_cast<float*>(g_cameraCutsceneStructAddress + QUATERNION_CUTSCENE_IN_STRUCT_OFFSET);
-			memcpy(quaternionInMemory, _originalQuaternion, 4 * sizeof(float));
+			memcpy(quaternionInMemory, _originalCutsceneQuaternion, 4 * sizeof(float));
+			fovInMemory = reinterpret_cast<float*>(g_cameraCutsceneStructAddress + FOV_CUTSCENE_IN_STRUCT_OFFSET);
+			*fovInMemory = _originalCutsceneFov;
 		}
-		// reset pointer of our cutscene camera, as it might be become deactivated and has to be set again in the interceptor
-		// before we can use it.
-		g_cameraCutsceneStructAddress = nullptr;
+		// in theory we should reset the cutscene camera pointer to null as it could be the next time the user enables it, it might be somewhere else and the interception
+		// hasn't ran yet. This is such an edge case that we leave it for now, as otherwise the camera can't be enabled twice when the game is paused. 
 	}
 
 
@@ -194,22 +213,24 @@ namespace IGCS::GameSpecific::CameraManipulator
 	{
 		float* coordsInMemory = nullptr;
 		float* quaternionInMemory = nullptr;
+		float* fovInMemory = nullptr;
 		if (isCameraFound())
 		{
 			coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET);
 			memcpy(_originalCoords, coordsInMemory, 3 * sizeof(float));
 			quaternionInMemory = reinterpret_cast<float*>(g_cameraStructAddress + QUATERNION_IN_STRUCT_OFFSET);
 			memcpy(_originalQuaternion, quaternionInMemory, 4 * sizeof(float));
-			float* fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
+			fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
 			_originalFov = *fovInMemory;
-
 		}
 		if (isCutsceneCameraFound())
 		{
 			coordsInMemory = reinterpret_cast<float*>(g_cameraCutsceneStructAddress + COORDS_CUTSCENE_IN_STRUCT_OFFSET);
 			memcpy(_originalCutsceneCoords, coordsInMemory, 3 * sizeof(float));
 			quaternionInMemory = reinterpret_cast<float*>(g_cameraCutsceneStructAddress + QUATERNION_CUTSCENE_IN_STRUCT_OFFSET);
-			memcpy(_originalQuaternion, quaternionInMemory, 4 * sizeof(float));
+			memcpy(_originalCutsceneQuaternion, quaternionInMemory, 4 * sizeof(float));
+			fovInMemory = reinterpret_cast<float*>(g_cameraCutsceneStructAddress + FOV_CUTSCENE_IN_STRUCT_OFFSET);
+			_originalCutsceneFov = *fovInMemory;
 		}
 	}
 }
