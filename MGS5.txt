@@ -140,7 +140,7 @@ mgsvtpp.exe+2B75BC8
 
 // Dof aperture distance
 1432A5FA0 - F3 0F10 4D 17         - movss xmm1,[rbp+17]
-1432A5FA5 - F3 0F11 8F 10010000   - movss [rdi+00000110],xmm1				<< blur strength
+1432A5FA5 - F3 0F11 8F 10010000   - movss [rdi+00000110],xmm1				<< focal length
 1432A5FAD - F3 0F10 45 07         - movss xmm0,[rbp+07]
 1432A5FB2 - F3 0F11 87 14010000   - movss [rdi+00000114],xmm0
 1432A5FBA - F3 41 0F10 4E 44      - movss xmm1,[r14+44]

@@ -52,7 +52,7 @@ namespace IGCS
 		int cameraControlDevice;		// 0==keyboard/mouse, 1 == gamepad, 2 == both, see Defaults.h
 		bool enableDoF;
 		float dofDistance;				// 0-infinite
-		float dofBlurStrength;			// 0-100
+		float dofFocalLength;			// 0-200
 		float dofAperture;				// 0.5-32
 
 		float clampFloat(float value, float min, float default)
@@ -103,7 +103,7 @@ namespace IGCS
 			cameraControlDevice = DEVICE_ID_ALL;
 			enableDoF = true;
 			dofDistance = 1.0f;
-			dofBlurStrength = 20.0f;
+			dofFocalLength = 20.0f;
 			dofAperture = 2.5;
 		}
 	};

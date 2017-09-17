@@ -260,19 +260,27 @@ dofStructInterceptor ENDP
 
 
 dofWriteInterceptor PROC
-;1432A5FA0 - F3 0F10 4D 17         - movss xmm1,[rbp+17]					
+;1432A5FA0 - F3 0F10 4D 17         - movss xmm1,[rbp+17]					<< INTERCEPT HERE
 ;1432A5FA5 - F3 0F11 8F 10010000   - movss [rdi+00000110],xmm1				<< focal length (FoV)
 ;1432A5FAD - F3 0F10 45 07         - movss xmm0,[rbp+07]
 ;1432A5FB2 - F3 0F11 87 14010000   - movss [rdi+00000114],xmm0				
-;1432A5FBA - F3 41 0F10 4E 44      - movss xmm1,[r14+44]					<< INTERCEPT HERE
+;1432A5FBA - F3 41 0F10 4E 44      - movss xmm1,[r14+44]					
 ;1432A5FC0 - F3 0F11 8F 24010000   - movss [rdi+00000124],xmm1				<< Aperture write.	(0.5-32)
 ;1432A5FC8 - F3 41 0F10 46 50      - movss xmm0,[r14+50]					<< CONTINUE HERE
 ;1432A5FCE - F3 0F11 87 28010000   - movss [rdi+00000128],xmm0
 ;1432A5FD6 - 41 80 BE E7000000 00  - cmp byte ptr [r14+000000E7],00 { 0 }
-	movss xmm1, dword ptr [r14+44h]
 	cmp byte ptr [g_cameraEnabled], 1
-	je exit
+	jne originalCode
+noWrites:
+	movss xmm0, dword ptr [rbp+07h]
+	movss xmm1, dword ptr [r14+44h]
+	jmp exit
 originalCode:
+	movss xmm1, dword ptr [rbp+17h]
+	movss dword ptr [rdi+00000110h],xmm1
+	movss xmm0, dword ptr [rbp+07h]
+	movss dword ptr [rdi+00000114],xmm0
+	movss xmm1, dword ptr [r14+44h]
 	movss dword ptr [rdi+00000124h],xmm1
 exit:
 	jmp qword ptr [_dofWriteInterceptionContinue]

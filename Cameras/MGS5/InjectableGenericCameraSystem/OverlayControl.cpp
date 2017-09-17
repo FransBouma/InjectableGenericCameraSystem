@@ -9,6 +9,7 @@
 #include <mutex>
 #include "Defaults.h"
 #include "Globals.h"
+#include "CameraManipulator.h"
 
 using namespace std;
 
@@ -67,7 +68,6 @@ namespace IGCS::OverlayControl
 		renderMainWindow();
 		renderSplash();
 		renderNotifications();
-		ImGui::ShowTestWindow(&_showMainWindow);
 		ImGui::Render();
 	}
 
@@ -229,6 +229,7 @@ Special thanks to:
 
 	void renderSettings()
 	{
+		GameSpecific::CameraManipulator::getSettingsFromGameState();
 		Settings& currentSettings = Globals::instance().settings();
 		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.3f);
 		bool settingsChanged = false;
@@ -259,17 +260,19 @@ Special thanks to:
 			settingsChanged |= ImGui::SliderFloat("FoV zoom speed", &currentSettings.fovChangeSpeed, 0.001f, 1.0f, "%.3f");
 
 			// dof
-			ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.3f) - 11.0f);
-			ImGui::Checkbox("Enable Depth of Field (DoF) effect *", &currentSettings.enableDoF);
-			ImGui::DragFloat("DoF focus distance *", &currentSettings.dofDistance, 0.5f, 0.01f, 1000.0f, "%.03f");
-			ImGui::SliderFloat("DoF aperture *", &currentSettings.dofAperture, 0.5f, 32.0f, "%.1f");
+			//ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.3f) - 11.0f);
+			//ImGui::Checkbox("Enable Depth of Field (DoF) effect *", &currentSettings.enableDoF);
+			ImGui::DragFloat("DoF focus distance *", &currentSettings.dofDistance, 0.1f, 0.1f, 1000.0f, "%.03f");
+			ImGui::SliderFloat("DoF aperture *", &currentSettings.dofAperture, 0.1f, 40.0f, "%.1f");
 			ImGui::SameLine(); ShowHelpMarker("The game's DoF uses lens focal length (FoV)\ntogether with aperture for blur strength.\nLower aperture values means shallower focus area.\n");
+			ImGui::SliderFloat("DoF lens focal length *", &currentSettings.dofFocalLength, 1.0f, 400.0f, "%.1f");
 		}
 		ImGui::PopItemWidth();
 		if (settingsChanged)
 		{
 			Globals::instance().markSettingsDirty();
 		}
+		GameSpecific::CameraManipulator::applySettingsToGameState();
 	}
 
 

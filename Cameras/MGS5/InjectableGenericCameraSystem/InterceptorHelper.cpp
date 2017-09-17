@@ -43,6 +43,10 @@ extern "C" {
 	void fovWriteInterceptor();
 	void gamespeedWriteInterceptor();
 	void timestopReadInterceptor();
+	void dofStructInterceptor();
+	void dofWriteInterceptor();
+	void dofControlInterceptor();
+
 }
 
 // external addresses used in asm.
@@ -53,6 +57,9 @@ extern "C" {
 	LPBYTE _fovWriteInterceptionContinue = nullptr;
 	LPBYTE _gamespeedInterceptionContinue = nullptr;
 	LPBYTE _timestopInterceptionContinue = nullptr;
+	LPBYTE _dofStructInterceptionContinue = nullptr;
+	LPBYTE _dofWriteInterceptionContinue = nullptr;
+	LPBYTE _dofControlInterceptionContinue = nullptr;
 }
 
 
@@ -68,6 +75,9 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[TIMESTOP_READ_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_READ_INTERCEPT_KEY, "48 BA 2B 15 1D 5C E5 A6 00 00 49 8B 1E 4C 8B 08 45 31 C0 48 89 C1", 1);
 		aobBlocks[FOV_WRITE1_CUTSCENE_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE1_CUTSCENE_INTERCEPT_KEY, "F3 0F 11 40 3C 48 89 F1 E8 ?? ?? ?? ?? 4C 8B AC 24", 1);
 		aobBlocks[FOV_WRITE2_CUTSCENE_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE2_CUTSCENE_INTERCEPT_KEY, "F3 0F 11 40 3C 0F B6 05 ?? ?? ?? ?? A8 01 74", 1);
+		aobBlocks[DOF_ADDRESS_INTERCEPT_KEY] = new AOBBlock(DOF_ADDRESS_INTERCEPT_KEY, "F3 41 0F 10 4E 38 F3 0F 11 8F 08 01 00 00 F3 41 0F10 56 4C", 1);
+		aobBlocks[DOF_WRITE_INTERCEPT_KEY] = new AOBBlock(DOF_WRITE_INTERCEPT_KEY, "F3 0F 10 4D 17 F3 0F 11 8F 10 01 00 00 F3 0F 10 45 07 F3 0F 11 87 14 01 00 00", 1);
+		aobBlocks[DOF_CONTROL_INTERCEPT_KEY] = new AOBBlock(DOF_CONTROL_INTERCEPT_KEY, "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 80 79 50 00", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -99,7 +109,11 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[FOV_WRITE_INTERCEPT_KEY], 0x11, &_fovWriteInterceptionContinue, &fovWriteInterceptor);
 		GameImageHooker::setHook(aobBlocks[GAMESPEED_WRITE_INTERCEPT_KEY], 0x0E, &_gamespeedInterceptionContinue, &gamespeedWriteInterceptor);
 		GameImageHooker::setHook(aobBlocks[TIMESTOP_READ_INTERCEPT_KEY], 0x16, &_timestopInterceptionContinue, &timestopReadInterceptor);
+		GameImageHooker::setHook(aobBlocks[DOF_ADDRESS_INTERCEPT_KEY], 0x0E, &_dofStructInterceptionContinue, &dofStructInterceptor);
+		GameImageHooker::setHook(aobBlocks[DOF_WRITE_INTERCEPT_KEY], 0x28, &_dofWriteInterceptionContinue, &dofWriteInterceptor);
+		//GameImageHooker::setHook(aobBlocks[DOF_CONTROL_INTERCEPT_KEY], 0x13, &_dofControlInterceptionContinue, &dofControlInterceptor);
 	}
+
 
 	// if 'enabled' is false, we'll nop the range where the FoV writes are placed, otherwise we'll write back the original statement bytes. 
 	void toggleFoVCutsceneWriteState(map<string, AOBBlock*> &aobBlocks, bool enabled)

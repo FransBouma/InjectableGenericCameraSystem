@@ -43,4 +43,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 	bool isCameraFound();
 	bool isCutsceneCameraFound();
 	void displayCameraStructAddress();
+	void getSettingsFromGameState();
+	void applySettingsToGameState();
 }

@@ -54,6 +54,42 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static float _originalCutsceneFov;
 
 
+	void getSettingsFromGameState()
+	{
+		if (nullptr == g_dofControlStructAddress || nullptr == g_dofStructAddress)
+		{
+			return;
+		}
+		Settings& currentSettings = Globals::instance().settings();
+		float* apertureInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_APERTURE_IN_STRUCT_OFFSET);
+		currentSettings.dofAperture = *apertureInMemory;
+		float* focusDistanceInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_FOCUS_DISTANCE_IN_STRUCT_OFFSET);
+		currentSettings.dofDistance = *focusDistanceInMemory;
+		float* focalLengthInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_FOCAL_LENGTH_IN_STRUCT_OFFSET);
+		currentSettings.dofFocalLength = *focalLengthInMemory;
+		//byte* dofEnable = (g_dofControlStructAddress + DOF_CONTROL_IN_STRUCT_OFFSET);
+		//currentSettings.enableDoF = (*dofEnable == (byte)1);
+	}
+
+
+	void applySettingsToGameState()
+	{
+		if (nullptr == g_dofControlStructAddress || nullptr == g_dofStructAddress)
+		{
+			return;
+		}
+		Settings& currentSettings = Globals::instance().settings();
+		float* apertureInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_APERTURE_IN_STRUCT_OFFSET);
+		*apertureInMemory = currentSettings.dofAperture;
+		float* focusDistanceInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_FOCUS_DISTANCE_IN_STRUCT_OFFSET);
+		*focusDistanceInMemory = currentSettings.dofDistance;
+		float* focalLengthInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_FOCAL_LENGTH_IN_STRUCT_OFFSET);
+		*focalLengthInMemory = currentSettings.dofFocalLength;
+		//byte* dofEnable = (g_dofControlStructAddress + DOF_CONTROL_IN_STRUCT_OFFSET);
+		//*dofEnable = currentSettings.enableDoF ? (byte)1 : (byte)0;
+	}
+	
+
 	// newValue: 1 == time should be frozen, 0 == normal gameplay
 	// returns true if the game was stopped by this call, false if the game was either already stopped or the state didn't change.
 	bool setTimeStopValue(byte newValue)
