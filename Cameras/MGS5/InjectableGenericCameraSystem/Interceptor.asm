@@ -39,7 +39,6 @@ PUBLIC gamespeedWriteInterceptor
 PUBLIC timestopReadInterceptor
 PUBLIC dofStructInterceptor
 PUBLIC dofWriteInterceptor
-PUBLIC dofControlInterceptor
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -52,7 +51,6 @@ EXTERN g_cameraCutsceneStructAddress: qword
 EXTERN g_timestopStructAddress: qword
 EXTERN g_gamespeedStructAddress: qword
 EXTERN g_dofStructAddress: qword
-EXTERN g_dofControlStructAddress: qword
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -65,7 +63,6 @@ EXTERN _gamespeedInterceptionContinue: qword
 EXTERN _timestopInterceptionContinue: qword
 EXTERN _dofStructInterceptionContinue: qword
 EXTERN _dofWriteInterceptionContinue: qword
-EXTERN _dofControlInterceptionContinue: qword
 
 .data
 ;---------------------------------------------------------------
@@ -177,7 +174,7 @@ fovWriteInterceptor ENDP
 
 gamespeedWriteInterceptor PROC
 ;142EB3833 - F3 0F11 7F 08         - movss [rdi+08],xmm7				<< INTERCEPT HERE
-;142EB3838 - F3 0F11 77 0C         - movss [rdi+0C],xmm6				// write gamespeed. 1.0 is normal speed. 0.00001 is almost paused.
+;142EB3838 - F3 0F11 77 0C         - movss [rdi+0C],xmm6				// write gamespeed. 1.0 is normal speed. 0.00001 is almost paused. Only works in gameplay.
 ;142EB383D - 48 8B 47 28           - mov rax,[rdi+28]
 ;142EB3841 - 48 85 C0              - test rax,rax						<< CONTINUE HERE
 ;142EB3844 - 74 42                 - je 142EB3888
@@ -272,40 +269,19 @@ dofWriteInterceptor PROC
 	cmp byte ptr [g_cameraEnabled], 1
 	jne originalCode
 noWrites:
+	movss xmm1,dword ptr [rbp+17h]
 	movss xmm0, dword ptr [rbp+07h]
-	movss xmm1, dword ptr [r14+44h]
+	movss xmm1, dword ptr [r14+44h]		
 	jmp exit
 originalCode:
-	movss xmm1, dword ptr [rbp+17h]
+	movss xmm1,dword ptr [rbp+17h]
 	movss dword ptr [rdi+00000110h],xmm1
 	movss xmm0, dword ptr [rbp+07h]
-	movss dword ptr [rdi+00000114],xmm0
-	movss xmm1, dword ptr [r14+44h]
+	movss dword ptr [rdi+00000114h],xmm0
+	movss xmm1, dword ptr [r14+44h]		
 	movss dword ptr [rdi+00000124h],xmm1
 exit:
 	jmp qword ptr [_dofWriteInterceptionContinue]
 dofWriteInterceptor ENDP
-
-
-dofControlInterceptor PROC
-;143004E20 - 48 89 5C 24 08        - mov [rsp+08],rbx						<< INTERCEPT HERE
-;143004E25 - 48 89 74 24 10        - mov [rsp+10],rsi
-;143004E2A - 57                    - push rdi
-;143004E2B - 48 83 EC 20           - sub rsp,20 { 32 }
-;143004E2F - 80 79 50 00           - cmp byte ptr [rcx+50],00 				<< dof enable flag (1==enable/0==disable).
-;143004E33 - 4C 89 C7              - mov rdi,r8								<< CONTINUE HERE
-;143004E36 - 48 89 D6              - mov rsi,rdx
-;143004E39 - 48 89 CB              - mov rbx,rcx
-;143004E3C - 74 4E                 - je 143004E8C
-	mov [g_dofControlStructAddress], rcx
-originalCode:
-	mov [rsp+08h],rbx
-	mov [rsp+10h],rsi
-	push rdi
-	sub rsp,20h
-	cmp byte ptr [rcx+50h], 00
-exit:
-	jmp qword ptr [_dofControlInterceptionContinue]
-dofControlInterceptor ENDP
 
 END

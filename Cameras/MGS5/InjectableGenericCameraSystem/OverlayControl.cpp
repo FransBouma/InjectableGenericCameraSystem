@@ -235,19 +235,20 @@ Special thanks to:
 		bool settingsChanged = false;
 		if (ImGui::Button("Reset to defaults"))
 		{
-			currentSettings.init();
+			currentSettings.init(true);
 			settingsChanged = true;
 		}
-		ImGui::TextUnformatted("Settings marked with a '*' are not persisted in the config file.");
+
 		if (ImGui::CollapsingHeader("Camera movement options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			settingsChanged |= ImGui::SliderFloat("Fast movement multiplier", &currentSettings.fastMovementMultiplier, 0.1f, 100.0f, "%.3f");
 			settingsChanged |= ImGui::SliderFloat("Slow movement multiplier", &currentSettings.slowMovementMultiplier, 0.001f, 1.0f, "%.3f");
 			settingsChanged |= ImGui::SliderFloat("Up movement multiplier", &currentSettings.movementUpMultiplier, 0.1f, 10.0f, "%.3f");
 			settingsChanged |= ImGui::SliderFloat("Movement speed", &currentSettings.movementSpeed, 0.001f, 0.5f, "%.3f");
-
-			ImGui::Combo("Camera control device *", &currentSettings.cameraControlDevice, "Keyboard & Mouse\0Gamepad\0Both\0\0");
+			settingsChanged |= ImGui::Combo("Camera control device", &currentSettings.cameraControlDevice, "Keyboard & Mouse\0Gamepad\0Both\0\0");
 			ImGui::SameLine(); ShowHelpMarker("The camera control device chosen will be blocked for game input.\n");
+			ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.3f) - 11.0f);
+			settingsChanged |= ImGui::Checkbox("Allow camera movement when this menu is up", &currentSettings.allowCameraMovementWhenMenuIsUp);
 		}
 		if (ImGui::CollapsingHeader("Camera rotation options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
@@ -257,15 +258,16 @@ Special thanks to:
 		}
 		if (ImGui::CollapsingHeader("Misc. camera options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			settingsChanged |= ImGui::SliderFloat("FoV zoom speed", &currentSettings.fovChangeSpeed, 0.001f, 1.0f, "%.3f");
-
+			settingsChanged |= ImGui::SliderFloat("Field of View (FoV) zoom speed", &currentSettings.fovChangeSpeed, 0.001f, 1.0f, "%.3f");
+			ImGui::SameLine(); ShowHelpMarker("The game's FoV is calculated from a lens length in mm.\nZooming therefore isn't linear.\n");
+		}
+		if (ImGui::CollapsingHeader("Options when camera is enabled", ImGuiTreeNodeFlags_DefaultOpen))
+		{
 			// dof
-			//ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.3f) - 11.0f);
-			//ImGui::Checkbox("Enable Depth of Field (DoF) effect *", &currentSettings.enableDoF);
-			ImGui::DragFloat("DoF focus distance *", &currentSettings.dofDistance, 0.1f, 0.1f, 1000.0f, "%.03f");
-			ImGui::SliderFloat("DoF aperture *", &currentSettings.dofAperture, 0.1f, 40.0f, "%.1f");
+			ImGui::DragFloat("Depth of Field (DoF) focus distance", &currentSettings.dofDistance, 0.01f, 0.1f, 1000.0f, "%.03f");
+			ImGui::SliderFloat("DoF aperture", &currentSettings.dofAperture, 0.1f, 40.0f, "%.1f");
 			ImGui::SameLine(); ShowHelpMarker("The game's DoF uses lens focal length (FoV)\ntogether with aperture for blur strength.\nLower aperture values means shallower focus area.\n");
-			ImGui::SliderFloat("DoF lens focal length *", &currentSettings.dofFocalLength, 1.0f, 400.0f, "%.1f");
+			ImGui::SliderFloat("DoF lens focal length", &currentSettings.dofFocalLength, 1.0f, 400.0f, "%.1f");
 		}
 		ImGui::PopItemWidth();
 		if (settingsChanged)

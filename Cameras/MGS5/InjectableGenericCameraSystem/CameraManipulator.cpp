@@ -41,7 +41,6 @@ extern "C" {
 	LPBYTE g_timestopStructAddress = nullptr;
 	LPBYTE g_gamespeedStructAddress = nullptr;
 	LPBYTE g_dofStructAddress = nullptr;
-	LPBYTE g_dofControlStructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -56,37 +55,32 @@ namespace IGCS::GameSpecific::CameraManipulator
 
 	void getSettingsFromGameState()
 	{
-		if (nullptr == g_dofControlStructAddress || nullptr == g_dofStructAddress)
-		{
-			return;
-		}
 		Settings& currentSettings = Globals::instance().settings();
-		float* apertureInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_APERTURE_IN_STRUCT_OFFSET);
-		currentSettings.dofAperture = *apertureInMemory;
-		float* focusDistanceInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_FOCUS_DISTANCE_IN_STRUCT_OFFSET);
-		currentSettings.dofDistance = *focusDistanceInMemory;
-		float* focalLengthInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_FOCAL_LENGTH_IN_STRUCT_OFFSET);
-		currentSettings.dofFocalLength = *focalLengthInMemory;
-		//byte* dofEnable = (g_dofControlStructAddress + DOF_CONTROL_IN_STRUCT_OFFSET);
-		//currentSettings.enableDoF = (*dofEnable == (byte)1);
+		if (nullptr != g_dofStructAddress)
+		{
+			float* apertureInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_APERTURE_IN_STRUCT_OFFSET);
+			currentSettings.dofAperture = *apertureInMemory;
+			float* focusDistanceInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_FOCUS_DISTANCE_IN_STRUCT_OFFSET);
+			currentSettings.dofDistance = *focusDistanceInMemory;
+			float* focalLengthInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_FOCAL_LENGTH_IN_STRUCT_OFFSET);
+			currentSettings.dofFocalLength = *focalLengthInMemory;
+		}
 	}
 
 
 	void applySettingsToGameState()
 	{
-		if (nullptr == g_dofControlStructAddress || nullptr == g_dofStructAddress)
-		{
-			return;
-		}
+		float* fovInMemory;
 		Settings& currentSettings = Globals::instance().settings();
-		float* apertureInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_APERTURE_IN_STRUCT_OFFSET);
-		*apertureInMemory = currentSettings.dofAperture;
-		float* focusDistanceInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_FOCUS_DISTANCE_IN_STRUCT_OFFSET);
-		*focusDistanceInMemory = currentSettings.dofDistance;
-		float* focalLengthInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_FOCAL_LENGTH_IN_STRUCT_OFFSET);
-		*focalLengthInMemory = currentSettings.dofFocalLength;
-		//byte* dofEnable = (g_dofControlStructAddress + DOF_CONTROL_IN_STRUCT_OFFSET);
-		//*dofEnable = currentSettings.enableDoF ? (byte)1 : (byte)0;
+		if (nullptr != g_dofStructAddress)
+		{
+			float* apertureInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_APERTURE_IN_STRUCT_OFFSET);
+			*apertureInMemory = currentSettings.dofAperture;
+			float* focusDistanceInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_FOCUS_DISTANCE_IN_STRUCT_OFFSET);
+			*focusDistanceInMemory = currentSettings.dofDistance;
+			float* focalLengthInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_FOCAL_LENGTH_IN_STRUCT_OFFSET);
+			*focalLengthInMemory = currentSettings.dofFocalLength;
+		}
 	}
 	
 
@@ -103,6 +97,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 		*timestopAddress = newValue;
 		return toReturn;
 	}
+
 
 	// Resets the FOV to the one it got when we enabled the camera
 	void resetFoV()

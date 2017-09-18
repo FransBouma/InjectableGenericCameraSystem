@@ -41,11 +41,10 @@ namespace IGCS::GameSpecific
 	#define FASTER_MULTIPLIER							10.0f
 	#define SLOWER_MULTIPLIER							0.1f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
-	#define DEFAULT_MOVEMENT_SPEED						0.04f
+	#define DEFAULT_MOVEMENT_SPEED						0.01f
 	#define DEFAULT_ROTATION_SPEED						0.008f
 	#define DEFAULT_FOV_SPEED							0.12f
 	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f
-	#define SUPERSAMPLE_FACTOR_MAX						5.0f
 	// End Mandatory constants
 
 	// AOB Keys for interceptor's AOB scanner
@@ -59,7 +58,6 @@ namespace IGCS::GameSpecific
 	#define FOV_WRITE2_CUTSCENE_INTERCEPT_KEY			"AOB_FOV_WRITE2_CUTSCENE_INTERCEPT"
 	#define DOF_ADDRESS_INTERCEPT_KEY					"AOB_DOF_ADDRESS_INTERCEPT"
 	#define DOF_WRITE_INTERCEPT_KEY						"AOB_DOF_WRITE_INTERCEPT"
-	#define DOF_CONTROL_INTERCEPT_KEY					"AOB_DOF_CONTROL_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
 	#define QUATERNION_IN_STRUCT_OFFSET					0xF0

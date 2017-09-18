@@ -45,8 +45,6 @@ extern "C" {
 	void timestopReadInterceptor();
 	void dofStructInterceptor();
 	void dofWriteInterceptor();
-	void dofControlInterceptor();
-
 }
 
 // external addresses used in asm.
@@ -59,7 +57,6 @@ extern "C" {
 	LPBYTE _timestopInterceptionContinue = nullptr;
 	LPBYTE _dofStructInterceptionContinue = nullptr;
 	LPBYTE _dofWriteInterceptionContinue = nullptr;
-	LPBYTE _dofControlInterceptionContinue = nullptr;
 }
 
 
@@ -77,7 +74,6 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[FOV_WRITE2_CUTSCENE_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE2_CUTSCENE_INTERCEPT_KEY, "F3 0F 11 40 3C 0F B6 05 ?? ?? ?? ?? A8 01 74", 1);
 		aobBlocks[DOF_ADDRESS_INTERCEPT_KEY] = new AOBBlock(DOF_ADDRESS_INTERCEPT_KEY, "F3 41 0F 10 4E 38 F3 0F 11 8F 08 01 00 00 F3 41 0F10 56 4C", 1);
 		aobBlocks[DOF_WRITE_INTERCEPT_KEY] = new AOBBlock(DOF_WRITE_INTERCEPT_KEY, "F3 0F 10 4D 17 F3 0F 11 8F 10 01 00 00 F3 0F 10 45 07 F3 0F 11 87 14 01 00 00", 1);
-		aobBlocks[DOF_CONTROL_INTERCEPT_KEY] = new AOBBlock(DOF_CONTROL_INTERCEPT_KEY, "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 80 79 50 00", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -111,7 +107,6 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[TIMESTOP_READ_INTERCEPT_KEY], 0x16, &_timestopInterceptionContinue, &timestopReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[DOF_ADDRESS_INTERCEPT_KEY], 0x0E, &_dofStructInterceptionContinue, &dofStructInterceptor);
 		GameImageHooker::setHook(aobBlocks[DOF_WRITE_INTERCEPT_KEY], 0x28, &_dofWriteInterceptionContinue, &dofWriteInterceptor);
-		//GameImageHooker::setHook(aobBlocks[DOF_CONTROL_INTERCEPT_KEY], 0x13, &_dofControlInterceptionContinue, &dofControlInterceptor);
 	}
 
 

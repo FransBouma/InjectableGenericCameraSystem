@@ -47,10 +47,10 @@ namespace IGCS
 		float movementSpeed;
 		float rotationSpeed;
 		float fovChangeSpeed;
+		int cameraControlDevice;		// 0==keyboard/mouse, 1 == gamepad, 2 == both, see Defaults.h
+		bool allowCameraMovementWhenMenuIsUp;
 
 		// settings not persisted to config file.
-		int cameraControlDevice;		// 0==keyboard/mouse, 1 == gamepad, 2 == both, see Defaults.h
-		bool enableDoF;
 		float dofDistance;				// 0-infinite
 		float dofFocalLength;			// 0-200
 		float dofAperture;				// 0.5-32
@@ -58,6 +58,12 @@ namespace IGCS
 		float clampFloat(float value, float min, float default)
 		{
 			return value < min ? default : value;
+		}
+
+		int clampInt(int value, int min, int max, int default)
+		{
+			return value < min ? default
+							   : value > max ? default: value;
 		}
 
 		void loadFromFile()
@@ -69,29 +75,34 @@ namespace IGCS
 				return;
 			}
 			invertY = iniFile.GetBool("invertY", "CameraSettings");
+			allowCameraMovementWhenMenuIsUp = iniFile.GetBool("allowCameraMovementWhenMenuIsUp", "CameraSettings");
 			fastMovementMultiplier = clampFloat(iniFile.GetFloat("fastMovementMultiplier", "CameraSettings"), 0.0f, FASTER_MULTIPLIER);
 			slowMovementMultiplier = clampFloat(iniFile.GetFloat("slowMovementMultiplier", "CameraSettings"), 0.0f, SLOWER_MULTIPLIER);
 			movementUpMultiplier = clampFloat(iniFile.GetFloat("movementUpMultiplier", "CameraSettings"), 0.0f, DEFAULT_UP_MOVEMENT_MULTIPLIER);
 			movementSpeed = clampFloat(iniFile.GetFloat("movementSpeed", "CameraSettings"), 0.0f, DEFAULT_MOVEMENT_SPEED);
 			rotationSpeed = clampFloat(iniFile.GetFloat("rotationSpeed", "CameraSettings"), 0.0f, DEFAULT_ROTATION_SPEED);
 			fovChangeSpeed = clampFloat(iniFile.GetFloat("fovChangeSpeed", "CameraSettings"), 0.0f, DEFAULT_FOV_SPEED);
+			cameraControlDevice = clampInt(iniFile.GetInt("cameraControlDevice", "CameraSettings"), 0, DEVICE_ID_ALL, DEVICE_ID_ALL);
 		}
 
 		void saveToFile()
 		{
 			CDataFile iniFile;
 			iniFile.SetBool("invertY", invertY, "", "CameraSettings");
+			iniFile.SetBool("allowCameraMovementWhenMenuIsUp", allowCameraMovementWhenMenuIsUp, "", "CameraSettings");
 			iniFile.SetFloat("fastMovementMultiplier", fastMovementMultiplier, "", "CameraSettings");
 			iniFile.SetFloat("slowMovementMultiplier", slowMovementMultiplier, "", "CameraSettings");
 			iniFile.SetFloat("movementUpMultiplier", movementUpMultiplier, "", "CameraSettings");
 			iniFile.SetFloat("movementSpeed", movementSpeed, "", "CameraSettings");
 			iniFile.SetFloat("rotationSpeed", rotationSpeed, "", "CameraSettings");
 			iniFile.SetFloat("fovChangeSpeed", fovChangeSpeed, "", "CameraSettings");
+			iniFile.SetInt("cameraControlDevice", cameraControlDevice, "", "CameraSettings");
 			iniFile.SetFileName(IGCS_SETTINGS_INI_FILENAME);
 			iniFile.Save();
 		}
 
-		void init()
+
+		void init(bool persistedOnly)
 		{
 			invertY = CONTROLLER_Y_INVERT;
 			fastMovementMultiplier = FASTER_MULTIPLIER;
@@ -101,10 +112,13 @@ namespace IGCS
 			rotationSpeed = DEFAULT_ROTATION_SPEED;
 			fovChangeSpeed = DEFAULT_FOV_SPEED;
 			cameraControlDevice = DEVICE_ID_ALL;
-			enableDoF = true;
-			dofDistance = 1.0f;
-			dofFocalLength = 20.0f;
-			dofAperture = 2.5;
+			allowCameraMovementWhenMenuIsUp = false;
+			if (!persistedOnly)
+			{
+				dofDistance = 1.0f;
+				dofFocalLength = 20.0f;
+				dofAperture = 2.5;
+			}
 		}
 	};
 

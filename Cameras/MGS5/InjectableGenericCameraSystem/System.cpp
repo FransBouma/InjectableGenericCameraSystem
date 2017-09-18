@@ -131,7 +131,7 @@ namespace IGCS
 			// camera not found yet, can't proceed.
 			return;
 		}
-		if (OverlayControl::isMainMenuVisible())
+		if (OverlayControl::isMainMenuVisible() && !Globals::instance().settings().allowCameraMovementWhenMenuIsUp)
 		{
 			// stop here, so keys used in the camera system won't affect anything of the camera
 			return;
