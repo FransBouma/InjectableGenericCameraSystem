@@ -162,4 +162,38 @@ mgsvtpp.exe+2B75BC8
 143004E39 - 48 89 CB              - mov rbx,rcx
 143004E3C - 74 4E                 - je 143004E8C
 
+// ToD (in seconds).
+14386DBD0 - 48 8B 05 21F237FF     - mov rax,[142BECDF8] { [142BD7850] }			<< Address of ToD struct. Offset is 4C
+14386DBD7 - C3                    - ret 
+14386DBD8 - 83 71 1B 6A           - xor dword ptr [rcx+1B],6A { 106 }
+
+Called from code below:
+1433B8AA6 - FF 10                 - call qword ptr [rax]						<< Calls function which calls function above.
+1433B8AA8 - 48 8B 03              - mov rax,[rbx]								<< rax still contains ToD struct address. Read it here. 
+1433B8AAB - 48 89 D9              - mov rcx,rbx
+1433B8AAE - F3 0F10 8D D40E0000   - movss xmm1,[rbp+00000ED4]
+1433B8AB6 - FF 50 10              - call qword ptr [rax+10]
+1433B8AB9 - 89 FB                 - mov ebx,edi
+1433B8ABB - F3 49 0F2C C1         - cvttss2si rax,xmm9
+1433B8AC0 - 29 C3                 - sub ebx,eax
+
+// weather
+143668ACA - 44 8B 68 14           - mov r13d,[rax+14]						<< Weather struct is in RAX.
+143668ACE - 44 8B 60 10           - mov r12d,[rax+10]
+143668AD2 - F3 44 0F10 80 D80E0000  - movss xmm8,[rax+00000ED8]
+143668ADB - 44 89 6C 24 20        - mov [rsp+20],r13d
+143668AE0 - 41 83 FD 03           - cmp r13d,03 { 3 }
+
+// weather types:
+0:Clear
+1:Cloudy
+2:Rain
+3:Sand Storm
+4:Mist
+
+// weather struct offsets:
+hard effect			: 0x10
+transition effect	: 0x14
+transition to effect: 0x18
+
 

@@ -41,6 +41,8 @@ extern "C" {
 	LPBYTE g_timestopStructAddress = nullptr;
 	LPBYTE g_gamespeedStructAddress = nullptr;
 	LPBYTE g_dofStructAddress = nullptr;
+	LPBYTE g_todStructAddress = nullptr;
+	LPBYTE g_weatherStructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -51,7 +53,10 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static float _originalCutsceneCoords[3];
 	static float _originalFov;
 	static float _originalCutsceneFov;
-
+	static int _originalToD=12;
+	static int _originalWeatherA = 0;
+	static int _originalWeatherB = 0;
+	static float _originalWeatherIntensity=1.0f;
 
 	void getSettingsFromGameState()
 	{
@@ -65,12 +70,26 @@ namespace IGCS::GameSpecific::CameraManipulator
 			float* focalLengthInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_FOCAL_LENGTH_IN_STRUCT_OFFSET);
 			currentSettings.dofFocalLength = *focalLengthInMemory;
 		}
+		if (nullptr != g_todStructAddress)
+		{
+			int* todInMemory = reinterpret_cast<int*>(g_todStructAddress + TOD_IN_STRUCT_OFFSET);
+			int currentTodInSeconds = (*todInMemory);
+			currentSettings.todHour = currentTodInSeconds / 3600; 
+			currentSettings.todMinute = (currentTodInSeconds - (currentSettings.todHour * 3600)) / 60;
+		}
+		if (nullptr != g_weatherStructAddress)
+		{
+			int* weatherInMemory = reinterpret_cast<int*>(g_weatherStructAddress + WEATHER_DIRECT_IN_STRUCT_OFFSET);
+			currentSettings.weatherA = weatherInMemory[0];
+			currentSettings.weatherB = weatherInMemory[2];			// 3 values, 0 and 2 are 2 weathers you can blend. 1 is transition effect
+			float* weatherIntensityInMemory = reinterpret_cast<float*>(g_weatherStructAddress + WEATHER_INTENSITY_IN_STRUCT_OFFSET);
+			currentSettings.weatherIntensity = *weatherIntensityInMemory;
+		}
 	}
 
 
 	void applySettingsToGameState()
 	{
-		float* fovInMemory;
 		Settings& currentSettings = Globals::instance().settings();
 		if (nullptr != g_dofStructAddress)
 		{
@@ -81,9 +100,19 @@ namespace IGCS::GameSpecific::CameraManipulator
 			float* focalLengthInMemory = reinterpret_cast<float*>(g_dofStructAddress + DOF_FOCAL_LENGTH_IN_STRUCT_OFFSET);
 			*focalLengthInMemory = currentSettings.dofFocalLength;
 		}
+		if (g_cameraEnabled)
+		{
+			if (nullptr != g_todStructAddress)
+			{
+				int todInSeconds = ((currentSettings.todHour % 24) * 3600) + ((currentSettings.todMinute % 60) * 60);
+				int* todInMemory = reinterpret_cast<int*>(g_todStructAddress + TOD_IN_STRUCT_OFFSET);
+				*todInMemory = todInSeconds;
+			}
+			writeWeatherValue(currentSettings.weatherA, currentSettings.weatherB, currentSettings.weatherIntensity);
+		}
 	}
-	
 
+	
 	// newValue: 1 == time should be frozen, 0 == normal gameplay
 	// returns true if the game was stopped by this call, false if the game was either already stopped or the state didn't change.
 	bool setTimeStopValue(byte newValue)
@@ -212,7 +241,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 	
 
 	// should restore the camera values in the camera structures to the cached values. This assures the free camera is always enabled at the original camera location.
-	void restoreOriginalCameraValues()
+	void restoreOriginalValuesAfterCameraDisable()
 	{
 		float* coordsInMemory = nullptr;
 		float* quaternionInMemory = nullptr;
@@ -235,12 +264,19 @@ namespace IGCS::GameSpecific::CameraManipulator
 			fovInMemory = reinterpret_cast<float*>(g_cameraCutsceneStructAddress + FOV_CUTSCENE_IN_STRUCT_OFFSET);
 			*fovInMemory = _originalCutsceneFov;
 		}
+		if (nullptr != g_todStructAddress)
+		{
+			int* todInMemory = reinterpret_cast<int*>(g_todStructAddress + TOD_IN_STRUCT_OFFSET);
+			*todInMemory = _originalToD;
+		}
+		writeWeatherValue(_originalWeatherA, _originalWeatherB, _originalWeatherIntensity);
+		
 		// in theory we should reset the cutscene camera pointer to null as it could be the next time the user enables it, it might be somewhere else and the interception
 		// hasn't ran yet. This is such an edge case that we leave it for now, as otherwise the camera can't be enabled twice when the game is paused. 
 	}
 
 
-	void cacheOriginalCameraValues()
+	void cacheOriginalValuesBeforeCameraEnable()
 	{
 		float* coordsInMemory = nullptr;
 		float* quaternionInMemory = nullptr;
@@ -262,6 +298,32 @@ namespace IGCS::GameSpecific::CameraManipulator
 			memcpy(_originalCutsceneQuaternion, quaternionInMemory, 4 * sizeof(float));
 			fovInMemory = reinterpret_cast<float*>(g_cameraCutsceneStructAddress + FOV_CUTSCENE_IN_STRUCT_OFFSET);
 			_originalCutsceneFov = *fovInMemory;
+		}
+		if (nullptr != g_todStructAddress)
+		{
+			int* todInMemory = reinterpret_cast<int*>(g_todStructAddress + TOD_IN_STRUCT_OFFSET);
+			_originalToD = *todInMemory;
+		}
+		if (nullptr != g_weatherStructAddress)
+		{
+			int* weatherInMemory = reinterpret_cast<int*>(g_weatherStructAddress + WEATHER_DIRECT_IN_STRUCT_OFFSET);
+			_originalWeatherA = weatherInMemory[0];
+			_originalWeatherB = weatherInMemory[2];
+			float* weatherIntensityInMemory = reinterpret_cast<float*>(g_weatherStructAddress + WEATHER_INTENSITY_IN_STRUCT_OFFSET);
+			*weatherIntensityInMemory = _originalWeatherIntensity;
+		}
+	}
+
+
+	void writeWeatherValue(int newWeatherValueA, int newWeatherValueB, float newWeatherIntensity)
+	{
+		if (nullptr != g_weatherStructAddress)
+		{
+			int* weatherInMemory = reinterpret_cast<int*>(g_weatherStructAddress + WEATHER_DIRECT_IN_STRUCT_OFFSET);
+			weatherInMemory[0] = (newWeatherValueA % 5);
+			weatherInMemory[2] = (newWeatherValueB % 5);
+			float* weatherIntensityInMemory = reinterpret_cast<float*>(g_weatherStructAddress + WEATHER_INTENSITY_IN_STRUCT_OFFSET);
+			*weatherIntensityInMemory = newWeatherIntensity < 0.0f ? 1.0f : newWeatherIntensity;
 		}
 	}
 }

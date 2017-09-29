@@ -39,6 +39,9 @@ PUBLIC gamespeedWriteInterceptor
 PUBLIC timestopReadInterceptor
 PUBLIC dofStructInterceptor
 PUBLIC dofWriteInterceptor
+PUBLIC weatherStructInterceptor
+PUBLIC todStructInterceptor
+
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -51,6 +54,8 @@ EXTERN g_cameraCutsceneStructAddress: qword
 EXTERN g_timestopStructAddress: qword
 EXTERN g_gamespeedStructAddress: qword
 EXTERN g_dofStructAddress: qword
+EXTERN g_weatherStructAddress: qword
+EXTERN g_todStructAddress: qword
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -63,7 +68,8 @@ EXTERN _gamespeedInterceptionContinue: qword
 EXTERN _timestopInterceptionContinue: qword
 EXTERN _dofStructInterceptionContinue: qword
 EXTERN _dofWriteInterceptionContinue: qword
-
+EXTERN _weatherStructInterceptionContinue: qword
+EXTERN _todStructInterceptionContinue: qword
 .data
 ;---------------------------------------------------------------
 ; Scratch pad
@@ -283,5 +289,37 @@ originalCode:
 exit:
 	jmp qword ptr [_dofWriteInterceptionContinue]
 dofWriteInterceptor ENDP
+
+weatherStructInterceptor PROC
+;143668ACA - 44 8B 68 14           - mov r13d,[rax+14]						<< INTERCEPT HERE << Weather struct is in RAX.
+;143668ACE - 44 8B 60 10           - mov r12d,[rax+10]
+;143668AD2 - F3 44 0F10 80 D80E0000  - movss xmm8,[rax+00000ED8]		
+;143668ADB - 44 89 6C 24 20        - mov [rsp+20],r13d						<< CONTINUE HERE
+;143668AE0 - 41 83 FD 03           - cmp r13d,03 { 3 }
+	mov [g_weatherStructAddress], rax
+originalCode:
+	mov r13d, dword ptr [rax+14h]				
+	mov r12d, dword ptr [rax+10h]
+	movss xmm8, dword ptr [rax+00000ED8h]
+exit:
+	jmp qword ptr [_weatherStructInterceptionContinue]
+weatherStructInterceptor ENDP
+
+todStructInterceptor PROC
+;1433B8AA6 - FF 10                 - call qword ptr [rax]						<< Calls function which calls function above.
+;1433B8AA8 - 48 8B 03              - mov rax,[rbx]								<< INTERCEPT HERE rax still contains ToD struct address. Read it here. 
+;1433B8AAB - 48 89 D9              - mov rcx,rbx
+;1433B8AAE - F3 0F10 8D D40E0000   - movss xmm1,[rbp+00000ED4]
+;1433B8AB6 - FF 50 10              - call qword ptr [rax+10]					<< CONTINUE HERE
+;1433B8AB9 - 89 FB                 - mov ebx,edi
+;1433B8ABB - F3 49 0F2C C1         - cvttss2si rax,xmm9
+	mov [g_todStructAddress], rax
+originalCode:
+	mov rax,[rbx]				
+	mov rcx, rbx
+	movss xmm1, dword ptr [rbp+00000ED4h]
+exit:
+	jmp qword ptr [_todStructInterceptionContinue]
+todStructInterceptor ENDP
 
 END

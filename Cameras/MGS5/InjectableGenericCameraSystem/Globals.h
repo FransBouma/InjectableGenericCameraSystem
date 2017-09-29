@@ -54,6 +54,11 @@ namespace IGCS
 		float dofDistance;				// 0-infinite
 		float dofFocalLength;			// 0-200
 		float dofAperture;				// 0.5-32
+		int weatherA;					// 0-4
+		int weatherB;					// 0-4
+		float weatherIntensity;			// 0-1
+		int todHour;					// 0-23
+		int todMinute;					// 0-59
 
 		float clampFloat(float value, float min, float default)
 		{
@@ -118,6 +123,11 @@ namespace IGCS
 				dofDistance = 1.0f;
 				dofFocalLength = 20.0f;
 				dofAperture = 2.5;
+				todHour = 12;
+				todMinute = 0;
+				weatherA = 0;
+				weatherB = 0;
+				weatherIntensity = 1.0f;
 			}
 		}
 	};

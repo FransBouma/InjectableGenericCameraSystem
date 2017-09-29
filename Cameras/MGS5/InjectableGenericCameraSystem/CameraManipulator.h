@@ -33,8 +33,8 @@ using namespace DirectX;
 namespace IGCS::GameSpecific::CameraManipulator
 {
 	void writeNewCameraValuesToGameData(XMFLOAT3 newCoords, XMVECTOR newLookQuaternion, bool cutsceneCamera);
-	void restoreOriginalCameraValues();
-	void cacheOriginalCameraValues();
+	void restoreOriginalValuesAfterCameraDisable();
+	void cacheOriginalValuesBeforeCameraEnable();
 	bool setTimeStopValue(byte newValue);
 	XMFLOAT3 getCurrentCameraCoords();
 	XMFLOAT3 getCurrentCutsceneCameraCoords();
@@ -45,4 +45,5 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void displayCameraStructAddress();
 	void getSettingsFromGameState();
 	void applySettingsToGameState();
+	void writeWeatherValue(int newWeatherValueA, int newWeatherValueB, float newWeatherIntensity);
 }
