@@ -55,7 +55,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static float _originalCutsceneFov;
 	static int _originalToD=12;
 	static int _originalWeatherA = 0;
-	static int _originalWeatherB = 0;
 	static float _originalWeatherIntensity=1.0f;
 
 	void getSettingsFromGameState()
@@ -269,7 +268,8 @@ namespace IGCS::GameSpecific::CameraManipulator
 			int* todInMemory = reinterpret_cast<int*>(g_todStructAddress + TOD_IN_STRUCT_OFFSET);
 			*todInMemory = _originalToD;
 		}
-		writeWeatherValue(_originalWeatherA, _originalWeatherB, _originalWeatherIntensity);
+		// restore weathers all with weather A
+		writeWeatherValue(_originalWeatherA, _originalWeatherA, _originalWeatherIntensity);
 		
 		// in theory we should reset the cutscene camera pointer to null as it could be the next time the user enables it, it might be somewhere else and the interception
 		// hasn't ran yet. This is such an edge case that we leave it for now, as otherwise the camera can't be enabled twice when the game is paused. 
@@ -308,7 +308,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 		{
 			int* weatherInMemory = reinterpret_cast<int*>(g_weatherStructAddress + WEATHER_DIRECT_IN_STRUCT_OFFSET);
 			_originalWeatherA = weatherInMemory[0];
-			_originalWeatherB = weatherInMemory[2];
 			float* weatherIntensityInMemory = reinterpret_cast<float*>(g_weatherStructAddress + WEATHER_INTENSITY_IN_STRUCT_OFFSET);
 			*weatherIntensityInMemory = _originalWeatherIntensity;
 		}
@@ -321,6 +320,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 		{
 			int* weatherInMemory = reinterpret_cast<int*>(g_weatherStructAddress + WEATHER_DIRECT_IN_STRUCT_OFFSET);
 			weatherInMemory[0] = (newWeatherValueA % 5);
+			weatherInMemory[1] = (newWeatherValueB % 5);
 			weatherInMemory[2] = (newWeatherValueB % 5);
 			float* weatherIntensityInMemory = reinterpret_cast<float*>(g_weatherStructAddress + WEATHER_INTENSITY_IN_STRUCT_OFFSET);
 			*weatherIntensityInMemory = newWeatherIntensity < 0.0f ? 1.0f : newWeatherIntensity;
