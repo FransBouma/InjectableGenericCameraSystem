@@ -2,8 +2,8 @@ Injectable camera for Metal Gear Solid V: The Phantom Pain
 ============================
 
 Current supported game version: v1.0.12+  
-Camera version: 1.0.1  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/MGS5_101   
+Camera version: 1.0.2  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/MGS5_102   
 Credits: Otis_Inf and Jan Schatter.
 
 ### How to use
