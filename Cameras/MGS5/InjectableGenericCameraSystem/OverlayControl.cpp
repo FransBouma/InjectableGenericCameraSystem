@@ -177,6 +177,7 @@ Special thanks to:
 			ImGui::PushTextWrapPos();
 			ImGui::TextUnformatted("* When the main window is open, all input of keyboard / mouse to the game is blocked and the camera is locked.");
 			ImGui::TextUnformatted("* The game's FoV is based on lens focal length so zooming in/out isn't linear.");
+			ImGui::TextUnformatted("* Changes made to time of day and weather only take effect when the game isn't paused.");
 			ImGui::TextUnformatted("* All changes you make to the main window (position/size) are saved to a file in the game root folder.");
 			ImGui::TextUnformatted("* Most settings you change will make the settings to be saved to a file in the game root folder.");
 			ImGui::TextUnformatted("* The device/devices chosen to control the camera are blocked from giving input to the game, all other devices are not.");
@@ -268,6 +269,15 @@ Special thanks to:
 			ImGui::SliderFloat("DoF aperture", &currentSettings.dofAperture, 0.1f, 40.0f, "%.1f");
 			ImGui::SameLine(); ShowHelpMarker("The game's DoF uses lens focal length (FoV)\ntogether with aperture for blur strength.\nLower aperture values means shallower focus area.\n");
 			ImGui::SliderFloat("DoF lens focal length", &currentSettings.dofFocalLength, 1.0f, 400.0f, "%.1f");
+
+			// Time of Day
+			ImGui::SliderInt("Time of Day (Hour)", &currentSettings.todHour, 0, 23);
+			ImGui::SliderInt("Time of Day (Minute)", &currentSettings.todMinute, 0, 59);
+
+			// weather
+			ImGui::Combo("Weather type A", &currentSettings.weatherA, "Clear\0Cloudy\0Rain\0Sand storm\0Mist / Fog\0\0");
+			ImGui::Combo("Weather type B", &currentSettings.weatherB, "Clear\0Cloudy\0Rain\0Sand storm\0Mist / Fog\0\0");
+			ImGui::SliderFloat("Weather blend factor (A blend with B)", &currentSettings.weatherIntensity, 0.0f, 1.0f, "%.3f");
 		}
 		ImGui::PopItemWidth();
 		if (settingsChanged)

@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Metal Gear Solid V: The Phantom Pain v1.0.12+"
-	#define CAMERA_VERSION								"1.0.0"
+	#define CAMERA_VERSION								"1.0.1"
 	#define CAMERA_CREDITS								"Otis_Inf and Jan Schatter. Special thanks to tinmantex and Hodgedogs"
 	#define GAME_WINDOW_TITLE							"METAL GEAR SOLID V: THE PHANTOM PAIN"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
@@ -58,6 +58,8 @@ namespace IGCS::GameSpecific
 	#define FOV_WRITE2_CUTSCENE_INTERCEPT_KEY			"AOB_FOV_WRITE2_CUTSCENE_INTERCEPT"
 	#define DOF_ADDRESS_INTERCEPT_KEY					"AOB_DOF_ADDRESS_INTERCEPT"
 	#define DOF_WRITE_INTERCEPT_KEY						"AOB_DOF_WRITE_INTERCEPT"
+	#define WEATHER_ADDRESS_INTERCEPT_KEY				"AOB_WEATHER_ADDRESS_INTERCEPT"
+	#define TOD_ADDRESS_INTERCEPT_KEY					"AOB_TOD_ADDRESS_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
 	#define QUATERNION_IN_STRUCT_OFFSET					0xF0
@@ -72,4 +74,7 @@ namespace IGCS::GameSpecific
 	#define DOF_FOCAL_LENGTH_IN_STRUCT_OFFSET			0x110
 	#define DOF_APERTURE_IN_STRUCT_OFFSET				0x124
 	#define DOF_CONTROL_IN_STRUCT_OFFSET				0x50
+	#define WEATHER_DIRECT_IN_STRUCT_OFFSET				0x10				// 3 dword values, on 0x10, 0x14 and 0x18. 0x10 is direct, 0x18 is transition weather
+	#define WEATHER_INTENSITY_IN_STRUCT_OFFSET			0x20				// float, 0-1. transition timer is at 0x24 (x->0).
+	#define TOD_IN_STRUCT_OFFSET						0x4C				// Dword, in seconds.
 }
