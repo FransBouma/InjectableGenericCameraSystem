@@ -25,48 +25,44 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma once
 #include "stdafx.h"
-#include "Globals.h"
-#include "GameConstants.h"
 
-//--------------------------------------------------------------------------------------------------------------------------------
-// data shared with asm functions. This is allocated here, 'C' style and not in some datastructure as passing that to 
-// MASM is rather tedious. 
-extern "C" {
-	byte g_cameraEnabled = 0;
-}
-
+#include <unordered_map>
+#include <mutex>
+#include <d3d11.h> 
 
 namespace IGCS
 {
-	Globals::Globals()
+	class ShaderToggleManager
 	{
-		_settings.init();
-		_settings.loadFromFile();
-	}
+	public:
+		ShaderToggleManager();
 
-
-	void Globals::saveSettingsIfRequired(float delta)
-	{
-		if (_settingsDirtyTimer <= 0.0f)
+		// Singleton instance retriever.
+		static ShaderToggleManager& instance()
 		{
-			// nothing to do
-			return;
+			static ShaderToggleManager theInstance;
+			return theInstance;
 		}
-		_settingsDirtyTimer -= delta;
-		if (_settingsDirtyTimer <= 0)
-		{
-			_settings.saveToFile();
-			_settingsDirtyTimer = 0.0f;
-		}
-	}
 
+		void addShader(const void *buffer, size_t bufferLength, __int64 shaderInstanceAddress);
+		void init(ID3D11Device *device);
+		void reset();
 
-	void Globals::markSettingsDirty()
-	{
-		if (_settingsDirtyTimer <= 0)
-		{
-			_settingsDirtyTimer = IGCS_SPLASH_DURATION;
-		}
-	}
+		ShaderToggleManager(ShaderToggleManager const&) = delete;			// see: https://stackoverflow.com/a/1008289/44991
+		void operator=(ShaderToggleManager const&) = delete;
+
+		ID3D11PixelShader* getDiscardingPixelShader() { return _discardingPixelShader; }
+
+	private:
+		__int64 calculateFNVHash(const void *buffer, size_t bufferLength);
+		void clearShaderHashMap();
+
+		ID3DBlob* _compiledDiscardPixelShaderBlob;
+		ID3D11PixelShader* _discardingPixelShader;
+		std::unordered_map<__int64, __int64> _shaderHashPerShaderObjectAddress;			// so the 64bit shader object address is the key, the 64bit hash of the buffer is the value. 
+		std::mutex _shaderHashLock;		// we need a lock as the call to add a shader and to check whether a shader is present are coming from different threads
+	};
 }
+

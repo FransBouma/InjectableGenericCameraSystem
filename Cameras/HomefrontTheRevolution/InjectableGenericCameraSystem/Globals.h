@@ -98,10 +98,12 @@ namespace IGCS
 	class Globals
 	{
 	public:
-		Globals();
-		~Globals();
 
-		static Globals& instance();
+		static Globals& instance()
+		{
+			static Globals theInstance;
+			return theInstance;
+		}
 
 		void saveSettingsIfRequired(float delta);
 		void markSettingsDirty();
@@ -115,7 +117,11 @@ namespace IGCS
 		Gamepad& gamePad() { return _gamePad; }
 		Settings& settings() { return _settings; }
 
+		Globals(Globals const&) = delete;			// see: https://stackoverflow.com/a/1008289/44991
+		void operator=(Globals const&) = delete;
+
 	private:
+		Globals();
 		bool _inputBlocked = false;
 		volatile bool _systemActive = false;
 		Gamepad _gamePad;
