@@ -46,6 +46,18 @@ namespace IGCS
 	}
 
 
+	Globals::~Globals()
+	{
+	}
+
+
+	Globals &Globals::instance()
+	{
+		static Globals theInstance;
+		return theInstance;
+	}
+
+
 	void Globals::saveSettingsIfRequired(float delta)
 	{
 		if (_settingsDirtyTimer <= 0.0f)

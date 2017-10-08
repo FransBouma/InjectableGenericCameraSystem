@@ -106,9 +106,6 @@
     <ClInclude Include="CDataFile.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderToggleManager.h">
-      <Filter>Main</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InterceptorHelper.cpp">
@@ -175,9 +172,6 @@
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="CDataFile.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderToggleManager.cpp">
       <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>

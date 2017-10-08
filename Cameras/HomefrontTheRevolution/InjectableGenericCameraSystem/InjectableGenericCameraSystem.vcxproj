@@ -182,7 +182,6 @@
     <ClInclude Include="Overlay\stb_rect_pack.h" />
     <ClInclude Include="Overlay\stb_textedit.h" />
     <ClInclude Include="Overlay\stb_truetype.h" />
-    <ClInclude Include="ShaderToggleManager.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="targetver.h" />
@@ -221,7 +220,6 @@
     <ClCompile Include="Overlay\imgui_demo.cpp" />
     <ClCompile Include="Overlay\imgui_draw.cpp" />
     <ClCompile Include="Overlay\imgui_impl_dx11.cpp" />
-    <ClCompile Include="ShaderToggleManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

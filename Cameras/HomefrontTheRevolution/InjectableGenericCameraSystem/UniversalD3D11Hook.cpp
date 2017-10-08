@@ -9,7 +9,6 @@
 #include "imgui_impl_dx11.h"
 #include "OverlayControl.h"
 #include "OverlayConsole.h"
-#include "ShaderToggleManager.h"
 
 #pragma comment(lib, "d3d11.lib")
 
@@ -18,7 +17,6 @@ namespace IGCS::DX11Hooker
 	#define DXGI_PRESENT_INDEX				8
 	#define DXGI_RESIZEBUFFERS_INDEX		13
 	#define DX11_CREATE_DEFERRED_CONTEXT	27
-	#define DX11_CREATE_PIXEL_SHADER		15
 	#define DX11_PS_SET_SHADER				9
 
 	//--------------------------------------------------------------------------------------------------------------------------------
@@ -35,7 +33,6 @@ namespace IGCS::DX11Hooker
 	typedef HRESULT(__stdcall *D3D11PresentHook) (IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
 	typedef HRESULT(__stdcall *D3D11ResizeBuffersHook) (IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags);
 	typedef HRESULT(__stdcall *D3D11CreateDeferredContextHook) (ID3D11Device* pDevice, UINT contextFlags, ID3D11DeviceContext** ppDeferredContext);
-	typedef HRESULT(__stdcall *D3D11CreatePixelShaderHook) (ID3D11Device* pDevice, const void* pShaderBytecode, SIZE_T bytecodeLength, ID3D11ClassLinkage* pClassLinkage, ID3D11PixelShader** ppPixelShader);
 	typedef HRESULT(__stdcall *D3D11PSSetShaderHook) (ID3D11DeviceContext* pDeviceContext, ID3D11PixelShader* pPixelShader, ID3D11ClassInstance *const *ppClassInstances, UINT numClassInstances);
 
 	static ID3D11Device* _device = nullptr;
@@ -47,7 +44,6 @@ namespace IGCS::DX11Hooker
 	static D3D11PresentHook hookedD3D11Present = nullptr;
 	static D3D11ResizeBuffersHook hookedD3D11ResizeBuffers = nullptr;
 	static D3D11CreateDeferredContextHook hookedD3D11CreateDeferredContext = nullptr;
-	static D3D11CreatePixelShaderHook hookedD3D11CreatePixelShader = nullptr;
 	static D3D11PSSetShaderHook hookedD3D11PSSetShader = nullptr;
 
 	static bool _tmpSwapChainInitialized = false;
@@ -58,56 +54,24 @@ namespace IGCS::DX11Hooker
 	// Detour methods which are called by the hooked vtable entrances
 	HRESULT __stdcall detourD3D11CreateDeferredContext(ID3D11Device* pDevice, UINT contextFlags, ID3D11DeviceContext** ppDeferredContext)
 	{
-		// TODO: hook PSSetShader of created devicecontext. Be sure to unhook it after the devicecontext is converted into a commandlist. 
-
 		return hookedD3D11CreateDeferredContext(pDevice, contextFlags, ppDeferredContext);
 	}
 
 
-	HRESULT __stdcall detourD3D11CreatePixelShader(ID3D11Device* pDevice, const void* pShaderBytecode, SIZE_T bytecodeLength, ID3D11ClassLinkage* pClassLinkage, ID3D11PixelShader** ppPixelShader)
-	{
-		HRESULT toReturn = hookedD3D11CreatePixelShader(pDevice, pShaderBytecode, bytecodeLength, pClassLinkage, ppPixelShader);
-		// store the created shader with the input in our shader toggle manager, so we can later on check whether a shader is to be blocked.
-		ShaderToggleManager::instance().addShader(pShaderBytecode, bytecodeLength, (__int64)*ppPixelShader);
-		return toReturn;
-	}
-
-	static int counter=1;
-
 	HRESULT __stdcall detourD3D11PSSetShader(ID3D11DeviceContext* pDeviceContext, ID3D11PixelShader* pPixelShader, ID3D11ClassInstance *const *ppClassInstances, UINT numClassInstances)
 	{
-		counter++;
-		if (counter > 100000)
-		{
-			counter = 1;
-		}
-		ID3D11PixelShader* discardingPixelShader = ShaderToggleManager::instance().getDiscardingPixelShader();
-		if (counter % 3 == 0 && nullptr!=discardingPixelShader && numClassInstances==0)
-		{
-			// pass 0 for numClassInstances, and pass the ppClassInstances as-is, otherwise some games with reshade can crash when they switch target views. 
-			return hookedD3D11PSSetShader(pDeviceContext, discardingPixelShader, ppClassInstances, 0);
-		}
-		else
-		{
-			return hookedD3D11PSSetShader(pDeviceContext, pPixelShader, ppClassInstances, numClassInstances);
-		}
+		return hookedD3D11PSSetShader(pDeviceContext, pPixelShader, ppClassInstances, numClassInstances);
 	}
 
 
 	HRESULT __stdcall detourD3D11ResizeBuffers(IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags)
 	{
 		_imGuiInitializing = true;
-
-		ShaderToggleManager::instance().reset();
 		ImGui_ImplDX11_InvalidateDeviceObjects();
 		cleanupRenderTarget();
-
 		HRESULT toReturn = hookedD3D11ResizeBuffers(pSwapChain, bufferCount, width, height, newFormat, swapChainFlags);
-
 		createRenderTarget(pSwapChain);
 		ImGui_ImplDX11_CreateDeviceObjects();
-		ShaderToggleManager::instance().init(_device);
-
 		_imGuiInitializing = false;
 		return toReturn;
 	}
@@ -144,11 +108,9 @@ namespace IGCS::DX11Hooker
 					createRenderTarget(pSwapChain);
 					initImGui();
 
-					hookDeviceMethods();
-					hookContextMethods();
-
-					// initialize our shader manager, which might upload shaders.
-					ShaderToggleManager::instance().init(_device);
+					// Uncomment lines below to hook device/context for shader interception
+					//hookDeviceMethods();
+					//hookContextMethods();
 
 					_initializeDeviceAndContext = false;
 				}
@@ -249,14 +211,6 @@ namespace IGCS::DX11Hooker
 		{
 			IGCS::Console::WriteError("Enabling of CreateDeferredContext hook failed!");
 		}
-		if (MH_CreateHook((LPBYTE)pDeviceVTable[DX11_CREATE_PIXEL_SHADER], &detourD3D11CreatePixelShader, reinterpret_cast<LPVOID*>(&hookedD3D11CreatePixelShader)) != MH_OK)
-		{
-			IGCS::Console::WriteError("Hooking CreatePixelShader failed!");
-		}
-		if (MH_EnableHook((LPBYTE)pDeviceVTable[DX11_CREATE_PIXEL_SHADER]) != MH_OK)
-		{
-			IGCS::Console::WriteError("Enabling of CreatePixelShader hook failed!");
-		}
 	}
 
 
@@ -281,6 +235,7 @@ namespace IGCS::DX11Hooker
 		{
 			IGCS::Console::WriteError("Enabling of PSSetShader hook failed!");
 		}
+
 	}
 
 

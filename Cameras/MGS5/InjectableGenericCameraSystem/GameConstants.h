@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Metal Gear Solid V: The Phantom Pain v1.0.12+"
-	#define CAMERA_VERSION								"1.0.4"
+	#define CAMERA_VERSION								"1.0.3"
 	#define CAMERA_CREDITS								"Otis_Inf and Jan Schatter. Special thanks to tinmantex and Hodgedogs"
 	#define GAME_WINDOW_TITLE							"METAL GEAR SOLID V: THE PHANTOM PAIN"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)

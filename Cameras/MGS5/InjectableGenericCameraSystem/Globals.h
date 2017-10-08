@@ -136,11 +136,10 @@ namespace IGCS
 	class Globals
 	{
 	public:
-		static Globals& instance()
-		{
-			static Globals theInstance;
-			return theInstance;
-		}
+		Globals();
+		~Globals();
+
+		static Globals& instance();
 
 		void saveSettingsIfRequired(float delta);
 		void markSettingsDirty();
@@ -156,11 +155,7 @@ namespace IGCS
 		bool keyboardMouseControlCamera() const { return _settings.cameraControlDevice == DEVICE_ID_KEYBOARD_MOUSE || _settings.cameraControlDevice == DEVICE_ID_ALL; }
 		bool controllerControlsCamera() const { return _settings.cameraControlDevice == DEVICE_ID_GAMEPAD || _settings.cameraControlDevice == DEVICE_ID_ALL; }
 
-		Globals(Globals const&) = delete;			// see: https://stackoverflow.com/a/1008289/44991
-		void operator=(Globals const&) = delete;
 	private:
-		Globals();
-
 		bool _inputBlocked = false;
 		volatile bool _systemActive = false;
 		Gamepad _gamePad;

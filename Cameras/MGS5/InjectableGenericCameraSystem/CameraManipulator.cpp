@@ -323,7 +323,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 			weatherInMemory[2] = (newWeatherValueB % 5);
 			weatherInMemory[1] = (newWeatherValueB % 5);		// load the intermediate weather last
 			float* weatherIntensityInMemory = reinterpret_cast<float*>(g_weatherStructAddress + WEATHER_INTENSITY_IN_STRUCT_OFFSET);
-			*weatherIntensityInMemory = newWeatherIntensity < -1.0f ? -1.0f : newWeatherIntensity;
+			*weatherIntensityInMemory = newWeatherIntensity < 0.0f ? 1.0f : newWeatherIntensity;
 		}
 	}
 }
