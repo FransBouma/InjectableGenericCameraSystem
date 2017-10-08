@@ -49,20 +49,30 @@ namespace IGCS
 		void addShader(const void *buffer, size_t bufferLength, __int64 shaderInstanceAddress);
 		void init(ID3D11Device *device);
 		void reset();
+		void toggleMarkMode();
+		void markModeHideNext();
+		void markModeHidePrevious();
+		bool isShaderHidden(__int64 shaderAddress);
+
+		ID3D11PixelShader* getDiscardingPixelShader() { return _discardingPixelShader; }
+		bool getInMarkMode() { return _inMarkMode; }
 
 		ShaderToggleManager(ShaderToggleManager const&) = delete;			// see: https://stackoverflow.com/a/1008289/44991
 		void operator=(ShaderToggleManager const&) = delete;
 
-		ID3D11PixelShader* getDiscardingPixelShader() { return _discardingPixelShader; }
 
 	private:
 		__int64 calculateFNVHash(const void *buffer, size_t bufferLength);
 		void clearShaderHashMap();
+		void setCurrentMarkedShaderAddress();
 
 		ID3DBlob* _compiledDiscardPixelShaderBlob;
 		ID3D11PixelShader* _discardingPixelShader;
 		std::unordered_map<__int64, __int64> _shaderHashPerShaderObjectAddress;			// so the 64bit shader object address is the key, the 64bit hash of the buffer is the value. 
 		std::mutex _shaderHashLock;		// we need a lock as the call to add a shader and to check whether a shader is present are coming from different threads
+		bool _inMarkMode;
+		int _markModeCurrentHiddenShaderIndex;		// we simply loop over the hashmap for these amount of times, till we either reach this value or the end of the hashmap, in which case we start at the beginning
+		__int64 _markModeCurrentHiddenShaderAddress;  // determined by iterating over shader hashmap.
 	};
 }
 

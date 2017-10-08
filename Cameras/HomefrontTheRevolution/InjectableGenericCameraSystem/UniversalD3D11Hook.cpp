@@ -72,25 +72,19 @@ namespace IGCS::DX11Hooker
 		return toReturn;
 	}
 
-	static int counter=1;
 
 	HRESULT __stdcall detourD3D11PSSetShader(ID3D11DeviceContext* pDeviceContext, ID3D11PixelShader* pPixelShader, ID3D11ClassInstance *const *ppClassInstances, UINT numClassInstances)
 	{
-		counter++;
-		if (counter > 100000)
+		if (ShaderToggleManager::instance().isShaderHidden((__int64)pPixelShader))
 		{
-			counter = 1;
+			ID3D11PixelShader* discardingPixelShader = ShaderToggleManager::instance().getDiscardingPixelShader();
+			if (nullptr != discardingPixelShader)
+			{
+				// pass 0 for numClassInstances, and pass the ppClassInstances as-is, otherwise some games with reshade can crash when they switch target views. 
+				return hookedD3D11PSSetShader(pDeviceContext, discardingPixelShader, ppClassInstances, 0);
+			}
 		}
-		ID3D11PixelShader* discardingPixelShader = ShaderToggleManager::instance().getDiscardingPixelShader();
-		if (counter % 3 == 0 && nullptr!=discardingPixelShader && numClassInstances==0)
-		{
-			// pass 0 for numClassInstances, and pass the ppClassInstances as-is, otherwise some games with reshade can crash when they switch target views. 
-			return hookedD3D11PSSetShader(pDeviceContext, discardingPixelShader, ppClassInstances, 0);
-		}
-		else
-		{
-			return hookedD3D11PSSetShader(pDeviceContext, pPixelShader, ppClassInstances, numClassInstances);
-		}
+		return hookedD3D11PSSetShader(pDeviceContext, pPixelShader, ppClassInstances, numClassInstances);
 	}
 
 
