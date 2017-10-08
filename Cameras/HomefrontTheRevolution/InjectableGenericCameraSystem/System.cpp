@@ -40,7 +40,6 @@
 #include "UniversalD3D11Hook.h"
 #include "OverlayConsole.h"
 #include "OverlayControl.h"
-#include "ShaderToggleManager.h"
 
 namespace IGCS
 {
@@ -112,29 +111,10 @@ namespace IGCS
 		if (Input::keyDown(IGCS_KEY_TOGGLE_OVERLAY) && (lcontrolPressed || rcontrolPressed))
 		{
 			OverlayControl::toggleOverlay();
-			Sleep(350);		// wait 350ms to avoid fast keyboard hammering
+			Sleep(350);		// wait 100ms to avoid fast keyboard hammering
 			// we're done now. 
 			return;
 		}
-		if (Input::keyDown(IGCS_KEY_TOGGLE_SHADERMARKING))
-		{
-			ShaderToggleManager::instance().toggleMarkMode();
-			Sleep(350);		// wait 350ms to avoid fast keyboard hammering
-			return;
-		}
-		if (Input::keyDown(IGCS_KEY_SHADER_MARKING_PREVIOUS))
-		{
-			ShaderToggleManager::instance().markModeHidePrevious();
-			Sleep(350);		// wait 350ms to avoid fast keyboard hammering
-			return;
-		}
-		if (Input::keyDown(IGCS_KEY_SHADER_MARKING_NEXT))
-		{
-			ShaderToggleManager::instance().markModeHideNext();
-			Sleep(350);		// wait 350ms to avoid fast keyboard hammering
-			return;
-		}
-
 		if (!_cameraStructFound)
 		{
 			// camera not found yet, can't proceed.
