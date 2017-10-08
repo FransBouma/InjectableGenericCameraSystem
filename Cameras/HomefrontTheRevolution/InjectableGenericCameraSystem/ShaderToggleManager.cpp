@@ -28,18 +28,14 @@
 #include "stdafx.h"
 #include "ShaderToggleManager.h"
 #include "OverlayConsole.h"
-#include "OverlayControl.h"
 #include <d3d11.h> 
 #include <D3Dcompiler.h> 
 
 #pragma comment(lib,"D3dcompiler.lib")
 
-using namespace std;
-
 namespace IGCS
 {
-	ShaderToggleManager::ShaderToggleManager() : _compiledDiscardPixelShaderBlob(nullptr), _discardingPixelShader(nullptr), _inMarkMode(false),
-												 _markModeCurrentHiddenShaderIndex(-1), _markModeCurrentHiddenShaderAddress(0)
+	ShaderToggleManager::ShaderToggleManager() : _compiledDiscardPixelShaderBlob(nullptr), _discardingPixelShader(nullptr)
 	{
 	}
 
@@ -61,11 +57,8 @@ namespace IGCS
 			_discardingPixelShader = nullptr;
 		}
 		clearShaderHashMap();
-		_markModeCurrentHiddenShaderIndex = -1;
-		_inMarkMode = false;
-		_markModeCurrentHiddenShaderAddress = 0;
 	}
-	
+
 
 	void ShaderToggleManager::init(ID3D11Device *device)
 	{
@@ -104,96 +97,11 @@ namespace IGCS
 	}
 
 
-	void ShaderToggleManager::toggleMarkMode()
-	{
-		_inMarkMode = !_inMarkMode;
-		OverlayControl::addNotification(_inMarkMode ? "Shader marking is now enabled" : "Shader marking is now disabled");
-		_shaderHashLock.lock();
-			_markModeCurrentHiddenShaderIndex = _shaderHashPerShaderObjectAddress.size() <= 0 ? -1 : 0;
-			OverlayControl::addNotification("Number of shaders in set: " + to_string(_shaderHashPerShaderObjectAddress.size()));
-		_shaderHashLock.unlock();
-		if (!_inMarkMode)
-		{
-			_markModeCurrentHiddenShaderAddress = 0;
-		}
-	}
-
-
-	void ShaderToggleManager::markModeHideNext()
-	{
-		if (!_inMarkMode)
-		{
-			return;
-		}
-		_markModeCurrentHiddenShaderIndex++;
-		_shaderHashLock.lock();
-			if (_markModeCurrentHiddenShaderIndex > _shaderHashPerShaderObjectAddress.size())
-			{
-				_markModeCurrentHiddenShaderIndex = 0;
-				OverlayControl::addNotification("End of shader set reached");
-			}
-			setCurrentMarkedShaderAddress();
-		_shaderHashLock.unlock();
-	}
-
-
-	void ShaderToggleManager::markModeHidePrevious()
-	{
-		if (!_inMarkMode)
-		{
-			return;
-		}
-		_markModeCurrentHiddenShaderIndex--;
-		_shaderHashLock.lock();
-			if (_markModeCurrentHiddenShaderIndex < 0)
-			{
-				_markModeCurrentHiddenShaderIndex = _shaderHashPerShaderObjectAddress.size() <= 0 ? -1 : 0;
-				OverlayControl::addNotification("Start of shader set reached");
-			}
-			setCurrentMarkedShaderAddress();
-		_shaderHashLock.unlock();
-	}
-	
-
-	bool ShaderToggleManager::isShaderHidden(__int64 shaderAddress)
-	{
-		if (_inMarkMode)
-		{
-			return _markModeCurrentHiddenShaderAddress == shaderAddress;
-		}
-		// add lookup in hashmap here.
-
-		return false;
-	}
-
-
 	void ShaderToggleManager::clearShaderHashMap()
 	{
 		_shaderHashLock.lock();
 			_shaderHashPerShaderObjectAddress.clear();
 		_shaderHashLock.unlock();
-	}
-
-
-	// expects shader map already to be locked by caller. 
-	void ShaderToggleManager::setCurrentMarkedShaderAddress()
-	{
-		if (!_inMarkMode)
-		{
-			return;
-		}
-		_markModeCurrentHiddenShaderAddress = 0;
-		int i = 0;
-		for (pair<__int64, __int64> element : _shaderHashPerShaderObjectAddress)
-		{
-			if (i == _markModeCurrentHiddenShaderIndex)
-			{
-				// 'first' is the key, 'second' is the value. the key is the address, the value is the hash. we need the address, so we read 'first'.
-				_markModeCurrentHiddenShaderAddress = element.first;
-				break;
-			}
-			i++;
-		}
 	}
 
 
