@@ -125,13 +125,13 @@ namespace IGCS
 		if (Input::keyDown(IGCS_KEY_SHADER_MARKING_PREVIOUS))
 		{
 			ShaderToggleManager::instance().markModeHidePrevious();
-			Sleep(350);		// wait 350ms to avoid fast keyboard hammering
+			Sleep(200);		// wait 200ms to avoid fast keyboard hammering
 			return;
 		}
 		if (Input::keyDown(IGCS_KEY_SHADER_MARKING_NEXT))
 		{
 			ShaderToggleManager::instance().markModeHideNext();
-			Sleep(350);		// wait 350ms to avoid fast keyboard hammering
+			Sleep(200);		// wait 200ms to avoid fast keyboard hammering
 			return;
 		}
 

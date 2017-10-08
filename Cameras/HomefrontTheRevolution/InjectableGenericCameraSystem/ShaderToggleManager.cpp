@@ -31,6 +31,8 @@
 #include "OverlayControl.h"
 #include <d3d11.h> 
 #include <D3Dcompiler.h> 
+#include <iomanip>
+#include <sstream>
 
 #pragma comment(lib,"D3dcompiler.lib")
 
@@ -41,6 +43,18 @@ namespace IGCS
 	ShaderToggleManager::ShaderToggleManager() : _compiledDiscardPixelShaderBlob(nullptr), _discardingPixelShader(nullptr), _inMarkMode(false),
 												 _markModeCurrentHiddenShaderIndex(-1), _markModeCurrentHiddenShaderAddress(0)
 	{
+	}
+
+
+
+	void ShaderToggleManager::addShader(__int64 shaderInstanceAddress)
+	{
+		_shaderHashLock.lock();
+			if (_shaderHashPerShaderObjectAddress.count(shaderInstanceAddress) <= 0)
+			{
+				_shaderHashPerShaderObjectAddress[shaderInstanceAddress] = -1;
+			}
+		_shaderHashLock.unlock();
 	}
 
 
@@ -79,7 +93,7 @@ namespace IGCS
 			"    {"
 			"        discard;"
 			"    }"
-			"    return float4(1, 1, 1, 0);"
+			"    return float4(1, 0, 1, 1);"
 			"}";
 		ID3DBlob* errorBlob;
 		HRESULT hr = D3DCompile(discardingPixelShader, strnlen(discardingPixelShader, 1024), "discardingPixelShader", NULL, NULL, "discardingPixelShader", "ps_4_0", 
@@ -93,7 +107,9 @@ namespace IGCS
 		else
 		{
 			// upload to D3D
-			hr = device->CreatePixelShader(_compiledDiscardPixelShaderBlob->GetBufferPointer(), _compiledDiscardPixelShaderBlob->GetBufferSize(), NULL, &_discardingPixelShader);
+			LPVOID byteBuffer = _compiledDiscardPixelShaderBlob->GetBufferPointer();
+			SIZE_T bufferLength = _compiledDiscardPixelShaderBlob->GetBufferSize();
+			hr = device->CreatePixelShader(byteBuffer, bufferLength, NULL, &_discardingPixelShader);
 			if (FAILED(hr))
 			{
 				OverlayConsole::instance().logError("Creating discardingPixelShader FAILED! Error code: %d", hr);
@@ -190,6 +206,9 @@ namespace IGCS
 			{
 				// 'first' is the key, 'second' is the value. the key is the address, the value is the hash. we need the address, so we read 'first'.
 				_markModeCurrentHiddenShaderAddress = element.first;
+				stringstream ss;
+				ss << " Hash as hex: " << hex << element.second;
+				OverlayControl::addNotification("Shader " + to_string(_markModeCurrentHiddenShaderIndex) + "/" + to_string(_shaderHashPerShaderObjectAddress.size()) + ss.str());
 				break;
 			}
 			i++;

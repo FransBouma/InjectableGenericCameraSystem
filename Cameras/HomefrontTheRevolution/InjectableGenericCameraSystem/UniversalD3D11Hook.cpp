@@ -75,6 +75,7 @@ namespace IGCS::DX11Hooker
 
 	HRESULT __stdcall detourD3D11PSSetShader(ID3D11DeviceContext* pDeviceContext, ID3D11PixelShader* pPixelShader, ID3D11ClassInstance *const *ppClassInstances, UINT numClassInstances)
 	{
+		ShaderToggleManager::instance().addShader((__int64)pPixelShader);
 		if (ShaderToggleManager::instance().isShaderHidden((__int64)pPixelShader))
 		{
 			ID3D11PixelShader* discardingPixelShader = ShaderToggleManager::instance().getDiscardingPixelShader();
