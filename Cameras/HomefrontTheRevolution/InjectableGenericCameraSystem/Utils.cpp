@@ -31,6 +31,8 @@
 #include "AOBBlock.h"
 #include "OverlayConsole.h"
 #include <comdef.h>
+#include "MinHook.h"
+#include "Console.h"
 
 using namespace std;
 
@@ -52,6 +54,26 @@ namespace IGCS::Utils
 			OverlayConsole::instance().logDebug("Window found with title: '%s'", titleAsChar);
 		}
 		return toReturn;
+	}
+
+
+	// pTarget: the function to hook, in the vTable
+	// pDetour: the function which will be called instead of pTarget after hooking
+	// ppOriginal: the address the vTable pointed to for pTarget. The original function code. 
+	// hookedMethodName: the name of the method to hook. For error reporting.
+	void setAndEnableHook(LPVOID pTarget, LPVOID pDetour, LPVOID *ppOriginal, string hookedMethodName)
+	{
+		if (MH_CreateHook(pTarget, pDetour, ppOriginal) != MH_OK)
+		{
+			IGCS::Console::WriteError("Hooking " + hookedMethodName + " failed!");
+			return;
+		}
+		if (MH_EnableHook(pTarget)!= MH_OK)
+		{
+			IGCS::Console::WriteError("Enabling of " + hookedMethodName + " hook failed!");
+			return;
+		}
+		OverlayConsole::instance().logDebug("Hook set to %s, at address: %p", hookedMethodName.c_str(), (void*)pTarget);
 	}
 
 

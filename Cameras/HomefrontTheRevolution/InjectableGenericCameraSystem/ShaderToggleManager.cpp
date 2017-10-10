@@ -46,6 +46,17 @@ namespace IGCS
 	}
 
 
+	ShaderUsabilityType ShaderToggleManager::getShaderUsability(__int64 shaderInstanceAddress)
+	{
+		ShaderUsabilityType toReturn = ShaderUsabilityType::Unknown;
+		if (_markModeCurrentHiddenShaderAddress == shaderInstanceAddress)
+		{
+			toReturn = ShaderUsabilityType::Blocked;
+		}
+		// add lookup in hashmap.
+		return toReturn;
+	}
+
 
 	void ShaderToggleManager::addShader(__int64 shaderInstanceAddress)
 	{

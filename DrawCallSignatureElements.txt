@@ -1,0 +1,57 @@
+See Imgui render method for details
+
+draw call signature elements:
+- OMGetBlendState()
+	-> ID3D11BlendState
+		-> GetDesc()
+			-> use values to calculate desc value
+			-> 8 render targets, cal for each individual target desc a value.
+	-> Other values, use individually. If IndependentBlendEnable is true, only 1 rendertarget is valid in blendstate desc (0)
+
+- OMGetDepthStencilState()
+	-> ID3D11DepthStencilState
+		-> GetDesc()
+			-> use values to calculate desc value
+	-> stencilRef
+		-> use value
+
+- PSGetSamplers
+	-> pass 0, 1
+		-> ID3D11SamplerState
+			-> GetDesc()
+				-> use values to calculate desc value
+
+- PSGetShaderResources
+	-> pass 0, 1
+		-> ID3D11ShaderResourceView 
+			-> GetDesc()
+				-> use values to calculate desc value
+
+- RSGetState
+	-> ID3D11RasterizerState 
+		-> GetDesc()
+			-> use values to calculate desc value
+
+			
+if this isn't enough, look at the following and perhaps also vertex shader data?
+			
+- IAGetIndexBuffer() 
+	-> ID3D11Buffer
+		-> GetDesc() 
+			-> Use values to calculate desc value
+	-> Format
+		-> use value
+	-> Offset
+		-> use value
+- IAGetPrimitiveTopology()
+	-> ID3D11InputLayout
+		-> use out value
+- IAGetVertexBuffers()
+	-> pass 0, 1
+		-> ID3D11Buffer
+			-> GetDesc() 
+				-> Use values to calculate desc value
+	-> strides
+		-> use first value 
+	-> offsets
+		-> use first value

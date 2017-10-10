@@ -34,6 +34,13 @@
 
 namespace IGCS
 {
+	enum ShaderUsabilityType
+	{
+		Unknown = 0,
+		Blocked,
+		Unblocked,
+	};
+
 	class ShaderToggleManager
 	{
 	public:
@@ -46,6 +53,7 @@ namespace IGCS
 			return theInstance;
 		}
 
+		ShaderUsabilityType getShaderUsability(__int64 shaderInstanceAddress);
 		void addShader(const void *buffer, size_t bufferLength, __int64 shaderInstanceAddress);
 		void addShader(__int64 shaderInstanceAddress);
 		void init(ID3D11Device *device);

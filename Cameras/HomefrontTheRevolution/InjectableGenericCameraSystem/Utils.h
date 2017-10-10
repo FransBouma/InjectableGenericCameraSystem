@@ -51,4 +51,5 @@ namespace IGCS::Utils
 	LPBYTE calculateAbsoluteAddress(AOBBlock* locationData, int nextOpCodeOffset);
 	std::string formatString(const char *fmt, va_list args);
 	bool stringStartsWith(const char *a, const char *b);
+	void setAndEnableHook(LPVOID pTarget, LPVOID pDetour, LPVOID *ppOriginal, std::string hookedMethodName);
 }

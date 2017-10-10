@@ -10,33 +10,54 @@
 #include "OverlayControl.h"
 #include "OverlayConsole.h"
 #include "ShaderToggleManager.h"
+#include "Utils.h"
 
 #pragma comment(lib, "d3d11.lib")
 
 namespace IGCS::DX11Hooker
 {
-	#define DXGI_PRESENT_INDEX				8
-	#define DXGI_RESIZEBUFFERS_INDEX		13
-	#define DX11_CREATE_DEFERRED_CONTEXT	27
-	#define DX11_CREATE_PIXEL_SHADER		15
-	#define DX11_PS_SET_SHADER				9
+	// DXGISwapchain
+	#define DXGI_PRESENT_INDEX						8
+	#define DXGI_RESIZEBUFFERS_INDEX				13
+	// Device
+	#define DX11_CREATE_DEFERRED_CONTEXT			27
+	// DeviceContext
+	#define DX11_PS_SET_SHADER						9
+	#define DX11_DRAW_INDEXED						12
+	#define DX11_DRAW								13
+	#define DX11_DRAW_INDEXED_INSTANCED				20
+	#define DX11_DRAW_INSTANCED						21
+	#define DX11_DRAW_AUTO							38
+	#define DX11_DRAW_INDEXED_INSTANCED_INDIRECT	39
+	#define DX11_DRAW_INSTANCED_INDIRECT			40
+
+
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Forward declarations
 	void createRenderTarget(IDXGISwapChain* pSwapChain);
 	void cleanupRenderTarget();
-	void initImGui();
-	void initImGuiStyle();
 	void hookDeviceMethods();
 	void hookContextMethods();
+	__int64 getCurrentPixelShaderAddress();
+	bool checkIfDrawCallShouldProceedAndRegisterShaderIfNeeded();
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Typedefs of functions to hook
+	// dxgiswapchain
 	typedef HRESULT(__stdcall *D3D11PresentHook) (IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
 	typedef HRESULT(__stdcall *D3D11ResizeBuffersHook) (IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags);
+	// device
 	typedef HRESULT(__stdcall *D3D11CreateDeferredContextHook) (ID3D11Device* pDevice, UINT contextFlags, ID3D11DeviceContext** ppDeferredContext);
-	typedef HRESULT(__stdcall *D3D11CreatePixelShaderHook) (ID3D11Device* pDevice, const void* pShaderBytecode, SIZE_T bytecodeLength, ID3D11ClassLinkage* pClassLinkage, ID3D11PixelShader** ppPixelShader);
+	// devicecontext
 	typedef HRESULT(__stdcall *D3D11PSSetShaderHook) (ID3D11DeviceContext* pDeviceContext, ID3D11PixelShader* pPixelShader, ID3D11ClassInstance *const *ppClassInstances, UINT numClassInstances);
+	typedef HRESULT(__stdcall *D3D11DrawHook) (ID3D11DeviceContext* pDeviceContext, UINT vertexCount, UINT startVertexLocation);
+	typedef HRESULT(__stdcall *D3D11DrawAutoHook) (ID3D11DeviceContext* pDeviceContext);
+	typedef HRESULT(__stdcall *D3D11DrawIndexedHook) (ID3D11DeviceContext* pDeviceContext, UINT indexCount, UINT startIndexLocation, INT baseVertexLocation);
+	typedef HRESULT(__stdcall *D3D11DrawIndexedInstancedHook) (ID3D11DeviceContext* pDeviceContext, UINT indexCountPerInstance, UINT instanceCount, UINT startIndexLocation, INT baseVertexLocation, UINT startInstanceLocation);
+	typedef HRESULT(__stdcall *D3D11DrawIndexedInstancedIndirectHook) (ID3D11DeviceContext* pDeviceContext, ID3D11Buffer* pBufferForArgs, UINT alignedByteOffsetForArgs);
+	typedef HRESULT(__stdcall *D3D11DrawInstancedHook) (ID3D11DeviceContext* pDeviceContext, UINT vertexCountPerInstance, UINT instanceCount, UINT startVertexLocation, UINT startInstanceLocation);
+	typedef HRESULT(__stdcall *D3D11DrawInstancedIndirectHook) (ID3D11DeviceContext* pDeviceContext, ID3D11Buffer* pBufferForArgs, UINT alignedByteOffsetForArgs);
 
 	static ID3D11Device* _device = nullptr;
 	static ID3D11DeviceContext* _context = nullptr;
@@ -44,11 +65,20 @@ namespace IGCS::DX11Hooker
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Pointers to the original hooked functions
+	// dxgiswapchain
 	static D3D11PresentHook hookedD3D11Present = nullptr;
 	static D3D11ResizeBuffersHook hookedD3D11ResizeBuffers = nullptr;
+	// device
 	static D3D11CreateDeferredContextHook hookedD3D11CreateDeferredContext = nullptr;
-	static D3D11CreatePixelShaderHook hookedD3D11CreatePixelShader = nullptr;
+	// devicecontext
 	static D3D11PSSetShaderHook hookedD3D11PSSetShader = nullptr;
+	static D3D11DrawHook hookedD3D11Draw = nullptr;
+	static D3D11DrawAutoHook hookedD3D11DrawAuto = nullptr;
+	static D3D11DrawIndexedHook hookedD3D11DrawIndexed = nullptr;
+	static D3D11DrawIndexedInstancedHook hookedD3D11DrawIndexedInstanced = nullptr;
+	static D3D11DrawIndexedInstancedIndirectHook hookedD3D11DrawIndexedInstancedIndirect = nullptr;
+	static D3D11DrawInstancedHook hookedD3D11DrawInstanced = nullptr;
+	static D3D11DrawInstancedIndirectHook hookedD3D11DrawInstancedIndirect = nullptr;
 
 	static bool _tmpSwapChainInitialized = false;
 	static bool _showWindow = true;
@@ -56,6 +86,7 @@ namespace IGCS::DX11Hooker
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Detour methods which are called by the hooked vtable entrances
+	//------[Device]------------------------------------------------------------------------------------------------------------------
 	HRESULT __stdcall detourD3D11CreateDeferredContext(ID3D11Device* pDevice, UINT contextFlags, ID3D11DeviceContext** ppDeferredContext)
 	{
 		// TODO: hook PSSetShader of created devicecontext. Be sure to unhook it after the devicecontext is converted into a commandlist. 
@@ -63,32 +94,93 @@ namespace IGCS::DX11Hooker
 		return hookedD3D11CreateDeferredContext(pDevice, contextFlags, ppDeferredContext);
 	}
 
-
-	HRESULT __stdcall detourD3D11CreatePixelShader(ID3D11Device* pDevice, const void* pShaderBytecode, SIZE_T bytecodeLength, ID3D11ClassLinkage* pClassLinkage, ID3D11PixelShader** ppPixelShader)
+	//------[DeviceContext]------------------------------------------------------------------------------------------------------------------
+	HRESULT __stdcall detourD3D11PSSetShader(ID3D11DeviceContext* pDeviceContext, ID3D11PixelShader* pPixelShader, ID3D11ClassInstance *const *ppClassInstances, UINT numClassInstances)
 	{
-		HRESULT toReturn = hookedD3D11CreatePixelShader(pDevice, pShaderBytecode, bytecodeLength, pClassLinkage, ppPixelShader);
-		// store the created shader with the input in our shader toggle manager, so we can later on check whether a shader is to be blocked.
-		ShaderToggleManager::instance().addShader(pShaderBytecode, bytecodeLength, (__int64)*ppPixelShader);
+		ShaderToggleManager::instance().addShader((__int64)pPixelShader);
+		return hookedD3D11PSSetShader(pDeviceContext, pPixelShader, ppClassInstances, numClassInstances);
+	}
+	
+
+	HRESULT __stdcall detourD3D11Draw (ID3D11DeviceContext* pDeviceContext, UINT vertexCount, UINT startVertexLocation)
+	{
+		HRESULT toReturn = S_OK;
+		if (checkIfDrawCallShouldProceedAndRegisterShaderIfNeeded())
+		{
+			toReturn = hookedD3D11Draw(pDeviceContext, vertexCount, startVertexLocation);
+		}
+		return toReturn;
+	}
+	
+
+	HRESULT __stdcall detourD3D11DrawAuto(ID3D11DeviceContext* pDeviceContext)
+	{
+		HRESULT toReturn = S_OK;
+		if (checkIfDrawCallShouldProceedAndRegisterShaderIfNeeded())
+		{
+			toReturn = hookedD3D11DrawAuto(pDeviceContext);
+		}
+		return toReturn;
+	}
+	
+
+	HRESULT __stdcall detourD3D11DrawIndexed(ID3D11DeviceContext* pDeviceContext, UINT indexCount, UINT startIndexLocation, INT baseVertexLocation)
+	{
+		HRESULT toReturn = S_OK;
+		if (checkIfDrawCallShouldProceedAndRegisterShaderIfNeeded())
+		{
+			toReturn = hookedD3D11DrawIndexed(pDeviceContext, indexCount, startIndexLocation, baseVertexLocation);
+		}
+		return toReturn;
+	}
+	
+
+	HRESULT __stdcall detourD3D11DrawIndexedInstanced(ID3D11DeviceContext* pDeviceContext, UINT indexCountPerInstance, UINT instanceCount, UINT startIndexLocation, 
+													  INT baseVertexLocation, UINT startInstanceLocation)
+	{
+		HRESULT toReturn = S_OK;
+		if (checkIfDrawCallShouldProceedAndRegisterShaderIfNeeded())
+		{
+			toReturn = hookedD3D11DrawIndexedInstanced(pDeviceContext, indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
+		}
 		return toReturn;
 	}
 
 
-	HRESULT __stdcall detourD3D11PSSetShader(ID3D11DeviceContext* pDeviceContext, ID3D11PixelShader* pPixelShader, ID3D11ClassInstance *const *ppClassInstances, UINT numClassInstances)
+	HRESULT __stdcall detourD3D11DrawIndexedInstancedIndirect(ID3D11DeviceContext* pDeviceContext, ID3D11Buffer* pBufferForArgs, UINT alignedByteOffsetForArgs)
 	{
-		ShaderToggleManager::instance().addShader((__int64)pPixelShader);
-		if (ShaderToggleManager::instance().isShaderHidden((__int64)pPixelShader))
+		HRESULT toReturn = S_OK;
+		if (checkIfDrawCallShouldProceedAndRegisterShaderIfNeeded())
 		{
-			ID3D11PixelShader* discardingPixelShader = ShaderToggleManager::instance().getDiscardingPixelShader();
-			if (nullptr != discardingPixelShader)
-			{
-				// pass 0 for numClassInstances, and pass the ppClassInstances as-is, otherwise some games with reshade can crash when they switch target views. 
-				return hookedD3D11PSSetShader(pDeviceContext, discardingPixelShader, ppClassInstances, 0);
-			}
+			toReturn = hookedD3D11DrawIndexedInstancedIndirect(pDeviceContext, pBufferForArgs, alignedByteOffsetForArgs);
 		}
-		return hookedD3D11PSSetShader(pDeviceContext, pPixelShader, ppClassInstances, numClassInstances);
+		return toReturn;
 	}
 
 
+	HRESULT __stdcall detourD3D11DrawInstanced(ID3D11DeviceContext* pDeviceContext, UINT vertexCountPerInstance, UINT instanceCount, UINT startVertexLocation, UINT startInstanceLocation)
+	{
+		HRESULT toReturn = S_OK;
+		if (checkIfDrawCallShouldProceedAndRegisterShaderIfNeeded())
+		{
+			toReturn = hookedD3D11DrawInstanced(pDeviceContext, vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
+		}
+		return toReturn;
+	}
+
+
+	HRESULT __stdcall detourD3D11DrawInstancedIndirect(ID3D11DeviceContext* pDeviceContext, ID3D11Buffer* pBufferForArgs, UINT alignedByteOffsetForArgs)
+	{
+		HRESULT toReturn = S_OK;
+		if (checkIfDrawCallShouldProceedAndRegisterShaderIfNeeded())
+		{
+			toReturn = hookedD3D11DrawInstancedIndirect(pDeviceContext, pBufferForArgs, alignedByteOffsetForArgs);
+		}
+		return toReturn;
+	}
+	
+
+	//------[DXGISwapChain]------------------------------------------------------------------------------------------------------------------
 	HRESULT __stdcall detourD3D11ResizeBuffers(IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags)
 	{
 		_imGuiInitializing = true;
@@ -137,7 +229,7 @@ namespace IGCS::DX11Hooker
 					}
 
 					createRenderTarget(pSwapChain);
-					initImGui();
+					OverlayControl::initImGui(_device, _context);
 
 					hookDeviceMethods();
 					hookContextMethods();
@@ -156,6 +248,7 @@ namespace IGCS::DX11Hooker
 		}
 		return hookedD3D11Present(pSwapChain, SyncInterval, Flags);
 	}
+
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Hook setting code
@@ -192,27 +285,8 @@ namespace IGCS::DX11Hooker
 		pDeviceContextVTable = (__int64*)pTmpContext;
 		pDeviceContextVTable = (__int64*)pDeviceContextVTable[0];
 
-		OverlayConsole::instance().logDebug("Present Address: %p", (void*)(__int64*)pSwapChainVTable[DXGI_PRESENT_INDEX]);
-
-		if (MH_CreateHook((LPBYTE)pSwapChainVTable[DXGI_PRESENT_INDEX], &detourD3D11Present, reinterpret_cast<LPVOID*>(&hookedD3D11Present)) != MH_OK)
-		{
-			IGCS::Console::WriteError("Hooking Present failed!");
-		}
-		if (MH_EnableHook((LPBYTE)pSwapChainVTable[DXGI_PRESENT_INDEX]) != MH_OK)
-		{
-			IGCS::Console::WriteError("Enabling of Present hook failed!");
-		}
-
-		OverlayConsole::instance().logDebug("ResizeBuffers Address: %p", (__int64*)pSwapChainVTable[DXGI_RESIZEBUFFERS_INDEX]);
-
-		if (MH_CreateHook((LPBYTE)pSwapChainVTable[DXGI_RESIZEBUFFERS_INDEX], &detourD3D11ResizeBuffers, reinterpret_cast<LPVOID*>(&hookedD3D11ResizeBuffers)) != MH_OK)
-		{
-			IGCS::Console::WriteError("Hooking ResizeBuffers failed!");
-		}
-		if (MH_EnableHook((LPBYTE)pSwapChainVTable[DXGI_RESIZEBUFFERS_INDEX]) != MH_OK)
-		{
-			IGCS::Console::WriteError("Enabling of ResizeBuffers hook failed!");
-		}
+		Utils::setAndEnableHook((LPBYTE)pSwapChainVTable[DXGI_PRESENT_INDEX], &detourD3D11Present, reinterpret_cast<LPVOID*>(&hookedD3D11Present), "DXGISwapChain::Present");
+		Utils::setAndEnableHook((LPBYTE)pSwapChainVTable[DXGI_RESIZEBUFFERS_INDEX], &detourD3D11ResizeBuffers, reinterpret_cast<LPVOID*>(&hookedD3D11ResizeBuffers), "DXGISwapChain::ResizeBuffers");
 
 		pTmpDevice->Release();
 		pTmpContext->Release();
@@ -234,24 +308,8 @@ namespace IGCS::DX11Hooker
 		__int64* pDeviceVTable = (__int64*)_device;
 		pDeviceVTable = (__int64*)pDeviceVTable[0];
 
-		OverlayConsole::instance().logDebug("CreateDeferredContext Address: %p", (__int64*)pDeviceVTable[DX11_CREATE_DEFERRED_CONTEXT]);
-
-		if (MH_CreateHook((LPBYTE)pDeviceVTable[DX11_CREATE_DEFERRED_CONTEXT], &detourD3D11CreateDeferredContext, reinterpret_cast<LPVOID*>(&hookedD3D11CreateDeferredContext)) != MH_OK)
-		{
-			IGCS::Console::WriteError("Hooking CreateDeferredContext failed!");
-		}
-		if (MH_EnableHook((LPBYTE)pDeviceVTable[DX11_CREATE_DEFERRED_CONTEXT]) != MH_OK)
-		{
-			IGCS::Console::WriteError("Enabling of CreateDeferredContext hook failed!");
-		}
-		if (MH_CreateHook((LPBYTE)pDeviceVTable[DX11_CREATE_PIXEL_SHADER], &detourD3D11CreatePixelShader, reinterpret_cast<LPVOID*>(&hookedD3D11CreatePixelShader)) != MH_OK)
-		{
-			IGCS::Console::WriteError("Hooking CreatePixelShader failed!");
-		}
-		if (MH_EnableHook((LPBYTE)pDeviceVTable[DX11_CREATE_PIXEL_SHADER]) != MH_OK)
-		{
-			IGCS::Console::WriteError("Enabling of CreatePixelShader hook failed!");
-		}
+		Utils::setAndEnableHook((LPBYTE)pDeviceVTable[DX11_CREATE_DEFERRED_CONTEXT], &detourD3D11CreateDeferredContext, reinterpret_cast<LPVOID*>(&hookedD3D11CreateDeferredContext),
+								"ID3D11Device::CreateDeferredContext");
 	}
 
 
@@ -265,17 +323,14 @@ namespace IGCS::DX11Hooker
 
 		__int64* pDeviceContextVTable = (__int64*)_context;
 		pDeviceContextVTable = (__int64*)pDeviceContextVTable[0];
-
-		OverlayConsole::instance().logDebug("PSSetShader Address: %p", (__int64*)pDeviceContextVTable[DX11_PS_SET_SHADER]);
-
-		if (MH_CreateHook((LPBYTE)pDeviceContextVTable[DX11_PS_SET_SHADER], &detourD3D11PSSetShader, reinterpret_cast<LPVOID*>(&hookedD3D11PSSetShader)) != MH_OK)
-		{
-			IGCS::Console::WriteError("Hooking PSSetShader failed!");
-		}
-		if (MH_EnableHook((LPBYTE)pDeviceContextVTable[DX11_PS_SET_SHADER]) != MH_OK)
-		{
-			IGCS::Console::WriteError("Enabling of PSSetShader hook failed!");
-		}
+		Utils::setAndEnableHook((LPBYTE)pDeviceContextVTable[DX11_PS_SET_SHADER], &detourD3D11PSSetShader, reinterpret_cast<LPVOID*>(&hookedD3D11PSSetShader), "ID3D11DeviceContext::PSSetShader");
+		Utils::setAndEnableHook((LPBYTE)pDeviceContextVTable[DX11_DRAW_INDEXED], &detourD3D11DrawIndexed, reinterpret_cast<LPVOID*>(&hookedD3D11DrawIndexed), "ID3D11DeviceContext::DrawIndexed");
+		Utils::setAndEnableHook((LPBYTE)pDeviceContextVTable[DX11_DRAW], &detourD3D11Draw, reinterpret_cast<LPVOID*>(&hookedD3D11Draw), "ID3D11DeviceContext::Draw");
+		Utils::setAndEnableHook((LPBYTE)pDeviceContextVTable[DX11_DRAW_INDEXED_INSTANCED], &detourD3D11DrawIndexedInstanced, reinterpret_cast<LPVOID*>(&hookedD3D11DrawIndexedInstanced), "ID3D11DeviceContext::DrawIndexedInstanced");
+		Utils::setAndEnableHook((LPBYTE)pDeviceContextVTable[DX11_DRAW_INSTANCED], &detourD3D11DrawInstanced, reinterpret_cast<LPVOID*>(&hookedD3D11DrawInstanced), "ID3D11DeviceContext::DrawInstanced");
+		Utils::setAndEnableHook((LPBYTE)pDeviceContextVTable[DX11_DRAW_AUTO], &detourD3D11DrawAuto, reinterpret_cast<LPVOID*>(&hookedD3D11DrawAuto), "ID3D11DeviceContext::DrawAuto");
+		Utils::setAndEnableHook((LPBYTE)pDeviceContextVTable[DX11_DRAW_INDEXED_INSTANCED_INDIRECT], &detourD3D11DrawIndexedInstancedIndirect, reinterpret_cast<LPVOID*>(&hookedD3D11DrawIndexedInstancedIndirect), "ID3D11DeviceContext::DrawIndexedInstancedIndirect");
+		Utils::setAndEnableHook((LPBYTE)pDeviceContextVTable[DX11_DRAW_INSTANCED_INDIRECT], &detourD3D11DrawInstancedIndirect, reinterpret_cast<LPVOID*>(&hookedD3D11DrawInstancedIndirect), "ID3D11DeviceContext::DrawInstancedIndirect");
 	}
 
 
@@ -304,68 +359,54 @@ namespace IGCS::DX11Hooker
 	}
 
 
-	void initImGui()
+	// Registers the current pixel shader address with the entropy calculated of the current context state, if the shader is unknown. 
+	// returns true if the caller should proceed with its original call or do nothing and return S_OK. 
+	// This value is calculated from the usability state of the current shader. If the shader is unknown at this point, it will 
+	// be picked up the next frame and we're returning true.
+	// It's not that great to merge two things into one thing, as that's in general going to bite you in the ass later on, but 
+	// it's an optimization to do it this way as it can now be done in one call and no if logic in the caller, and as a lot of methods
+	// will need this method, it's best to use 1 method instead of two with if-logic.
+	bool checkIfDrawCallShouldProceedAndRegisterShaderIfNeeded()
 	{
-		ImGui_ImplDX11_Init(IGCS::Globals::instance().mainWindowHandle(), _device, _context);
-		ImGuiIO& io = ImGui::GetIO();
-		io.IniFilename = IGCS_OVERLAY_INI_FILENAME;
-		initImGuiStyle();
+		__int64 pixelShaderAddress = getCurrentPixelShaderAddress();
+		ShaderUsabilityType currentShaderUsabilityState = ShaderToggleManager::instance().getShaderUsability(pixelShaderAddress);
+		bool toReturn = false;
+		switch (currentShaderUsabilityState)
+		{
+		case ShaderUsabilityType::Blocked:
+			// do nothing
+			break;
+		case ShaderUsabilityType::Unblocked:
+			// simply call the real method
+			toReturn = true;
+			break;
+		case ShaderUsabilityType::Unknown:
+			// calculate context state entropy, register shader with the entropy, continue as normal, so render.
+// TODO: Add entropy calculation / registration.
+			toReturn = true;
+			break;
+		}
+		return toReturn;
 	}
 
 
-	void initImGuiStyle()
+
+	__int64 getCurrentPixelShaderAddress()
 	{
-		ImGuiStyle& style = ImGui::GetStyle();
-
-		style.WindowRounding = 2.0f;
-		style.FrameRounding = 1.0f;
-		style.IndentSpacing = 25.0f;
-		style.ScrollbarSize = 16.0f;
-		style.ScrollbarRounding = 1.0f;
-
-		style.Colors[ImGuiCol_Text] = ImVec4(0.84f, 0.84f, 0.88f, 1.00f);
-		style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.24f, 0.29f, 1.00f);
-		style.Colors[ImGuiCol_WindowBg] = ImVec4(0.07f, 0.07f, 0.09f, 0.90f);
-		style.Colors[ImGuiCol_ChildWindowBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-		style.Colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
-		style.Colors[ImGuiCol_Border] = ImVec4(0.80f, 0.80f, 0.83f, 0.88f);
-		style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);
-		style.Colors[ImGuiCol_FrameBg] = ImVec4(0.22f, 0.22f, 0.24f, 0.31f);
-		style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.24f, 0.24f, 0.25f, 1.00f);
-		style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.35f, 0.35f, 0.38f, 1.00f);
-		style.Colors[ImGuiCol_TitleBg] = ImVec4(0.27f, 0.27f, 0.33f, 0.37f);
-		style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.40f, 0.40f, 0.80f, 0.20f);
-		style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
-		style.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.37f, 0.37f, 0.42f, 0.42f);
-		style.Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.09f, 0.09f, 0.10f, 1.00f);
-		style.Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.45f, 0.45f, 0.45f, 0.30f);
-		style.Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);
-		style.Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);
-		style.Colors[ImGuiCol_ComboBg] = ImVec4(0.13f, 0.13f, 0.16f, 1.00f);
-		style.Colors[ImGuiCol_CheckMark] = ImVec4(0.80f, 0.80f, 0.83f, 0.53f);
-		style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.65f, 0.31f, 0.00f, 0.71f);
-		style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);
-		style.Colors[ImGuiCol_Button] = ImVec4(0.65f, 0.31f, 0.00f, 0.86f);
-		style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.80f, 0.41f, 0.00f, 1.00f);
-		style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
-		style.Colors[ImGuiCol_Header] = ImVec4(0.50f, 0.50f, 0.53f, 0.49f);
-		style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.47f, 0.47f, 0.49f, 1.00f);
-		style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.40f, 0.40f, 0.44f, 0.31f);
-		style.Colors[ImGuiCol_Column] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
-		style.Colors[ImGuiCol_ColumnHovered] = ImVec4(0.23f, 0.23f, 0.24f, 1.00f);
-		style.Colors[ImGuiCol_ColumnActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
-		style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.44f, 0.44f, 0.44f, 0.30f);
-		style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);
-		style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);
-		style.Colors[ImGuiCol_CloseButton] = ImVec4(0.40f, 0.40f, 0.40f, 0.44f);
-		style.Colors[ImGuiCol_CloseButtonHovered] = ImVec4(0.40f, 0.40f, 0.40f, 0.93f);
-		style.Colors[ImGuiCol_CloseButtonActive] = ImVec4(0.40f, 0.39f, 0.38f, 1.00f);
-		style.Colors[ImGuiCol_PlotLines] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
-		style.Colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
-		style.Colors[ImGuiCol_PlotHistogram] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
-		style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
-		style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
-		style.Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
+		ID3D11PixelShader* currentShader;
+		ID3D11ClassInstance* currentShaderInstances[256];
+		UINT amountOfInstances;
+		_context->PSGetShader(&currentShader, currentShaderInstances, &amountOfInstances);
+		__int64 toReturn = (__int64)currentShader;
+		currentShader->Release();
+		for (UINT i = 0; i < amountOfInstances; i++)
+		{
+			if (currentShaderInstances[i])
+			{
+				currentShaderInstances[i]->Release();
+			}
+		}
+		return toReturn;
 	}
 }
 
