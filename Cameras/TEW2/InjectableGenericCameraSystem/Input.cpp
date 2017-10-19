@@ -32,10 +32,17 @@
 #include "imgui_impl_dx11.h"
 #include "OverlayConsole.h"
 #include "OverlayControl.h"
+#include <mutex>
 
 namespace IGCS::Input
 {
 	using namespace std;
+
+	// The key/mouse states are unprotected for write/read. This is initially bad, but protecting it with a mutex is difficult as the present call
+	// will read it and multiple calls from that thread causes mutex problems. For now they're unprotected (not that bad, the next frame it will be corrected anyway).
+	static byte g_keyStates[256];		// 0x0==nothing, 0x88==key is down this frame, 0x08==key is released, 0x80==key was down previous frame.
+	static byte g_mouseButtonStates[3];	// 0x0==nothing, 0x88==button is down this frame, 0x08==button is released, 0x80==button was down previous frame.
+	static short g_mouseWheelDelta = 0;
 
 	// I know, multi-threaded programming, but these two values are scalars, and read/write of multiple threads (which is the case) doesn't really 
 	// matter: wrapping this in mutexes is overkill: x86 processors can write up to 7 bytes in an atomic instruction, more than enough for a long, 
@@ -43,6 +50,60 @@ namespace IGCS::Input
 	// keyword should be enough to mark them for the optimizer not to mess with them. 
 	volatile static long _deltaMouseX = 0;
 	volatile static long _deltaMouseY = 0;
+	
+	void setMouseButtonState(int button, bool down);
+
+	void setKeyboardMouseStateInImGuiIO()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		for (int i = 0; i < 256; i++)
+		{
+			if ((g_keyStates[i] & 0x88) == 0x88)
+			{
+				WORD ch = 0;
+				io.AddInputCharacter(ToAscii(i, MapVirtualKey(i, MAPVK_VK_TO_VSC), g_keyStates, &ch, 0) ? ch : 0);
+			}
+		}
+
+		for (int i = 0; i < 3; i++)
+		{
+			io.MouseDown[i] = (g_mouseButtonStates[i] & 0x80) == 0x80;
+		}
+		io.MouseWheel += g_mouseWheelDelta;
+	}
+
+
+	// Resets the states in the keystates buffer by resetting their lower 4 bits. This will make sure the keystate interpretation code in NewFrame will
+	// only pick up the key when its Keydown message was received the first time. 0x88/0x08 is used as this is the way GetKeyState() is reporting states too.
+	void resetKeyStates()
+	{
+		// clear 0x08 bit on keys in keystate array so we avoid repeat issues.
+		for (int i = 0; i < 256; i++)
+		{
+			g_keyStates[i] &= ~0x08;
+		}
+	}
+
+
+	void resetMouseState()
+	{
+		// clear 0x08 bit on mouse buttons in mouse state array so we avoid repeat issues.
+		for (int i = 0; i < 256; i++)
+		{
+			g_mouseButtonStates[i] &= ~0x08;
+		}
+		g_mouseWheelDelta = 0;
+	}
+
+
+	void setMouseButtonState(int button, bool down)
+	{
+		if (button < 0 || button > 3)
+		{
+			return;
+		}
+		g_mouseButtonStates[button] = down ? 0x88 : 0x08;
+	}
 
 
 	bool keyDown(int virtualKeyCode)
@@ -109,39 +170,76 @@ namespace IGCS::Input
 		}
 
 		// first handle the message through the Imgui handler so we get an up to date IO structure for the overlay
-		ImGui_ImplDX11_WndProcHandler(lpMsg->hwnd, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
+		LRESULT handledByImGuiHandler = ImGui_ImplDX11_WndProcHandler(lpMsg->hwnd, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
 
-		// Stop here if the camera isn't enabled as the camera isn't controllable in that situation. 
-		if(!g_cameraEnabled && !OverlayControl::isMainMenuVisible())
+		if (!handledByImGuiHandler)
 		{
-			return false;
+			// grab mouse position
+			ScreenToClient(static_cast<HWND>(lpMsg->hwnd), &lpMsg->pt);
+			ImGuiIO& io = ImGui::GetIO();
+			io.MousePos.x = static_cast<float>(lpMsg->pt.x);
+			io.MousePos.y = static_cast<float>(lpMsg->pt.y);
 		}
+
 		bool toReturn = false;
 		switch (lpMsg->message)
 		{
 			case WM_INPUT:
 			{
-				// handle mouse
-				RAWINPUT *pRI = NULL;
-
 				// Determine how big the buffer should be
-				UINT iBuffer;
-				GetRawInputData((HRAWINPUT)lpMsg->lParam, RID_INPUT, NULL, &iBuffer, sizeof(RAWINPUTHEADER));
-				// Allocate a buffer with enough size to hold the raw input data
-				LPBYTE lpb = new BYTE[iBuffer];
-				if (lpb == NULL)
-				{
-					return false;
-				}
+				UINT bufferSize;
+				GetRawInputData((HRAWINPUT)lpMsg->lParam, RID_INPUT, NULL, &bufferSize, sizeof(RAWINPUTHEADER));
+				LPBYTE lpb = new BYTE[bufferSize];
 				// Get the raw input data
-				UINT readSize = GetRawInputData((HRAWINPUT)lpMsg->lParam, RID_INPUT, lpb, &iBuffer, sizeof(RAWINPUTHEADER));
-				if (readSize == iBuffer)
+				UINT readSize = GetRawInputData((HRAWINPUT)lpMsg->lParam, RID_INPUT, lpb, &bufferSize, sizeof(RAWINPUTHEADER));
+				if (readSize == bufferSize)
 				{
-					pRI = (RAWINPUT*)lpb;
+					RAWINPUT* pRawData = (RAWINPUT*)lpb;
 					// Process the Mouse Messages
-					if (pRI->header.dwType == RIM_TYPEMOUSE)
+					if (pRawData->header.dwType == RIM_TYPEMOUSE)
 					{
-						processRawMouseData(&pRI->data.mouse);
+						processRawMouseData(&pRawData->data.mouse);
+						if (!handledByImGuiHandler)
+						{
+							// check mouse buttons / wheel.
+							if (pRawData->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN)
+							{
+								setMouseButtonState(0, true);
+							}
+							else
+							{
+								if (pRawData->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP)
+								{
+									setMouseButtonState(0, false);
+								}
+							}
+							if (pRawData->data.mouse.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN)
+							{
+								setMouseButtonState(1, true);
+							}
+							else
+							{
+								if (pRawData->data.mouse.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_UP)
+								{
+									setMouseButtonState(1, false);
+								}
+							}
+							if (pRawData->data.mouse.usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN)
+							{
+								setMouseButtonState(2, true);
+							}
+							else
+							{
+								if (pRawData->data.mouse.usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_UP)
+								{
+									setMouseButtonState(2, false);
+								}
+							}
+							if (pRawData->data.mouse.usButtonFlags & RI_MOUSE_WHEEL)
+							{
+								g_mouseWheelDelta += static_cast<short>(pRawData->data.mouse.usButtonData) / WHEEL_DELTA;
+							}
+						}
 					}
 				}
 				delete lpb;
@@ -150,7 +248,19 @@ namespace IGCS::Input
 			break;
 			// simply return true for all messages related to mouse / keyboard so they won't reach the message pump of the main window. 
 			case WM_KEYDOWN:
+				if (lpMsg->wParam < 256)
+				{
+					g_keyStates[lpMsg->wParam] = 0x88;
+				}
+				toReturn = true;
+				break;
 			case WM_KEYUP:
+				if (lpMsg->wParam < 256)
+				{
+					g_keyStates[lpMsg->wParam] = 0x08;
+				}
+				toReturn = true;
+				break;
 			case WM_CAPTURECHANGED:
 			case WM_LBUTTONDBLCLK:
 			case WM_LBUTTONDOWN:
@@ -190,6 +300,12 @@ namespace IGCS::Input
 				toReturn = true;
 				break;
 			break;
+		}
+
+		if (!g_cameraEnabled && !OverlayControl::isMainMenuVisible())
+		{
+			// let the game also handle the message
+			return false;
 		}
 		return toReturn;
 	}

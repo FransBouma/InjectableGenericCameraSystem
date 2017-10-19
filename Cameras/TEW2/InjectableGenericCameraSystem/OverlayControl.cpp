@@ -10,6 +10,7 @@
 #include "Defaults.h"
 #include "Globals.h"
 #include "CameraManipulator.h"
+#include "Input.h"
 
 using namespace std;
 
@@ -43,6 +44,7 @@ namespace IGCS::OverlayControl
 	void renderSplash();
 	void updateNotificationStore();
 	void ShowHelpMarker(const char* desc);
+	void ShowExampleAppFixedOverlay(bool* p_open);
 
 	//-----------------------------------------------
 	// code
@@ -60,15 +62,35 @@ namespace IGCS::OverlayControl
 
 	void renderOverlay()
 	{
-		ImGui_ImplDX11_NewFrame();
+		// set io values FIRST, as NewFrame will reset IO values otherwise and it looks at the values for mousewheel for sizing in... new frame!
+		Input::setKeyboardMouseStateInImGuiIO();
 		Globals::instance().saveSettingsIfRequired(ImGui::GetIO().DeltaTime);
+
+		ImGui_ImplDX11_NewFrame();
 		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiSetCond_FirstUseEver);     // Normally user code doesn't need/want to call it because positions are saved in .ini file anyway. 
 		auto& io = ImGui::GetIO();
 		io.MouseDrawCursor = _showMainWindow;
+		ShowExampleAppFixedOverlay(&_showMainWindow);
 		renderMainWindow();
 		renderSplash();
 		renderNotifications();
 		ImGui::Render();
+	}
+
+
+	// Demonstrate creating a simple static window with no decoration.
+	void ShowExampleAppFixedOverlay(bool* p_open)
+	{
+		ImGui::SetNextWindowPos(ImVec2(10, 10));
+		if (!ImGui::Begin("Example: Fixed Overlay", p_open, ImVec2(0, 0), 0.3f, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings))
+		{
+			ImGui::End();
+			return;
+		}
+		ImGui::Text("Simple overlay\non the top-left side of the screen.");
+		ImGui::Separator();
+		ImGui::Text("Mouse Position: (%.1f,%.1f)", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
+		ImGui::End();
 	}
 
 
@@ -242,7 +264,7 @@ Special thanks to:
 			settingsChanged |= ImGui::SliderFloat("Fast movement multiplier", &currentSettings.fastMovementMultiplier, 0.1f, 100.0f, "%.3f");
 			settingsChanged |= ImGui::SliderFloat("Slow movement multiplier", &currentSettings.slowMovementMultiplier, 0.001f, 1.0f, "%.3f");
 			settingsChanged |= ImGui::SliderFloat("Up movement multiplier", &currentSettings.movementUpMultiplier, 0.1f, 10.0f, "%.3f");
-			settingsChanged |= ImGui::SliderFloat("Movement speed", &currentSettings.movementSpeed, 0.001f, 0.5f, "%.3f");
+			settingsChanged |= ImGui::SliderFloat("Movement speed", &currentSettings.movementSpeed, 0.01f, 3.0f, "%.3f");
 			settingsChanged |= ImGui::Combo("Camera control device", &currentSettings.cameraControlDevice, "Keyboard & Mouse\0Gamepad\0Both\0\0");
 			ImGui::SameLine(); ShowHelpMarker("The camera control device chosen will be blocked for game input.\n");
 			ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.3f) - 11.0f);
@@ -250,7 +272,7 @@ Special thanks to:
 		}
 		if (ImGui::CollapsingHeader("Camera rotation options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			settingsChanged |= ImGui::SliderFloat("Rotation speed", &currentSettings.rotationSpeed, 0.001f, 0.1f, "%.3f");
+			settingsChanged |= ImGui::SliderFloat("Rotation speed", &currentSettings.rotationSpeed, 0.001f, 0.5f, "%.3f");
 			ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.3f)-11.0f);
 			settingsChanged |= ImGui::Checkbox("Invert Y look direction", &currentSettings.invertY);
 		}

@@ -251,7 +251,7 @@ namespace IGCS
 		long mouseDeltaY = Input::getMouseDeltaY();
 		if (abs(mouseDeltaY) > 1)
 		{
-			_camera.pitch(static_cast<float>(mouseDeltaY) * MOUSE_SPEED_CORRECTION * multiplier);
+			_camera.pitch(-(static_cast<float>(mouseDeltaY) * MOUSE_SPEED_CORRECTION * multiplier));
 		}
 		if (abs(mouseDeltaX) > 1)
 		{

@@ -37,4 +37,7 @@ namespace IGCS::Input
 	void resetMouseDeltas();
 	bool handleMessage(LPMSG lpMsg);
 	void registerRawInput();
+	void resetKeyStates();
+	void resetMouseState();
+	void setKeyboardMouseStateInImGuiIO();
 }

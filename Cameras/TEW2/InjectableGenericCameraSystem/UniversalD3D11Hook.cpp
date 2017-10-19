@@ -9,6 +9,7 @@
 #include "imgui_impl_dx11.h"
 #include "OverlayControl.h"
 #include "OverlayConsole.h"
+#include "Input.h"
 
 #pragma comment(lib, "d3d11.lib")
 
@@ -91,7 +92,8 @@ namespace IGCS::DX11Hooker
 				// render our own stuff
 				_context->OMSetRenderTargets(1, &_mainRenderTargetView, NULL);
 				OverlayControl::renderOverlay();
-				ImGui_ImpDX11_ResetKeyStates();
+				Input::resetKeyStates();
+				Input::resetMouseState();
 			}
 		}
 		return hookedD3D11Present(pSwapChain, SyncInterval, Flags);

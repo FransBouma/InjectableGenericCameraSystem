@@ -124,7 +124,7 @@ namespace IGCS
 		{
 			lookDirectionInverter = -lookDirectionInverter;
 		}
-		_pitch += (Globals::instance().settings().rotationSpeed * amount * lookDirectionInverter);
+		_pitch -= (Globals::instance().settings().rotationSpeed * amount * lookDirectionInverter);			// y is left, so inversed
 		_pitch = clampAngle(_pitch);
 	}
 

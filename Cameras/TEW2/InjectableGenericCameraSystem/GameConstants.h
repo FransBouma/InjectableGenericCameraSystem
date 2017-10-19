@@ -42,7 +42,7 @@ namespace IGCS::GameSpecific
 	#define SLOWER_MULTIPLIER							0.1f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
 	#define DEFAULT_MOVEMENT_SPEED						1.0f
-	#define DEFAULT_ROTATION_SPEED						0.008f
+	#define DEFAULT_ROTATION_SPEED						0.01f
 	#define DEFAULT_FOV_SPEED							0.05f
 	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f
 	// End Mandatory constants

@@ -10,7 +10,6 @@
 #include <imgui.h>
 #include "imgui_impl_dx11.h"
 #include "imgui_internal.h"
-#include <mutex>
 
 // DirectX
 #include <d3d11.h>
@@ -39,9 +38,6 @@ static ID3D11RasterizerState*   g_pRasterizerState = NULL;
 static ID3D11BlendState*        g_pBlendState = NULL;
 static ID3D11DepthStencilState* g_pDepthStencilState = NULL;
 static int                      g_VertexBufferSize = 5000, g_IndexBufferSize = 10000;
-
-static byte						g_keyStates[256];		// 0x0==nothing, 0x88==key is down this frame, 0x08==key is released, 0x80==key was down previous frame.
-static std::mutex               g_keyStateMutex;
 
 struct VERTEX_CONSTANT_BUFFER
 {
@@ -272,18 +268,12 @@ IMGUI_API LRESULT ImGui_ImplDX11_WndProcHandler(HWND, UINT msg, WPARAM wParam, L
 		if (wParam < 256)
 		{
 			io.KeysDown[wParam] = 1;
-			g_keyStateMutex.lock();
-				g_keyStates[wParam] = 0x88;
-			g_keyStateMutex.unlock();
 		}
         return true;
     case WM_KEYUP:
 		if (wParam < 256)
 		{
 			io.KeysDown[wParam] = 0;
-			g_keyStateMutex.lock();
-				g_keyStates[wParam] = 0x08;
-			g_keyStateMutex.unlock();
 		}
         return true;
 	// ignore WM_CHAR, as it's a result of a reprocessing of WM_KEYDOWN/UP and we're processing keydown to ascii elsewhere
@@ -607,31 +597,7 @@ void ImGui_ImplDX11_NewFrame()
 		io.FontGlobalScale = ImClamp(io.FontGlobalScale + io.MouseWheel * 0.10f, 1.0f, 2.50f);
 	}
 
-	g_keyStateMutex.lock();
-	for (unsigned int i = 0; i < 256; i++)
-	{
-		if ((g_keyStates[i] & 0x88)==0x88)
-		{
-			WORD ch = 0;
-			io.AddInputCharacter(ToAscii(i, MapVirtualKey(i, MAPVK_VK_TO_VSC), g_keyStates, &ch, 0) ? ch : 0);
-		}
-	}
-	g_keyStateMutex.unlock();
-
-    // Start the frame
+	// Start the frame
     ImGui::NewFrame();
 }
 
-
-// Resets the states in the keystates buffer by resetting their lower 4 bits. This will make sure the keystate interpretation code in NewFrame will
-// only pick up the key when its Keydown message was received the first time. 0x88/0x08 is used as this is the way GetKeyState() is reporting states too.
-void ImGui_ImpDX11_ResetKeyStates()
-{
-	g_keyStateMutex.lock();
-	// clear 0x08 bit on keys in keystate array so we avoid repeat issues.
-	for (int i = 0; i < 256; i++)
-	{
-		g_keyStates[i] &= ~0x08;
-	}
-	g_keyStateMutex.unlock();
-}
