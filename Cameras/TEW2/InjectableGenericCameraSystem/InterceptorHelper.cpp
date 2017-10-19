@@ -31,6 +31,7 @@
 #include "GameImageHooker.h"
 #include <map>
 #include "OverlayConsole.h"
+#include "CameraManipulator.h"
 
 using namespace std;
 
@@ -39,14 +40,14 @@ using namespace std;
 extern "C" {
 	void cameraStructInterceptor();
 	void cameraWrite1Interceptor();
-	void timestopReadInterceptor();
+	void cameraWrite2Interceptor();
 }
 
 // external addresses used in asm.
 extern "C" {
 	LPBYTE _cameraStructInterceptionContinue = nullptr;
 	LPBYTE _cameraWrite1InterceptionContinue = nullptr;
-	LPBYTE _timestopInterceptionContinue = nullptr;
+	LPBYTE _cameraWrite2InterceptionContinue = nullptr;
 }
 
 
@@ -54,10 +55,11 @@ namespace IGCS::GameSpecific::InterceptorHelper
 {
 	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, map<string, AOBBlock*> &aobBlocks)
 	{
-		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "F3 0F 10 02 0F 5A C0 F2 0F 11 81 88 00 00 00 F3 0F 10 4A 04 0F 5A C9 F2 0F 11 89 90 00 00 00", 1);	
+		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "F3 0F 10 0A F3 41 0F 10 00 0F 5A C0 0F 5A C9 F2 0F 58 C8 F2 0F 11 89 88 00 00 00 F3 0F 10 52 04", 1);	
 		aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE1_INTERCEPT_KEY, "F3 0F 10 02 0F 5A C0 F2 0F 11 81 88 00 00 00 F3 0F 10 4A 04 0F 5A C9 F2 0F 11 89 90 00 00 00", 1);
+		aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE1_INTERCEPT_KEY, "F2 0F 11 86 88 00 00 00 0F 11 8E 90 00 00 00 0F 10 4C 24 50 0F 11 8E A0 00 00 00 F3 0F10 4C 24 60", 1);
 		aobBlocks[FOV_WRITE_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE_INTERCEPT_KEY, "E8 ?? ?? ?? ?? F3 0F 59 05 ?? ?? ?? ?? F3 0F 58 C0 | F3 0F 11 43 2C F3 0F 10 05", 1);
-		//aobBlocks[TIMESTOP_READ_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_READ_INTERCEPT_KEY, "48 BA 2B 15 1D 5C E5 A6 00 00 49 8B 1E 4C 8B 08 45 31 C0 48 89 C1", 1);
+		aobBlocks[TIMESTOP_READ_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_READ_INTERCEPT_KEY, "83 3D | ?? ?? ?? ?? 00 75 0A C7 81 30 01 00 00 00 00 00 00 8B 92 38 02 00 00 03 91 30 01 00", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -85,7 +87,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void setPostCameraStructHooks(map<string, AOBBlock*> &aobBlocks, LPBYTE hostImageAddress)
 	{
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY], 0x0F, &_cameraWrite1InterceptionContinue, &cameraWrite1Interceptor);
-		//GameImageHooker::setHook(aobBlocks[TIMESTOP_READ_INTERCEPT_KEY], 0x16, &_timestopInterceptionContinue, &timestopReadInterceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY], 0x29, &_cameraWrite2InterceptionContinue, &cameraWrite2Interceptor);
+		CameraManipulator::setTimestopValueAddress(Utils::calculateAbsoluteAddress(aobBlocks[TIMESTOP_READ_INTERCEPT_KEY], 5)); // TEW2.exe+444830 - 83 3D 41B25702 00		- cmp dword ptr [TEW2.exe+29BFA78],00
 	}
 
 	// if 'enabled' is false, we'll nop the range where the FoV writes are placed, otherwise we'll write back the original statement bytes. 

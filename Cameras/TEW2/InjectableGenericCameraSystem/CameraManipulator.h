@@ -41,4 +41,5 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void changeFoV(float amount);
 	bool isCameraFound();
 	void displayCameraStructAddress();
+	void setTimestopValueAddress(LPBYTE address);
 }

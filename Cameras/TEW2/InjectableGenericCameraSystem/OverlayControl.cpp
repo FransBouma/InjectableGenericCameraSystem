@@ -44,7 +44,6 @@ namespace IGCS::OverlayControl
 	void renderSplash();
 	void updateNotificationStore();
 	void ShowHelpMarker(const char* desc);
-	void ShowExampleAppFixedOverlay(bool* p_open);
 
 	//-----------------------------------------------
 	// code
@@ -70,27 +69,10 @@ namespace IGCS::OverlayControl
 		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiSetCond_FirstUseEver);     // Normally user code doesn't need/want to call it because positions are saved in .ini file anyway. 
 		auto& io = ImGui::GetIO();
 		io.MouseDrawCursor = _showMainWindow;
-		ShowExampleAppFixedOverlay(&_showMainWindow);
 		renderMainWindow();
 		renderSplash();
 		renderNotifications();
 		ImGui::Render();
-	}
-
-
-	// Demonstrate creating a simple static window with no decoration.
-	void ShowExampleAppFixedOverlay(bool* p_open)
-	{
-		ImGui::SetNextWindowPos(ImVec2(10, 10));
-		if (!ImGui::Begin("Example: Fixed Overlay", p_open, ImVec2(0, 0), 0.3f, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings))
-		{
-			ImGui::End();
-			return;
-		}
-		ImGui::Text("Simple overlay\non the top-left side of the screen.");
-		ImGui::Separator();
-		ImGui::Text("Mouse Position: (%.1f,%.1f)", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
-		ImGui::End();
 	}
 
 
@@ -222,7 +204,7 @@ Special thanks to:
 			ImGui::TextUnformatted("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
 			ImGui::TextUnformatted("Numpad +/- or d-pad up/down           : Increase / decrease FoV");
 			ImGui::TextUnformatted("Numpad * or controller B-button       : Reset FoV");
-			ImGui::TextUnformatted("Numpad 0                              : Pause the game. Unpause with pressing ESC twice.");
+			ImGui::TextUnformatted("Numpad 0                              : Toggle game pause (Normal game play)");
 		}
 		if (ImGui::CollapsingHeader("Settings editor help"))
 		{

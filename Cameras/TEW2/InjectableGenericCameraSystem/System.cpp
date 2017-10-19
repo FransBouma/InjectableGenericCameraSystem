@@ -164,7 +164,7 @@ namespace IGCS
 		}
 		if (Input::keyDown(IGCS_KEY_TIMESTOP))
 		{
-			freezeGame();
+			toggleTimestopState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
 
@@ -370,13 +370,10 @@ namespace IGCS
 	}
 
 
-	// Freezes the game by using the menu timestop.
-	void System::freezeGame()
+	void System::toggleTimestopState()
 	{
-		bool gamePaused = CameraManipulator::setTimeStopValue(true);
-		if (gamePaused)
-		{
-			OverlayControl::addNotification("Game paused. Unpause with the menu by pressing ESC twice.");
-		}
+		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
+		OverlayControl::addNotification(_timeStopped ? "Game paused" : "Game unpaused");
+		CameraManipulator::setTimeStopValue(_timeStopped);
 	}
 }

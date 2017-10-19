@@ -37,7 +37,6 @@ using namespace std;
 
 extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
-	LPBYTE g_timestopStructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -45,19 +44,25 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static double _originalCoords[3];			// coords are stored in doubles.
 	static float _originalRotationMatrix[12];	// 3x3 matrix
 	static float _originalFoV;
+	static LPBYTE g_timestopValueAddress = nullptr;
+
+
+	void setTimestopValueAddress(LPBYTE address)
+	{
+		g_timestopValueAddress = address;
+	}
 
 	
 	// newValue: 1 == time should be frozen, 0 == normal gameplay
 	// returns true if the game was stopped by this call, false if the game was either already stopped or the state didn't change.
 	bool setTimeStopValue(byte newValue)
 	{
-		if (nullptr == g_timestopStructAddress)
+		if (nullptr == g_timestopValueAddress)
 		{
 			return false;
 		}
-		byte* timestopAddress = (g_timestopStructAddress + TIMESTOP_IN_STRUCT_OFFSET);
-		bool toReturn = *timestopAddress == (byte)0 && (newValue == (byte)1);
-		*timestopAddress = newValue;
+		bool toReturn = *g_timestopValueAddress == (byte)0 && (newValue == (byte)1);
+		*g_timestopValueAddress = newValue;
 		return toReturn;
 	}
 

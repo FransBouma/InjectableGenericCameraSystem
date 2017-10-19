@@ -33,7 +33,7 @@
 ; Public definitions so the linker knows which names are present in this file
 PUBLIC cameraStructInterceptor
 PUBLIC cameraWrite1Interceptor
-PUBLIC timestopReadInterceptor
+PUBLIC cameraWrite2Interceptor
 
 ;---------------------------------------------------------------
 
@@ -42,19 +42,29 @@ PUBLIC timestopReadInterceptor
 ; values in asm to communicate with the system
 EXTERN g_cameraEnabled: byte
 EXTERN g_cameraStructAddress: qword
-EXTERN g_timestopStructAddress: qword
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
 ; Own externs, defined in InterceptorHelper.cpp
 EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _cameraWrite1InterceptionContinue: qword
-EXTERN _timestopInterceptionContinue: qword
+EXTERN _cameraWrite2InterceptionContinue: qword
 
 .data
 
 ;---------------------------------------------------------------
 ; Scratch pad
+;
+; Timestop read. This is a byte (1==stop, 0==continue). 
+; We simply need to read the RIP relative value using AOB scanning to get the address. 
+;TEW2.exe+444830 - 83 3D 41B25702 00		- cmp dword ptr [TEW2.exe+29BFA78],00		<< Timestop read
+;TEW2.exe+444837 - 75 0A					- jne TEW2.exe+444843
+;TEW2.exe+444839 - C7 81 30010000 00000000	- mov [rcx+00000130],00000000 { 0 }
+;TEW2.exe+444843 - 8B 92 38020000			- mov edx,[rdx+00000238]
+;TEW2.exe+444849 - 03 91 30010000			- add edx,[rcx+00000130]
+;TEW2.exe+44484F - 48 81 C1 28010000		- add rcx,00000128 { 296 }
+;TEW2.exe+444856 - E9 05000000				- jmp TEW2.exe+444860
+;
 
 .code
 
@@ -144,6 +154,7 @@ cameraWrite1Interceptor PROC
 ;TEW2.exe+6B55DE - 41 8B 40 20           - mov eax,[r8+20]
 ;TEW2.exe+6B55E2 - 89 81 C0000000        - mov [rcx+000000C0],eax
 ;TEW2.exe+6B55E8 - C3                    - ret
+;
 	cmp byte ptr [g_cameraEnabled], 1
 	jne originalCode
 	; issue a 'ret' as the routine shouldn't be executed
@@ -157,40 +168,28 @@ exit:
 cameraWrite1Interceptor ENDP
 
 
-
-timestopReadInterceptor PROC
-;1433BA21C - 48 BA 2B151D5CE5A60000 - mov rdx,0000A6E55C1D152B				<< INTERCEPT HERE
-;1433BA226 - 49 8B 1E              - mov rbx,[r14]
-;1433BA229 - 4C 8B 08              - mov r9,[rax]
-;1433BA22C - 45 31 C0              - xor r8d,r8d
-;1433BA22F - 48 89 C1              - mov rcx,rax
-;1433BA232 - 41 FF 51 18           - call qword ptr [r9+18]					<< CONTINUE HERE
-;
-; timestop struct pointer is in rdi. The actual read is further down but we can't intercept it there so we do it higher up in the code path
-;
-; actual read:
-;1433BA301 - 8B 47 38              - mov eax,[rdi+38]					// timestop read.
-;1433BA304 - FF C8                 - dec eax
-;1433BA306 - 83 F8 3F              - cmp eax,3F { 63 }
-;1433BA309 - 77 2C                 - ja 1433BA337
-;1433BA30B - 48 B9 0180008000000080 - mov rcx,8000000080008001 { -2147450879 }
-;1433BA315 - 48 0FA3 C1            - bt rcx,rax
-;1433BA319 - 73 1C                 - jae 1433BA337
-;1433BA31B - 80 3D EEFB7EFF 00     - cmp byte ptr [142BA9F10],00 { [00000000] }
-;1433BA322 - 75 13                 - jne 1433BA337
-;1433BA324 - 48 8B 4F 40           - mov rcx,[rdi+40]
-;1433BA328 - 8B 01                 - mov eax,[rcx]
-;1433BA32A - C1 E8 1F              - shr eax,1F { 31 }
-	mov [g_timestopStructAddress], rdi
+cameraWrite2Interceptor PROC
+;TEW2.exe+6B172C - F2 0F11 46 78         - movsd [rsi+78],xmm0
+;TEW2.exe+6B1731 - 0F5A C2               - cvtps2pd xmm0,xmm2
+;TEW2.exe+6B1734 - F2 0F11 86 88000000   - movsd [rsi+00000088],xmm0		<< INTERCEPT HERE		// coords
+;TEW2.exe+6B173C - 0F11 8E 90000000      - movups [rsi+00000090],xmm1
+;TEW2.exe+6B1743 - 0F10 4C 24 50         - movups xmm1,[rsp+50]
+;TEW2.exe+6B1748 - 0F11 8E A0000000      - movups [rsi+000000A0],xmm1		// matrix
+;TEW2.exe+6B174F - F3 0F10 4C 24 60      - movss xmm1,[rsp+60]
+;TEW2.exe+6B1755 - F3 0F11 8E B0000000   - movss [rsi+000000B0],xmm1			// matrix
+;TEW2.exe+6B175D - 48 8B 9C 24 98000000  - mov rbx,[rsp+00000098]			<< CONTINUE HERE
+;TEW2.exe+6B1765 - 48 81 C4 80000000     - add rsp,00000080 { 128 }
+	cmp byte ptr [g_cameraEnabled], 1
+	je exit
 originalCode:
-	mov rdx,0000A6E55C1D152Bh
-	mov rbx,[r14]
-	mov r9,[rax]
-	xor r8d,r8d
-	mov rcx,rax
+	movsd qword ptr [rsi+00000088h],xmm0   
+	movups xmmword ptr [rsi+00000090h],xmm1
+	movups xmm1,xmmword ptr [rsp+50h]
+	movups xmmword ptr [rsi+000000a0h],xmm1
+	movss xmm1,dword ptr [rsp+60h]   
+	movss dword ptr [rsi+000000b0h],xmm1   
 exit:
-	jmp qword ptr [_timestopInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
-timestopReadInterceptor ENDP
-
+	jmp qword ptr [_cameraWrite2InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+cameraWrite2Interceptor ENDP
 
 END

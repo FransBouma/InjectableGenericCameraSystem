@@ -52,12 +52,13 @@ namespace IGCS
 		void handleKeyboardCameraMovement(float multiplier);
 		void handleMouseCameraMovement(float multiplier);
 		void handleGamePadMovement(float multiplierBase);
-		void freezeGame();
+		void toggleTimestopState();
 		void waitForCameraStructAddresses();
 
 		Camera _camera;
 		LPBYTE _hostImageAddress;
 		DWORD _hostImageSize;
+		bool _timeStopped = false;
 		bool _cameraMovementLocked = false;
 		bool _cameraStructFound = false;
 		map<string, AOBBlock*> _aobBlocks;

@@ -9,6 +9,11 @@ Credits: Otis_Inf
 ### How to use
 Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.
 
+### HUD Toggle
+You need a hud toggle. I made one, here it is:
+https://mega.nz/#!FAQTHLDa!-WwPYVO8rsuu6rzmJ35h_xszlpEXP7r51f6GKm4EakY  
+
+
 ### EULA
 To use these camera tools, you have to comply to the following:
 If you ask me a question which is answered in the enclosed readme.txt, so i.o.w. you didn't read it at all, 
