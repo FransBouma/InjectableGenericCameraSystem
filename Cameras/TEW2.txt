@@ -1,0 +1,261 @@
+The Evil Within 2
+=====================
+
+CVar for timestop: (to find it)
+G_stoptime 1
+G_stoptime 0
+
+Timestop:
+TEW2.exe+444830 - 83 3D 41B25702 00		- cmp dword ptr [TEW2.exe+29BFA78],00		<< Timestop read
+TEW2.exe+444837 - 75 0A					- jne TEW2.exe+444843
+TEW2.exe+444839 - C7 81 30010000 00000000	- mov [rcx+00000130],00000000 { 0 }
+TEW2.exe+444843 - 8B 92 38020000			- mov edx,[rdx+00000238]
+TEW2.exe+444849 - 03 91 30010000			- add edx,[rcx+00000130]
+TEW2.exe+44484F - 48 81 C1 28010000		- add rcx,00000128 { 296 }
+TEW2.exe+444856 - E9 05000000				- jmp TEW2.exe+444860
+
+FoV:
+TEW2.exe+6B4101 - E8 66055800           - call TEW2.exe+C3466C
+TEW2.exe+6B4106 - F3 0F59 05 EA55F500   - mulss xmm0,[TEW2.exe+16096F8] { [57.30] }
+TEW2.exe+6B410E - F3 0F58 C0            - addss xmm0,xmm0
+TEW2.exe+6B4112 - F3 0F11 43 2C         - movss [rbx+2C],xmm0							<< FOV WRITE
+TEW2.exe+6B4117 - F3 0F10 05 E5F53002   - movss xmm0,[TEW2.exe+29C3704] { [1.78] }
+TEW2.exe+6B411F - 0F2E C6               - ucomiss xmm0,xmm6
+TEW2.exe+6B4122 - 7A 02                 - jp TEW2.exe+6B4126
+
+
+
+Camera
+---------------------------------------
+The real source camera seems to be: (this is used for both cutscene and gameplay and is sourced to the cameras above)
+// FOV is located close by. Check if this can be used or that the code above still works. 
+// write 1
+TEW2.exe+6B5410 - F3 0F10 0A            - movss xmm1,[rdx]
+TEW2.exe+6B5414 - F3 41 0F10 00         - movss xmm0,[r8]
+TEW2.exe+6B5419 - 0F5A C0               - cvtps2pd xmm0,xmm0
+TEW2.exe+6B541C - 0F5A C9               - cvtps2pd xmm1,xmm1
+TEW2.exe+6B541F - F2 0F58 C8            - addsd xmm1,xmm0
+TEW2.exe+6B5423 - F2 0F11 89 88000000   - movsd [rcx+00000088],xmm1			// X
+TEW2.exe+6B542B - F3 0F10 52 04         - movss xmm2,[rdx+04]
+TEW2.exe+6B5430 - F3 41 0F10 40 04      - movss xmm0,[r8+04]
+TEW2.exe+6B5436 - 0F5A C0               - cvtps2pd xmm0,xmm0
+TEW2.exe+6B5439 - 0F5A D2               - cvtps2pd xmm2,xmm2
+TEW2.exe+6B543C - F2 0F58 D0            - addsd xmm2,xmm0
+TEW2.exe+6B5440 - F2 0F11 91 90000000   - movsd [rcx+00000090],xmm2			// Y
+TEW2.exe+6B5448 - F3 0F10 4A 08         - movss xmm1,[rdx+08]
+TEW2.exe+6B544D - F3 41 0F10 40 08      - movss xmm0,[r8+08]
+TEW2.exe+6B5453 - 0F5A C9               - cvtps2pd xmm1,xmm1
+TEW2.exe+6B5456 - 0F5A C0               - cvtps2pd xmm0,xmm0
+TEW2.exe+6B5459 - F2 0F58 C8            - addsd xmm1,xmm0
+TEW2.exe+6B545D - F2 0F11 89 98000000   - movsd [rcx+00000098],xmm1			// Z
+TEW2.exe+6B5465 - 41 8B 01              - mov eax,[r9]
+TEW2.exe+6B5468 - 89 81 A0000000        - mov [rcx+000000A0],eax			// Matrix
+TEW2.exe+6B546E - 41 8B 41 04           - mov eax,[r9+04]
+TEW2.exe+6B5472 - 89 81 A4000000        - mov [rcx+000000A4],eax
+TEW2.exe+6B5478 - 41 8B 41 08           - mov eax,[r9+08]
+TEW2.exe+6B547C - 89 81 A8000000        - mov [rcx+000000A8],eax
+TEW2.exe+6B5482 - 41 8B 41 0C           - mov eax,[r9+0C]
+TEW2.exe+6B5486 - 89 81 AC000000        - mov [rcx+000000AC],eax
+TEW2.exe+6B548C - 41 8B 41 10           - mov eax,[r9+10]
+TEW2.exe+6B5490 - 89 81 B0000000        - mov [rcx+000000B0],eax
+TEW2.exe+6B5496 - 41 8B 41 14           - mov eax,[r9+14]
+TEW2.exe+6B549A - 89 81 B4000000        - mov [rcx+000000B4],eax
+TEW2.exe+6B54A0 - 41 8B 41 18           - mov eax,[r9+18]
+TEW2.exe+6B54A4 - 89 81 B8000000        - mov [rcx+000000B8],eax
+TEW2.exe+6B54AA - 41 8B 41 1C           - mov eax,[r9+1C]
+TEW2.exe+6B54AE - 89 81 BC000000        - mov [rcx+000000BC],eax
+TEW2.exe+6B54B4 - 41 8B 41 20           - mov eax,[r9+20]
+TEW2.exe+6B54B8 - 89 81 C0000000        - mov [rcx+000000C0],eax
+TEW2.exe+6B54BE - C3                    - ret 
+
+// Write 2. Best for interception, as the code in write 1 isn't called in cutscenes
+TEW2.exe+6B5560 - F3 0F10 02            - movss xmm0,[rdx]
+TEW2.exe+6B5564 - 0F5A C0               - cvtps2pd xmm0,xmm0
+TEW2.exe+6B5567 - F2 0F11 81 88000000   - movsd [rcx+00000088],xmm0			// write X (double!)
+TEW2.exe+6B556F - F3 0F10 4A 04         - movss xmm1,[rdx+04]
+TEW2.exe+6B5574 - 0F5A C9               - cvtps2pd xmm1,xmm1
+TEW2.exe+6B5577 - F2 0F11 89 90000000   - movsd [rcx+00000090],xmm1			// write Y
+TEW2.exe+6B557F - F3 0F10 42 08         - movss xmm0,[rdx+08]
+TEW2.exe+6B5584 - 0F5A C0               - cvtps2pd xmm0,xmm0
+TEW2.exe+6B5587 - F2 0F11 81 98000000   - movsd [rcx+00000098],xmm0			// write Z
+TEW2.exe+6B558F - 41 8B 00              - mov eax,[r8]
+TEW2.exe+6B5592 - 89 81 A0000000        - mov [rcx+000000A0],eax			// matrix
+TEW2.exe+6B5598 - 41 8B 40 04           - mov eax,[r8+04]
+TEW2.exe+6B559C - 89 81 A4000000        - mov [rcx+000000A4],eax
+TEW2.exe+6B55A2 - 41 8B 40 08           - mov eax,[r8+08]
+TEW2.exe+6B55A6 - 89 81 A8000000        - mov [rcx+000000A8],eax
+TEW2.exe+6B55AC - 41 8B 40 0C           - mov eax,[r8+0C]
+TEW2.exe+6B55B0 - 89 81 AC000000        - mov [rcx+000000AC],eax
+TEW2.exe+6B55B6 - 41 8B 40 10           - mov eax,[r8+10]
+TEW2.exe+6B55BA - 89 81 B0000000        - mov [rcx+000000B0],eax
+TEW2.exe+6B55C0 - 41 8B 40 14           - mov eax,[r8+14]
+TEW2.exe+6B55C4 - 89 81 B4000000        - mov [rcx+000000B4],eax
+TEW2.exe+6B55CA - 41 8B 40 18           - mov eax,[r8+18]
+TEW2.exe+6B55CE - 89 81 B8000000        - mov [rcx+000000B8],eax
+TEW2.exe+6B55D4 - 41 8B 40 1C           - mov eax,[r8+1C]
+TEW2.exe+6B55D8 - 89 81 BC000000        - mov [rcx+000000BC],eax
+TEW2.exe+6B55DE - 41 8B 40 20           - mov eax,[r8+20]
+TEW2.exe+6B55E2 - 89 81 C0000000        - mov [rcx+000000C0],eax
+TEW2.exe+6B55E8 - C3                    - ret 
+
+// write 3:
+TEW2.exe+6B172C - F2 0F11 46 78         - movsd [rsi+78],xmm0
+TEW2.exe+6B1731 - 0F5A C2               - cvtps2pd xmm0,xmm2
+TEW2.exe+6B1734 - F2 0F11 86 88000000   - movsd [rsi+00000088],xmm0			// coords
+TEW2.exe+6B173C - 0F11 8E 90000000      - movups [rsi+00000090],xmm1
+TEW2.exe+6B1743 - 0F10 4C 24 50         - movups xmm1,[rsp+50]
+TEW2.exe+6B1748 - 0F11 8E A0000000      - movups [rsi+000000A0],xmm1		// matrix
+TEW2.exe+6B174F - F3 0F10 4C 24 60      - movss xmm1,[rsp+60]
+TEW2.exe+6B1755 - F3 0F11 8E B0000000   - movss [rsi+000000B0],xmm1			// matrix
+TEW2.exe+6B175D - 48 8B 9C 24 98000000  - mov rbx,[rsp+00000098]
+TEW2.exe+6B1765 - 48 81 C4 80000000     - add rsp,00000080 { 128 }
+
+
+-----
+Data above is used to calculate the matrices below. 
+
+FoV: 
+TEW2.exe+6B9C98 - F3 0F10 0D F005F600   - movss xmm1,[TEW2.exe+161A290] { [100.00] }
+TEW2.exe+6B9CA0 - F3 0F5D C8            - minss xmm1,xmm0
+TEW2.exe+6B9CA4 - 48 8D BB 28020000     - lea rdi,[rbx+00000228]
+TEW2.exe+6B9CAB - F3 0F11 8B FC4D0000   - movss [rbx+00004DFC],xmm1			<<<<<<< FOV WRITE
+TEW2.exe+6B9CB3 - 48 8B CF              - mov rcx,rdi
+TEW2.exe+6B9CB6 - E8 A5A3FFFF           - call TEW2.exe+6B4060
+TEW2.exe+6B9CBB - 48 8B 8B 20010000     - mov rcx,[rbx+00000120]
+
+Camera coords:
+// write 1: these can control the camera but the player movement is still causing camera movement too. 
+// These coords are read for calculation of the real camera which is located higher (at offset 4D8C/90/94)
+TEW2.exe+6B9369 - F3 0F11 64 24 40      - movss [rsp+40],xmm4
+TEW2.exe+6B936F - F3 0F11 5C 24 44      - movss [rsp+44],xmm3
+TEW2.exe+6B9375 - F3 0F11 54 24 48      - movss [rsp+48],xmm2
+TEW2.exe+6B937B - F3 0F11 A6 184E0000   - movss [rsi+00004E18],xmm4			<<< WRITE X
+TEW2.exe+6B9383 - 33 D2                 - xor edx,edx
+TEW2.exe+6B9385 - F3 0F11 9E 1C4E0000   - movss [rsi+00004E1C],xmm3			<<< WRITE Y
+TEW2.exe+6B938D - 48 8B CF              - mov rcx,rdi
+TEW2.exe+6B9390 - F3 0F11 96 204E0000   - movss [rsi+00004E20],xmm2			<<< WRITE Z
+TEW2.exe+6B9398 - 48 8B 07              - mov rax,[rdi]
+TEW2.exe+6B939B - FF 90 08010000        - call qword ptr [rax+00000108]
+TEW2.exe+6B93A1 - 0F2F C7               - comiss xmm0,xmm7
+
+// better way, 3 writes. Offsets 4D8C/90/94
+// write 1
+TEW2.exe+6B8E6D - F3 41 0F58 C0         - addss xmm0,xmm8
+TEW2.exe+6B8E72 - F3 0F58 CF            - addss xmm1,xmm7
+TEW2.exe+6B8E76 - F3 0F58 D6            - addss xmm2,xmm6
+TEW2.exe+6B8E7A - F3 0F11 86 944D0000   - movss [rsi+00004D94],xmm0			<< WRITE Z
+TEW2.exe+6B8E82 - F3 0F11 8E 904D0000   - movss [rsi+00004D90],xmm1			<< WRITE Y
+TEW2.exe+6B8E8A - F3 0F11 96 8C4D0000   - movss [rsi+00004D8C],xmm2			<< WRITE X
+TEW2.exe+6B8E92 - F2 0F10 86 6C4C0000   - movsd xmm0,[rsi+00004C6C]
+TEW2.exe+6B8E9A - 8B 86 744C0000        - mov eax,[rsi+00004C74]
+TEW2.exe+6B8EA0 - F2 0F11 44 24 30      - movsd [rsp+30],xmm0
+TEW2.exe+6B8EA6 - F3 0F10 44 24 30      - movss xmm0,[rsp+30]
+TEW2.exe+6B8EAC - F3 0F10 4C 24 34      - movss xmm1,[rsp+34]
+
+// write 2
+TEW2.exe+6B913B - E8 D0FACEFF           - call TEW2.exe+3A8C10
+TEW2.exe+6B9140 - F3 0F10 44 24 40      - movss xmm0,[rsp+40]
+TEW2.exe+6B9146 - F3 0F10 4C 24 44      - movss xmm1,[rsp+44]
+TEW2.exe+6B914C - F3 0F11 86 8C4D0000   - movss [rsi+00004D8C],xmm0			<< WRITE X
+TEW2.exe+6B9154 - F3 0F10 44 24 48      - movss xmm0,[rsp+48]
+TEW2.exe+6B915A - F3 0F11 86 944D0000   - movss [rsi+00004D94],xmm0			<< WRITE Y
+TEW2.exe+6B9162 - F3 0F11 8E 904D0000   - movss [rsi+00004D90],xmm1			<< WRITE Z
+TEW2.exe+6B916A - 48 8B 8E 20010000     - mov rcx,[rsi+00000120]
+TEW2.exe+6B9171 - E8 9AE64300           - call TEW2.exe+AF7810
+TEW2.exe+6B9176 - 48 8B D8              - mov rbx,rax
+
+//write 3
+TEW2.exe+6B97D8 - 66 0F5A C0            - cvtpd2ps xmm0,xmm0
+TEW2.exe+6B97DC - 66 0F5A C9            - cvtpd2ps xmm1,xmm1
+TEW2.exe+6B97E0 - F3 0F11 86 8C4D0000   - movss [rsi+00004D8C],xmm0			<< WRITE X
+TEW2.exe+6B97E8 - F3 0F11 8E 904D0000   - movss [rsi+00004D90],xmm1			<< WRITE Y
+TEW2.exe+6B97F0 - 66 0F5A D2            - cvtpd2ps xmm2,xmm2
+TEW2.exe+6B97F4 - F3 0F11 96 944D0000   - movss [rsi+00004D94],xmm2			<< WRITE Z
+TEW2.exe+6B97FC - F6 86 00520000 10     - test byte ptr [rsi+00005200],10 { 16 }
+TEW2.exe+6B9803 - F2 0F10 86 6C4C0000   - movsd xmm0,[rsi+00004C6C]
+TEW2.exe+6B980B - 8B 86 744C0000        - mov eax,[rsi+00004C74]
+
+// Rotation matrix. It's located right next to X, Y, Z. 2 writes both copy ctors from stack allocated structs
+// Write1 
+TEW2.exe+6B8EFC - 48 8B D0              - mov rdx,rax
+TEW2.exe+6B8EFF - 0F57 FF               - xorps xmm7,xmm7
+TEW2.exe+6B8F02 - 8B 08                 - mov ecx,[rax]
+TEW2.exe+6B8F04 - 89 8E 984D0000        - mov [rsi+00004D98],ecx		// _11
+TEW2.exe+6B8F0A - 8B 48 04              - mov ecx,[rax+04]
+TEW2.exe+6B8F0D - 89 8E 9C4D0000        - mov [rsi+00004D9C],ecx
+TEW2.exe+6B8F13 - 8B 48 08              - mov ecx,[rax+08]
+TEW2.exe+6B8F16 - 89 8E A04D0000        - mov [rsi+00004DA0],ecx
+TEW2.exe+6B8F1C - 8B 48 0C              - mov ecx,[rax+0C]
+TEW2.exe+6B8F1F - 89 8E A44D0000        - mov [rsi+00004DA4],ecx
+TEW2.exe+6B8F25 - 8B 40 10              - mov eax,[rax+10]
+TEW2.exe+6B8F28 - 89 86 A84D0000        - mov [rsi+00004DA8],eax
+TEW2.exe+6B8F2E - 8B 42 14              - mov eax,[rdx+14]
+TEW2.exe+6B8F31 - 89 86 AC4D0000        - mov [rsi+00004DAC],eax
+TEW2.exe+6B8F37 - 8B 42 18              - mov eax,[rdx+18]
+TEW2.exe+6B8F3A - 89 86 B04D0000        - mov [rsi+00004DB0],eax
+TEW2.exe+6B8F40 - 8B 42 1C              - mov eax,[rdx+1C]
+TEW2.exe+6B8F43 - 89 86 B44D0000        - mov [rsi+00004DB4],eax
+TEW2.exe+6B8F49 - 8B 42 20              - mov eax,[rdx+20]
+TEW2.exe+6B8F4C - 89 86 B84D0000        - mov [rsi+00004DB8],eax
+TEW2.exe+6B8F52 - F3 0F10 8E A04D0000   - movss xmm1,[rsi+00004DA0]
+TEW2.exe+6B8F5A - 0F2F CF               - comiss xmm1,xmm7
+TEW2.exe+6B8F5D - 76 1C                 - jna TEW2.exe+6B8F7B
+
+// Write 2
+TEW2.exe+6B9864 - 8B 08                 - mov ecx,[rax]
+TEW2.exe+6B9866 - 48 8B D0              - mov rdx,rax
+TEW2.exe+6B9869 - 89 8E 984D0000        - mov [rsi+00004D98],ecx		// _11
+TEW2.exe+6B986F - 8B 48 04              - mov ecx,[rax+04]
+TEW2.exe+6B9872 - 89 8E 9C4D0000        - mov [rsi+00004D9C],ecx
+TEW2.exe+6B9878 - 8B 48 08              - mov ecx,[rax+08]
+TEW2.exe+6B987B - 89 8E A04D0000        - mov [rsi+00004DA0],ecx
+TEW2.exe+6B9881 - 8B 48 0C              - mov ecx,[rax+0C]
+TEW2.exe+6B9884 - 89 8E A44D0000        - mov [rsi+00004DA4],ecx
+TEW2.exe+6B988A - 8B 48 10              - mov ecx,[rax+10]
+TEW2.exe+6B988D - 89 8E A84D0000        - mov [rsi+00004DA8],ecx
+TEW2.exe+6B9893 - 8B 40 14              - mov eax,[rax+14]
+TEW2.exe+6B9896 - 89 86 AC4D0000        - mov [rsi+00004DAC],eax
+TEW2.exe+6B989C - 8B 42 18              - mov eax,[rdx+18]
+TEW2.exe+6B989F - 89 86 B04D0000        - mov [rsi+00004DB0],eax
+TEW2.exe+6B98A5 - 8B 42 1C              - mov eax,[rdx+1C]
+TEW2.exe+6B98A8 - 89 86 B44D0000        - mov [rsi+00004DB4],eax
+TEW2.exe+6B98AE - 8B 42 20              - mov eax,[rdx+20]
+TEW2.exe+6B98B1 - 89 86 B84D0000        - mov [rsi+00004DB8],eax
+TEW2.exe+6B98B7 - 8B 86 00530000        - mov eax,[rsi+00005300]
+TEW2.exe+6B98BD - 89 86 FC4D0000        - mov [rsi+00004DFC],eax
+TEW2.exe+6B98C3 - 48 81 C4 40010000     - add rsp,00000140 { 320 }
+TEW2.exe+6B98CA - 5E                    - pop rsi
+TEW2.exe+6B98CB - 5B                    - pop rbx
+TEW2.exe+6B98CC - 5D                    - pop rbp
+TEW2.exe+6B98CD - C3                    - ret 
+
+-----------------------------
+Cutscene camera is right below the gameplay camera. 
+Writes:
+coords/matrix
+TEW2.exe+6B47C0 - F3 0F11 02            - movss [rdx],xmm0
+TEW2.exe+6B47C4 - F3 0F11 4A 04         - movss [rdx+04],xmm1
+TEW2.exe+6B47C9 - 66 0F5A D2            - cvtpd2ps xmm2,xmm2
+TEW2.exe+6B47CD - F3 0F11 52 08         - movss [rdx+08],xmm2
+TEW2.exe+6B47D2 - 8B 81 A0000000        - mov eax,[rcx+000000A0]
+TEW2.exe+6B47D8 - 41 89 00              - mov [r8],eax
+TEW2.exe+6B47DB - 8B 81 A4000000        - mov eax,[rcx+000000A4]
+TEW2.exe+6B47E1 - 41 89 40 04           - mov [r8+04],eax
+TEW2.exe+6B47E5 - 8B 81 A8000000        - mov eax,[rcx+000000A8]
+TEW2.exe+6B47EB - 41 89 40 08           - mov [r8+08],eax
+TEW2.exe+6B47EF - 8B 81 AC000000        - mov eax,[rcx+000000AC]
+TEW2.exe+6B47F5 - 41 89 40 0C           - mov [r8+0C],eax
+TEW2.exe+6B47F9 - 8B 81 B0000000        - mov eax,[rcx+000000B0]
+TEW2.exe+6B47FF - 41 89 40 10           - mov [r8+10],eax
+TEW2.exe+6B4803 - 8B 81 B4000000        - mov eax,[rcx+000000B4]
+TEW2.exe+6B4809 - 41 89 40 14           - mov [r8+14],eax
+TEW2.exe+6B480D - 8B 81 B8000000        - mov eax,[rcx+000000B8]
+TEW2.exe+6B4813 - 41 89 40 18           - mov [r8+18],eax
+TEW2.exe+6B4817 - 8B 81 BC000000        - mov eax,[rcx+000000BC]
+TEW2.exe+6B481D - 41 89 40 1C           - mov [r8+1C],eax
+TEW2.exe+6B4821 - 8B 81 C0000000        - mov eax,[rcx+000000C0]
+TEW2.exe+6B4827 - 41 89 40 20           - mov [r8+20],eax
+TEW2.exe+6B482B - C3                    - ret 
+TEW2.exe+6B482C - CC                    - int 3 
+
+--------------------------------------------------------------

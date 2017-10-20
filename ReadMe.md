@@ -11,7 +11,7 @@ The system is initially designed for 64bit hosts as all games are 64bit nowadays
 
 ## Folder structure description
 
-In the folder `Cameras` you'll several implementations of the system, adapted for specific games. The most up-to-date camera is currently the Hellblade: Senua's Sacrifice camera source. New cameras should be based on that source code. 
+In the folder `Cameras` you'll several implementations of the system, adapted for specific games. 
 
 The cameras don't use a shared piece of code as in general cameras have to be adapted to a game pretty deeply and I didn't want to make a big
 configurable ball. Additionally, cameras are often written once and perhaps fixed once or twice when the game is updated, but that's it. Copying
@@ -39,6 +39,7 @@ automatically when you clone the repo. The camera uses DirectXMath for the 3D ma
 * Metal Gear Solid V: The Phantom Pain: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/MGS5
 * Prey (2017): https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Prey
 * Ryse: Son of Rome: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/RyseSonOfRome
+* The Evil Within 2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/TEW2
 * Tomb Raider 2013: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Tombraider
 * Watch_Dogs: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Watch_Dogs
 * Watch_Dogs2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Watch_Dogs2
