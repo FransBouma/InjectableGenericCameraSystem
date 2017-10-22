@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"The Evil Within 2 v1.0+"
-	#define CAMERA_VERSION								"1.0.0"
+	#define CAMERA_VERSION								"1.0.1"
 	#define CAMERA_CREDITS								"Otis_Inf"
 	#define GAME_WINDOW_TITLE							"The Evil Within 2"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)

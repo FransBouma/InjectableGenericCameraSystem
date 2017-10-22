@@ -100,7 +100,7 @@ namespace IGCS
 		}
 
 
-		void init(bool persistedOnly)
+		void init()
 		{
 			invertY = CONTROLLER_Y_INVERT;
 			fastMovementMultiplier = FASTER_MULTIPLIER;

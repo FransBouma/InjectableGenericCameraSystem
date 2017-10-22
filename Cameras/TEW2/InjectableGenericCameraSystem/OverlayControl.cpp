@@ -69,8 +69,8 @@ namespace IGCS::OverlayControl
 		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiSetCond_FirstUseEver);     // Normally user code doesn't need/want to call it because positions are saved in .ini file anyway. 
 		auto& io = ImGui::GetIO();
 		io.MouseDrawCursor = _showMainWindow;
-		renderMainWindow();
 		renderSplash();
+		renderMainWindow();
 		renderNotifications();
 		ImGui::Render();
 	}
@@ -237,7 +237,7 @@ Special thanks to:
 		bool settingsChanged = false;
 		if (ImGui::Button("Reset to defaults"))
 		{
-			currentSettings.init(true);
+			currentSettings.init();
 			settingsChanged = true;
 		}
 
@@ -335,7 +335,8 @@ Special thanks to:
 			return;
 		}
 		ImGui::SetNextWindowPos(ImVec2(10, 10));
-		if (!ImGui::Begin("IGCS Splash", nullptr, ImVec2(0, 0), 0.3f, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings))
+		if (!ImGui::Begin("IGCS Splash", nullptr, ImVec2(0, 0), 0.3f, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | 
+																	  ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings))
 		{
 			ImGui::End();
 			return;

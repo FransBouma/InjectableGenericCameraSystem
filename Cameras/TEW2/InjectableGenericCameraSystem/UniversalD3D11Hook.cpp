@@ -101,14 +101,13 @@ namespace IGCS::DX11Hooker
 
 	void initializeHook()
 	{
-		HWND hWnd = IGCS::Globals::instance().mainWindowHandle();
 		D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 		DXGI_SWAP_CHAIN_DESC swapChainDesc;
 		ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 		swapChainDesc.BufferCount = 1;
 		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		swapChainDesc.OutputWindow = hWnd;
+		swapChainDesc.OutputWindow = IGCS::Globals::instance().mainWindowHandle();
 		swapChainDesc.SampleDesc.Count = 1;
 		swapChainDesc.Windowed = TRUE;
 		swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
@@ -118,8 +117,7 @@ namespace IGCS::DX11Hooker
 		ID3D11Device *pTmpDevice = NULL;
 		ID3D11DeviceContext *pTmpContext = NULL;
 		IDXGISwapChain* pTmpSwapChain;
-		if (FAILED(D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, NULL, &featureLevel, 1
-			, D3D11_SDK_VERSION, &swapChainDesc, &pTmpSwapChain, &pTmpDevice, NULL, &pTmpContext)))
+		if (FAILED(D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, NULL, &featureLevel, 1, D3D11_SDK_VERSION, &swapChainDesc, &pTmpSwapChain, &pTmpDevice, NULL, &pTmpContext)))
 		{
 			IGCS::Console::WriteError("Failed to create directX device and swapchain!");
 			return;
