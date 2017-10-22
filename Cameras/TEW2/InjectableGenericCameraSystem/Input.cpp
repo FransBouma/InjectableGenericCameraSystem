@@ -169,13 +169,20 @@ namespace IGCS::Input
 			return false;
 		}
 
+		// simply use our main window handle.
+		HWND handleToUse = Globals::instance().mainWindowHandle();
+		if (handleToUse == nullptr)
+		{
+			return false;
+		}
+
 		// first handle the message through the Imgui handler so we get an up to date IO structure for the overlay
-		LRESULT handledByImGuiHandler = ImGui_ImplDX11_WndProcHandler(lpMsg->hwnd, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
+		LRESULT handledByImGuiHandler = ImGui_ImplDX11_WndProcHandler(handleToUse, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
 
 		if (!handledByImGuiHandler)
 		{
 			// grab mouse position
-			ScreenToClient(static_cast<HWND>(lpMsg->hwnd), &lpMsg->pt);
+			ScreenToClient(static_cast<HWND>(handleToUse), &lpMsg->pt);
 			ImGuiIO& io = ImGui::GetIO();
 			io.MousePos.x = static_cast<float>(lpMsg->pt.x);
 			io.MousePos.y = static_cast<float>(lpMsg->pt.y);

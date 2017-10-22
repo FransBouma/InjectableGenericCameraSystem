@@ -81,12 +81,12 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void setCameraStructInterceptorHook(map<string, AOBBlock*> &aobBlocks)
 	{
 		GameImageHooker::setHook(aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY], 0x0F, &_cameraStructInterceptionContinue, &cameraStructInterceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY], 0x0F, &_cameraWrite1InterceptionContinue, &cameraWrite1Interceptor);
 	}
 
 
 	void setPostCameraStructHooks(map<string, AOBBlock*> &aobBlocks, LPBYTE hostImageAddress)
 	{
-		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY], 0x0F, &_cameraWrite1InterceptionContinue, &cameraWrite1Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY], 0x29, &_cameraWrite2InterceptionContinue, &cameraWrite2Interceptor);
 		CameraManipulator::setTimestopValueAddress(Utils::calculateAbsoluteAddress(aobBlocks[TIMESTOP_READ_INTERCEPT_KEY], 5)); // TEW2.exe+444830 - 83 3D 41B25702 00		- cmp dword ptr [TEW2.exe+29BFA78],00
 	}

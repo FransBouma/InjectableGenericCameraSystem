@@ -154,7 +154,7 @@ cameraWrite1Interceptor PROC
 ;TEW2.exe+6B55DE - 41 8B 40 20           - mov eax,[r8+20]
 ;TEW2.exe+6B55E2 - 89 81 C0000000        - mov [rcx+000000C0],eax
 ;TEW2.exe+6B55E8 - C3                    - ret
-;
+	mov [g_cameraStructAddress], rcx
 	cmp byte ptr [g_cameraEnabled], 1
 	jne originalCode
 	; issue a 'ret' as the routine shouldn't be executed
