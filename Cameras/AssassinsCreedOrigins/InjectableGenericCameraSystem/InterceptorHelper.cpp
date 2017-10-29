@@ -44,6 +44,7 @@ extern "C" {
 	void cameraWrite3Interceptor();
 	void cameraWrite4Interceptor();
 	void fovReadInterceptor();
+	void resolutionScaleReadInterceptor();
 }
 
 // external addresses used in asm.
@@ -54,6 +55,7 @@ extern "C" {
 	LPBYTE _cameraWrite3InterceptionContinue = nullptr;
 	LPBYTE _cameraWrite4InterceptionContinue = nullptr;
 	LPBYTE _fovReadInterceptionContinue = nullptr;
+	LPBYTE _resolutionScaleReadInterceptionContinue = nullptr;
 }
 
 
@@ -70,6 +72,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[FOV_WRITE2_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE2_INTERCEPT_KEY, "89 87 64 02 00 00 48 8B CF E8 ?? ?? ?? ?? 45 33 C0 44 89 87 24 07 00 00", 1);
 		aobBlocks[FOV_READ_INTERCEPT_KEY] = new AOBBlock(FOV_READ_INTERCEPT_KEY, "F3 41 0F 10 94 24 24 01 00 00 45 0F 57 D2 41 0F 2F D2 F3 41 0F 10 8F 64 02 00 00", 1);
 		aobBlocks[PHOTOMODE_ENABLE_ALWAYS_KEY] = new AOBBlock(PHOTOMODE_ENABLE_ALWAYS_KEY, "74 ?? E8 ?? ?? ?? ?? 80 B8 A9 02 00 00 00 74 ?? B8 01 00 00 00 48 81 C4", 1);
+		aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY] = new AOBBlock(RESOLUTION_SCALE_INTERCEPT_KEY, "41 8B 86 A8 00 00 00 49 8B CF 41 89 87 20 07 00 00 E8 ?? ?? ?? ??  48 8D 8B D0 00 00 00", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -101,6 +104,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY], 0x10, &_cameraWrite3InterceptionContinue, &cameraWrite3Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY], 0x10, &_cameraWrite4InterceptionContinue, &cameraWrite4Interceptor);
 		GameImageHooker::setHook(aobBlocks[FOV_READ_INTERCEPT_KEY], 0x1B, &_fovReadInterceptionContinue, &fovReadInterceptor);
+		GameImageHooker::setHook(aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY], 0x11, &_resolutionScaleReadInterceptionContinue, &resolutionScaleReadInterceptor);
 		enablePhotomodeEverywhere(aobBlocks);
 	}
 

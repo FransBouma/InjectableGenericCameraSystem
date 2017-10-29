@@ -41,7 +41,7 @@ namespace IGCS
 {
 	Globals::Globals()
 	{
-		_settings.init();
+		_settings.init(false);
 		_settings.loadFromFile();
 	}
 

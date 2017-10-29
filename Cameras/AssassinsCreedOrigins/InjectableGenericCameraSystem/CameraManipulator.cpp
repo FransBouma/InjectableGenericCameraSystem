@@ -39,6 +39,7 @@ extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
 	LPBYTE g_cameraPhotoModeStructAddress = nullptr;
 	LPBYTE g_fovStructAddress = nullptr;
+	LPBYTE g_resolutionScaleAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -48,6 +49,28 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static float _originalQuaternion[4];
 	static float _originalPMQuaternion[4];  // photomode cam
 	static float _originalFoV;
+
+
+	void getSettingsFromGameState()
+	{
+		Settings& currentSettings = Globals::instance().settings();
+		if (nullptr != g_resolutionScaleAddress)
+		{
+			float* resolutionScaleInMemory = reinterpret_cast<float*>(g_resolutionScaleAddress + RESOLUTION_SCALE_IN_STRUCT_OFFSET);
+			currentSettings.resolutionScale = *resolutionScaleInMemory;
+		}
+	}
+
+
+	void applySettingsToGameState()
+	{
+		Settings& currentSettings = Globals::instance().settings();
+		if (nullptr != g_resolutionScaleAddress)
+		{
+			float* resolutionScaleInMemory = reinterpret_cast<float*>(g_resolutionScaleAddress + RESOLUTION_SCALE_IN_STRUCT_OFFSET);
+			*resolutionScaleInMemory = Utils::clamp(currentSettings.resolutionScale, RESOLUTION_SCALE_MIN, RESOLUTION_SCALE_MAX, 1.0f);
+		}
+	}
 
 
 	// Resets the FOV to the one it got when we enabled the camera

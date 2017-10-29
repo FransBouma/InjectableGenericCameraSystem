@@ -42,4 +42,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 	bool isCameraFound();
 	bool isPhotomodeCameraFound();
 	void displayCameraStructAddress();
+	void getSettingsFromGameState();
+	void applySettingsToGameState();
 }

@@ -37,6 +37,7 @@ PUBLIC cameraWrite2Interceptor
 PUBLIC cameraWrite3Interceptor
 PUBLIC cameraWrite4Interceptor
 PUBLIC fovReadInterceptor
+PUBLIC resolutionScaleReadInterceptor
 
 ;---------------------------------------------------------------
 
@@ -47,6 +48,7 @@ EXTERN g_cameraEnabled: byte
 EXTERN g_cameraStructAddress: qword
 EXTERN g_cameraPhotoModeStructAddress: qword
 EXTERN g_fovStructAddress: qword
+EXTERN g_resolutionScaleAddress: qword
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -57,6 +59,7 @@ EXTERN _cameraWrite2InterceptionContinue: qword
 EXTERN _cameraWrite3InterceptionContinue: qword
 EXTERN _cameraWrite4InterceptionContinue: qword
 EXTERN _fovReadInterceptionContinue: qword
+EXTERN _resolutionScaleReadInterceptionContinue: qword
 
 .data
 
@@ -223,6 +226,24 @@ originalCode:
 exit:
 	jmp qword ptr [_fovReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 fovReadInterceptor ENDP
+
+
+resolutionScaleReadInterceptor PROC
+;ACOrigins.exe+72A6C5 - 41 8B 86 A8000000     - mov eax,[r14+000000A8]					<< INTERCEPT HERE<< Read of resolution scale (float. 1.0 is 100%) Max is 4!
+;ACOrigins.exe+72A6CC - 49 8B CF              - mov rcx,r15
+;ACOrigins.exe+72A6CF - 41 89 87 20070000     - mov [r15+00000720],eax
+;ACOrigins.exe+72A6D6 - E8 454B1100           - call ACOrigins.exe+83F220				<< CONTINUE HERE
+;ACOrigins.exe+72A6DB - 48 8D 8B D0000000     - lea rcx,[rbx+000000D0]
+;ACOrigins.exe+72A6E2 - 49 8D 97 50040000     - lea rdx,[r15+00000450]
+;ACOrigins.exe+72A6E9 - E8 F2ABFDFF           - call ACOrigins.exe+7052E0
+	mov [g_resolutionScaleAddress], r14
+originalCode:
+	mov eax,[r14+000000A8h]
+	mov rcx,r15
+	mov [r15+00000720h],eax
+exit:
+	jmp qword ptr [_resolutionScaleReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+resolutionScaleReadInterceptor ENDP
 
 
 END

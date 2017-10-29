@@ -45,6 +45,8 @@ namespace IGCS::GameSpecific
 	#define DEFAULT_ROTATION_SPEED						0.01f
 	#define DEFAULT_FOV_SPEED							0.0005f
 	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f
+	#define RESOLUTION_SCALE_MAX						4.0f
+	#define RESOLUTION_SCALE_MIN						0.5f
 	// End Mandatory constants
 
 	// AOB Keys for interceptor's AOB scanner
@@ -57,6 +59,7 @@ namespace IGCS::GameSpecific
 	#define FOV_WRITE2_INTERCEPT_KEY					"AOB_FOV_WRITE2_INTERCEPT"
 	#define FOV_READ_INTERCEPT_KEY						"AOB_FOV_READ_INTERCEPT"
 	#define PHOTOMODE_ENABLE_ALWAYS_KEY					"AOB_PHOTOMODE_ENABLE_ALWAYS"
+	#define RESOLUTION_SCALE_INTERCEPT_KEY				"AOB_RESOLUTION_SCALE_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
 	#define COORDS_IN_STRUCT_OFFSET						0x60				

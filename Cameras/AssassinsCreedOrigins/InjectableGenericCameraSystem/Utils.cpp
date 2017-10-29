@@ -36,6 +36,7 @@ using namespace std;
 
 namespace IGCS::Utils
 {
+
 	BOOL isMainWindow(HWND handle)
 	{
 		BOOL toReturn = GetWindow(handle, GW_OWNER) == (HWND)0 && IsWindowVisible(handle);

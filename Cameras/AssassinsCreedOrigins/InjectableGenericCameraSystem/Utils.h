@@ -42,6 +42,19 @@ namespace IGCS::Utils
 		HWND best_handle;
 	};
 
+	template <typename T>
+	T clamp(T value, T min, T max, T default)
+	{
+		return value < min ? default
+			: value > max ? default: value;
+	}
+	
+	template <typename T>
+	T clamp(T value, T min, T default)
+	{
+		return value < min ? default : value;
+	}
+	
 
 	HWND findMainWindow(unsigned long process_id);
 	MODULEINFO getModuleInfoOfContainingProcess();

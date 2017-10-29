@@ -31,6 +31,7 @@
 #include "GameConstants.h"
 #include "Defaults.h"
 #include "CDataFile.h"
+#include "Utils.h"
 
 extern "C" byte g_cameraEnabled;
 extern "C" byte g_gamePaused;
@@ -52,17 +53,7 @@ namespace IGCS
 
 		// settings not persisted to config file.
 		// add settings to edit here.
-
-		float clampFloat(float value, float min, float default)
-		{
-			return value < min ? default : value;
-		}
-
-		int clampInt(int value, int min, int max, int default)
-		{
-			return value < min ? default
-							   : value > max ? default: value;
-		}
+		float resolutionScale;			// 0.5-4.0
 
 		void loadFromFile()
 		{
@@ -74,14 +65,15 @@ namespace IGCS
 			}
 			invertY = iniFile.GetBool("invertY", "CameraSettings");
 			allowCameraMovementWhenMenuIsUp = iniFile.GetBool("allowCameraMovementWhenMenuIsUp", "CameraSettings");
-			fastMovementMultiplier = clampFloat(iniFile.GetFloat("fastMovementMultiplier", "CameraSettings"), 0.0f, FASTER_MULTIPLIER);
-			slowMovementMultiplier = clampFloat(iniFile.GetFloat("slowMovementMultiplier", "CameraSettings"), 0.0f, SLOWER_MULTIPLIER);
-			movementUpMultiplier = clampFloat(iniFile.GetFloat("movementUpMultiplier", "CameraSettings"), 0.0f, DEFAULT_UP_MOVEMENT_MULTIPLIER);
-			movementSpeed = clampFloat(iniFile.GetFloat("movementSpeed", "CameraSettings"), 0.0f, DEFAULT_MOVEMENT_SPEED);
-			rotationSpeed = clampFloat(iniFile.GetFloat("rotationSpeed", "CameraSettings"), 0.0f, DEFAULT_ROTATION_SPEED);
-			fovChangeSpeed = clampFloat(iniFile.GetFloat("fovChangeSpeed", "CameraSettings"), 0.0f, DEFAULT_FOV_SPEED);
-			cameraControlDevice = clampInt(iniFile.GetInt("cameraControlDevice", "CameraSettings"), 0, DEVICE_ID_ALL, DEVICE_ID_ALL);
+			fastMovementMultiplier = Utils::clamp(iniFile.GetFloat("fastMovementMultiplier", "CameraSettings"), 0.0f, FASTER_MULTIPLIER);
+			slowMovementMultiplier = Utils::clamp(iniFile.GetFloat("slowMovementMultiplier", "CameraSettings"), 0.0f, SLOWER_MULTIPLIER);
+			movementUpMultiplier = Utils::clamp(iniFile.GetFloat("movementUpMultiplier", "CameraSettings"), 0.0f, DEFAULT_UP_MOVEMENT_MULTIPLIER);
+			movementSpeed = Utils::clamp(iniFile.GetFloat("movementSpeed", "CameraSettings"), 0.0f, DEFAULT_MOVEMENT_SPEED);
+			rotationSpeed = Utils::clamp(iniFile.GetFloat("rotationSpeed", "CameraSettings"), 0.0f, DEFAULT_ROTATION_SPEED);
+			fovChangeSpeed = Utils::clamp(iniFile.GetFloat("fovChangeSpeed", "CameraSettings"), 0.0f, DEFAULT_FOV_SPEED);
+			cameraControlDevice = Utils::clamp(iniFile.GetInt("cameraControlDevice", "CameraSettings"), 0, DEVICE_ID_ALL, DEVICE_ID_ALL);
 		}
+
 
 		void saveToFile()
 		{
@@ -100,7 +92,7 @@ namespace IGCS
 		}
 
 
-		void init()
+		void init(bool persistedOnly)
 		{
 			invertY = CONTROLLER_Y_INVERT;
 			fastMovementMultiplier = FASTER_MULTIPLIER;
@@ -111,6 +103,10 @@ namespace IGCS
 			fovChangeSpeed = DEFAULT_FOV_SPEED;
 			cameraControlDevice = DEVICE_ID_ALL;
 			allowCameraMovementWhenMenuIsUp = false;
+			if (!persistedOnly)
+			{
+				resolutionScale = 1.0f;
+			}
 		}
 	};
 

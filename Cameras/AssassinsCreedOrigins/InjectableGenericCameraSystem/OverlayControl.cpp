@@ -182,6 +182,7 @@ Special thanks to:
 			ImGui::TextUnformatted("* When the main window is open, all input of keyboard / mouse to the game is blocked and the camera is locked.");
 			ImGui::TextUnformatted("* All changes you make to the main window (position/size) are saved to a file in the game root folder.");
 			ImGui::TextUnformatted("* Most settings you change will make the settings to be saved to a file in the game root folder.");
+			ImGui::TextUnformatted("* When you block input to the game, the device(s) which control the camera are blocked, all other devices are still sending input to the game.");
 			ImGui::TextUnformatted("* You'll get a notification in the top left corner when you change something with the keyboard, like enable/disable the camera.");
 			ImGui::PopTextWrapPos();
 		}
@@ -204,7 +205,7 @@ Special thanks to:
 			ImGui::TextUnformatted("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
 			ImGui::TextUnformatted("Numpad +/- or d-pad up/down           : Increase / decrease FoV");
 			ImGui::TextUnformatted("Numpad * or controller B-button       : Reset FoV");
-			ImGui::TextUnformatted("Numpad .                              : Block input to game.");
+			ImGui::TextUnformatted("Numpad .                              : Block input to game for camera control device.");
 		}
 
 		if (ImGui::CollapsingHeader("Settings editor help"))
@@ -233,12 +234,13 @@ Special thanks to:
 
 	void renderSettings()
 	{
+		GameSpecific::CameraManipulator::getSettingsFromGameState();
 		Settings& currentSettings = Globals::instance().settings();
 		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.3f);
 		bool settingsChanged = false;
 		if (ImGui::Button("Reset to defaults"))
 		{
-			currentSettings.init();
+			currentSettings.init(true);
 			settingsChanged = true;
 		}
 
@@ -262,12 +264,15 @@ Special thanks to:
 		if (ImGui::CollapsingHeader("Misc. camera options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			settingsChanged |= ImGui::SliderFloat("Field of View (FoV) zoom speed", &currentSettings.fovChangeSpeed, 0.0001f, 0.01f, "%.4f");
+			ImGui::SliderFloat("Resolution scale factor", &currentSettings.resolutionScale, 0.5f, 4.0f, "%.1f");
+			ImGui::SameLine(); ShowHelpMarker("Be careful with values bigger than 2 as it could make\nthe game crash due to too much overhead.");
 		}
 		ImGui::PopItemWidth();
 		if (settingsChanged)
 		{
 			Globals::instance().markSettingsDirty();
 		}
+		GameSpecific::CameraManipulator::applySettingsToGameState();
 	}
 
 
