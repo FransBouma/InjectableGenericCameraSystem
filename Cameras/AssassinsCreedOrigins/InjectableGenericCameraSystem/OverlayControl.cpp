@@ -184,6 +184,7 @@ Special thanks to:
 			ImGui::TextUnformatted("* Most settings you change will make the settings to be saved to a file in the game root folder.");
 			ImGui::TextUnformatted("* When you block input to the game, the device(s) which control the camera are blocked, all other devices are still sending input to the game.");
 			ImGui::TextUnformatted("* You'll get a notification in the top left corner when you change something with the keyboard, like enable/disable the camera.");
+			ImGui::TextUnformatted("* The resolution scale factor is reset to the game menu value when the camera is disabled");
 			ImGui::PopTextWrapPos();
 		}
 
@@ -264,8 +265,8 @@ Special thanks to:
 		if (ImGui::CollapsingHeader("Misc. camera options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			settingsChanged |= ImGui::SliderFloat("Field of View (FoV) zoom speed", &currentSettings.fovChangeSpeed, 0.0001f, 0.01f, "%.4f");
-			ImGui::SliderFloat("Resolution scale factor", &currentSettings.resolutionScale, 0.5f, 4.0f, "%.1f");
-			ImGui::SameLine(); ShowHelpMarker("Be careful with values bigger than 2 as it could make\nthe game crash due to too much overhead.");
+			ImGui::SliderFloat("Resolution scale factor", &currentSettings.resolutionScale, 0.5f, 2.0f, "%.1f");
+			ImGui::SameLine(); ShowHelpMarker("Be careful with values bigger than 2 as it could make\nthe game crash due to too much overhead.\nYou can specify values bigger than 2 by using\nCtrl-click and then type the value.\nMax is 4.0.");
 		}
 		ImGui::PopItemWidth();
 		if (settingsChanged)

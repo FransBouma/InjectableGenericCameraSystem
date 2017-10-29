@@ -49,7 +49,14 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static float _originalQuaternion[4];
 	static float _originalPMQuaternion[4];  // photomode cam
 	static float _originalFoV;
+	static LPBYTE g_resolutionScaleMenuValueAddress = nullptr;
 
+
+	void setResolutionScaleMenuValueAddress(LPBYTE address)
+	{
+		g_resolutionScaleMenuValueAddress = address;
+	}
+	
 
 	void getSettingsFromGameState()
 	{
@@ -208,6 +215,12 @@ namespace IGCS::GameSpecific::CameraManipulator
 			coordsInMemory = reinterpret_cast<float*>(g_cameraPhotoModeStructAddress + COORDS_IN_PM_STRUCT_OFFSET);
 			memcpy(quaternionInMemory, _originalPMQuaternion, 4 * sizeof(float));
 			memcpy(coordsInMemory, _originalPMCoords, 3 * sizeof(float));
+		}
+		if (nullptr != g_resolutionScaleMenuValueAddress && nullptr!=g_resolutionScaleAddress)
+		{
+			float* resolutionScaleInMemory = reinterpret_cast<float*>(g_resolutionScaleAddress + RESOLUTION_SCALE_IN_STRUCT_OFFSET);
+			float* resolutionScaleMenuInMemory = reinterpret_cast<float*>(g_resolutionScaleMenuValueAddress);
+			*resolutionScaleInMemory = *resolutionScaleMenuInMemory;
 		}
 	}
 

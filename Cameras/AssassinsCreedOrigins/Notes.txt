@@ -174,3 +174,14 @@ ACOrigins.exe+72A6DB - 48 8D 8B D0000000     - lea rcx,[rbx+000000D0]
 ACOrigins.exe+72A6E2 - 49 8D 97 50040000     - lea rdx,[r15+00000450]
 ACOrigins.exe+72A6E9 - E8 F2ABFDFF           - call ACOrigins.exe+7052E0
 
+// Resolution scale menu value: 
+ACOrigins.exe+81000C - F3 0F10 05 00FCD703   - movss xmm0,[ACOrigins.exe+458FC14] { [1.40] }
+ACOrigins.exe+810014 - F3 0F5C 05 6812D803   - subss xmm0,[ACOrigins.exe+4591284] { [1.40] }		<< Read here, hardcoded value. 
+ACOrigins.exe+81001C - 0F54 05 6D479902      - andps xmm0,[ACOrigins.exe+31A4790] { [7FFFFFFF] }
+ACOrigins.exe+810023 - 0F2F 05 5A099A02      - comiss xmm0,[ACOrigins.exe+31B0984] { [0.00] }
+ACOrigins.exe+81002A - 0F96 C0               - setbe al
+ACOrigins.exe+81002D - 22 D0                 - and dl,al
+ACOrigins.exe+81002F - 84 D2                 - test dl,dl
+ACOrigins.exe+810031 - 0F94 C0               - sete al
+ACOrigins.exe+810034 - C3                    - ret 
+
