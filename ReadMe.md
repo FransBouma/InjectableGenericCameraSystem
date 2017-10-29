@@ -27,6 +27,7 @@ automatically when you clone the repo. The camera uses DirectXMath for the 3D ma
 
 ## Camera's released: 
 * Assassin's Creed 3: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/AssassinsCreed3
+* Assassin's Creed Origins: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/AssassinsCreedOrigins
 * Batman Arkham Knight: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/BatmanArkhamKnight
 * Bulletstorm Full Clip Edition: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/BulletstormFCE
 * Deus Ex: Mankind Divided: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/DXMD
