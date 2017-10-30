@@ -10,10 +10,9 @@ Credits: Otis_Inf
 Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.
 
 ### Important
-* MSI Afterburner (and like other stuff that creates an overlay) do **not** work together with the camera tools: 
-the game either crashes or the overlay won't show up. Use the Ubisoft Uplay overlay to take screenshots instead 
+* It can be that tools like MSI Afterburner and others which create an overlay do **not** work together with the camera tools: 
+the game either crashes or the overlay won't show up. If that's the case, use the Ubisoft Uplay overlay to take screenshots instead 
 as that works OK: configure it to save uncompressed copies of the screenshots in the UPlay settings. 
-I'm sorry but I can't fix this. 
 
 * Be careful with the resolution scaling factor in the camera tools settings. Using a value of 2 or higher with a very 
 high resolution will likely make the game become unresponsive and crash if you don't have the latest greatest videocard.
