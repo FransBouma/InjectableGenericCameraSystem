@@ -185,3 +185,14 @@ ACOrigins.exe+81002F - 84 D2                 - test dl,dl
 ACOrigins.exe+810031 - 0F94 C0               - sete al
 ACOrigins.exe+810034 - C3                    - ret 
 
+// ToD
+ACOrigins.exe+117C5E0 - F3 0F5E C7            - divss xmm0,xmm7
+ACOrigins.exe+117C5E4 - 0F28 7C 24 30         - movaps xmm7,[rsp+30]
+ACOrigins.exe+117C5E9 - F3 0F59 C6            - mulss xmm0,xmm6
+ACOrigins.exe+117C5ED - F3 41 0F58 C0         - addss xmm0,xmm8
+ACOrigins.exe+117C5F2 - 44 0F28 44 24 20      - movaps xmm8,[rsp+20]
+ACOrigins.exe+117C5F8 - F3 0F11 00            - movss [rax],xmm0					<<< Write of ToD.
+ACOrigins.exe+117C5FC - 48 8B 83 40020000     - mov rax,[rbx+00000240]
+ACOrigins.exe+117C603 - F3 0F10 08            - movss xmm1,[rax]
+ACOrigins.exe+117C607 - 0F2F CA               - comiss xmm1,xmm2
+
