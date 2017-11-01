@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Assassin's Creed Origins v1.02+"
-	#define CAMERA_VERSION								"1.0.0"
+	#define CAMERA_VERSION								"1.0.1"
 	#define CAMERA_CREDITS								"Otis_Inf"
 	#define GAME_WINDOW_TITLE							"Assassin's Creed Origins"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
@@ -61,6 +61,7 @@ namespace IGCS::GameSpecific
 	#define PHOTOMODE_ENABLE_ALWAYS_KEY					"AOB_PHOTOMODE_ENABLE_ALWAYS"
 	#define RESOLUTION_SCALE_INTERCEPT_KEY				"AOB_RESOLUTION_SCALE_INTERCEPT"
 	#define RESOLUTION_SCALE_MENU_KEY					"AOB_RESOLUTION_SCALE_MENU"
+	#define TOD_WRITE_INTERCEPT_KEY						"AOB_TOD_WRITE_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
 	#define COORDS_IN_STRUCT_OFFSET						0x60				

@@ -2,9 +2,12 @@ Injectable camera for Assassin's Creed Origins
 ============================
 
 Current supported game version: v1.02+ (UPlay version)  
-Camera version: 1.0.0  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/ACO_100  
+Camera version: 1.0.1  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/ACO_101  
 Credits: Otis_Inf
+
+### Changes
+* v1.0.1: Added: time of day selection in camera menu.
 
 ### How to use
 Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.

@@ -38,6 +38,7 @@ PUBLIC cameraWrite3Interceptor
 PUBLIC cameraWrite4Interceptor
 PUBLIC fovReadInterceptor
 PUBLIC resolutionScaleReadInterceptor
+PUBLIC todWriteInterceptor
 
 ;---------------------------------------------------------------
 
@@ -49,6 +50,7 @@ EXTERN g_cameraStructAddress: qword
 EXTERN g_cameraPhotoModeStructAddress: qword
 EXTERN g_fovStructAddress: qword
 EXTERN g_resolutionScaleAddress: qword
+EXTERN g_todStructAddress: qword
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -60,6 +62,7 @@ EXTERN _cameraWrite3InterceptionContinue: qword
 EXTERN _cameraWrite4InterceptionContinue: qword
 EXTERN _fovReadInterceptionContinue: qword
 EXTERN _resolutionScaleReadInterceptionContinue: qword
+EXTERN _todWriteInterceptionContinue: qword
 
 .data
 
@@ -244,6 +247,28 @@ originalCode:
 exit:
 	jmp qword ptr [_resolutionScaleReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 resolutionScaleReadInterceptor ENDP
+
+
+todWriteInterceptor PROC
+;ACOrigins.exe+117C5E0 - F3 0F5E C7            - divss xmm0,xmm7
+;ACOrigins.exe+117C5E4 - 0F28 7C 24 30         - movaps xmm7,[rsp+30]
+;ACOrigins.exe+117C5E9 - F3 0F59 C6            - mulss xmm0,xmm6					
+;ACOrigins.exe+117C5ED - F3 41 0F58 C0         - addss xmm0,xmm8
+;ACOrigins.exe+117C5F2 - 44 0F28 44 24 20      - movaps xmm8,[rsp+20]				
+;ACOrigins.exe+117C5F8 - F3 0F11 00            - movss [rax],xmm0					<<< INTERCEPT HERE <<< Write of ToD.
+;ACOrigins.exe+117C5FC - 48 8B 83 40020000     - mov rax,[rbx+00000240]
+;ACOrigins.exe+117C603 - F3 0F10 08            - movss xmm1,[rax]
+;ACOrigins.exe+117C607 - 0F2F CA               - comiss xmm1,xmm2					<<< CONTINUE HERE
+	mov [g_todStructAddress], rax
+	cmp byte ptr [g_cameraEnabled], 1
+	je exit
+originalCode:
+	movss dword ptr [rax],xmm0		
+exit:
+	mov rax, [rbx+00000240h]
+	movss xmm1, dword ptr [rax]
+	jmp qword ptr [_todWriteInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+todWriteInterceptor ENDP
 
 
 END

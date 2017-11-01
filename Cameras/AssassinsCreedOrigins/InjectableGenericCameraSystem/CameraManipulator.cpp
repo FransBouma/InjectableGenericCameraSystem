@@ -40,6 +40,7 @@ extern "C" {
 	LPBYTE g_cameraPhotoModeStructAddress = nullptr;
 	LPBYTE g_fovStructAddress = nullptr;
 	LPBYTE g_resolutionScaleAddress = nullptr;
+	LPBYTE g_todStructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -50,7 +51,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static float _originalPMQuaternion[4];  // photomode cam
 	static float _originalFoV;
 	static LPBYTE g_resolutionScaleMenuValueAddress = nullptr;
-
 
 	void setResolutionScaleMenuValueAddress(LPBYTE address)
 	{
@@ -66,6 +66,14 @@ namespace IGCS::GameSpecific::CameraManipulator
 			float* resolutionScaleInMemory = reinterpret_cast<float*>(g_resolutionScaleAddress + RESOLUTION_SCALE_IN_STRUCT_OFFSET);
 			currentSettings.resolutionScale = *resolutionScaleInMemory;
 		}
+		if (nullptr != g_todStructAddress)
+		{
+			float* todInMemory = reinterpret_cast<float*>(g_todStructAddress);
+			float valueInMemory = *todInMemory;
+			currentSettings.todHour = (int)floor(valueInMemory);
+			float valueWithoutMinuteFraction = valueInMemory - floor(valueInMemory);
+			currentSettings.todMinute = (int)(valueWithoutMinuteFraction * 60.0f);
+		}
 	}
 
 
@@ -76,6 +84,13 @@ namespace IGCS::GameSpecific::CameraManipulator
 		{
 			float* resolutionScaleInMemory = reinterpret_cast<float*>(g_resolutionScaleAddress + RESOLUTION_SCALE_IN_STRUCT_OFFSET);
 			*resolutionScaleInMemory = Utils::clamp(currentSettings.resolutionScale, RESOLUTION_SCALE_MIN, RESOLUTION_SCALE_MAX, 1.0f);
+		}
+		if (nullptr != g_todStructAddress)
+		{
+			float* todInMemory = reinterpret_cast<float*>(g_todStructAddress);
+			float valueToStore = (static_cast<float>(currentSettings.todHour) + (static_cast<float>(currentSettings.todMinute) / 60.0f));
+			valueToStore = Utils::clamp(valueToStore, 0.0f, 24.0f, 0.0f);
+			*todInMemory = valueToStore;
 		}
 	}
 
