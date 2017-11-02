@@ -35,6 +35,10 @@ namespace IGCS::GameImageHooker
 	// Sets a jmp qword ptr [address] statement at hostImageAddress + startOffset for x64 and a jmp <relative address> for x86
 	void setHook(LPBYTE hostImageAddress, DWORD startOffset, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction)
 	{
+		if (hostImageAddress == nullptr)
+		{
+			return;
+		}
 		LPBYTE startOfHookAddress = hostImageAddress + startOffset;
 		*interceptionContinue = startOfHookAddress + continueOffset;
 #ifdef _WIN64
