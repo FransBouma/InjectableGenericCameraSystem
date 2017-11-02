@@ -96,16 +96,18 @@ EXTERN _todWriteInterceptionContinue: qword
 
 cameraStructInterceptor PROC
 ; camera address interceptor is also a write blocker. 
-;ACOrigins.exe+138A2A7 - 48 8B CF              - mov rcx,rdi							<< INTERCEPT HERE
-;ACOrigins.exe+138A2AA - 0F28 00               - movaps xmm0,[rax]
-;ACOrigins.exe+138A2AD - 0F29 87 E0020000      - movaps [rdi+000002E0],xmm0
-;ACOrigins.exe+138A2B4 - 0F29 47 60            - movaps [rdi+60],xmm0					<< Write coords
-;ACOrigins.exe+138A2B8 - E8 83CFFFFF           - call ACOrigins.exe+1387240				<< CONTINUE HERE
-;ACOrigins.exe+138A2BD - 48 8B 8F 40030000     - mov rcx,[rdi+00000340]
-;ACOrigins.exe+138A2C4 - 4C 8D BF 00030000     - lea r15,[rdi+00000300]
-;ACOrigins.exe+138A2CB - F3 0F11 74 24 40      - movss [rsp+40],xmm6
-;ACOrigins.exe+138A2D1 - 4C 8D 45 80           - lea r8,[rbp-80]
-;ACOrigins.exe+138A2D5 - 48 8D 81 B0010000     - lea rax,[rcx+000001B0]
+; v1.03
+;ACOrigins.exe+13933C7 - 48 8B CF              - mov rcx,rdi							<< INTERCEPT HERE
+;ACOrigins.exe+13933CA - 0F28 00               - movaps xmm0,[rax]
+;ACOrigins.exe+13933CD - 0F29 87 E0020000      - movaps [rdi+000002E0],xmm0
+;ACOrigins.exe+13933D4 - 0F29 47 60            - movaps [rdi+60],xmm0					<< Write coords
+;ACOrigins.exe+13933D8 - E8 63CFFFFF           - call ACOrigins.exe+1390340				<< CONTINUE HERE
+;ACOrigins.exe+13933DD - 48 8B 8F 40030000     - mov rcx,[rdi+00000340]
+;ACOrigins.exe+13933E4 - 4C 8D BF 00030000     - lea r15,[rdi+00000300]
+;ACOrigins.exe+13933EB - F3 0F11 74 24 40      - movss [rsp+40],xmm6
+;ACOrigins.exe+13933F1 - 4C 8D 45 80           - lea r8,[rbp-80]
+;ACOrigins.exe+13933F5 - 48 8D 81 B0010000     - lea rax,[rcx+000001B0]
+;ACOrigins.exe+13933FC - 48 8D 91 C8000000     - lea rdx,[rcx+000000C8]
 	mov [g_cameraStructAddress], rdi
 	mov rcx,rdi				
 	movaps xmm0, xmmword ptr [rax]
@@ -120,15 +122,15 @@ cameraStructInterceptor ENDP
 
 
 cameraWrite1Interceptor PROC
-;ACOrigins.exe+138A1B3 - 4C 8D 67 70           - lea r12,[rdi+70]
-;ACOrigins.exe+138A1B7 - 48 8D B7 F0020000     - lea rsi,[rdi+000002F0]
-;ACOrigins.exe+138A1BE - 0F28 D6               - movaps xmm2,xmm6
-;ACOrigins.exe+138A1C1 - 0F29 06               - movaps [rsi],xmm0
-;ACOrigins.exe+138A1C4 - 49 8B D4              - mov rdx,r12							<< INTERCEPT HERE
-;ACOrigins.exe+138A1C7 - 41 0F29 04 24         - movaps [r12],xmm0						<< WRITE quaternion
-;ACOrigins.exe+138A1CC - 48 8B 8F 40030000     - mov rcx,[rdi+00000340]
-;ACOrigins.exe+138A1D3 - 48 8B 49 50           - mov rcx,[rcx+50]						<< CONTINUE HERE
-;ACOrigins.exe+138A1D7 - E8 A48A0300           - call ACOrigins.exe+13C2C80				
+;ACOrigins.exe+13932D3 - 4C 8D 67 70           - lea r12,[rdi+70]
+;ACOrigins.exe+13932D7 - 48 8D B7 F0020000     - lea rsi,[rdi+000002F0]
+;ACOrigins.exe+13932DE - 0F28 D6               - movaps xmm2,xmm6
+;ACOrigins.exe+13932E1 - 0F29 06               - movaps [rsi],xmm0
+;ACOrigins.exe+13932E4 - 49 8B D4              - mov rdx,r12							<< INTERCEPT HERE
+;ACOrigins.exe+13932E7 - 41 0F29 04 24         - movaps [r12],xmm0						<< WRITE quaternion
+;ACOrigins.exe+13932EC - 48 8B 8F 40030000     - mov rcx,[rdi+00000340]
+;ACOrigins.exe+13932F3 - 48 8B 49 50           - mov rcx,[rcx+50]						<< CONTINUE HERE
+;ACOrigins.exe+13932F7 - E8 845A0300           - call ACOrigins.exe+13C8D80
 	mov rdx,r12			
 	cmp byte ptr [g_cameraEnabled], 1
 	je exit
@@ -141,15 +143,14 @@ cameraWrite1Interceptor ENDP
 
 
 cameraWrite2Interceptor PROC
-;ACOrigins.exe+138A7D6 - 0F59 D0               - mulps xmm2,xmm0
-;ACOrigins.exe+138A7D9 - 0FC6 ED B1            - shufps xmm5,xmm5,-4F { 177 }
-;ACOrigins.exe+138A7DD - 0F59 EB               - mulps xmm5,xmm3
-;ACOrigins.exe+138A7E0 - 0F58 E2               - addps xmm4,xmm2
-;ACOrigins.exe+138A7E3 - 0F58 E5               - addps xmm4,xmm5						<< INTERCEPT HERE
-;ACOrigins.exe+138A7E6 - 0F29 26               - movaps [rsi],xmm4
-;ACOrigins.exe+138A7E9 - 41 0F29 24 24         - movaps [r12],xmm4						<< Write quaternion.
-;ACOrigins.exe+138A7EE - F3 41 0F10 07         - movss xmm0,[r15]						
-;ACOrigins.exe+138A7F3 - F3 0F5F 05 FDC8E501   - maxss xmm0,[ACOrigins.exe+31E70F8] { [0.00] }	<< CONTINUE HERE
+;ACOrigins.exe+13938FD - 0F59 EB               - mulps xmm5,xmm3
+;ACOrigins.exe+1393900 - 0F58 E2               - addps xmm4,xmm2
+;ACOrigins.exe+1393903 - 0F58 E5               - addps xmm4,xmm5						<< INTERCEPT HERE
+;ACOrigins.exe+1393906 - 0F29 26               - movaps [rsi],xmm4
+;ACOrigins.exe+1393909 - 41 0F29 24 24         - movaps [r12],xmm4						<< Write quaternion.
+;ACOrigins.exe+139390E - F3 41 0F10 07         - movss xmm0,[r15]
+;ACOrigins.exe+1393913 - F3 0F5F 05 15BCE701   - maxss xmm0,[ACOrigins.exe+320F530]		<< CONTINUE HERE
+;ACOrigins.exe+139391B - 48 8B 87 40030000     - mov rax,[rdi+00000340]
 	addps xmm4,xmm5	
 	cmp byte ptr [g_cameraEnabled], 1
 	je exit
@@ -164,22 +165,26 @@ cameraWrite2Interceptor ENDP
 
 cameraWrite3Interceptor PROC
 ; photomode camera
-;ACOrigins.exe+1D9683D - 0F59 C3               - mulps xmm0,xmm3
-;ACOrigins.exe+1D96840 - 0F58 E0               - addps xmm4,xmm0
-;ACOrigins.exe+1D96843 - 0F59 E6               - mulps xmm4,xmm6
-;ACOrigins.exe+1D96846 - 41 0F28 73 F0         - movaps xmm6,[r11-10]
-;ACOrigins.exe+1D9684B - 0F29 A7 40050000      - movaps [rdi+00000540],xmm4			
-;ACOrigins.exe+1D96852 - 44 0F29 8F 80040000   - movaps [rdi+00000480],xmm9			<<< INTERCEPT HERE <<< coords
-;ACOrigins.exe+1D9685A - 45 0F28 4B C0         - movaps xmm9,[r11-40]
-;ACOrigins.exe+1D9685F - 49 8B E3              - mov rsp,r11						
-;ACOrigins.exe+1D96862 - 41 5F                 - pop r15							<<< CONTINUE HERE
+; v1.03
+;ACOrigins.exe+1DB34F0 - 41 0F28 7B E0         - movaps xmm7,[r11-20]
+;ACOrigins.exe+1DB34F5 - 0F59 C3               - mulps xmm0,xmm3
+;ACOrigins.exe+1DB34F8 - 0F58 E0               - addps xmm4,xmm0
+;ACOrigins.exe+1DB34FB - 0F59 E6               - mulps xmm4,xmm6
+;ACOrigins.exe+1DB34FE - 41 0F28 73 F0         - movaps xmm6,[r11-10]
+;ACOrigins.exe+1DB3503 - 0F29 A7 30050000      - movaps [rdi+00000530],xmm4
+;ACOrigins.exe+1DB350A - 44 0F29 A7 70040000   - movaps [rdi+00000470],xmm12		<<< INTERCEPT HERE <<< coords
+;ACOrigins.exe+1DB3512 - 45 0F28 63 90         - movaps xmm12,[r11-70]
+;ACOrigins.exe+1DB3517 - 49 8B E3              - mov rsp,r11
+;ACOrigins.exe+1DB351A - 41 5F                 - pop r15							<<< CONTINUE HERE
+;ACOrigins.exe+1DB351C - 41 5E                 - pop r14
+;ACOrigins.exe+1DB351E - 5F                    - pop rdi
 	mov [g_cameraPhotoModeStructAddress], rdi
 	cmp byte ptr [g_cameraEnabled], 1
 	je exit
 originalCode:
-	movaps xmmword ptr [rdi+00000480h],xmm9
+	movaps xmmword ptr [rdi+00000470h],xmm12
 exit:
-	movaps xmm9, xmmword ptr [r11-40h]
+	movaps xmm12, xmmword ptr [r11-70h]
 	mov rsp,r11
 	jmp qword ptr [_cameraWrite3InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite3Interceptor ENDP
@@ -187,22 +192,23 @@ cameraWrite3Interceptor ENDP
 
 cameraWrite4Interceptor PROC
 ; photomode camera
-;ACOrigins.exe+1D966DD - 0F28 35 BCA24101      - movaps xmm6,[ACOrigins.exe+31B09A0]
-;ACOrigins.exe+1D966E4 - 0F28 DC               - movaps xmm3,xmm4					<< INTERCEPT HERE
-;ACOrigins.exe+1D966E7 - 0F29 A7 90040000      - movaps [rdi+00000490],xmm4			<<< Quaternion write
-;ACOrigins.exe+1D966EE - 0F59 DD               - mulps xmm3,xmm5
-;ACOrigins.exe+1D966F1 - 0F28 CB               - movaps xmm1,xmm3
-;ACOrigins.exe+1D966F4 - 0F28 C3               - movaps xmm0,xmm3					<<< CONTINUE HERE
-;ACOrigins.exe+1D966F7 - 0FC6 CB AA            - shufps xmm1,xmm3,-56 { 170 }
-;ACOrigins.exe+1D966FB - 0FC6 C3 55            - shufps xmm0,xmm3,55 { 85 }
-;ACOrigins.exe+1D966FF - F3 0F58 C1            - addss xmm0,xmm1
-;ACOrigins.exe+1D96703 - 0F28 CC               - movaps xmm1,xmm4
-;ACOrigins.exe+1D96706 - 0FC6 CC D2            - shufps xmm1,xmm4,-2E { 210 }
+; v1.03
+;ACOrigins.exe+1DB3385 - 0F59 E0               - mulps xmm4,xmm0
+;ACOrigins.exe+1DB3388 - 0F59 E5               - mulps xmm4,xmm5
+;ACOrigins.exe+1DB338B - 0F28 2D EE9A4101      - movaps xmm5,[ACOrigins.exe+31CCE80]
+;ACOrigins.exe+1DB3392 - 0F28 DC               - movaps xmm3,xmm4					<< INTERCEPT HERE
+;ACOrigins.exe+1DB3395 - 0F29 A7 80040000      - movaps [rdi+00000480],xmm4			<< Quaternion write
+;ACOrigins.exe+1DB339C - 0F59 DD               - mulps xmm3,xmm5
+;ACOrigins.exe+1DB339F - 0F28 CB               - movaps xmm1,xmm3					
+;ACOrigins.exe+1DB33A2 - 0F28 C3               - movaps xmm0,xmm3					<<< CONTINUE HERE
+;ACOrigins.exe+1DB33A5 - 0FC6 CB AA            - shufps xmm1,xmm3,-56 { 170 }
+;ACOrigins.exe+1DB33A9 - 0FC6 C3 55            - shufps xmm0,xmm3,55 { 85 }
+;ACOrigins.exe+1DB33AD - F3 0F58 C1            - addss xmm0,xmm1
 	movaps xmm3,xmm4			
 	cmp byte ptr [g_cameraEnabled], 1
 	je exit
 originalCode:
-	movaps xmmword ptr [rdi+00000490h], xmm4	
+	movaps xmmword ptr [rdi+00000480h], xmm4	
 exit:
 	mulps xmm3,xmm5
 	movaps xmm1,xmm3
@@ -211,15 +217,15 @@ cameraWrite4Interceptor ENDP
 
 
 fovReadInterceptor PROC
-;ACOrigins.exe+80336A - 0F29 85 10030000			- movaps [rbp+00000310],xmm0
-;ACOrigins.exe+803371 - 0F29 8D 00030000			- movaps [rbp+00000300],xmm1
-;ACOrigins.exe+803378 - E8 3359BCFF					- call ACOrigins.exe+3C8CB0
-;ACOrigins.exe+80337D - F3 41 0F10 94 24 24010000	- movss xmm2,[r12+00000124]				<< INTERCEPT HERE
-;ACOrigins.exe+803387 - 45 0F57 D2					- xorps xmm10,xmm10
-;ACOrigins.exe+80338B - 41 0F2F D2					- comiss xmm2,xmm10
-;ACOrigins.exe+80338F - F3 41 0F10 8F 64020000		- movss xmm1,[r15+00000264]				<< FOV READ
-;ACOrigins.exe+803398 - F3 0F10 05 94119A02			- movss xmm0,[ACOrigins.exe+31A4534]	<< CONTINUE HERE
-;ACOrigins.exe+8033A0 - 76 41						- jna ACOrigins.exe+8033E3
+;ACOrigins.exe+80717A - 0F29 85 10030000			- movaps [rbp+00000310],xmm0
+;ACOrigins.exe+807181 - 0F29 8D 00030000			- movaps [rbp+00000300],xmm1
+;ACOrigins.exe+807188 - E8 4358BCFF					- call ACOrigins.exe+3CC9D0
+;ACOrigins.exe+80718D - F3 41 0F10 94 24 24010000	- movss xmm2,[r12+00000124]				<< INTERCEPT HERE
+;ACOrigins.exe+807197 - 45 0F57 D2					- xorps xmm10,xmm10
+;ACOrigins.exe+80719B - 41 0F2F D2					- comiss xmm2,xmm10
+;ACOrigins.exe+80719F - F3 41 0F10 8F 64020000		- movss xmm1,[r15+00000264]				<< FOV READ
+;ACOrigins.exe+8071A8 - F3 0F10 05 A45B9C02			- movss xmm0,[ACOrigins.exe+31CCD54]	<< CONTINUE HERE
+;ACOrigins.exe+8071B0 - 76 41						- jna ACOrigins.exe+8071F3
 	mov [g_fovStructAddress], r15
 originalCode:
 	movss xmm2, dword ptr [r12+00000124h]
@@ -232,33 +238,37 @@ fovReadInterceptor ENDP
 
 
 resolutionScaleReadInterceptor PROC
-;ACOrigins.exe+72A6C5 - 41 8B 86 A8000000     - mov eax,[r14+000000A8]					<< INTERCEPT HERE<< Read of resolution scale (float. 1.0 is 100%) Max is 4!
-;ACOrigins.exe+72A6CC - 49 8B CF              - mov rcx,r15
-;ACOrigins.exe+72A6CF - 41 89 87 20070000     - mov [r15+00000720],eax
-;ACOrigins.exe+72A6D6 - E8 454B1100           - call ACOrigins.exe+83F220				<< CONTINUE HERE
-;ACOrigins.exe+72A6DB - 48 8D 8B D0000000     - lea rcx,[rbx+000000D0]
-;ACOrigins.exe+72A6E2 - 49 8D 97 50040000     - lea rdx,[r15+00000450]
-;ACOrigins.exe+72A6E9 - E8 F2ABFDFF           - call ACOrigins.exe+7052E0
+; v1.03
+;ACOrigins.exe+72E9D9 - 89 8D 58070000        - mov [rbp+00000758],ecx
+;ACOrigins.exe+72E9DF - F3 0F11 B5 64020000   - movss [rbp+00000264],xmm6
+;ACOrigins.exe+72E9E7 - 89 85 5C070000        - mov [rbp+0000075C],eax
+;ACOrigins.exe+72E9ED - 41 8B 86 A8000000     - mov eax,[r14+000000A8]					<< INTERCEPT HERE<< Read of resolution scale (float. 1.0 is 100%) Max is 4!
+;ACOrigins.exe+72E9F4 - 48 8B CD              - mov rcx,rbp
+;ACOrigins.exe+72E9F7 - 89 85 20070000        - mov [rbp+00000720],eax
+;ACOrigins.exe+72E9FD - E8 6E481100           - call ACOrigins.exe+843270				<< CONTINUE HERE
+;ACOrigins.exe+72EA02 - 48 8D 8B D0000000     - lea rcx,[rbx+000000D0]
+;ACOrigins.exe+72EA09 - 48 8D 95 50040000     - lea rdx,[rbp+00000450]
+;ACOrigins.exe+72EA10 - E8 FBA4FDFF           - call ACOrigins.exe+708F10
 	mov [g_resolutionScaleAddress], r14
 originalCode:
 	mov eax,[r14+000000A8h]
-	mov rcx,r15
-	mov [r15+00000720h],eax
+	mov rcx,rbp
+	mov [rbp+00000720h],eax
 exit:
 	jmp qword ptr [_resolutionScaleReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 resolutionScaleReadInterceptor ENDP
 
 
 todWriteInterceptor PROC
-;ACOrigins.exe+117C5E0 - F3 0F5E C7            - divss xmm0,xmm7
-;ACOrigins.exe+117C5E4 - 0F28 7C 24 30         - movaps xmm7,[rsp+30]
-;ACOrigins.exe+117C5E9 - F3 0F59 C6            - mulss xmm0,xmm6					
-;ACOrigins.exe+117C5ED - F3 41 0F58 C0         - addss xmm0,xmm8
-;ACOrigins.exe+117C5F2 - 44 0F28 44 24 20      - movaps xmm8,[rsp+20]				
-;ACOrigins.exe+117C5F8 - F3 0F11 00            - movss [rax],xmm0					<<< INTERCEPT HERE <<< Write of ToD.
-;ACOrigins.exe+117C5FC - 48 8B 83 40020000     - mov rax,[rbx+00000240]
-;ACOrigins.exe+117C603 - F3 0F10 08            - movss xmm1,[rax]
-;ACOrigins.exe+117C607 - 0F2F CA               - comiss xmm1,xmm2					<<< CONTINUE HERE
+;ACOrigins.exe+1185730 - F3 0F5E C7            - divss xmm0,xmm7
+;ACOrigins.exe+1185734 - 0F28 7C 24 30         - movaps xmm7,[rsp+30]
+;ACOrigins.exe+1185739 - F3 0F59 C6            - mulss xmm0,xmm6
+;ACOrigins.exe+118573D - F3 41 0F58 C0         - addss xmm0,xmm8
+;ACOrigins.exe+1185742 - 44 0F28 44 24 20      - movaps xmm8,[rsp+20]
+;ACOrigins.exe+1185748 - F3 0F11 00            - movss [rax],xmm0					<<< INTERCEPT HERE <<< Write of ToD.
+;ACOrigins.exe+118574C - 48 8B 83 40020000     - mov rax,[rbx+00000240]
+;ACOrigins.exe+1185753 - F3 0F10 08            - movss xmm1,[rax]
+;ACOrigins.exe+1185757 - 0F2F CA               - comiss xmm1,xmm2					<<< CONTINUE HERE
 	mov [g_todStructAddress], rax
 	cmp byte ptr [g_cameraEnabled], 1
 	je exit

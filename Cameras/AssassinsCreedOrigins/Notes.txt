@@ -63,28 +63,34 @@ ACOrigins.exe+138A7FB - 48 8B 87 40030000     - mov rax,[rdi+00000340]
 
 // Photomode camera only:
 // coords
-ACOrigins.exe+1D9683D - 0F59 C3               - mulps xmm0,xmm3
-ACOrigins.exe+1D96840 - 0F58 E0               - addps xmm4,xmm0
-ACOrigins.exe+1D96843 - 0F59 E6               - mulps xmm4,xmm6
-ACOrigins.exe+1D96846 - 41 0F28 73 F0         - movaps xmm6,[r11-10]
-ACOrigins.exe+1D9684B - 0F29 A7 40050000      - movaps [rdi+00000540],xmm4			
-ACOrigins.exe+1D96852 - 44 0F29 8F 80040000   - movaps [rdi+00000480],xmm9			<<< coords
-ACOrigins.exe+1D9685A - 45 0F28 4B C0         - movaps xmm9,[r11-40]
-ACOrigins.exe+1D9685F - 49 8B E3              - mov rsp,r11
-ACOrigins.exe+1D96862 - 41 5F                 - pop r15
-
+// v1.03:
+ACOrigins.exe+1DB34F0 - 41 0F28 7B E0         - movaps xmm7,[r11-20]
+ACOrigins.exe+1DB34F5 - 0F59 C3               - mulps xmm0,xmm3
+ACOrigins.exe+1DB34F8 - 0F58 E0               - addps xmm4,xmm0
+ACOrigins.exe+1DB34FB - 0F59 E6               - mulps xmm4,xmm6
+ACOrigins.exe+1DB34FE - 41 0F28 73 F0         - movaps xmm6,[r11-10]
+ACOrigins.exe+1DB3503 - 0F29 A7 30050000      - movaps [rdi+00000530],xmm4
+ACOrigins.exe+1DB350A - 44 0F29 A7 70040000   - movaps [rdi+00000470],xmm12				<< WRITE Coords
+ACOrigins.exe+1DB3512 - 45 0F28 63 90         - movaps xmm12,[r11-70]
+ACOrigins.exe+1DB3517 - 49 8B E3              - mov rsp,r11
+ACOrigins.exe+1DB351A - 41 5F                 - pop r15
+ACOrigins.exe+1DB351C - 41 5E                 - pop r14
+ACOrigins.exe+1DB351E - 5F                    - pop rdi
+                        
 // quaternion
-ACOrigins.exe+1D966DD - 0F28 35 BCA24101      - movaps xmm6,[ACOrigins.exe+31B09A0]
-ACOrigins.exe+1D966E4 - 0F28 DC               - movaps xmm3,xmm4
-ACOrigins.exe+1D966E7 - 0F29 A7 90040000      - movaps [rdi+00000490],xmm4			<<< Quaternion write
-ACOrigins.exe+1D966EE - 0F59 DD               - mulps xmm3,xmm5
-ACOrigins.exe+1D966F1 - 0F28 CB               - movaps xmm1,xmm3
-ACOrigins.exe+1D966F4 - 0F28 C3               - movaps xmm0,xmm3
-ACOrigins.exe+1D966F7 - 0FC6 CB AA            - shufps xmm1,xmm3,-56 { 170 }
-ACOrigins.exe+1D966FB - 0FC6 C3 55            - shufps xmm0,xmm3,55 { 85 }
-ACOrigins.exe+1D966FF - F3 0F58 C1            - addss xmm0,xmm1
-ACOrigins.exe+1D96703 - 0F28 CC               - movaps xmm1,xmm4
-ACOrigins.exe+1D96706 - 0FC6 CC D2            - shufps xmm1,xmm4,-2E { 210 }
+// v1.03
+ACOrigins.exe+1DB3385 - 0F59 E0               - mulps xmm4,xmm0
+ACOrigins.exe+1DB3388 - 0F59 E5               - mulps xmm4,xmm5
+ACOrigins.exe+1DB338B - 0F28 2D EE9A4101      - movaps xmm5,[ACOrigins.exe+31CCE80] { [0.01] }
+ACOrigins.exe+1DB3392 - 0F28 DC               - movaps xmm3,xmm4
+ACOrigins.exe+1DB3395 - 0F29 A7 80040000      - movaps [rdi+00000480],xmm4				<< WRITE Quaternion
+ACOrigins.exe+1DB339C - 0F59 DD               - mulps xmm3,xmm5
+ACOrigins.exe+1DB339F - 0F28 CB               - movaps xmm1,xmm3
+ACOrigins.exe+1DB33A2 - 0F28 C3               - movaps xmm0,xmm3
+ACOrigins.exe+1DB33A5 - 0FC6 CB AA            - shufps xmm1,xmm3,-56 { 170 }
+ACOrigins.exe+1DB33A9 - 0FC6 C3 55            - shufps xmm0,xmm3,55 { 85 }
+ACOrigins.exe+1DB33AD - F3 0F58 C1            - addss xmm0,xmm1
+
 
 // Photomode FOV:
 ACOrigins.exe+1D90185 - F3 0F58 97 60040000   - addss xmm2,[rdi+00000460]
@@ -115,32 +121,35 @@ ACOrigins.exe+28D0AD7 - E8 446C4BFF           - call ACOrigins.exe+1D87720
 ACOrigins.exe+28D0ADC - 48 8B C8              - mov rcx,rax
 
 // FOV write 1:
-ACOrigins.exe+1094661 - 74 0E                 - je ACOrigins.exe+1094671
-ACOrigins.exe+1094663 - 8B 80 80010000        - mov eax,[rax+00000180]
-ACOrigins.exe+1094669 - 89 83 64020000        - mov [rbx+00000264],eax
-ACOrigins.exe+109466F - EB 09                 - jmp ACOrigins.exe+109467A
-ACOrigins.exe+1094671 - F3 44 0F11 8B 64020000  - movss [rbx+00000264],xmm9				<< FOV WRITE. 
-ACOrigins.exe+109467A - 49 8B D4              - mov rdx,r12
-ACOrigins.exe+109467D - 48 8B CB              - mov rcx,rbx
-ACOrigins.exe+1094680 - E8 AB4C7AFF           - call ACOrigins.exe+839330
+// v1.03
+ACOrigins.exe+1058743 - 74 0C                 - je ACOrigins.exe+1058751
+ACOrigins.exe+1058745 - 8B 8F 64020000        - mov ecx,[rdi+00000264]
+ACOrigins.exe+105874B - 89 8F 58070000        - mov [rdi+00000758],ecx
+ACOrigins.exe+1058751 - 48 8D 54 24 20        - lea rdx,[rsp+20]
+ACOrigins.exe+1058756 - F3 0F11 B7 64020000   - movss [rdi+00000264],xmm6			    << FOV WRITE
+ACOrigins.exe+105875E - 48 8B CF              - mov rcx,rdi
+ACOrigins.exe+1058761 - 89 87 5C070000        - mov [rdi+0000075C],eax
+ACOrigins.exe+1058767 - E8 344C7EFF           - call ACOrigins.exe+83D3A0
+ACOrigins.exe+105876C - 33 D2                 - xor edx,edx
+ACOrigins.exe+105876E - 89 97 24070000        - mov [rdi+00000724],edx
+ACOrigins.exe+1058774 - 41 8B 46 20           - mov eax,[r14+20]
 
 // FOV Write 2: 
-ACOrigins.exe+1050B4B - 74 3A                 - je ACOrigins.exe+1050B87
-ACOrigins.exe+1050B4D - 49 8B 47 59           - mov rax,[r15+59]
-ACOrigins.exe+1050B51 - 4A 8B 0C 20           - mov rcx,[rax+r12]
-ACOrigins.exe+1050B55 - 48 8B 41 50           - mov rax,[rcx+50]
-ACOrigins.exe+1050B59 - 80 B8 73010000 00     - cmp byte ptr [rax+00000173],00 { 0 }
-ACOrigins.exe+1050B60 - 74 08                 - je ACOrigins.exe+1050B6A
-ACOrigins.exe+1050B62 - 8B 80 80010000        - mov eax,[rax+00000180]
-ACOrigins.exe+1050B68 - EB 07                 - jmp ACOrigins.exe+1050B71
-ACOrigins.exe+1050B6A - 41 8B 85 B0000000     - mov eax,[r13+000000B0]
-ACOrigins.exe+1050B71 - 48 8D 54 24 20        - lea rdx,[rsp+20]
-ACOrigins.exe+1050B76 - 89 87 64020000        - mov [rdi+00000264],eax					<< FOV WRITE
-ACOrigins.exe+1050B7C - 48 8B CF              - mov rcx,rdi
-ACOrigins.exe+1050B7F - E8 AC877EFF           - call ACOrigins.exe+839330
-ACOrigins.exe+1050B84 - 45 33 C0              - xor r8d,r8d
-ACOrigins.exe+1050B87 - 44 89 87 24070000     - mov [rdi+00000724],r8d
-ACOrigins.exe+1050B8E - 41 8B 46 20           - mov eax,[r14+20]						<< CONTINUE HERE
+// v1.03
+ACOrigins.exe+109C569 - EB 22                 - jmp ACOrigins.exe+109C58D
+ACOrigins.exe+109C56B - E8 F0392D00           - call ACOrigins.exe+136FF60
+ACOrigins.exe+109C570 - 39 83 5C070000        - cmp [rbx+0000075C],eax
+ACOrigins.exe+109C576 - 74 0C                 - je ACOrigins.exe+109C584
+ACOrigins.exe+109C578 - 8B 8B 64020000        - mov ecx,[rbx+00000264]
+ACOrigins.exe+109C57E - 89 8B 58070000        - mov [rbx+00000758],ecx
+ACOrigins.exe+109C584 - F3 44 0F11 93 64020000  - movss [rbx+00000264],xmm10			<< FOV WRITE
+ACOrigins.exe+109C58D - 49 8B D5              - mov rdx,r13
+ACOrigins.exe+109C590 - 89 83 5C070000        - mov [rbx+0000075C],eax
+ACOrigins.exe+109C596 - 48 8B CB              - mov rcx,rbx
+ACOrigins.exe+109C599 - E8 020E7AFF           - call ACOrigins.exe+83D3A0
+ACOrigins.exe+109C59E - 33 D2                 - xor edx,edx
+ACOrigins.exe+109C5A0 - 89 93 24070000        - mov [rbx+00000724],edx
+ACOrigins.exe+109C5A6 - 41 8B 46 20           - mov eax,[r14+20]
 
 // Fov Read, for address:
 ACOrigins.exe+80336A - 0F29 85 10030000      - movaps [rbp+00000310],xmm0
