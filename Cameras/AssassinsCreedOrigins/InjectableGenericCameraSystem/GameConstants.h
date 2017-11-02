@@ -30,7 +30,7 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Assassin's Creed Origins v1.02+"
+	#define GAME_NAME									"Assassin's Creed Origins v1.03+"
 	#define CAMERA_VERSION								"1.0.2"
 	#define CAMERA_CREDITS								"Otis_Inf"
 	#define GAME_WINDOW_TITLE							"Assassin's Creed Origins"
