@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Assassin's Creed Origins v1.03+"
-	#define CAMERA_VERSION								"1.0.2"
+	#define CAMERA_VERSION								"1.0.3"
 	#define CAMERA_CREDITS								"Otis_Inf"
 	#define GAME_WINDOW_TITLE							"Assassin's Creed Origins"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
@@ -55,6 +55,7 @@ namespace IGCS::GameSpecific
 	#define CAMERA_WRITE2_INTERCEPT_KEY					"AOB_CAMERA_WRITE2_INTERCEPT"
 	#define CAMERA_WRITE3_INTERCEPT_KEY					"AOB_CAMERA_WRITE3_INTERCEPT"
 	#define CAMERA_WRITE4_INTERCEPT_KEY					"AOB_CAMERA_WRITE4_INTERCEPT"
+	#define CAMERA_WRITE5_INTERCEPT_KEY					"AOB_CAMERA_WRITE5_INTERCEPT"
 	#define FOV_WRITE1_INTERCEPT_KEY					"AOB_FOV_WRITE1_INTERCEPT"
 	#define FOV_WRITE2_INTERCEPT_KEY					"AOB_FOV_WRITE2_INTERCEPT"
 	#define FOV_READ_INTERCEPT_KEY						"AOB_FOV_READ_INTERCEPT"
@@ -62,13 +63,15 @@ namespace IGCS::GameSpecific
 	#define RESOLUTION_SCALE_INTERCEPT_KEY				"AOB_RESOLUTION_SCALE_INTERCEPT"
 	#define RESOLUTION_SCALE_MENU_KEY					"AOB_RESOLUTION_SCALE_MENU"
 	#define TOD_WRITE_INTERCEPT_KEY						"AOB_TOD_WRITE_INTERCEPT"
+	#define TIMESTOP_READ_INTERCEPT_KEY					"AOB_TIMESTOP_READ_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
-	#define COORDS_IN_STRUCT_OFFSET						0x60				
+	#define COORDS_IN_STRUCT_OFFSET						0x60
 	#define COORDS2_IN_STRUCT_OFFSET					0x2E0
 	#define COORDS_IN_PM_STRUCT_OFFSET					0x470				
 	#define QUATERNION_IN_STRUCT_OFFSET					0x70
 	#define QUATERNION_IN_PM_STRUCT_OFFSET				0x480	
 	#define FOV_IN_STRUCT_OFFSET						0x264
 	#define RESOLUTION_SCALE_IN_STRUCT_OFFSET			0xA8
+	#define TIMESTOP_IN_STRUCT_OFFSET					0x1458
 }

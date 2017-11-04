@@ -61,6 +61,23 @@ ACOrigins.exe+138A7EE - F3 41 0F10 07         - movss xmm0,[r15]
 ACOrigins.exe+138A7F3 - F3 0F5F 05 FDC8E501   - maxss xmm0,[ACOrigins.exe+31E70F8] { [0.00] }
 ACOrigins.exe+138A7FB - 48 8B 87 40030000     - mov rax,[rdi+00000340]
 
+// cutscene coords write
+// write 5
+ACOrigins.exe+13D6640 - F3 0F10 98 B00B0000   - movss xmm3,[rax+00000BB0]
+ACOrigins.exe+13D6648 - 0F14 D8               - unpcklps xmm3,xmm0
+ACOrigins.exe+13D664B - 0F14 D1               - unpcklps xmm2,xmm1
+ACOrigins.exe+13D664E - 0F14 DA               - unpcklps xmm3,xmm2
+ACOrigins.exe+13D6651 - 0F29 1F               - movaps [rdi],xmm3				<< WRITE coords
+ACOrigins.exe+13D6654 - 48 8B 43 38           - mov rax,[rbx+38]
+ACOrigins.exe+13D6658 - 0F28 80 A00B0000      - movaps xmm0,[rax+00000BA0]
+ACOrigins.exe+13D665F - 0F29 45 00            - movaps [rbp+00],xmm0
+ACOrigins.exe+13D6663 - 48 8B 43 38           - mov rax,[rbx+38]
+ACOrigins.exe+13D6667 - 8B 88 BC0B0000        - mov ecx,[rax+00000BBC]
+ACOrigins.exe+13D666D - 48 8B 44 24 70        - mov rax,[rsp+70]
+ACOrigins.exe+13D6672 - 89 08                 - mov [rax],ecx
+
+
+
 // Photomode camera only:
 // coords
 // v1.03:
@@ -184,15 +201,16 @@ ACOrigins.exe+72A6E2 - 49 8D 97 50040000     - lea rdx,[r15+00000450]
 ACOrigins.exe+72A6E9 - E8 F2ABFDFF           - call ACOrigins.exe+7052E0
 
 // Resolution scale menu value: 
-ACOrigins.exe+81000C - F3 0F10 05 00FCD703   - movss xmm0,[ACOrigins.exe+458FC14] { [1.40] }
-ACOrigins.exe+810014 - F3 0F5C 05 6812D803   - subss xmm0,[ACOrigins.exe+4591284] { [1.40] }		<< Read here, hardcoded value. 
-ACOrigins.exe+81001C - 0F54 05 6D479902      - andps xmm0,[ACOrigins.exe+31A4790] { [7FFFFFFF] }
-ACOrigins.exe+810023 - 0F2F 05 5A099A02      - comiss xmm0,[ACOrigins.exe+31B0984] { [0.00] }
-ACOrigins.exe+81002A - 0F96 C0               - setbe al
-ACOrigins.exe+81002D - 22 D0                 - and dl,al
-ACOrigins.exe+81002F - 84 D2                 - test dl,dl
-ACOrigins.exe+810031 - 0F94 C0               - sete al
-ACOrigins.exe+810034 - C3                    - ret 
+ACOrigins.exe+813E6A - 74 23                 - je ACOrigins.exe+813E8F
+ACOrigins.exe+813E6C - F3 0F10 05 E07EDE03   - movss xmm0,[ACOrigins.exe+45FBD54] { [1.20] }
+ACOrigins.exe+813E74 - F3 0F5C 05 A87CDE03   - subss xmm0,[ACOrigins.exe+45FBB24] { [1.20] }			<< Read here, hardcoded value. 
+ACOrigins.exe+813E7C - 0F54 05 2D919B02      - andps xmm0,[ACOrigins.exe+31CCFB0] { [7FFFFFFF] }
+ACOrigins.exe+813E83 - 0F2F 05 2A539C02      - comiss xmm0,[ACOrigins.exe+31D91B4] { [0.00] }
+ACOrigins.exe+813E8A - 0F96 C0               - setbe al
+ACOrigins.exe+813E8D - 22 D0                 - and dl,al
+ACOrigins.exe+813E8F - 84 D2                 - test dl,dl
+ACOrigins.exe+813E91 - 0F94 C0               - sete al
+
 
 // ToD
 ACOrigins.exe+117C5E0 - F3 0F5E C7            - divss xmm0,xmm7
@@ -204,4 +222,22 @@ ACOrigins.exe+117C5F8 - F3 0F11 00            - movss [rax],xmm0					<<< Write o
 ACOrigins.exe+117C5FC - 48 8B 83 40020000     - mov rax,[rbx+00000240]
 ACOrigins.exe+117C603 - F3 0F10 08            - movss xmm1,[rax]
 ACOrigins.exe+117C607 - 0F2F CA               - comiss xmm1,xmm2
+
+
+// Timestop
+ACOrigins.exe+11E2800 - 48 8D 8D 78010000     - lea rcx,[rbp+00000178]
+ACOrigins.exe+11E2807 - 49 8B D5              - mov rdx,r13
+ACOrigins.exe+11E280A - E8 B123FAFF           - call ACOrigins.exe+1184BC0
+ACOrigins.exe+11E280F - 48 8B 4D 78           - mov rcx,[rbp+78]
+ACOrigins.exe+11E2813 - 44 8B 85 C4610000     - mov r8d,[rbp+000061C4]
+ACOrigins.exe+11E281A - 48 8B 95 BC610000     - mov rdx,[rbp+000061BC]
+ACOrigins.exe+11E2821 - 83 B9 58140000 00     - cmp dword ptr [rcx+00001458],00 	<<< READ timestop address.
+ACOrigins.exe+11E2828 - 41 0F9F C1            - setg r9l
+ACOrigins.exe+11E282C - 41 C1 E8 11           - shr r8d,11 { 17 }
+ACOrigins.exe+11E2830 - E8 DBC8F7FF           - call ACOrigins.exe+115F110
+ACOrigins.exe+11E2835 - 48 8B 4D 78           - mov rcx,[rbp+78]
+ACOrigins.exe+11E2839 - 44 8B 85 D0610000     - mov r8d,[rbp+000061D0]
+ACOrigins.exe+11E2840 - 48 8B 95 C8610000     - mov rdx,[rbp+000061C8]
+
+
 

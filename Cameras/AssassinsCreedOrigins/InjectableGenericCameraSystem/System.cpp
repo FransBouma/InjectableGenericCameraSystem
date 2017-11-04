@@ -162,6 +162,11 @@ namespace IGCS
 		{
 			CameraManipulator::changeFoV(Globals::instance().settings().fovChangeSpeed);
 		}
+		if (Input::keyDown(IGCS_KEY_TIMESTOP))
+		{
+			toggleTimestopState();
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
 
 		if (!g_cameraEnabled)
 		{
@@ -374,9 +379,17 @@ namespace IGCS
 		OverlayControl::addNotification(newValue ? "Input to game blocked" : "Input to game enabled");
 	}
 
+
 	void System::displayCameraState()
 	{
 		OverlayControl::addNotification(g_cameraEnabled ? "Camera enabled" : "Camera disabled");
 	}
 
+
+	void System::toggleTimestopState()
+	{
+		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
+		OverlayControl::addNotification(_timeStopped ? "Game paused" : "Game unpaused");
+		CameraManipulator::setTimeStopValue(_timeStopped);
+	}
 }

@@ -207,6 +207,7 @@ Special thanks to:
 			ImGui::TextUnformatted("Numpad +/- or d-pad up/down           : Increase / decrease FoV");
 			ImGui::TextUnformatted("Numpad * or controller B-button       : Reset FoV");
 			ImGui::TextUnformatted("Numpad .                              : Block input to game for camera control device.");
+			ImGui::TextUnformatted("Numpad 0                              : Toggle game pause");
 		}
 
 		if (ImGui::CollapsingHeader("Settings editor help"))
