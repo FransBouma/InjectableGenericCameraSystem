@@ -72,7 +72,7 @@ namespace IGCS
 		int index = 0;
 		char* pChar = &pattern[0];
 
-		_patternSize = pattern.size();
+		_patternSize = static_cast<int>(pattern.size());
 		_bytePattern = (LPBYTE)calloc(0x1, _patternSize);
 		_patternMask = (char*)calloc(0x1, _patternSize);
 		_customOffset = 0;

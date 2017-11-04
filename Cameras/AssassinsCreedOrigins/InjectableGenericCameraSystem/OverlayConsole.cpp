@@ -10,7 +10,7 @@ namespace IGCS
 	#define CONSOLE_DEBUG_PREFIX "[DEBUG]"
 	#define CONSOLE_ERROR_PREFIX ">> ERROR <<"
 
-	void OverlayConsole::logDebug(const char* fmt, ...) IM_PRINTFARGS(2)
+	void OverlayConsole::logDebug(const char* fmt, ...) IM_FMTARGS(2)
 	{
 #ifdef _DEBUG
 		va_list args;
@@ -23,7 +23,7 @@ namespace IGCS
 	}
 
 
-	void OverlayConsole::logError(const char* fmt, ...) IM_PRINTFARGS(2)
+	void OverlayConsole::logError(const char* fmt, ...) IM_FMTARGS(2)
 	{
 		va_list args;
 		va_start(args, fmt);
@@ -34,7 +34,7 @@ namespace IGCS
 	}
 
 
-	void OverlayConsole::logLine(const char* fmt, ...) IM_PRINTFARGS(2)
+	void OverlayConsole::logLine(const char* fmt, ...) IM_FMTARGS(2)
 	{
 		va_list args;
 		va_start(args, fmt);

@@ -34,7 +34,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 {
 	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, std::map<std::string, AOBBlock*> &aobBlocks);
 	void setCameraStructInterceptorHook(std::map<std::string, AOBBlock*> &aobBlocks);
-	void setPostCameraStructHooks(std::map<std::string, AOBBlock*> &aobBlocks, LPBYTE hostImageAddress);
+	void setPostCameraStructHooks(std::map<std::string, AOBBlock*> &aobBlocks);
 	void toggleFoVWriteState(std::map<std::string, AOBBlock*> &aobBlocks, bool enabled);
 	void enablePhotomodeEverywhere(std::map<std::string, AOBBlock*> &aobBlocks);
 }

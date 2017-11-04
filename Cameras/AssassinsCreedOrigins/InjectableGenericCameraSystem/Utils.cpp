@@ -83,7 +83,11 @@ namespace IGCS::Utils
 			}
 		}
 		MODULEINFO toReturn;
-		if (nullptr != processModule)
+		if (nullptr == processModule)
+		{
+			toReturn.lpBaseOfDll = nullptr;
+		}
+		else
 		{
 			if (!GetModuleInformation(processHandle, processModule, &toReturn, sizeof(MODULEINFO)))
 			{
@@ -100,7 +104,11 @@ namespace IGCS::Utils
 		HANDLE processHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
 		HMODULE dllModule = GetModuleHandle(libraryName);
 		MODULEINFO toReturn;
-		if (nullptr != dllModule)
+		if (nullptr == dllModule)
+		{
+			toReturn.lpBaseOfDll = nullptr;
+		}
+		else
 		{
 			if (!GetModuleInformation(processHandle, dllModule, &toReturn, sizeof(MODULEINFO)))
 			{
