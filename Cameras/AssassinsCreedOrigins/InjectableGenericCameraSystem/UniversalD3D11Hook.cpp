@@ -59,8 +59,9 @@ namespace IGCS::DX11Hooker
 	HRESULT __stdcall detourD3D11Present(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 	{
 		static bool _initializeDeviceAndContext = true;
+		static bool _presentInProgress = false;
 
-		if (_tmpSwapChainInitialized)
+		if (_tmpSwapChainInitialized && !_presentInProgress)
 		{
 			if (!(Flags & DXGI_PRESENT_TEST) && !_imGuiInitializing)
 			{

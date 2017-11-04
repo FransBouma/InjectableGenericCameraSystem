@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
-#include "ImGui.h"
+#include "imgui.h"
 
 namespace IGCS
 {
@@ -17,9 +17,9 @@ namespace IGCS
 		}
 
 		void clear() { _buf.clear(); _lineOffsets.clear(); }
-		void logDebug(const char* fmt, ...) IM_PRINTFARGS(2);
-		void logError(const char* fmt, ...) IM_PRINTFARGS(2);
-		void logLine(const char* fmt, ...)  IM_PRINTFARGS(2);
+		void logDebug(const char* fmt, ...) IM_FMTARGS(2);
+		void logError(const char* fmt, ...) IM_FMTARGS(2);
+		void logLine(const char* fmt, ...)  IM_FMTARGS(2);
 		void draw();
 
 		OverlayConsole(OverlayConsole const&) = delete;			// see: https://stackoverflow.com/a/1008289/44991
