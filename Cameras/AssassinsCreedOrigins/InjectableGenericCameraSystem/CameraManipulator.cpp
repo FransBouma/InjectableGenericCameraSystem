@@ -41,6 +41,7 @@ extern "C" {
 	LPBYTE g_fovStructAddress = nullptr;
 	LPBYTE g_resolutionScaleAddress = nullptr;
 	LPBYTE g_todStructAddress = nullptr;
+	LPBYTE g_timestopStructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -57,6 +58,21 @@ namespace IGCS::GameSpecific::CameraManipulator
 		g_resolutionScaleMenuValueAddress = address;
 	}
 	
+
+	// newValue: 1 == time should be frozen, 0 == normal gameplay
+	// returns true if the game was stopped by this call, false if the game was either already stopped or the state didn't change.
+	bool setTimeStopValue(byte newValue)
+	{
+		if (nullptr == g_timestopStructAddress)
+		{
+			return false;
+		}
+		LPBYTE timestopInMemory = (g_timestopStructAddress + TIMESTOP_IN_STRUCT_OFFSET);
+		bool toReturn = *timestopInMemory == (byte)0 && (newValue == (byte)1);
+		*timestopInMemory = newValue;
+		return toReturn;
+	}
+
 
 	void getSettingsFromGameState()
 	{

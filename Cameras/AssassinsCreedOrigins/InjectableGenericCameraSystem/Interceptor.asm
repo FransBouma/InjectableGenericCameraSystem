@@ -36,9 +36,11 @@ PUBLIC cameraWrite1Interceptor
 PUBLIC cameraWrite2Interceptor
 PUBLIC cameraWrite3Interceptor
 PUBLIC cameraWrite4Interceptor
+PUBLIC cameraWrite5Interceptor
 PUBLIC fovReadInterceptor
 PUBLIC resolutionScaleReadInterceptor
 PUBLIC todWriteInterceptor
+PUBLIC timestopReadInterceptor
 
 ;---------------------------------------------------------------
 
@@ -51,6 +53,7 @@ EXTERN g_cameraPhotoModeStructAddress: qword
 EXTERN g_fovStructAddress: qword
 EXTERN g_resolutionScaleAddress: qword
 EXTERN g_todStructAddress: qword
+EXTERN g_timestopStructAddress: qword
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -60,9 +63,11 @@ EXTERN _cameraWrite1InterceptionContinue: qword
 EXTERN _cameraWrite2InterceptionContinue: qword
 EXTERN _cameraWrite3InterceptionContinue: qword
 EXTERN _cameraWrite4InterceptionContinue: qword
+EXTERN _cameraWrite5InterceptionContinue: qword
 EXTERN _fovReadInterceptionContinue: qword
 EXTERN _resolutionScaleReadInterceptionContinue: qword
 EXTERN _todWriteInterceptionContinue: qword
+EXTERN _timestopReadInterceptionContinue: qword
 
 .data
 
@@ -216,6 +221,33 @@ exit:
 cameraWrite4Interceptor ENDP
 
 
+cameraWrite5Interceptor PROC
+; cutscene camera coords
+; v1.03
+;ACOrigins.exe+13D6640 - F3 0F10 98 B00B0000   - movss xmm3,[rax+00000BB0]
+;ACOrigins.exe+13D6648 - 0F14 D8               - unpcklps xmm3,xmm0
+;ACOrigins.exe+13D664B - 0F14 D1               - unpcklps xmm2,xmm1
+;ACOrigins.exe+13D664E - 0F14 DA               - unpcklps xmm3,xmm2
+;ACOrigins.exe+13D6651 - 0F29 1F               - movaps [rdi],xmm3				<< INTERCEPT HERE << WRITE coords
+;ACOrigins.exe+13D6654 - 48 8B 43 38           - mov rax,[rbx+38]
+;ACOrigins.exe+13D6658 - 0F28 80 A00B0000      - movaps xmm0,[rax+00000BA0]
+;ACOrigins.exe+13D665F - 0F29 45 00            - movaps [rbp+00],xmm0			
+;ACOrigins.exe+13D6663 - 48 8B 43 38           - mov rax,[rbx+38]				<< CONTINUE HERE
+;ACOrigins.exe+13D6667 - 8B 88 BC0B0000        - mov ecx,[rax+00000BBC]
+;ACOrigins.exe+13D666D - 48 8B 44 24 70        - mov rax,[rsp+70]
+;ACOrigins.exe+13D6672 - 89 08                 - mov [rax],ecx
+	cmp byte ptr [g_cameraEnabled], 1
+	je exit
+originalCode:
+	movaps xmmword ptr [rdi],xmm3			
+exit:
+	mov rax,[rbx+38h]
+	movaps xmm0, xmmword ptr [rax+00000BA0h]
+	movaps xmmword ptr [rbp+00h],xmm0
+	jmp qword ptr [_cameraWrite5InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+cameraWrite5Interceptor ENDP
+
+
 fovReadInterceptor PROC
 ;ACOrigins.exe+80717A - 0F29 85 10030000			- movaps [rbp+00000310],xmm0
 ;ACOrigins.exe+807181 - 0F29 8D 00030000			- movaps [rbp+00000300],xmm1
@@ -279,6 +311,31 @@ exit:
 	movss xmm1, dword ptr [rax]
 	jmp qword ptr [_todWriteInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 todWriteInterceptor ENDP
+
+
+timestopReadInterceptor PROC
+;ACOrigins.exe+11E2800 - 48 8D 8D 78010000     - lea rcx,[rbp+00000178]
+;ACOrigins.exe+11E2807 - 49 8B D5              - mov rdx,r13
+;ACOrigins.exe+11E280A - E8 B123FAFF           - call ACOrigins.exe+1184BC0
+;ACOrigins.exe+11E280F - 48 8B 4D 78           - mov rcx,[rbp+78]					
+;ACOrigins.exe+11E2813 - 44 8B 85 C4610000     - mov r8d,[rbp+000061C4]				<<< INTERCEPT HERE
+;ACOrigins.exe+11E281A - 48 8B 95 BC610000     - mov rdx,[rbp+000061BC]
+;ACOrigins.exe+11E2821 - 83 B9 58140000 00     - cmp dword ptr [rcx+00001458],00 	<<< READ timestop address.
+;ACOrigins.exe+11E2828 - 41 0F9F C1            - setg r9l							<<< CONTINUE HERE
+;ACOrigins.exe+11E282C - 41 C1 E8 11           - shr r8d,11 { 17 }
+;ACOrigins.exe+11E2830 - E8 DBC8F7FF           - call ACOrigins.exe+115F110
+;ACOrigins.exe+11E2835 - 48 8B 4D 78           - mov rcx,[rbp+78]
+;ACOrigins.exe+11E2839 - 44 8B 85 D0610000     - mov r8d,[rbp+000061D0]
+;ACOrigins.exe+11E2840 - 48 8B 95 C8610000     - mov rdx,[rbp+000061C8]
+	mov [g_timestopStructAddress], rcx
+originalCode:
+	mov r8d,[rbp+000061C4h]
+	mov rdx,[rbp+000061BCh]
+	cmp dword ptr [rcx+00001458h],00 
+exit:
+	jmp qword ptr [_timestopReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+timestopReadInterceptor ENDP
+
 
 
 END

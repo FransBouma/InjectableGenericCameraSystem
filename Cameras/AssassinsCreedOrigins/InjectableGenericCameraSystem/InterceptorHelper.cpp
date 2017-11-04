@@ -43,9 +43,11 @@ extern "C" {
 	void cameraWrite2Interceptor();
 	void cameraWrite3Interceptor();
 	void cameraWrite4Interceptor();
+	void cameraWrite5Interceptor();
 	void fovReadInterceptor();
 	void resolutionScaleReadInterceptor();
 	void todWriteInterceptor();
+	void timestopReadInterceptor();
 }
 
 // external addresses used in asm.
@@ -55,9 +57,11 @@ extern "C" {
 	LPBYTE _cameraWrite2InterceptionContinue = nullptr;
 	LPBYTE _cameraWrite3InterceptionContinue = nullptr;
 	LPBYTE _cameraWrite4InterceptionContinue = nullptr;
+	LPBYTE _cameraWrite5InterceptionContinue = nullptr;
 	LPBYTE _fovReadInterceptionContinue = nullptr;
 	LPBYTE _resolutionScaleReadInterceptionContinue = nullptr;
 	LPBYTE _todWriteInterceptionContinue = nullptr;
+	LPBYTE _timestopReadInterceptionContinue = nullptr;
 }
 
 
@@ -70,6 +74,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE2_INTERCEPT_KEY, "0F 58 E5 0F 29 26 41 0F 29 24 24 F3 41 0F 10 07 F3 0F 5F 05", 1);
 		aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE3_INTERCEPT_KEY, "44 0F 29 A7 70 04 00 00 45 0F 28 63 90 49 8B E3", 1);
 		aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE4_INTERCEPT_KEY, "0F 28 DC 0F 29 A7 80 04 00 00 0F 59 DD 0F 28 CB 0F 28 C3 0F C6 CB AA 0F C6 C3 55 F3 0F 58 C1", 1);
+		aobBlocks[CAMERA_WRITE5_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE5_INTERCEPT_KEY, "0F 29 1F 48 8B 43 38 0F 28 80 A0 0B 00 00 0F 29 45 00 48 8B 43 38", 1);
 		aobBlocks[FOV_WRITE1_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE1_INTERCEPT_KEY, "F3 0F 11 B7 64 02 00 00 48 8B CF 89 87 5C 07 00 00", 1);
 		aobBlocks[FOV_WRITE2_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE2_INTERCEPT_KEY, "F3 44 0F 11 93 64 02 00 00 49 8B D5 89 83 5C 07 00 00 48 8B CB E8", 1);
 		aobBlocks[FOV_READ_INTERCEPT_KEY] = new AOBBlock(FOV_READ_INTERCEPT_KEY, "F3 41 0F 10 94 24 24 01 00 00 45 0F 57 D2 41 0F 2F D2 F3 41 0F 10 8F 64 02 00 00", 1);
@@ -77,6 +82,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY] = new AOBBlock(RESOLUTION_SCALE_INTERCEPT_KEY, "41 8B 86 A8 00 00 00 48 8B CD 89 85 20 07 00 00", 1);
 		aobBlocks[RESOLUTION_SCALE_MENU_KEY] = new AOBBlock(RESOLUTION_SCALE_MENU_KEY, "F3 0F 5C 05 | ?? ?? ?? ?? 0F 54 05 ?? ?? ?? ?? 0F 2F 05 ?? ?? ?? ?? 0F 96 C0 22 D0 84 D2 0F 94 C0", 1);
 		aobBlocks[TOD_WRITE_INTERCEPT_KEY] = new AOBBlock(TOD_WRITE_INTERCEPT_KEY, "F3 0F 11 00 48 8B 83 40 02 00 00 F3 0F 10 08 0F 2F CA", 1);
+		aobBlocks[TIMESTOP_READ_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_READ_INTERCEPT_KEY, "44 8B 85 C4 61 00 00 48 8B 95 BC 61 00 00 83 B9 58 14 00 00 00", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -107,9 +113,11 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY], 0x10, &_cameraWrite2InterceptionContinue, &cameraWrite2Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY], 0x10, &_cameraWrite3InterceptionContinue, &cameraWrite3Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY], 0x10, &_cameraWrite4InterceptionContinue, &cameraWrite4Interceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE5_INTERCEPT_KEY], 0x12, &_cameraWrite5InterceptionContinue, &cameraWrite5Interceptor);
 		GameImageHooker::setHook(aobBlocks[FOV_READ_INTERCEPT_KEY], 0x1B, &_fovReadInterceptionContinue, &fovReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY], 0x10, &_resolutionScaleReadInterceptionContinue, &resolutionScaleReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[TOD_WRITE_INTERCEPT_KEY], 0x0F, &_todWriteInterceptionContinue, &todWriteInterceptor);
+		GameImageHooker::setHook(aobBlocks[TIMESTOP_READ_INTERCEPT_KEY], 0x15, &_timestopReadInterceptionContinue, &timestopReadInterceptor);
 		CameraManipulator::setResolutionScaleMenuValueAddress(Utils::calculateAbsoluteAddress(aobBlocks[RESOLUTION_SCALE_MENU_KEY], 4)); // ACOrigins.exe+813E74 - F3 0F5C 05 A87CDE03   - subss xmm0,[ACOrigins.exe+45FBB24]
 		enablePhotomodeEverywhere(aobBlocks);
 	}
@@ -117,21 +125,23 @@ namespace IGCS::GameSpecific::InterceptorHelper
 
 	void enablePhotomodeEverywhere(map<string, AOBBlock*> &aobBlocks)
 	{
-		//ACOrigins.exe+28D0AA6 - 74 13                 - je ACOrigins.exe+28D0ABB
-		//ACOrigins.exe+28D0AA8 - 48 8D 15 517AC9FE     - lea rdx,[ACOrigins.exe+1568500] { [-9.52] }
-		//ACOrigins.exe+28D0AAF - 48 8B C8              - mov rcx,rax
-		//ACOrigins.exe+28D0AB2 - E8 4975C9FE           - call ACOrigins.exe+1568000
-		//ACOrigins.exe+28D0AB7 - 84 C0                 - test al,al
-		//ACOrigins.exe+28D0AB9 - 74 D5                 - je ACOrigins.exe+28D0A90						<< NOP and photomode is usable in cutscenes. 
-		//ACOrigins.exe+28D0ABB - E8 606C4BFF           - call ACOrigins.exe+1D87720
-		//ACOrigins.exe+28D0AC0 - 80 B8 A9020000 00     - cmp byte ptr [rax+000002A9],00 { 0 }
-		//ACOrigins.exe+28D0AC7 - 74 0E                 - je ACOrigins.exe+28D0AD7
-		//ACOrigins.exe+28D0AC9 - B8 01000000           - mov eax,00000001 { 1 }
-		//ACOrigins.exe+28D0ACE - 48 81 C4 20010000     - add rsp,00000120 { 288 }
-		//ACOrigins.exe+28D0AD5 - 5B                    - pop rbx
-		//ACOrigins.exe+28D0AD6 - C3                    - ret 
+		//ACOrigins.exe+28F568B - E8 F0BBC5FE           - call ACOrigins.exe+1551280
+		//ACOrigins.exe+28F5690 - 48 05 68030000        - add rax,00000368 { 872 }
+		//ACOrigins.exe+28F5696 - 74 13                 - je ACOrigins.exe+28F56AB
+		//ACOrigins.exe+28F5698 - 48 8D 15 91C5C7FE     - lea rdx,[ACOrigins.exe+1571C30] { [-9.52] }
+		//ACOrigins.exe+28F569F - 48 8B C8              - mov rcx,rax
+		//ACOrigins.exe+28F56A2 - E8 59C0C7FE           - call ACOrigins.exe+1571700
+		//ACOrigins.exe+28F56A7 - 84 C0                 - test al,al
+		//ACOrigins.exe+28F56A9 - 74 D5                 - je ACOrigins.exe+28F5680						<< NOP and photomode is usable in cutscenes. 
+		//ACOrigins.exe+28F56AB - E8 30E34AFF           - call ACOrigins.exe+1DA39E0
+		//ACOrigins.exe+28F56B0 - 80 B8 A9020000 00     - cmp byte ptr [rax+000002A9],00 { 0 }			<< is 1 if photomode is enabled.
+		//ACOrigins.exe+28F56B7 - 74 0E                 - je ACOrigins.exe+28F56C7
+		//ACOrigins.exe+28F56B9 - B8 01000000           - mov eax,00000001 { 1 }
+		//ACOrigins.exe+28F56BE - 48 81 C4 20010000     - add rsp,00000120 { 288 }
+		//ACOrigins.exe+28F56C5 - 5B                    - pop rbx
+		//ACOrigins.exe+28F56C6 - C3                    - ret 
 
-		GameImageHooker::nopRange(aobBlocks[PHOTOMODE_ENABLE_ALWAYS_KEY], 2);			// ACOrigins.exe+28D0AB9 - 74 D5                 - je ACOrigins.exe+28D0A90
+		GameImageHooker::nopRange(aobBlocks[PHOTOMODE_ENABLE_ALWAYS_KEY], 2);			// ACOrigins.exe+28F56A9 - 74 D5                 - je ACOrigins.exe+28F5680
 	}
 
 
