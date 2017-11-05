@@ -40,6 +40,7 @@
 #include "UniversalD3D11Hook.h"
 #include "OverlayConsole.h"
 #include "OverlayControl.h"
+#include "MinHook.h"
 
 namespace IGCS
 {
@@ -324,10 +325,12 @@ namespace IGCS
 	// Initializes system. Will block till camera struct is found.
 	void System::initialize()
 	{
+		MH_Initialize();
+		OverlayControl::init();
 		Globals::instance().mainWindowHandle(Utils::findMainWindow(GetCurrentProcessId()));
 		InputHooker::setInputHooks();
-		DX11Hooker::initializeHook();
 		Input::registerRawInput();
+		DX11Hooker::initializeHook();
 
 		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
 		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);

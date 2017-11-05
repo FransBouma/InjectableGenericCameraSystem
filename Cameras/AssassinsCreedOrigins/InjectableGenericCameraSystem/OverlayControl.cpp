@@ -27,7 +27,7 @@ namespace IGCS::OverlayControl
 	//-----------------------------------------------
 	// statics
 	static vector<Notification> _activeNotifications;
-	static mutex _lock;	// we need a lock as notifications are added by our system thread but reads (and purges) are done from the dx11 hooked present thread
+	static CRITICAL_SECTION _notificationCriticalSection;
 	static volatile bool _displaySplash = true;
 	static volatile float _timeSplashFirstShown = -1;
 	static ImVec2 _splashWindowSize;
@@ -47,15 +47,21 @@ namespace IGCS::OverlayControl
 
 	//-----------------------------------------------
 	// code
+
+	void init()
+	{
+		InitializeCriticalSectionAndSpinCount(&_notificationCriticalSection, 0x400);
+	}
+
 	void addNotification(string notificationText)
 	{
-		_lock.lock();
+		EnterCriticalSection(&_notificationCriticalSection);
 			Notification toAdd;
 			toAdd.notificationText = notificationText;
 			toAdd.timeFirstDisplayed = -1.0f;
 			_activeNotifications.push_back(toAdd);
 			OverlayConsole::instance().logLine(notificationText.c_str());
-		_lock.unlock();
+		LeaveCriticalSection(&_notificationCriticalSection);
 	}
 
 
@@ -284,7 +290,7 @@ Special thanks to:
 
 	void renderNotifications()
 	{
-		_lock.lock();
+		EnterCriticalSection(&_notificationCriticalSection);
 			updateNotificationStore();
 			if (_activeNotifications.size() > 0)
 			{
@@ -304,7 +310,7 @@ Special thanks to:
 				}
 				ImGui::End();
 			}
-		_lock.unlock();
+		LeaveCriticalSection(&_notificationCriticalSection);
 	}
 
 

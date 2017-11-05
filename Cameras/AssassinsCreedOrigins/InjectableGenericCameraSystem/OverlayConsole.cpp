@@ -10,6 +10,16 @@ namespace IGCS
 	#define CONSOLE_DEBUG_PREFIX "[DEBUG]"
 	#define CONSOLE_ERROR_PREFIX ">> ERROR <<"
 
+
+	void OverlayConsole::clear()
+	{
+		EnterCriticalSection(&_contentCriticalSection);
+		_buf.clear();
+		_lineOffsets.clear();
+		LeaveCriticalSection(&_contentCriticalSection);
+	}
+
+
 	void OverlayConsole::logDebug(const char* fmt, ...) IM_FMTARGS(2)
 	{
 #ifdef _DEBUG
@@ -47,6 +57,7 @@ namespace IGCS
 
 	void OverlayConsole::logLinev(const char* fmt, va_list args)
 	{
+		EnterCriticalSection(&_contentCriticalSection);
 		int old_size = _buf.size();
 		va_list args_copy;
 		va_copy(args_copy, args);
@@ -60,6 +71,7 @@ namespace IGCS
 			}
 		}
 		_scrollToBottom = true;
+		LeaveCriticalSection(&_contentCriticalSection);
 	}
 
 
@@ -79,6 +91,8 @@ namespace IGCS
 		{
 			ImGui::LogToClipboard();
 		}
+
+		EnterCriticalSection(&_contentCriticalSection);
 		const char* buf_begin = _buf.begin();
 		const char* line = buf_begin;
 		for (int line_no = 0; line != NULL; line_no++)
@@ -101,7 +115,7 @@ namespace IGCS
 			}
 			line = line_end && line_end[1] ? line_end + 1 : NULL;
 		}
-
+		LeaveCriticalSection(&_contentCriticalSection);
 		if (_scrollToBottom)
 		{
 			ImGui::SetScrollHere(1.0f);

@@ -168,7 +168,6 @@ namespace IGCS::InputHooker
 	// they're enabled. 
 	void setInputHooks()
 	{
-		MH_Initialize();
 		if (MH_CreateHookApiEx(L"xinput9_1_0", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
 		{
 			OverlayConsole::instance().logError("Hooking XInput9_1_0 failed!");

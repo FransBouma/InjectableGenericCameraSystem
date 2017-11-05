@@ -40,8 +40,10 @@ namespace IGCS::DX11Hooker
 	static D3D11ResizeBuffersHook hookedD3D11ResizeBuffers = nullptr;
 
 	static bool _tmpSwapChainInitialized = false;
-	static bool _showWindow = true;
-	static bool _imGuiInitializing = false;
+	static volatile bool _showWindow = true;
+	static volatile bool _imGuiInitializing = false;
+	static volatile bool _initializeDeviceAndContext = true;
+	static volatile bool _presentInProgress = false;
 
 	HRESULT __stdcall detourD3D11ResizeBuffers(IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags)
 	{
@@ -58,10 +60,12 @@ namespace IGCS::DX11Hooker
 
 	HRESULT __stdcall detourD3D11Present(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 	{
-		static bool _initializeDeviceAndContext = true;
-		static bool _presentInProgress = false;
-
-		if (_tmpSwapChainInitialized && !_presentInProgress)
+		if (_presentInProgress)
+		{
+			return S_OK;
+		}
+		_presentInProgress = true;
+		if (_tmpSwapChainInitialized)
 		{
 			if (!(Flags & DXGI_PRESENT_TEST) && !_imGuiInitializing)
 			{
@@ -89,19 +93,22 @@ namespace IGCS::DX11Hooker
 
 					_initializeDeviceAndContext = false;
 				}
-
 				// render our own stuff
 				_context->OMSetRenderTargets(1, &_mainRenderTargetView, NULL);
 				OverlayControl::renderOverlay();
 				Input::resetKeyStates();
 				Input::resetMouseState();
 			}
+
 		}
-		return hookedD3D11Present(pSwapChain, SyncInterval, Flags);
+		HRESULT toReturn = hookedD3D11Present(pSwapChain, SyncInterval, Flags);
+		_presentInProgress = false;
+		return toReturn;
 	}
 
 	void initializeHook()
 	{
+		_tmpSwapChainInitialized = false;
 		D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 		DXGI_SWAP_CHAIN_DESC swapChainDesc;
 		ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
