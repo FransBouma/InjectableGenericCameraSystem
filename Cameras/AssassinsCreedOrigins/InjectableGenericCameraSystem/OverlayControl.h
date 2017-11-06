@@ -4,6 +4,7 @@
 
 namespace IGCS::OverlayControl
 {
+	void init();
 	void toggleOverlay();
 	void renderOverlay();
 	bool isMainMenuVisible();

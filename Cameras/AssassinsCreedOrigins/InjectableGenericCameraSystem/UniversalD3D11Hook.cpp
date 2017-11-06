@@ -10,6 +10,7 @@
 #include "OverlayControl.h"
 #include "OverlayConsole.h"
 #include "Input.h"
+#include <atomic>
 
 #pragma comment(lib, "d3d11.lib")
 
@@ -40,8 +41,9 @@ namespace IGCS::DX11Hooker
 	static D3D11ResizeBuffersHook hookedD3D11ResizeBuffers = nullptr;
 
 	static bool _tmpSwapChainInitialized = false;
-	static bool _showWindow = true;
-	static bool _imGuiInitializing = false;
+	static atomic_bool _imGuiInitializing = false;
+	static atomic_bool _initializeDeviceAndContext = true;
+	static atomic_bool _presentInProgress = false;
 
 	HRESULT __stdcall detourD3D11ResizeBuffers(IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags)
 	{
@@ -58,10 +60,12 @@ namespace IGCS::DX11Hooker
 
 	HRESULT __stdcall detourD3D11Present(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 	{
-		static bool _initializeDeviceAndContext = true;
-		static bool _presentInProgress = false;
-
-		if (_tmpSwapChainInitialized && !_presentInProgress)
+		if (_presentInProgress)
+		{
+			return S_OK;
+		}
+		_presentInProgress = true;
+		if (_tmpSwapChainInitialized)
 		{
 			if (!(Flags & DXGI_PRESENT_TEST) && !_imGuiInitializing)
 			{
@@ -89,19 +93,22 @@ namespace IGCS::DX11Hooker
 
 					_initializeDeviceAndContext = false;
 				}
-
 				// render our own stuff
 				_context->OMSetRenderTargets(1, &_mainRenderTargetView, NULL);
 				OverlayControl::renderOverlay();
 				Input::resetKeyStates();
 				Input::resetMouseState();
 			}
+
 		}
-		return hookedD3D11Present(pSwapChain, SyncInterval, Flags);
+		HRESULT toReturn = hookedD3D11Present(pSwapChain, SyncInterval, Flags);
+		_presentInProgress = false;
+		return toReturn;
 	}
 
 	void initializeHook()
 	{
+		_tmpSwapChainInitialized = false;
 		D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 		DXGI_SWAP_CHAIN_DESC swapChainDesc;
 		ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
@@ -234,9 +241,6 @@ namespace IGCS::DX11Hooker
 		style.Colors[ImGuiCol_Header] = ImVec4(0.50f, 0.50f, 0.53f, 0.49f);
 		style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.47f, 0.47f, 0.49f, 1.00f);
 		style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.40f, 0.40f, 0.44f, 0.31f);
-		style.Colors[ImGuiCol_Column] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
-		style.Colors[ImGuiCol_ColumnHovered] = ImVec4(0.23f, 0.23f, 0.24f, 1.00f);
-		style.Colors[ImGuiCol_ColumnActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
 		style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.44f, 0.44f, 0.44f, 0.30f);
 		style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);
 		style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);

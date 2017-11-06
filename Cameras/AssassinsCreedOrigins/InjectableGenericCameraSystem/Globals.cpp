@@ -33,7 +33,7 @@
 // data shared with asm functions. This is allocated here, 'C' style and not in some datastructure as passing that to 
 // MASM is rather tedious. 
 extern "C" {
-	byte g_cameraEnabled = 0;
+	BYTE g_cameraEnabled = 0;
 }
 
 

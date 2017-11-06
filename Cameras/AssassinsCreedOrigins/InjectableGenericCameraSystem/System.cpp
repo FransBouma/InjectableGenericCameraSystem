@@ -40,6 +40,7 @@
 #include "UniversalD3D11Hook.h"
 #include "OverlayConsole.h"
 #include "OverlayControl.h"
+#include "MinHook.h"
 
 namespace IGCS
 {
@@ -94,9 +95,9 @@ namespace IGCS
 		}
 
 		// calculate new camera values. We have two cameras, but they might not be available both, so we have to test before we do anything. 
-		XMVECTOR newLookQuaternion = _camera.calculateLookQuaternion();
-		XMFLOAT3 currentCoords; 
-		XMFLOAT3 newCoords;
+		DirectX::XMVECTOR newLookQuaternion = _camera.calculateLookQuaternion();
+		DirectX::XMFLOAT3 currentCoords;
+		DirectX::XMFLOAT3 newCoords;
 		if (GameSpecific::CameraManipulator::isCameraFound())
 		{
 			currentCoords = GameSpecific::CameraManipulator::getCurrentCameraCoords();
@@ -146,7 +147,7 @@ namespace IGCS
 				CameraManipulator::cacheOriginalValuesBeforeCameraEnable();
 				_camera.resetAngles();
 			}
-			g_cameraEnabled = g_cameraEnabled == 0 ? (byte)1 : (byte)0;
+			g_cameraEnabled = g_cameraEnabled == 0 ? (BYTE)1 : (BYTE)0;
 			displayCameraState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
@@ -324,10 +325,12 @@ namespace IGCS
 	// Initializes system. Will block till camera struct is found.
 	void System::initialize()
 	{
+		MH_Initialize();
+		OverlayControl::init();
 		Globals::instance().mainWindowHandle(Utils::findMainWindow(GetCurrentProcessId()));
 		InputHooker::setInputHooks();
-		DX11Hooker::initializeHook();
 		Input::registerRawInput();
+		DX11Hooker::initializeHook();
 
 		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
 		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);
@@ -388,7 +391,7 @@ namespace IGCS
 
 	void System::toggleTimestopState()
 	{
-		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
+		_timeStopped = _timeStopped == 0 ? (BYTE)1 : (BYTE)0;
 		OverlayControl::addNotification(_timeStopped ? "Game paused" : "Game unpaused");
 		CameraManipulator::setTimeStopValue(_timeStopped);
 	}

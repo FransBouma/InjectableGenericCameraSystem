@@ -11,6 +11,7 @@
 #include "Globals.h"
 #include "CameraManipulator.h"
 #include "Input.h"
+#include <atomic>
 
 using namespace std;
 
@@ -27,11 +28,11 @@ namespace IGCS::OverlayControl
 	//-----------------------------------------------
 	// statics
 	static vector<Notification> _activeNotifications;
-	static mutex _lock;	// we need a lock as notifications are added by our system thread but reads (and purges) are done from the dx11 hooked present thread
-	static volatile bool _displaySplash = true;
-	static volatile float _timeSplashFirstShown = -1;
+	static CRITICAL_SECTION _notificationCriticalSection;
+	static atomic_bool _displaySplash = true;
+	static atomic<float> _timeSplashFirstShown = -1;
 	static ImVec2 _splashWindowSize;
-	static int _menuItemSelected = 0;
+	static atomic_int _menuItemSelected = 0;
 	static bool _showMainWindow = false;
 	
 	//-----------------------------------------------
@@ -47,15 +48,21 @@ namespace IGCS::OverlayControl
 
 	//-----------------------------------------------
 	// code
+
+	void init()
+	{
+		InitializeCriticalSectionAndSpinCount(&_notificationCriticalSection, 0x400);
+	}
+
 	void addNotification(string notificationText)
 	{
-		_lock.lock();
+		EnterCriticalSection(&_notificationCriticalSection);
 			Notification toAdd;
 			toAdd.notificationText = notificationText;
 			toAdd.timeFirstDisplayed = -1.0f;
 			_activeNotifications.push_back(toAdd);
 			OverlayConsole::instance().logLine(notificationText.c_str());
-		_lock.unlock();
+		LeaveCriticalSection(&_notificationCriticalSection);
 	}
 
 
@@ -66,7 +73,7 @@ namespace IGCS::OverlayControl
 		Globals::instance().saveSettingsIfRequired(ImGui::GetIO().DeltaTime);
 
 		ImGui_ImplDX11_NewFrame();
-		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiSetCond_FirstUseEver);     // Normally user code doesn't need/want to call it because positions are saved in .ini file anyway. 
+		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);     // Normally user code doesn't need/want to call it because positions are saved in .ini file anyway. 
 		auto& io = ImGui::GetIO();
 		io.MouseDrawCursor = _showMainWindow;
 		renderSplash();
@@ -82,7 +89,7 @@ namespace IGCS::OverlayControl
 		{
 			return;
 		}
-		ImGui::SetNextWindowSize(ImVec2(700, 450), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(700, 450), ImGuiCond_FirstUseEver);
 		string title = string("Injectable Camera Tools v") + CAMERA_VERSION + " for " + GAME_NAME;
 		ImGui::Begin(title.c_str(), &_showMainWindow, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse);
 
@@ -284,7 +291,7 @@ Special thanks to:
 
 	void renderNotifications()
 	{
-		_lock.lock();
+		EnterCriticalSection(&_notificationCriticalSection);
 			updateNotificationStore();
 			if (_activeNotifications.size() > 0)
 			{
@@ -294,8 +301,7 @@ Special thanks to:
 					yCoord = _splashWindowSize.y + 5.0f;	// add a tiny space between splash and the notifications.
 				}
 				ImGui::SetNextWindowPos(ImVec2(10, yCoord));
-				if (ImGui::Begin("Notifications", nullptr, ImVec2(0, 0), 0.3f, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | 
-																				ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings))
+				if (ImGui::Begin("Notifications", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings))
 				{
 					for (vector<Notification>::iterator it = _activeNotifications.begin(); it < _activeNotifications.end(); it++)
 					{
@@ -304,7 +310,7 @@ Special thanks to:
 				}
 				ImGui::End();
 			}
-		_lock.unlock();
+		LeaveCriticalSection(&_notificationCriticalSection);
 	}
 
 
@@ -341,14 +347,14 @@ Special thanks to:
 		{
 			_timeSplashFirstShown = currentRenderTime;
 		}
-		_displaySplash &= (currentRenderTime - _timeSplashFirstShown) < IGCS_SPLASH_DURATION;
+		_displaySplash = _displaySplash & ((currentRenderTime - _timeSplashFirstShown) < IGCS_SPLASH_DURATION);
 		if (!_displaySplash)
 		{
 			return;
 		}
 		ImGui::SetNextWindowPos(ImVec2(10, 10));
-		if (!ImGui::Begin("IGCS Splash", nullptr, ImVec2(0, 0), 0.3f, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | 
-																	  ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings))
+		if (!ImGui::Begin("IGCS Splash", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | 
+												  ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings))
 		{
 			ImGui::End();
 			return;

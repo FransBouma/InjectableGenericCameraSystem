@@ -153,7 +153,7 @@ namespace IGCS::Utils
 
 	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, AOBBlock* const toScanFor)
 	{
-		register BYTE firstByte = *(toScanFor->bytePattern());
+		BYTE firstByte = *(toScanFor->bytePattern());
 		__int64 length = (__int64)imageAddress + imageSize - toScanFor->patternSize();
 
 		LPBYTE toReturn = nullptr;
@@ -162,7 +162,7 @@ namespace IGCS::Utils
 		{
 			// reset the pointer found, as we're not interested in this occurrence, we need a following occurrence.
 			toReturn = nullptr;
-			for (register __int64 i = (__int64)startOfScan; i < length; i += 4)
+			for (__int64 i = (__int64)startOfScan; i < length; i += 4)
 			{
 				unsigned x = *(unsigned*)(i);
 
@@ -216,6 +216,7 @@ namespace IGCS::Utils
 	// next instruction starts.
 	LPBYTE calculateAbsoluteAddress(AOBBlock* locationData, int nextOpCodeOffset)
 	{
+		assert(locationData != nullptr);
 		// ripRelativeValueAddress is the absolute address of a DWORD value which is a RIP relative offset. A calculation has to be performed on x64 to
 		// calculate from that rip relative value and its location the real absolute address it refers to. That address is returned.
 		LPBYTE ripRelativeValueAddress = locationData->locationInImage() + locationData->customOffset();

@@ -33,6 +33,7 @@
 #include "OverlayConsole.h"
 #include "OverlayControl.h"
 #include <mutex>
+#include <atomic>
 
 namespace IGCS::Input
 {
@@ -40,16 +41,11 @@ namespace IGCS::Input
 
 	// The key/mouse states are unprotected for write/read. This is initially bad, but protecting it with a mutex is difficult as the present call
 	// will read it and multiple calls from that thread causes mutex problems. For now they're unprotected (not that bad, the next frame it will be corrected anyway).
-	static byte g_keyStates[256];		// 0x0==nothing, 0x88==key is down this frame, 0x08==key is released, 0x80==key was down previous frame.
-	static byte g_mouseButtonStates[3];	// 0x0==nothing, 0x88==button is down this frame, 0x08==button is released, 0x80==button was down previous frame.
+	static BYTE g_keyStates[256];		// 0x0==nothing, 0x88==key is down this frame, 0x08==key is released, 0x80==key was down previous frame.
+	static BYTE g_mouseButtonStates[3];	// 0x0==nothing, 0x88==button is down this frame, 0x08==button is released, 0x80==button was down previous frame.
 	static short g_mouseWheelDelta = 0;
-
-	// I know, multi-threaded programming, but these two values are scalars, and read/write of multiple threads (which is the case) doesn't really 
-	// matter: wrapping this in mutexes is overkill: x86 processors can write up to 7 bytes in an atomic instruction, more than enough for a long, 
-	// and the values are used in a system which is updated rapidly, so if a write overlaps a read, the next frame will correct that. The 'volatile'
-	// keyword should be enough to mark them for the optimizer not to mess with them. 
-	volatile static long _deltaMouseX = 0;
-	volatile static long _deltaMouseY = 0;
+	static atomic_long _deltaMouseX = 0;
+	static atomic_long _deltaMouseY = 0;
 	
 	void setMouseButtonState(int button, bool down);
 
