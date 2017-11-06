@@ -10,6 +10,7 @@
 #include "OverlayControl.h"
 #include "OverlayConsole.h"
 #include "Input.h"
+#include <atomic>
 
 #pragma comment(lib, "d3d11.lib")
 
@@ -40,10 +41,9 @@ namespace IGCS::DX11Hooker
 	static D3D11ResizeBuffersHook hookedD3D11ResizeBuffers = nullptr;
 
 	static bool _tmpSwapChainInitialized = false;
-	static volatile bool _showWindow = true;
-	static volatile bool _imGuiInitializing = false;
-	static volatile bool _initializeDeviceAndContext = true;
-	static volatile bool _presentInProgress = false;
+	static atomic_bool _imGuiInitializing = false;
+	static atomic_bool _initializeDeviceAndContext = true;
+	static atomic_bool _presentInProgress = false;
 
 	HRESULT __stdcall detourD3D11ResizeBuffers(IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags)
 	{
@@ -241,9 +241,6 @@ namespace IGCS::DX11Hooker
 		style.Colors[ImGuiCol_Header] = ImVec4(0.50f, 0.50f, 0.53f, 0.49f);
 		style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.47f, 0.47f, 0.49f, 1.00f);
 		style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.40f, 0.40f, 0.44f, 0.31f);
-		style.Colors[ImGuiCol_Column] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
-		style.Colors[ImGuiCol_ColumnHovered] = ImVec4(0.23f, 0.23f, 0.24f, 1.00f);
-		style.Colors[ImGuiCol_ColumnActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
 		style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.44f, 0.44f, 0.44f, 0.30f);
 		style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);
 		style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);

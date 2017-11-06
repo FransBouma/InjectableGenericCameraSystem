@@ -180,9 +180,9 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		if (enabled)
 		{
 			// enable writes
-			byte originalStatementBytes1[8] = { 0xF3, 0x0F, 0x11, 0xB7, 0x64, 0x02, 0x00, 0x00 };			// ACOrigins.exe+1058756 - F3 0F11 B7 64020000   - movss [rdi+00000264],xmm6
+			BYTE originalStatementBytes1[8] = { 0xF3, 0x0F, 0x11, 0xB7, 0x64, 0x02, 0x00, 0x00 };			// ACOrigins.exe+1058756 - F3 0F11 B7 64020000   - movss [rdi+00000264],xmm6
 			GameImageHooker::writeRange(aobBlocks[FOV_WRITE1_INTERCEPT_KEY], originalStatementBytes1, 8);
-			byte originalStatementBytes2[9] = { 0xF3, 0x44, 0x0F, 0x11, 0x93, 0x64, 0x02, 0x00, 0x00 };		// ACOrigins.exe+109C584 - F3 44 0F11 93 64020000  - movss [rbx+00000264],xmm10
+			BYTE originalStatementBytes2[9] = { 0xF3, 0x44, 0x0F, 0x11, 0x93, 0x64, 0x02, 0x00, 0x00 };		// ACOrigins.exe+109C584 - F3 44 0F11 93 64020000  - movss [rbx+00000264],xmm10
 			GameImageHooker::writeRange(aobBlocks[FOV_WRITE2_INTERCEPT_KEY], originalStatementBytes2, 9);
 		}
 		else

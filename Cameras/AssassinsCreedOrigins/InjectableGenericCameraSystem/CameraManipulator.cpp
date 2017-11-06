@@ -61,14 +61,14 @@ namespace IGCS::GameSpecific::CameraManipulator
 
 	// newValue: 1 == time should be frozen, 0 == normal gameplay
 	// returns true if the game was stopped by this call, false if the game was either already stopped or the state didn't change.
-	bool setTimeStopValue(byte newValue)
+	bool setTimeStopValue(BYTE newValue)
 	{
 		if (nullptr == g_timestopStructAddress)
 		{
 			return false;
 		}
 		LPBYTE timestopInMemory = (g_timestopStructAddress + TIMESTOP_IN_STRUCT_OFFSET);
-		bool toReturn = *timestopInMemory == (byte)0 && (newValue == (byte)1);
+		bool toReturn = *timestopInMemory == (BYTE)0 && (newValue == (BYTE)1);
 		*timestopInMemory = newValue;
 		return toReturn;
 	}

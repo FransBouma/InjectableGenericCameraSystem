@@ -61,7 +61,7 @@ namespace IGCS::InputHooker
 
 	//-----------------------------------------------
 	// statics
-	static mutex _lock;
+	static CRITICAL_SECTION _messageProcessCriticalSection;
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Implementations
@@ -151,7 +151,7 @@ namespace IGCS::InputHooker
 
 	void processMessage(LPMSG lpMsg, bool removeIfRequired)
 	{
-		_lock.lock();
+		EnterCriticalSection(&_messageProcessCriticalSection);
 			if (lpMsg->hwnd != nullptr /* && removeIfRequired */ && Input::handleMessage(lpMsg))
 			{
 				// message was handled by our code. This means it's a message we want to block if input blocking is enabled or the overlay / menu is shown
@@ -160,7 +160,7 @@ namespace IGCS::InputHooker
 					lpMsg->message = WM_NULL;	// reset to WM_NULL so the host will receive a dummy message instead.
 				}
 			}
-		_lock.unlock();
+		LeaveCriticalSection(&_messageProcessCriticalSection);
 	}
 
 
@@ -168,6 +168,8 @@ namespace IGCS::InputHooker
 	// they're enabled. 
 	void setInputHooks()
 	{
+		InitializeCriticalSectionAndSpinCount(&_messageProcessCriticalSection, 0x400);
+
 		if (MH_CreateHookApiEx(L"xinput9_1_0", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
 		{
 			OverlayConsole::instance().logError("Hooking XInput9_1_0 failed!");

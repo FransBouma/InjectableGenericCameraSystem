@@ -33,8 +33,8 @@
 #include "CDataFile.h"
 #include "Utils.h"
 
-extern "C" byte g_cameraEnabled;
-extern "C" byte g_gamePaused;
+extern "C" BYTE g_cameraEnabled;
+extern "C" BYTE g_gamePaused;
 
 namespace IGCS
 {
