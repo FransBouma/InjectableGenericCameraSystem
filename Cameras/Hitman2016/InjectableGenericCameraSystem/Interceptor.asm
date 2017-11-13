@@ -37,6 +37,7 @@ PUBLIC cameraWriteInterceptor2
 PUBLIC cameraWriteInterceptor3
 PUBLIC cameraReadInterceptor1
 PUBLIC gamespeedAddressInterceptor
+PUBLIC fovWriteInterceptor
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -56,8 +57,15 @@ EXTERN _cameraWriteInterceptionContinue2: qword
 EXTERN _cameraWriteInterceptionContinue3: qword
 EXTERN _cameraReadInterceptionContinue1: qword
 EXTERN _gamespeedInterceptionContinue: qword
+EXTERN _fovWriteInterceptionContinue: qword
 
-
+; Scratch pad
+;hitman.exe+E609DA - 0F28 CE               - movaps xmm1,xmm6
+;hitman.exe+E609DD - 8B 0D 19EFD300        - mov ecx,[hitman.exe+1B9F8FC]
+;hitman.exe+E609E3 - F3 0F10 05 9D6C0C02   - movss xmm0,[hitman.exe+2F27688] << supersampling read here
+;hitman.exe+E609EB - 85 C9                 - test ecx,ecx
+;hitman.exe+E609ED - 74 08                 - je hitman.exe+E609F7
+;
 ;---------------------------------------------------------------
 .code
 
@@ -172,10 +180,20 @@ exit:
 cameraWriteInterceptor3 ENDP
 
 cameraReadInterceptor1 PROC
-;hitman.exe+43BD210 - 53                    - push rbx								<<< HERE
-;hitman.exe+43BD211 - 48 81 EC 80000000     - sub rsp,00000080 { 128 }		
-;hitman.exe+43BD218 - F6 81 AE000000 02     - test byte ptr [rcx+000000AE],02 { 2 }
-;hitman.exe+43BD21F - 48 89 CB              - mov rbx,rcx							<<< CONTINUE
+; v1.13.2
+;0000000140BDE4C0 | 40 53                    | push rbx										<< INTERCEPT HERE
+;0000000140BDE4C2 | 48 81 EC 80 00 00 00     | sub rsp,80                            
+;0000000140BDE4C9 | F6 81 AE 00 00 00 02     | test byte ptr ds:[rcx+AE],2           
+;0000000140BDE4D0 | 48 8B D9                 | mov rbx,rcx									<< CONTINUE
+;0000000140BDE4D3 | 0F 84 53 02 00 00        | je hitman_dump.140BDE72C              
+;0000000140BDE4D9 | 48 8B 41 18              | mov rax,qword ptr ds:[rcx+18]         
+;0000000140BDE4DD | F3 0F 10 81 98 00 00 00  | movss xmm0,dword ptr ds:[rcx+98]      
+;0000000140BDE4E5 | 0F 29 7C 24 60           | movaps xmmword ptr ss:[rsp+60],xmm7   
+;0000000140BDE4EA | F3 0F 7E B9 90 00 00 00  | movq xmm7,qword ptr ds:[rcx+90]       
+;0000000140BDE4F2 | 44 0F 29 44 24 50        | movaps xmmword ptr ss:[rsp+50],xmm8   
+;0000000140BDE4F8 | 0F C6 F8 04              | shufps xmm7,xmm0,4                    
+;0000000140BDE4FC | 44 0F 10 81 80 00 00 00  | movups xmm8,xmmword ptr ds:[rcx+80]   
+;0000000140BDE504 | 48 85 C0                 | test rax,rax                          
 	cmp byte ptr [g_cameraEnabled], 1					
 	jne originalCode
 	cmp byte ptr [g_aimFrozen], 1
@@ -190,5 +208,28 @@ originalCode:
 exit:
 	jmp qword ptr [_cameraReadInterceptionContinue1]	; jmp back into the original game code which is the location after the original statements above.
 cameraReadInterceptor1 ENDP
+
+
+fovWriteInterceptor PROC
+; FOV write:  (1.13.2)
+; hitman.exe+398799 - 0F28 C1               - movaps xmm0,xmm1
+; hitman.exe+39879C - 48 8B 89 E8060000     - mov rcx,[rcx+000006E8]
+; hitman.exe+3987A3 - 48 85 C9              - test rcx,rcx
+; hitman.exe+3987A6 - 74 05                 - je hitman.exe+3987AD
+; hitman.exe+3987A8 - E8 A3C0FEFF           - call hitman.exe+384850
+; hitman.exe+3987AD - 0F28 C8               - movaps xmm1,xmm0
+; hitman.exe+3987B0 - F3 0F11 83 00070000   - movss [rbx+00000700],xmm0				<< INTERCEPT HERE	<< FOV WRITE (Degrees. Default is 40)
+; hitman.exe+3987B8 - 48 8B CB              - mov rcx,rbx
+; hitman.exe+3987BB - 48 83 C4 20           - add rsp,20 { 32 }
+; hitman.exe+3987BF - 5B                    - pop rbx								<< CONTINUE HERE
+	cmp byte ptr [g_cameraEnabled], 1					
+	je exit
+originalCode:
+	movss dword ptr [rbx+00000700h],xmm0
+exit:
+	mov rcx,rbx
+	add rsp,20h
+	jmp qword ptr [_fovWriteInterceptionContinue]	; jmp back into the original game code which is the location after the original statements above.
+fovWriteInterceptor ENDP
 
 END

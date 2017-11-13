@@ -33,6 +33,7 @@
 #include "Utils.h"
 #include "AOBBlock.h"
 #include "Console.h"
+#include "CameraManipulator.h"
 
 using namespace std;
 
@@ -45,22 +46,18 @@ extern "C" {
 	void cameraWriteInterceptor3();
 	void cameraReadInterceptor1();
 	void gamespeedAddressInterceptor();
+	void fovWriteInterceptor();
 }
 
 // external addresses used in asm.
 extern "C" {
-	// The continue address for continuing execution after camera values address interception. 
-	LPBYTE _cameraStructInterceptionContinue = 0;
-	// the continue address for continuing execution after interception of the first block of code which writes to the camera values. 
-	LPBYTE _cameraWriteInterceptionContinue1 = 0;
-	// the continue address for continuing execution after interception of the second block of code which writes to the camera values. 
-	LPBYTE _cameraWriteInterceptionContinue2 = 0;
-	// the continue address for continuing execution after interception of the third block of code which writes to the camera values. 
-	LPBYTE _cameraWriteInterceptionContinue3 = 0;
-	// the continue address for the continuing execution after interception of the gamespeed block of code. 
-	LPBYTE _gamespeedInterceptionContinue = 0;
-	// the continue address for the continuing exeuction after interception of the camera quaternion read code.
-	LPBYTE _cameraReadInterceptionContinue1 = 0;
+	LPBYTE _cameraStructInterceptionContinue = nullptr;
+	LPBYTE _cameraWriteInterceptionContinue1 = nullptr;
+	LPBYTE _cameraWriteInterceptionContinue2 = nullptr;
+	LPBYTE _cameraWriteInterceptionContinue3 = nullptr;
+	LPBYTE _gamespeedInterceptionContinue = nullptr;
+	LPBYTE _cameraReadInterceptionContinue1 = nullptr;
+	LPBYTE _fovWriteInterceptionContinue = nullptr;
 }
 
 
@@ -72,10 +69,10 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE_INTERCEPT1_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT1_KEY, "0F 28 00 0F 11 83 80 00 00 00 F3 0F 10 44 24 50 F3 0F 11 83 90 00 00 00", 3);
 		aobBlocks[CAMERA_WRITE_INTERCEPT2_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT2_KEY, "F3 0F 11 83 98 00 00 00 F3 0F 11 8B 94 00 00 00 EB", 3);
 		aobBlocks[CAMERA_WRITE_INTERCEPT3_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT3_KEY, "0F 11 83 80 00 00 00 0F 28 4F 30 0F 28 C1 F3 0F 11 8B 90 00 00 00 0F C6 C1 55 0F C6 C9 AA", 3);
-		aobBlocks[CAMERA_READ_INTERCEPT_KEY] = new AOBBlock(CAMERA_READ_INTERCEPT_KEY, "53 48 81 EC 80 00 00 00 F6 81 AE 00 00 00 02 48 89 CB", 1);
+		aobBlocks[CAMERA_READ_INTERCEPT_KEY] = new AOBBlock(CAMERA_READ_INTERCEPT_KEY, "53 48 81 EC ?? 00 00 00 F6 81 ?? 00 00 00 ??", 1);
 		aobBlocks[GAMESPEED_ADDRESS_INTERCEPT_KEY] = new AOBBlock(GAMESPEED_ADDRESS_INTERCEPT_KEY, "48 89 43 28 48 8B 4B 18 48 89 4B 20 48 01 43 18 EB", 1);
-		aobBlocks[FOV_WRITE_INTERCEPT1_KEY] = new AOBBlock(FOV_WRITE_INTERCEPT1_KEY, "74 ?? F3 0F 10 05 ?? ?? ?? ?? F3 0F 11 89 FC 00 00 00 F3 0F 59 0D ?? ?? ?? ?? 0F 2F C8", 1);
-		aobBlocks[FOV_WRITE_INTERCEPT2_KEY] = new AOBBlock(FOV_WRITE_INTERCEPT2_KEY, "0F 28 C1 | F3 0F 11 81 7C 01 00 00 E9 ?? ?? ?? ?? C3", 1);	// offset is at 'F3' so we use a '|'. 
+		aobBlocks[FOV_WRITE_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE_INTERCEPT_KEY, "F3 0F 11 83 00 07 00 00 48 8B CB 48 83 C4 20", 1);
+		aobBlocks[SUPERSAMPLING_ADDRESS_KEY] = new AOBBlock(SUPERSAMPLING_ADDRESS_KEY, "8B 0D ?? ?? ?? ?? F3 0F 10 05 | ?? ?? ?? ?? 85 C9", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -107,20 +104,13 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE_INTERCEPT2_KEY], 0x10, &_cameraWriteInterceptionContinue2, &cameraWriteInterceptor2);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE_INTERCEPT3_KEY], 0x2E, &_cameraWriteInterceptionContinue3, &cameraWriteInterceptor3);
 		GameImageHooker::setHook(aobBlocks[CAMERA_READ_INTERCEPT_KEY], 0xF, &_cameraReadInterceptionContinue1, &cameraReadInterceptor1);
+		GameImageHooker::setHook(aobBlocks[FOV_WRITE_INTERCEPT_KEY], 0xF, &_fovWriteInterceptionContinue, &fovWriteInterceptor);
+		CameraManipulator::setResolutionScaleMenuValueAddress(Utils::calculateAbsoluteAddress(aobBlocks[SUPERSAMPLING_ADDRESS_KEY], 4));	//hitman.exe+E609E3 - F3 0F10 05 9D6C0C02   - movss xmm0,[hitman.exe+2F27688] << supersampling read here
 	}
 
 
 	void setTimestopInterceptorHook(map<string, AOBBlock*> &aobBlocks)
 	{
 		GameImageHooker::setHook(aobBlocks[GAMESPEED_ADDRESS_INTERCEPT_KEY], 0x10, &_gamespeedInterceptionContinue, &gamespeedAddressInterceptor);
-	}
-
-
-	// The FoV write is disabled with NOPs, as the code block contains jumps out of the block so it's not easy to intercept with a silent method. It's OK though
-	// as the FoV changes simply change a value, so instead of the game keeping it at a value we overwrite it. We reset it to a default value when the FoV is disabled by the user 
-	void disableFoVWrite(map<string, AOBBlock*> &aobBlocks)
-	{
-		GameImageHooker::nopRange(aobBlocks[FOV_WRITE_INTERCEPT1_KEY], 2);
-		GameImageHooker::nopRange(aobBlocks[FOV_WRITE_INTERCEPT2_KEY], 8);
 	}
 }

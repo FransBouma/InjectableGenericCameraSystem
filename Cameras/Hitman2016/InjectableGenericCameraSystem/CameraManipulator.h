@@ -33,6 +33,7 @@ using namespace DirectX;
 namespace IGCS::GameSpecific::CameraManipulator
 {
 	void writeNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoords);
+	void setResolutionScaleMenuValueAddress(LPBYTE address);
 	void waitForCameraStructAddresses();
 	void restoreOriginalCameraValues();
 	void cacheOriginalCameraValues();

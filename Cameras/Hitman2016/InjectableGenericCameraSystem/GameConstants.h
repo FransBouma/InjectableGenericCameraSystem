@@ -30,8 +30,8 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Hitman 2016 v1.10.0"
-	#define CAMERA_VERSION								"1.0.9"
+	#define GAME_NAME									"Hitman 2016 v1.13.2"
+	#define CAMERA_VERSION								"1.0.10"
 	#define CAMERA_CREDITS								"Otis_Inf, Jim2Point0. Special thanks to: One3rd"
 	#define GAME_WINDOW_TITLE							"HITMAN"
 	#define INITIAL_PITCH_RADIANS						(-90.0f * XM_PI) / 180.f	// World has Z up and Y out of the screen, so rotate around X (pitch) -90 degrees.
@@ -44,9 +44,8 @@ namespace IGCS::GameSpecific
 	#define DEFAULT_SUPERSAMPLING_SPEED					0.05f
 	#define DEFAULT_MOVEMENT_SPEED						0.03f
 	#define DEFAULT_ROTATION_SPEED						0.01f
-	#define DEFAULT_FOV_RADIANS							0.7f
 	#define DEFAULT_FOV_DEGREES							40.0f
-	#define DEFAULT_FOV_SPEED							0.002f
+	#define DEFAULT_FOV_SPEED							0.1f
 	#define DEFAULT_Z_MOVEMENT_MULTIPLIER				0.5f
 	#define DEFAULT_MIN_GAME_SPEED						0.1f
 	#define DEFAULT_MAX_GAME_SPEED						10.0f
@@ -59,15 +58,14 @@ namespace IGCS::GameSpecific
 	#define CAMERA_WRITE_INTERCEPT3_KEY					"AOB_CAMERA_WRITE_INTERCEPT3"
 	#define CAMERA_READ_INTERCEPT_KEY					"AOB_CAMERA_READ_INTERCEPT3"
 	#define GAMESPEED_ADDRESS_INTERCEPT_KEY				"AOB_GAMESPEED_ADDRESS_INTERCEPT"
-	#define FOV_WRITE_INTERCEPT1_KEY					"AOB_FOV_WRITE_INTERCEPT1"
-	#define FOV_WRITE_INTERCEPT2_KEY					"AOB_FOV_WRITE_INTERCEPT2"
+	#define FOV_WRITE_INTERCEPT_KEY						"AOB_FOV_WRITE_INTERCEPT"
+	#define SUPERSAMPLING_ADDRESS_KEY					"AOB_SUPERSAMPLING_ADDRESS"
 														
 	// Indices in the structures read by interceptors 
 	#define LOOK_QUATERNION_IN_CAMERA_STRUCT_OFFSET		0x80		
 	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0x90		
-	#define FOV_IN_CAMERA_STRUCT_OFFSET					0x17C		
+	#define FOV_IN_CAMERA_STRUCT_OFFSET					0x700		
 	#define GAMESPEED_IN_STRUCT_OFFSET					0x48		
-	#define SUPERSAMPLING_OFFSET						0x305A008	// offset of the supersampling variable, within hitman.exe. Doesn't change often.
 
 	// specific option.
 	#define IGCS_KEY_FREEZE_47							VK_END	

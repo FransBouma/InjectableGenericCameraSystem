@@ -49,4 +49,5 @@ namespace IGCS::Utils
 	MODULEINFO getModuleInfoOfContainingProcess();
 	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, AOBBlock* const toScanFor);
 	BYTE CharToByte(char c);
+	LPBYTE calculateAbsoluteAddress(AOBBlock* locationData, int nextOpCodeOffset);
 }

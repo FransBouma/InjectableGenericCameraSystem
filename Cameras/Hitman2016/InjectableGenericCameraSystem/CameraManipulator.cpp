@@ -36,6 +36,7 @@ using namespace std;
 extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
 	LPBYTE g_gamespeedStructAddress = nullptr;
+	LPBYTE g_resolutionScaleMenuValueAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -43,10 +44,16 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static float _originalLookData[4];
 	static float _originalCoordsData[3];
 	static bool _timeHasBeenStopped = false;
+	
+
+	void setResolutionScaleMenuValueAddress(LPBYTE address)
+	{
+		g_resolutionScaleMenuValueAddress = address;
+	}
 
 	void changeSupersampling(LPBYTE hostImageAddress, float amount)
 	{
-		float* superSamplingValueAddress = reinterpret_cast<float*>(hostImageAddress + SUPERSAMPLING_OFFSET);
+		float* superSamplingValueAddress = reinterpret_cast<float*>(g_resolutionScaleMenuValueAddress);
 		float newValue = (*superSamplingValueAddress) + amount;
 		if (newValue < 0.5f)
 		{
@@ -138,7 +145,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void resetFoV()
 	{
 		float* fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_CAMERA_STRUCT_OFFSET);
-		*fovInMemory = DEFAULT_FOV_RADIANS;
+		*fovInMemory = DEFAULT_FOV_DEGREES;
 	}
 
 

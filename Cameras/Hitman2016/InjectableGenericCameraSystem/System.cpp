@@ -335,7 +335,6 @@ namespace IGCS
 		_camera.setYaw(INITIAL_YAW_RADIANS);
 		// initialize the writes after the camera has been found and initialized, as they rely on the camera struct address.
 		GameSpecific::InterceptorHelper::setCameraWriteInterceptorHooks(_aobBlocks);
-		GameSpecific::InterceptorHelper::disableFoVWrite(_aobBlocks);
 	}
 	
 
@@ -421,8 +420,8 @@ namespace IGCS
 		Console::WriteLine("Numpad 4/Numpad 6 or l-stick          : Move camera left / right");
 		Console::WriteLine("Numpad 7/Numpad 9 or l/r-trigger      : Move camera up / down");
 		Console::WriteLine("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
-		Console::WriteLine("Numpad +/Numpad - or d-pad up/down    : Increase / decrease FoV");
-		Console::WriteLine("Numpad * or controller B-button       : Reset FoV");
+		Console::WriteLine("Numpad +/Numpad - or d-pad up/down    : Increase / decrease FoV (with camera)");
+		Console::WriteLine("Numpad * or controller B-button       : Reset FoV (with camera)");
 		Console::WriteLine("Numpad 0                              : Pause / Continue game");
 		Console::WriteLine("F2                                    : Decrease Game speed (during pause)");
 		Console::WriteLine("F3                                    : Increase Game speed (during pause)");
@@ -430,7 +429,7 @@ namespace IGCS
 		Console::WriteLine("[                                     : Decrease Supersampling value");
 		Console::WriteLine("]                                     : Increase Supersampling value (careful!)");
 		Console::WriteLine("Numpad /                              : Toggle Y look direction");
-		Console::WriteLine("Numpad .                              : Block input to game");
+		Console::WriteLine("Numpad .                              : Toggle block input to game");
 		Console::WriteLine("ALT+H                                 : This help");
 		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
 		// wait for 350ms to avoid fast keyboard hammering

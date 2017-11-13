@@ -146,7 +146,7 @@ namespace IGCS::InputHooker
 
 	void processMessage(LPMSG lpMsg, bool removeIfRequired)
 	{
-		if (lpMsg->hwnd != nullptr && removeIfRequired && Input::handleMessage(lpMsg))
+		if (lpMsg->hwnd != nullptr /*&& removeIfRequired*/ && Input::handleMessage(lpMsg))
 		{
 			// message was handled by our code. This means it's a message we want to block if input blocking is enabled. 
 			if (Globals::instance().inputBlocked())
