@@ -38,8 +38,8 @@ namespace IGCS::GameSpecific
 	#define INITIAL_YAW_RADIANS							0.0f
 	#define INITIAL_ROLL_RADIANS						0.0f
 	#define CONTROLLER_Y_INVERT							true
-	#define FASTER_MULTIPLIER							3.0f
-	#define SLOWER_MULTIPLIER							0.15f
+	#define FASTER_MULTIPLIER							6.0f
+	#define SLOWER_MULTIPLIER							0.05f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
 	#define DEFAULT_SUPERSAMPLING_SPEED					0.05f
 	#define DEFAULT_MOVEMENT_SPEED						0.03f

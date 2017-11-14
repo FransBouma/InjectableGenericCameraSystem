@@ -1,10 +1,11 @@
 Injectable camera for Hitman 2016
 ============================
 
-Doesn't work on the GOTY edition, as that's a different game. Some features might be broken with the latest game patch for the regular game. 
+Works in GOTY too, however v1.0.10 of the camera will be the last one that's released. It will perhaps break with later
+editions of the game, and if that happens, that's too bad, sorry. 
 
-Current supported game version: v1.10.0+. 
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/Hitman2016_v109  
+Current supported game version: v1.13.2+. 
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/Hitman2016_v110  
 Feedback / Guide: http://www.deadendthrills.com/forum/discussion/512/guide-hitman-2016  
 Credits: Otis_Inf / Jim2Point0. Special thanks to: One3rd  
 
