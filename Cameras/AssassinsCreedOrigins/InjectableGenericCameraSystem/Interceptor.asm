@@ -270,22 +270,22 @@ fovReadInterceptor ENDP
 
 
 resolutionScaleReadInterceptor PROC
-; v1.03
-;ACOrigins.exe+72E9D9 - 89 8D 58070000        - mov [rbp+00000758],ecx
-;ACOrigins.exe+72E9DF - F3 0F11 B5 64020000   - movss [rbp+00000264],xmm6
-;ACOrigins.exe+72E9E7 - 89 85 5C070000        - mov [rbp+0000075C],eax
-;ACOrigins.exe+72E9ED - 41 8B 86 A8000000     - mov eax,[r14+000000A8]					<< INTERCEPT HERE<< Read of resolution scale (float. 1.0 is 100%) Max is 4!
-;ACOrigins.exe+72E9F4 - 48 8B CD              - mov rcx,rbp
-;ACOrigins.exe+72E9F7 - 89 85 20070000        - mov [rbp+00000720],eax
-;ACOrigins.exe+72E9FD - E8 6E481100           - call ACOrigins.exe+843270				<< CONTINUE HERE
-;ACOrigins.exe+72EA02 - 48 8D 8B D0000000     - lea rcx,[rbx+000000D0]
-;ACOrigins.exe+72EA09 - 48 8D 95 50040000     - lea rdx,[rbp+00000450]
-;ACOrigins.exe+72EA10 - E8 FBA4FDFF           - call ACOrigins.exe+708F10
+; v1.05
+;000000014072A399 | 89 8D 68 07 00 00                | mov dword ptr ss:[rbp+768],ecx   
+;000000014072A39F | F3 0F 11 B5 64 02 00 00          | movss dword ptr ss:[rbp+264],xmm6
+;000000014072A3A7 | 89 85 6C 07 00 00                | mov dword ptr ss:[rbp+76C],eax   
+;000000014072A3AD | 41 8B 86 A8 00 00 00             | mov eax,dword ptr ds:[r14+A8]    << INTERCEPT HERE<< Read of resolution scale (float. 1.0 is 100%) Max is 4!
+;000000014072A3B4 | 48 8B CD                         | mov rcx,rbp                      
+;000000014072A3B7 | 89 85 30 07 00 00                | mov dword ptr ss:[rbp+730],eax   
+;000000014072A3BD | E8 BE 43 11 00                   | call acorigins_dump.14083E780    << CONTINUE HERE
+;000000014072A3C2 | 48 8D 8B D0 00 00 00             | lea rcx,qword ptr ds:[rbx+D0]    
+;000000014072A3C9 | 48 8D 95 60 04 00 00             | lea rdx,qword ptr ss:[rbp+460]   
+;000000014072A3D0 | E8 6B A6 FD FF                   | call acorigins_dump.140704A40    
 	mov [g_resolutionScaleAddress], r14
 originalCode:
 	mov eax,[r14+000000A8h]
 	mov rcx,rbp
-	mov [rbp+00000720h],eax
+	mov [rbp+00000730h],eax
 exit:
 	jmp qword ptr [_resolutionScaleReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 resolutionScaleReadInterceptor ENDP
