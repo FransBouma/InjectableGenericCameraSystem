@@ -75,11 +75,11 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE3_INTERCEPT_KEY, "44 0F 29 A7 70 04 00 00 45 0F 28 63 90 49 8B E3", 1);
 		aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE4_INTERCEPT_KEY, "0F 28 DC 0F 29 A7 80 04 00 00 0F 59 DD 0F 28 CB 0F 28 C3 0F C6 CB AA 0F C6 C3 55 F3 0F 58 C1", 1);
 		aobBlocks[CAMERA_WRITE5_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE5_INTERCEPT_KEY, "0F 29 1F 48 8B 43 38 0F 28 80 A0 0B 00 00 0F 29 45 00 48 8B 43 38", 1);
-		aobBlocks[FOV_WRITE1_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE1_INTERCEPT_KEY, "F3 0F 11 B7 64 02 00 00 48 8B CF 89 87 5C 07 00 00", 1);
-		aobBlocks[FOV_WRITE2_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE2_INTERCEPT_KEY, "F3 44 0F 11 93 64 02 00 00 49 8B D5 89 83 5C 07 00 00 48 8B CB E8", 1);
+		aobBlocks[FOV_WRITE1_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE1_INTERCEPT_KEY, "F3 0F 11 B7 64 02 00 00 48 8B CF 89 87 ?? 07 00 00 E8", 1);
+		aobBlocks[FOV_WRITE2_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE2_INTERCEPT_KEY, "F3 44 0F 11 93 64 02 00 00 49 8B D5 89 83 ?? 07 00 00 48 8B CB E8", 1);
 		aobBlocks[FOV_READ_INTERCEPT_KEY] = new AOBBlock(FOV_READ_INTERCEPT_KEY, "F3 41 0F 10 94 24 24 01 00 00 45 0F 57 D2 41 0F 2F D2 F3 41 0F 10 8F 64 02 00 00", 1);
 		aobBlocks[PHOTOMODE_ENABLE_ALWAYS_KEY] = new AOBBlock(PHOTOMODE_ENABLE_ALWAYS_KEY, "74 ?? E8 ?? ?? ?? ?? 80 B8 A9 02 00 00 00 74 ?? B8 01 00 00 00 48 81 C4", 1);
-		aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY] = new AOBBlock(RESOLUTION_SCALE_INTERCEPT_KEY, "41 8B 86 A8 00 00 00 48 8B CD 89 85 20 07 00 00", 1);
+		aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY] = new AOBBlock(RESOLUTION_SCALE_INTERCEPT_KEY, "41 8B 86 A8 00 00 00 48 8B CD 89 85 ?? 07 00 00", 1);
 		aobBlocks[RESOLUTION_SCALE_MENU_KEY] = new AOBBlock(RESOLUTION_SCALE_MENU_KEY, "F3 0F 5C 05 | ?? ?? ?? ?? 0F 54 05 ?? ?? ?? ?? 0F 2F 05 ?? ?? ?? ?? 0F 96 C0 22 D0 84 D2 0F 94 C0", 1);
 		aobBlocks[TOD_WRITE_INTERCEPT_KEY] = new AOBBlock(TOD_WRITE_INTERCEPT_KEY, "F3 0F 11 00 48 8B 83 40 02 00 00 F3 0F 10 08 0F 2F CA", 1);
 		aobBlocks[TIMESTOP_READ_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_READ_INTERCEPT_KEY, "44 8B 85 C4 61 00 00 48 8B 95 BC 61 00 00 83 B9 58 14 00 00 00", 1);
@@ -149,40 +149,42 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void toggleFoVWriteState(map<string, AOBBlock*> &aobBlocks, bool enabled)
 	{
 		// fov write 1
-		// ACOrigins.exe+1058743 - 74 0C                 - je ACOrigins.exe+1058751
-		// ACOrigins.exe+1058745 - 8B 8F 64020000        - mov ecx,[rdi+00000264]
-		// ACOrigins.exe+105874B - 89 8F 58070000        - mov [rdi+00000758],ecx
-		// ACOrigins.exe+1058751 - 48 8D 54 24 20        - lea rdx,[rsp+20]
-		// ACOrigins.exe+1058756 - F3 0F11 B7 64020000   - movss [rdi+00000264],xmm6			    << FOV WRITE
-		// ACOrigins.exe+105875E - 48 8B CF              - mov rcx,rdi
-		// ACOrigins.exe+1058761 - 89 87 5C070000        - mov [rdi+0000075C],eax
-		// ACOrigins.exe+1058767 - E8 344C7EFF           - call ACOrigins.exe+83D3A0
-		// ACOrigins.exe+105876C - 33 D2                 - xor edx,edx
-		// ACOrigins.exe+105876E - 89 97 24070000        - mov [rdi+00000724],edx
-		// ACOrigins.exe+1058774 - 41 8B 46 20           - mov eax,[r14+20]
+		// v1.0.5
+		//0000000141054213 | 74 0C                    | je acorigins_dump.141054221      
+		//0000000141054215 | 8B 8F 64 02 00 00        | mov ecx,dword ptr ds:[rdi+264]   
+		//000000014105421B | 89 8F 68 07 00 00        | mov dword ptr ds:[rdi+768],ecx   
+		//0000000141054221 | 48 8D 54 24 20           | lea rdx,qword ptr ss:[rsp+20]    
+		//0000000141054226 | F3 0F 11 B7 64 02 00 00  | movss dword ptr ds:[rdi+264],xmm6			<< FOV WRITE
+		//000000014105422E | 48 8B CF                 | mov rcx,rdi                      
+		//0000000141054231 | 89 87 6C 07 00 00        | mov dword ptr ds:[rdi+76C],eax   
+		//0000000141054237 | E8 D4 45 7E FF           | call acorigins_dump.140838810    
+		//000000014105423C | 33 D2                    | xor edx,edx                      
+		//000000014105423E | 89 97 34 07 00 00        | mov dword ptr ds:[rdi+734],edx   
+		//0000000141054244 | 41 8B 46 20              | mov eax,dword ptr ds:[r14+20]    
 
 		// fov write 2
-		// ACOrigins.exe+109C569 - EB 22                 - jmp ACOrigins.exe+109C58D
-		// ACOrigins.exe+109C56B - E8 F0392D00           - call ACOrigins.exe+136FF60
-		// ACOrigins.exe+109C570 - 39 83 5C070000        - cmp [rbx+0000075C],eax
-		// ACOrigins.exe+109C576 - 74 0C                 - je ACOrigins.exe+109C584
-		// ACOrigins.exe+109C578 - 8B 8B 64020000        - mov ecx,[rbx+00000264]
-		// ACOrigins.exe+109C57E - 89 8B 58070000        - mov [rbx+00000758],ecx
-		// ACOrigins.exe+109C584 - F3 44 0F11 93 64020000  - movss [rbx+00000264],xmm10			<< FOV WRITE
-		// ACOrigins.exe+109C58D - 49 8B D5              - mov rdx,r13
-		// ACOrigins.exe+109C590 - 89 83 5C070000        - mov [rbx+0000075C],eax
-		// ACOrigins.exe+109C596 - 48 8B CB              - mov rcx,rbx
-		// ACOrigins.exe+109C599 - E8 020E7AFF           - call ACOrigins.exe+83D3A0
-		// ACOrigins.exe+109C59E - 33 D2                 - xor edx,edx
-		// ACOrigins.exe+109C5A0 - 89 93 24070000        - mov [rbx+00000724],edx
-		// ACOrigins.exe+109C5A6 - 41 8B 46 20           - mov eax,[r14+20]
+		// v1.0.5
+		//0000000141097E29 | EB 22                        | jmp acorigins_dump.141097E4D      
+		//0000000141097E2B | E8 60 2B 2D 00               | call acorigins_dump.14136A990     
+		//0000000141097E30 | 39 83 6C 07 00 00            | cmp dword ptr ds:[rbx+76C],eax    
+		//0000000141097E36 | 74 0C                        | je acorigins_dump.141097E44       
+		//0000000141097E38 | 8B 8B 64 02 00 00            | mov ecx,dword ptr ds:[rbx+264]    
+		//0000000141097E3E | 89 8B 68 07 00 00            | mov dword ptr ds:[rbx+768],ecx    
+		//0000000141097E44 | F3 44 0F 11 93 64 02 00 00   | movss dword ptr ds:[rbx+264],xmm10		<< FOV WRITE
+		//0000000141097E4D | 49 8B D5                     | mov rdx,r13                       
+		//0000000141097E50 | 89 83 6C 07 00 00            | mov dword ptr ds:[rbx+76C],eax    
+		//0000000141097E56 | 48 8B CB                     | mov rcx,rbx                       
+		//0000000141097E59 | E8 B2 09 7A FF               | call acorigins_dump.140838810     
+		//0000000141097E5E | 33 D2                        | xor edx,edx                       
+		//0000000141097E60 | 89 93 34 07 00 00            | mov dword ptr ds:[rbx+734],edx    
+		//0000000141097E66 | 41 8B 46 20                  | mov eax,dword ptr ds:[r14+20]     
 
 		if (enabled)
 		{
 			// enable writes
-			BYTE originalStatementBytes1[8] = { 0xF3, 0x0F, 0x11, 0xB7, 0x64, 0x02, 0x00, 0x00 };			// ACOrigins.exe+1058756 - F3 0F11 B7 64020000   - movss [rdi+00000264],xmm6
+			BYTE originalStatementBytes1[8] = { 0xF3, 0x0F, 0x11, 0xB7, 0x64, 0x02, 0x00, 0x00 };			// 0000000141054226 | F3 0F 11 B7 64 02 00 00  | movss dword ptr ds:[rdi+264],xmm6
 			GameImageHooker::writeRange(aobBlocks[FOV_WRITE1_INTERCEPT_KEY], originalStatementBytes1, 8);
-			BYTE originalStatementBytes2[9] = { 0xF3, 0x44, 0x0F, 0x11, 0x93, 0x64, 0x02, 0x00, 0x00 };		// ACOrigins.exe+109C584 - F3 44 0F11 93 64020000  - movss [rbx+00000264],xmm10
+			BYTE originalStatementBytes2[9] = { 0xF3, 0x44, 0x0F, 0x11, 0x93, 0x64, 0x02, 0x00, 0x00 };		// 0000000141097E44 | F3 44 0F 11 93 64 02 00 00   | movss dword ptr ds:[rbx+264],xmm10
 			GameImageHooker::writeRange(aobBlocks[FOV_WRITE2_INTERCEPT_KEY], originalStatementBytes2, 9);
 		}
 		else
