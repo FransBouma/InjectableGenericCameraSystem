@@ -239,5 +239,52 @@ ACOrigins.exe+11E2835 - 48 8B 4D 78           - mov rcx,[rbp+78]
 ACOrigins.exe+11E2839 - 44 8B 85 D0610000     - mov r8d,[rbp+000061D0]
 ACOrigins.exe+11E2840 - 48 8B 95 C8610000     - mov rdx,[rbp+000061C8]
 
+--------------------------------------------
+DeadEndThrills contributions:
+
+Hide Hud:
+------------
+Nop instruction at: 0F 10 05 2F FA 1B 03 0F 11 01 48 83 C4 18 
+
+This led to this code, as the function found with AOB string above is called by multiple threads, one being the hud renderer->
+
+Better hud hide: 
+ACOrigins.exe+8B1D80 - 48 8B C4              - mov rax,rsp					<< Place RET here to hide hud completely. Restore-> hud is there again.
+ACOrigins.exe+8B1D83 - 48 89 58 18           - mov [rax+18],rbx
+ACOrigins.exe+8B1D87 - 48 89 48 08           - mov [rax+08],rcx
+ACOrigins.exe+8B1D8B - 55                    - push rbp
+ACOrigins.exe+8B1D8C - 56                    - push rsi
+ACOrigins.exe+8B1D8D - 57                    - push rdi
+ACOrigins.exe+8B1D8E - 41 54                 - push r12
+ACOrigins.exe+8B1D90 - 41 55                 - push r13
+ACOrigins.exe+8B1D92 - 41 56                 - push r14
+ACOrigins.exe+8B1D94 - 41 57                 - push r15
+ACOrigins.exe+8B1D96 - 48 8D 68 98           - lea rbp,[rax-68]
+
+----> Full AOB: 48 8B C4 48 89 58 18 48 89 48 08 55 56 57 41 54 41 55 41 56 41 57 48 8D 68 98
+
+
+Internal resolution change:
+---------------------------------
+
+89 51 30 B8 1C 00 00 00 44 89 41 34 8B D7
+The instructions here tell the game what viewport to expect. If you multiply the resolutions by your 
+res multiplier value and grab a screenshot, it'll capture at the intended res. However...
+
+...that alone will just shrink the image to a corner of your window. To reinflate it to a useful size, you'll 
+want to also multiply the resolutions accessed by instructions here:
+F3 0F 11 5A 08 F3 0F 5C DD F3 0F 11 0A F3 0F 11 52 04 F3 0F 11 62 0C
+
+Requires viewport invalidation though. Which might be triggered by sending an invalidaterect message or resize message. 
+
+
+
+
+
+
+
+
+
+
 
 

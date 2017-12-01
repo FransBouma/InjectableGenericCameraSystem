@@ -67,10 +67,35 @@ namespace IGCS::GameSpecific::CameraManipulator
 		{
 			return false;
 		}
+		// to pause this game:
+		// set TIMESTOP_SOURCE_IN_STRUCT to 1, then the rest will follow
+		// to unpause this game:
+		// set TIMESTOP_SOURCE_IN_STRUCT to -1, then wait till TIMESTOP_CONTINUE_IN_STRUCT is 1. Then set that to 0 and that's the end.
+		// if that's done, check if TIMESTOP_IN_STRUCT is 0. If not, set it to 0 regardless. 
+
+		LPBYTE timestopSourceInMemory = (g_timestopStructAddress + TIMESTOP_SOURCE_IN_STRUCT_OFFSET);
 		LPBYTE timestopInMemory = (g_timestopStructAddress + TIMESTOP_IN_STRUCT_OFFSET);
-		bool toReturn = *timestopInMemory == (BYTE)0 && (newValue == (BYTE)1);
-		*timestopInMemory = newValue;
-		return toReturn;
+		if (newValue > 0)
+		{
+			// pause the game
+			*timestopSourceInMemory = (BYTE)1;
+		}
+		else
+		{
+			// unpause the game. 
+			*timestopSourceInMemory = (BYTE)-1;
+			LPBYTE timestopContinueInMemory = (g_timestopStructAddress + TIMESTOP_CONTINUE_IN_STRUCT_OFFSET);
+			// wait till continue is set to 1
+			Sleep(20);
+			while (*timestopContinueInMemory != (BYTE)1)
+			{
+				Sleep(20);
+			}
+			*timestopContinueInMemory = (BYTE)0;
+			Sleep(20);
+			*timestopInMemory = (BYTE)0;
+		}
+		return *timestopInMemory;
 	}
 
 

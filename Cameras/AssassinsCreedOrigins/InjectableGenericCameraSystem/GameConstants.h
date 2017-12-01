@@ -31,8 +31,8 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Assassin's Creed Origins v1.05+"
-	#define CAMERA_VERSION								"1.0.4"
-	#define CAMERA_CREDITS								"Otis_Inf"
+	#define CAMERA_VERSION								"1.0.5"
+	#define CAMERA_CREDITS								"Otis_Inf. Thanks to DeadEndThrills for HUD render location."
 	#define GAME_WINDOW_TITLE							"Assassin's Creed Origins"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
 	#define INITIAL_YAW_RADIANS							0.0f	// around Y axis	(out of the screen)
@@ -64,6 +64,7 @@ namespace IGCS::GameSpecific
 	#define RESOLUTION_SCALE_MENU_KEY					"AOB_RESOLUTION_SCALE_MENU"
 	#define TOD_WRITE_INTERCEPT_KEY						"AOB_TOD_WRITE_INTERCEPT"
 	#define TIMESTOP_READ_INTERCEPT_KEY					"AOB_TIMESTOP_READ_INTERCEPT"
+	#define HUD_RENDER_INTERCEPT_KEY					"AOB_HUD_RENDER_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
 	#define COORDS_IN_STRUCT_OFFSET						0x60
@@ -73,5 +74,7 @@ namespace IGCS::GameSpecific
 	#define QUATERNION_IN_PM_STRUCT_OFFSET				0x480	
 	#define FOV_IN_STRUCT_OFFSET						0x264
 	#define RESOLUTION_SCALE_IN_STRUCT_OFFSET			0xA8
-	#define TIMESTOP_IN_STRUCT_OFFSET					0x1458
+	#define TIMESTOP_IN_STRUCT_OFFSET					0x1458			// the original timestop flag. Don't set this directly. 
+	#define TIMESTOP_SOURCE_IN_STRUCT_OFFSET			0x1460			// set to 1 to stop, -1 to continue
+	#define TIMESTOP_CONTINUE_IN_STRUCT_OFFSET			0x1459			// after timestop source is set to -1, this will become 1. has to be set to 0. This can take a bit, so wait several 100ms
 }

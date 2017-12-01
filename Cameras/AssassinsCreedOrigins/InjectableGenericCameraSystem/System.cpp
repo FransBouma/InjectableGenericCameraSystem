@@ -169,6 +169,12 @@ namespace IGCS
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
 
+		if (Input::keyDown(IGCS_KEY_HUD_TOGGLE))
+		{
+			toggleHudRenderState();
+			Sleep(350);
+		}
+
 		if (!g_cameraEnabled)
 		{
 			// camera is disabled. We simply disable all input to the camera movement, by returning now.
@@ -391,8 +397,14 @@ namespace IGCS
 
 	void System::toggleTimestopState()
 	{
-		_timeStopped = _timeStopped == 0 ? (BYTE)1 : (BYTE)0;
+		_timeStopped = !_timeStopped;
 		OverlayControl::addNotification(_timeStopped ? "Game paused" : "Game unpaused");
 		CameraManipulator::setTimeStopValue(_timeStopped);
+	}
+
+	void System::toggleHudRenderState()
+	{
+		_hudToggled = !_hudToggled;
+		InterceptorHelper::toggleHudRenderState(_aobBlocks, _hudToggled);
 	}
 }
