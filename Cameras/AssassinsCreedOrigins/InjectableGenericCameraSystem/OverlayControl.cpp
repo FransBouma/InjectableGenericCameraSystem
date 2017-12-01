@@ -200,7 +200,8 @@ Special thanks to:
 			ImGui::TextUnformatted("Ctrl-Ins                              : Show / Hide Camera tools main window");
 			ImGui::TextUnformatted("Ctrl + Mouse wheel                    : Resize font");
 			ImGui::TextUnformatted("Ins                                   : Enable/Disable camera");
-			ImGui::TextUnformatted("HOME                                  : Lock/unlock camera movement");
+			ImGui::TextUnformatted("Home                                  : Lock/unlock camera movement");
+			ImGui::TextUnformatted("Del                                   : Toggle HUD");
 			ImGui::TextUnformatted("ALT + rotate/move                     : Faster rotate / move");
 			ImGui::TextUnformatted("Right-CTRL + rotate/move              : Slower rotate / move");
 			ImGui::TextUnformatted("Controller Y-button + l/r-stick       : Faster rotate / move");

@@ -55,6 +55,7 @@ namespace IGCS
 		void waitForCameraStructAddresses();
 		void toggleInputBlockState(bool newValue);
 		void toggleTimestopState();
+		void toggleHudRenderState();
 
 		Camera _camera;
 		LPBYTE _hostImageAddress;
@@ -62,6 +63,7 @@ namespace IGCS
 		bool _timeStopped = false;
 		bool _cameraMovementLocked = false;
 		bool _cameraStructFound = false;
+		bool _hudToggled = false;
 		map<string, AOBBlock*> _aobBlocks;
 	};
 }

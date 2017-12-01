@@ -83,6 +83,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[RESOLUTION_SCALE_MENU_KEY] = new AOBBlock(RESOLUTION_SCALE_MENU_KEY, "F3 0F 5C 05 | ?? ?? ?? ?? 0F 54 05 ?? ?? ?? ?? 0F 2F 05 ?? ?? ?? ?? 0F 96 C0 22 D0 84 D2 0F 94 C0", 1);
 		aobBlocks[TOD_WRITE_INTERCEPT_KEY] = new AOBBlock(TOD_WRITE_INTERCEPT_KEY, "F3 0F 11 00 48 8B 83 40 02 00 00 F3 0F 10 08 0F 2F CA", 1);
 		aobBlocks[TIMESTOP_READ_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_READ_INTERCEPT_KEY, "44 8B 85 C4 61 00 00 48 8B 95 BC 61 00 00 83 B9 58 14 00 00 00", 1);
+		aobBlocks[HUD_RENDER_INTERCEPT_KEY] = new AOBBlock(HUD_RENDER_INTERCEPT_KEY, "48 8B C4 48 89 58 18 48 89 48 08 55 56 57 41 54 41 55 41 56 41 57 48 8D 68 98", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -145,7 +146,40 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	}
 
 
-	// if 'enabled' is false, we'll nop the range where the FoV writes are placed, otherwise we'll write back the original statement bytes. 
+	// if enabled is true, we'll place a 'ret' at the start of the code block, making the game skip rendering any hud element. If false, we'll reset
+	// the original first statement so code will proceed as normal. 
+	void toggleHudRenderState(map<string, AOBBlock*> &aobBlocks, bool enabled)
+	{
+		// start of HUD widget render code
+		// v1.0.5
+		//ACOrigins.exe+8B1D80 - 48 8B C4              - mov rax,rsp					<< Place RET here to hide hud completely. Restore-> hud is there again.
+		//ACOrigins.exe+8B1D83 - 48 89 58 18           - mov [rax+18],rbx
+		//ACOrigins.exe+8B1D87 - 48 89 48 08           - mov [rax+08],rcx
+		//ACOrigins.exe+8B1D8B - 55                    - push rbp
+		//ACOrigins.exe+8B1D8C - 56                    - push rsi
+		//ACOrigins.exe+8B1D8D - 57                    - push rdi
+		//ACOrigins.exe+8B1D8E - 41 54                 - push r12
+		//ACOrigins.exe+8B1D90 - 41 55                 - push r13
+		//ACOrigins.exe+8B1D92 - 41 56                 - push r14
+		//ACOrigins.exe+8B1D94 - 41 57                 - push r15
+		//ACOrigins.exe+8B1D96 - 48 8D 68 98           - lea rbp,[rax-68]
+
+		if (enabled)
+		{
+			// set ret
+			BYTE statementBytes[1] = { 0xC3 };						// ACOrigins.exe+8B1D80 - 48 8B C4              - mov rax,rsp
+			GameImageHooker::writeRange(aobBlocks[HUD_RENDER_INTERCEPT_KEY], statementBytes, 1);
+		}
+		else
+		{
+			// set original statement
+			BYTE statementBytes[3] = { 0x48, 0x8B, 0xC4 };			// ACOrigins.exe+8B1D80 - 48 8B C4              - mov rax,rsp
+			GameImageHooker::writeRange(aobBlocks[HUD_RENDER_INTERCEPT_KEY], statementBytes, 3);
+		}
+	}
+
+
+	// if 'enabled' is true, we'll nop the range where the FoV writes are placed, otherwise we'll write back the original statement bytes. 
 	void toggleFoVWriteState(map<string, AOBBlock*> &aobBlocks, bool enabled)
 	{
 		// fov write 1
