@@ -239,6 +239,90 @@ ACOrigins.exe+11E2835 - 48 8B 4D 78           - mov rcx,[rbp+78]
 ACOrigins.exe+11E2839 - 44 8B 85 D0610000     - mov r8d,[rbp+000061D0]
 ACOrigins.exe+11E2840 - 48 8B 95 C8610000     - mov rdx,[rbp+000061C8]
 
+Pause game function: 
+v1.0.5
+ABI:
+- RAX: 1 (not relevant)
+- RBX: some pointer, not relevant
+- RCX: struct pointer into which to set values (pWorld). Same pointer we found as 'timestop struct'
+ACOrigins.exe+1157A40 - 48 89 5C 24 08        - mov [rsp+08],rbx
+ACOrigins.exe+1157A45 - 57                    - push rdi
+ACOrigins.exe+1157A46 - 48 83 EC 20           - sub rsp,20 { 32 }
+ACOrigins.exe+1157A4A - 48 8B F9              - mov rdi,rcx
+ACOrigins.exe+1157A4D - 0F31                  - rdtsc 
+ACOrigins.exe+1157A4F - 48 C1 E2 20           - shl rdx,20 { 32 }
+ACOrigins.exe+1157A53 - 48 8D 0D 76C07203     - lea rcx,[ACOrigins.exe+4883AD0] { [FFFFFFFF] }
+ACOrigins.exe+1157A5A - 48 0B C2              - or rax,rdx
+ACOrigins.exe+1157A5D - 48 8B D8              - mov rbx,rax
+ACOrigins.exe+1157A60 - E8 EB0A27FF           - call ACOrigins.exe+3C8550
+ACOrigins.exe+1157A65 - 0F31                  - rdtsc 
+ACOrigins.exe+1157A67 - 48 C1 E2 20           - shl rdx,20 { 32 }
+ACOrigins.exe+1157A6B - 48 8D 0D 36477A02     - lea rcx,[ACOrigins.exe+38FC1A8] { [1431EF1F0] }
+ACOrigins.exe+1157A72 - 48 0B C2              - or rax,rdx
+ACOrigins.exe+1157A75 - 48 8B D3              - mov rdx,rbx
+ACOrigins.exe+1157A78 - 4C 8B C0              - mov r8,rax
+ACOrigins.exe+1157A7B - E8 603CFA00           - call ACOrigins.exe+20FB6E0
+ACOrigins.exe+1157A80 - FF 87 3C150000        - inc [rdi+0000153C]
+ACOrigins.exe+1157A86 - 83 BF 3C150000 01     - cmp dword ptr [rdi+0000153C],01 { 1 }
+ACOrigins.exe+1157A8D - 75 10                 - jne ACOrigins.exe+1157A9F
+ACOrigins.exe+1157A8F - 48 8B 05 E29A3403     - mov rax,[ACOrigins.exe+44A1578] { [01C368F0] }
+ACOrigins.exe+1157A96 - 8B 50 2C              - mov edx,[rax+2C]
+ACOrigins.exe+1157A99 - 89 97 38150000        - mov [rdi+00001538],edx
+ACOrigins.exe+1157A9F - 48 8D 0D 2AC07203     - lea rcx,[ACOrigins.exe+4883AD0] { [FFFFFFFF] }
+ACOrigins.exe+1157AA6 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
+ACOrigins.exe+1157AAB - 48 83 C4 20           - add rsp,20 { 32 }
+ACOrigins.exe+1157AAF - 5F                    - pop rdi
+ACOrigins.exe+1157AB0 - E9 EBF9E101           - jmp ACOrigins.exe+2F774A0		// Leave Critical Section, with ret.
+
+Unpause game function:
+ABI: Same as pause game function.
+ACOrigins.exe+11629D0 - 48 89 5C 24 08        - mov [rsp+08],rbx
+ACOrigins.exe+11629D5 - 57                    - push rdi
+ACOrigins.exe+11629D6 - 48 83 EC 20           - sub rsp,20 { 32 }
+ACOrigins.exe+11629DA - 48 8B F9              - mov rdi,rcx
+ACOrigins.exe+11629DD - 0F31                  - rdtsc 
+ACOrigins.exe+11629DF - 48 C1 E2 20           - shl rdx,20 { 32 }
+ACOrigins.exe+11629E3 - 48 8D 0D E6107203     - lea rcx,[ACOrigins.exe+4883AD0] { [FFFFFFFF] }
+ACOrigins.exe+11629EA - 48 0B C2              - or rax,rdx
+ACOrigins.exe+11629ED - 48 8B D8              - mov rbx,rax
+ACOrigins.exe+11629F0 - E8 5B5B26FF           - call ACOrigins.exe+3C8550
+ACOrigins.exe+11629F5 - 0F31                  - rdtsc 
+ACOrigins.exe+11629F7 - 48 C1 E2 20           - shl rdx,20 { 32 }
+ACOrigins.exe+11629FB - 48 8D 0D A6977902     - lea rcx,[ACOrigins.exe+38FC1A8] { [1431EF1F0] }
+ACOrigins.exe+1162A02 - 48 0B C2              - or rax,rdx
+ACOrigins.exe+1162A05 - 48 8B D3              - mov rdx,rbx
+ACOrigins.exe+1162A08 - 4C 8B C0              - mov r8,rax
+ACOrigins.exe+1162A0B - E8 D08CF900           - call ACOrigins.exe+20FB6E0
+ACOrigins.exe+1162A10 - 8B 87 3C150000        - mov eax,[rdi+0000153C]
+ACOrigins.exe+1162A16 - 85 C0                 - test eax,eax
+ACOrigins.exe+1162A18 - 74 3D                 - je ACOrigins.exe+1162A57
+ACOrigins.exe+1162A1A - 83 E8 01              - sub eax,01 { 1 }
+ACOrigins.exe+1162A1D - 89 87 3C150000        - mov [rdi+0000153C],eax
+ACOrigins.exe+1162A23 - 75 4A                 - jne ACOrigins.exe+1162A6F
+ACOrigins.exe+1162A25 - 48 8B 05 4CEB3303     - mov rax,[ACOrigins.exe+44A1578] { [01C368F0] }
+ACOrigins.exe+1162A2C - 8B 48 2C              - mov ecx,[rax+2C]
+ACOrigins.exe+1162A2F - 3B 8F 38150000        - cmp ecx,[rdi+00001538]
+ACOrigins.exe+1162A35 - 75 0C                 - jne ACOrigins.exe+1162A43
+ACOrigins.exe+1162A37 - C7 87 38150000 FFFFFFFF - mov [rdi+00001538],FFFFFFFF { [0] }
+ACOrigins.exe+1162A41 - EB 2C                 - jmp ACOrigins.exe+1162A6F
+ACOrigins.exe+1162A43 - B8 02000000           - mov eax,00000002 { 2 }
+ACOrigins.exe+1162A48 - 3B C8                 - cmp ecx,eax
+ACOrigins.exe+1162A4A - 0F46 C8               - cmovbe ecx,eax
+ACOrigins.exe+1162A4D - 2B C8                 - sub ecx,eax
+ACOrigins.exe+1162A4F - 89 8F 38150000        - mov [rdi+00001538],ecx
+ACOrigins.exe+1162A55 - EB 18                 - jmp ACOrigins.exe+1162A6F
+ACOrigins.exe+1162A57 - 48 8D 8F 20140000     - lea rcx,[rdi+00001420]
+ACOrigins.exe+1162A5E - E8 1D2C53FF           - call ACOrigins.exe+695680
+ACOrigins.exe+1162A63 - 48 8D 8F D0140000     - lea rcx,[rdi+000014D0]
+ACOrigins.exe+1162A6A - E8 112C53FF           - call ACOrigins.exe+695680
+ACOrigins.exe+1162A6F - 48 8D 0D 5A107203     - lea rcx,[ACOrigins.exe+4883AD0] { [FFFFFFFF] }
+ACOrigins.exe+1162A76 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
+ACOrigins.exe+1162A7B - 48 83 C4 20           - add rsp,20 { 32 }
+ACOrigins.exe+1162A7F - 5F                    - pop rdi
+ACOrigins.exe+1162A80 - E9 1B4AE101           - jmp ACOrigins.exe+2F774A0
+
+
+
 --------------------------------------------
 DeadEndThrills contributions:
 

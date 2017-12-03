@@ -84,6 +84,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[TOD_WRITE_INTERCEPT_KEY] = new AOBBlock(TOD_WRITE_INTERCEPT_KEY, "F3 0F 11 00 48 8B 83 40 02 00 00 F3 0F 10 08 0F 2F CA", 1);
 		aobBlocks[TIMESTOP_READ_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_READ_INTERCEPT_KEY, "44 8B 85 C4 61 00 00 48 8B 95 BC 61 00 00 83 B9 58 14 00 00 00", 1);
 		aobBlocks[HUD_RENDER_INTERCEPT_KEY] = new AOBBlock(HUD_RENDER_INTERCEPT_KEY, "48 8B C4 48 89 58 18 48 89 48 08 55 56 57 41 54 41 55 41 56 41 57 48 8D 68 98", 1);
+		aobBlocks[PAUSE_FUNCTION_LOCATION_KEY] = new AOBBlock(PAUSE_FUNCTION_LOCATION_KEY, "48 89 5C 24 08 57 48 83 EC 20 48 8B F9 0F 31 48 C1 E2 20 48 8D 0D ?? ?? ?? ?? 48 0B C2 48 8B D8 E8 ?? ?? ?? ?? 0F 31 48 C1 E2 20 48 8D 0D ?? ?? ?? ?? 48 0B C2 48 8B D3 4C 8B C0 E8 ?? ?? ?? ?? FF 87 3C 15 00 00", 1);
+		aobBlocks[UNPAUSE_FUNCTION_LOCATION_KEY] = new AOBBlock(UNPAUSE_FUNCTION_LOCATION_KEY, "48 89 5C 24 08 57 48 83 EC 20 48 8B F9 0F 31 48 C1 E2 20 48 8D 0D ?? ?? ?? ?? 48 0B C2 48 8B D8 E8 ?? ?? ?? ?? 0F 31 48 C1 E2 20 48 8D 0D ?? ?? ?? ?? 48 0B C2 48 8B D3 4C 8B C0 E8 ?? ?? ?? ?? 8B 87 3C 15 00 00", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -121,6 +123,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[TIMESTOP_READ_INTERCEPT_KEY], 0x15, &_timestopReadInterceptionContinue, &timestopReadInterceptor);
 		CameraManipulator::setResolutionScaleMenuValueAddress(Utils::calculateAbsoluteAddress(aobBlocks[RESOLUTION_SCALE_MENU_KEY], 4)); // ACOrigins.exe+813E74 - F3 0F5C 05 A87CDE03   - subss xmm0,[ACOrigins.exe+45FBB24]
 		enablePhotomodeEverywhere(aobBlocks);
+		CameraManipulator::setPauseUnpauseGameFunctionPointers(aobBlocks[PAUSE_FUNCTION_LOCATION_KEY]->absoluteAddress(), aobBlocks[UNPAUSE_FUNCTION_LOCATION_KEY]->absoluteAddress());
 	}
 
 
