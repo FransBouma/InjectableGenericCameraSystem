@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Assassin's Creed Origins v1.05+"
-	#define CAMERA_VERSION								"1.0.5"
+	#define CAMERA_VERSION								"1.0.6"
 	#define CAMERA_CREDITS								"Otis_Inf. Thanks to DeadEndThrills for HUD render location."
 	#define GAME_WINDOW_TITLE							"Assassin's Creed Origins"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
@@ -65,6 +65,8 @@ namespace IGCS::GameSpecific
 	#define TOD_WRITE_INTERCEPT_KEY						"AOB_TOD_WRITE_INTERCEPT"
 	#define TIMESTOP_READ_INTERCEPT_KEY					"AOB_TIMESTOP_READ_INTERCEPT"
 	#define HUD_RENDER_INTERCEPT_KEY					"AOB_HUD_RENDER_INTERCEPT"
+	#define PAUSE_FUNCTION_LOCATION_KEY					"AOB_PAUSE_FUNCTION"
+	#define UNPAUSE_FUNCTION_LOCATION_KEY				"AOB_UNPAUSE_FUNCTION"
 
 	// Indices in the structures read by interceptors 
 	#define COORDS_IN_STRUCT_OFFSET						0x60

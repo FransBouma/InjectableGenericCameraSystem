@@ -46,6 +46,13 @@ extern "C" {
 
 namespace IGCS::GameSpecific::CameraManipulator
 {
+	// typedef of signatures of two functions we'll call from our own code to pause/unpause the game properly. 
+	typedef void(__stdcall *PauseGameFunction) (LPVOID pWorld);
+	typedef void(__stdcall *UnpauseGameFunction) (LPVOID pWorld);
+	// the function pointers we'll call to pause/unpause the game. They point to AOB scanned addresses found in the host image.
+	static PauseGameFunction _pauseGameFunc = nullptr;
+	static UnpauseGameFunction _unpauseGameFunc = nullptr;
+
 	static float _originalCoords[3];
 	static float _originalPMCoords[3];		// photomode cam
 	static float _originalQuaternion[4];
@@ -53,9 +60,77 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static float _originalFoV;
 	static LPBYTE g_resolutionScaleMenuValueAddress = nullptr;
 
+
 	void setResolutionScaleMenuValueAddress(LPBYTE address)
 	{
 		g_resolutionScaleMenuValueAddress = address;
+	}
+
+
+	void setPauseUnpauseGameFunctionPointers(LPBYTE pauseFunctionAddress, LPBYTE unpauseFunctionAddress)
+	{
+		// pause function: 
+		//ABI:
+		//- RCX: struct pointer into which to set values (pWorld). Same pointer we found as 'timestop struct'
+		//ACOrigins.exe+1157A40 - 48 89 5C 24 08        - mov [rsp+08],rbx
+		//ACOrigins.exe+1157A45 - 57                    - push rdi
+		//ACOrigins.exe+1157A46 - 48 83 EC 20           - sub rsp,20 { 32 }
+		//ACOrigins.exe+1157A4A - 48 8B F9              - mov rdi,rcx
+		//ACOrigins.exe+1157A4D - 0F31                  - rdtsc 
+		//ACOrigins.exe+1157A4F - 48 C1 E2 20           - shl rdx,20 { 32 }
+		//ACOrigins.exe+1157A53 - 48 8D 0D 76C07203     - lea rcx,[ACOrigins.exe+4883AD0] { [FFFFFFFF] }
+		//ACOrigins.exe+1157A5A - 48 0B C2              - or rax,rdx
+		//ACOrigins.exe+1157A5D - 48 8B D8              - mov rbx,rax
+		//ACOrigins.exe+1157A60 - E8 EB0A27FF           - call ACOrigins.exe+3C8550
+		//ACOrigins.exe+1157A65 - 0F31                  - rdtsc 
+		//ACOrigins.exe+1157A67 - 48 C1 E2 20           - shl rdx,20 { 32 }
+		//ACOrigins.exe+1157A6B - 48 8D 0D 36477A02     - lea rcx,[ACOrigins.exe+38FC1A8] { [1431EF1F0] }
+		//ACOrigins.exe+1157A72 - 48 0B C2              - or rax,rdx
+		//ACOrigins.exe+1157A75 - 48 8B D3              - mov rdx,rbx
+		//ACOrigins.exe+1157A78 - 4C 8B C0              - mov r8,rax
+		//ACOrigins.exe+1157A7B - E8 603CFA00           - call ACOrigins.exe+20FB6E0
+		//ACOrigins.exe+1157A80 - FF 87 3C150000        - inc [rdi+0000153C]
+		//ACOrigins.exe+1157A86 - 83 BF 3C150000 01     - cmp dword ptr [rdi+0000153C],01 { 1 }
+		//ACOrigins.exe+1157A8D - 75 10                 - jne ACOrigins.exe+1157A9F
+		//ACOrigins.exe+1157A8F - 48 8B 05 E29A3403     - mov rax,[ACOrigins.exe+44A1578] { [01C368F0] }
+		//ACOrigins.exe+1157A96 - 8B 50 2C              - mov edx,[rax+2C]
+		//ACOrigins.exe+1157A99 - 89 97 38150000        - mov [rdi+00001538],edx
+		//ACOrigins.exe+1157A9F - 48 8D 0D 2AC07203     - lea rcx,[ACOrigins.exe+4883AD0] { [FFFFFFFF] }
+		//ACOrigins.exe+1157AA6 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
+		//ACOrigins.exe+1157AAB - 48 83 C4 20           - add rsp,20 { 32 }
+		//ACOrigins.exe+1157AAF - 5F                    - pop rdi
+		//ACOrigins.exe+1157AB0 - E9 EBF9E101           - jmp ACOrigins.exe+2F774A0		// Leave Critical Section, with ret.
+
+		// unpause function:
+		//ABI: Same as pause game function.
+		//ACOrigins.exe+11629D0 - 48 89 5C 24 08        - mov [rsp+08],rbx
+		//ACOrigins.exe+11629D5 - 57                    - push rdi
+		//ACOrigins.exe+11629D6 - 48 83 EC 20           - sub rsp,20 { 32 }
+		//ACOrigins.exe+11629DA - 48 8B F9              - mov rdi,rcx
+		//ACOrigins.exe+11629DD - 0F31                  - rdtsc 
+		//ACOrigins.exe+11629DF - 48 C1 E2 20           - shl rdx,20 { 32 }
+		//ACOrigins.exe+11629E3 - 48 8D 0D E6107203     - lea rcx,[ACOrigins.exe+4883AD0] { [FFFFFFFF] }
+		//ACOrigins.exe+11629EA - 48 0B C2              - or rax,rdx
+		//ACOrigins.exe+11629ED - 48 8B D8              - mov rbx,rax
+		//ACOrigins.exe+11629F0 - E8 5B5B26FF           - call ACOrigins.exe+3C8550
+		//ACOrigins.exe+11629F5 - 0F31                  - rdtsc 
+		//ACOrigins.exe+11629F7 - 48 C1 E2 20           - shl rdx,20 { 32 }
+		//ACOrigins.exe+11629FB - 48 8D 0D A6977902     - lea rcx,[ACOrigins.exe+38FC1A8] { [1431EF1F0] }
+		//ACOrigins.exe+1162A02 - 48 0B C2              - or rax,rdx
+		//ACOrigins.exe+1162A05 - 48 8B D3              - mov rdx,rbx
+		//ACOrigins.exe+1162A08 - 4C 8B C0              - mov r8,rax
+		//ACOrigins.exe+1162A0B - E8 D08CF900           - call ACOrigins.exe+20FB6E0
+		//ACOrigins.exe+1162A10 - 8B 87 3C150000        - mov eax,[rdi+0000153C]
+		//ACOrigins.exe+1162A16 - 85 C0                 - test eax,eax
+		//ACOrigins.exe+1162A18 - 74 3D                 - je ACOrigins.exe+1162A57
+		//ACOrigins.exe+1162A1A - 83 E8 01              - sub eax,01 { 1 }
+		//ACOrigins.exe+1162A1D - 89 87 3C150000        - mov [rdi+0000153C],eax
+		//ACOrigins.exe+1162A23 - 75 4A                 - jne ACOrigins.exe+1162A6F
+		//ACOrigins.exe+1162A25 - 48 8B 05 4CEB3303     - mov rax,[ACOrigins.exe+44A1578] { [01C368F0] }
+		//ACOrigins.exe+1162A2C - 8B 48 2C              - mov ecx,[rax+2C]
+		//ACOrigins.exe+1162A2F - 3B 8F 38150000        - cmp ecx,[rdi+00001538]
+		_pauseGameFunc = (PauseGameFunction)(pauseFunctionAddress);
+		_unpauseGameFunc = (UnpauseGameFunction)(unpauseFunctionAddress);
 	}
 	
 
@@ -67,35 +142,20 @@ namespace IGCS::GameSpecific::CameraManipulator
 		{
 			return false;
 		}
-		// to pause this game:
-		// set TIMESTOP_SOURCE_IN_STRUCT to 1, then the rest will follow
-		// to unpause this game:
-		// set TIMESTOP_SOURCE_IN_STRUCT to -1, then wait till TIMESTOP_CONTINUE_IN_STRUCT is 1. Then set that to 0 and that's the end.
-		// if that's done, check if TIMESTOP_IN_STRUCT is 0. If not, set it to 0 regardless. 
-
-		LPBYTE timestopSourceInMemory = (g_timestopStructAddress + TIMESTOP_SOURCE_IN_STRUCT_OFFSET);
-		LPBYTE timestopInMemory = (g_timestopStructAddress + TIMESTOP_IN_STRUCT_OFFSET);
-		if (newValue > 0)
+		if (nullptr == _pauseGameFunc)
 		{
-			// pause the game
-			*timestopSourceInMemory = (BYTE)1;
+			return false;
+		}
+
+		if (newValue)
+		{
+			_pauseGameFunc((LPVOID)g_timestopStructAddress);
 		}
 		else
 		{
-			// unpause the game. 
-			*timestopSourceInMemory = (BYTE)-1;
-			LPBYTE timestopContinueInMemory = (g_timestopStructAddress + TIMESTOP_CONTINUE_IN_STRUCT_OFFSET);
-			// wait till continue is set to 1
-			Sleep(20);
-			while (*timestopContinueInMemory != (BYTE)1)
-			{
-				Sleep(20);
-			}
-			*timestopContinueInMemory = (BYTE)0;
-			Sleep(20);
-			*timestopInMemory = (BYTE)0;
+			_unpauseGameFunc((LPVOID)g_timestopStructAddress);
 		}
-		return *timestopInMemory;
+		return newValue;
 	}
 
 

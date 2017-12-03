@@ -43,4 +43,5 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void displayCameraStructAddress();
 	void getSettingsFromGameState();
 	void applySettingsToGameState();
+	void setPauseUnpauseGameFunctionPointers(LPBYTE pauseFunctionAddress, LPBYTE unpauseFunctionAddress);
 }
