@@ -3,7 +3,7 @@ Injectable camera for Assassin's Creed Origins
 
 Current supported game version: v1.1+ (UPlay version)  
 Camera version: 1.0.7  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/ACO_106  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/ACO_107  
 Credits: Otis_Inf. Thanks to DeadEndThrills for HUD render location.
 
 ### Changes
