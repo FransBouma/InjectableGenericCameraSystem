@@ -1,12 +1,13 @@
 Injectable camera for Assassin's Creed Origins
 ============================
 
-Current supported game version: v1.05+ (UPlay version)  
-Camera version: 1.0.6  
+Current supported game version: v1.1+ (UPlay version)  
+Camera version: 1.0.7  
 Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/ACO_106  
 Credits: Otis_Inf. Thanks to DeadEndThrills for HUD render location.
 
 ### Changes
+* v1.0.7: Fixed for v1.1 of the game.
 * v1.0.6: For game pause/unpause it now calls the native game functions for engine pause/unpause. Should fix any crashes related to pause/unpause.
 * v1.0.5: Added more reliable timestop and HUD toggle.
 * v1.0.4: Added own injector, fixed some offsets for game version v1.0.5

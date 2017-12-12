@@ -249,21 +249,22 @@ cameraWrite5Interceptor ENDP
 
 
 fovReadInterceptor PROC
-;ACOrigins.exe+80717A - 0F29 85 10030000			- movaps [rbp+00000310],xmm0
-;ACOrigins.exe+807181 - 0F29 8D 00030000			- movaps [rbp+00000300],xmm1
-;ACOrigins.exe+807188 - E8 4358BCFF					- call ACOrigins.exe+3CC9D0
-;ACOrigins.exe+80718D - F3 41 0F10 94 24 24010000	- movss xmm2,[r12+00000124]				<< INTERCEPT HERE
-;ACOrigins.exe+807197 - 45 0F57 D2					- xorps xmm10,xmm10
-;ACOrigins.exe+80719B - 41 0F2F D2					- comiss xmm2,xmm10
-;ACOrigins.exe+80719F - F3 41 0F10 8F 64020000		- movss xmm1,[r15+00000264]				<< FOV READ
-;ACOrigins.exe+8071A8 - F3 0F10 05 A45B9C02			- movss xmm0,[ACOrigins.exe+31CCD54]	<< CONTINUE HERE
-;ACOrigins.exe+8071B0 - 76 41						- jna ACOrigins.exe+8071F3
-	mov [g_fovStructAddress], r15
+;v1.10
+;00000001409FFA7A | 0F 29 85 00 03 00 00             | movaps xmmword ptr ss:[rbp+300],xmm0
+;00000001409FFA81 | 0F 29 8D F0 02 00 00             | movaps xmmword ptr ss:[rbp+2F0],xmm1
+;00000001409FFA88 | E8 D3 4B BC FF                   | call acorigins_dump.1405C4660       
+;00000001409FFA8D | F3 41 0F 10 94 24 24 01 00 00    | movss xmm2,dword ptr ds:[r12+124]		<< INTERCEPT HERE
+;00000001409FFA97 | 45 0F 57 FF                      | xorps xmm15,xmm15                   
+;00000001409FFA9B | 41 0F 2F D7                      | comiss xmm2,xmm15                   
+;00000001409FFA9F | F3 41 0F 10 8E 64 02 00 00       | movss xmm1,dword ptr ds:[r14+264]		<< FOV READ
+;00000001409FFAA8 | F3 0F 10 05 74 9E A2 02          | movss xmm0,dword ptr ds:[143429924]		<< CONTINUE HERE
+;00000001409FFAB0 | 76 41                            | jbe acorigins_dump.1409FFAF3        
+	mov [g_fovStructAddress], r14
 originalCode:
-	movss xmm2, dword ptr [r12+00000124h]
-	xorps xmm10,xmm10
-	comiss xmm2,xmm10
-	movss xmm1, dword ptr [r15+00000264h]
+	movss xmm2,dword ptr [r12+124h]
+	xorps xmm15,xmm15                
+	comiss xmm2,xmm15                
+	movss xmm1,dword ptr [r14+264h]
 exit:
 	jmp qword ptr [_fovReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 fovReadInterceptor ENDP
