@@ -252,12 +252,12 @@ namespace IGCS::GameSpecific::CameraManipulator
 		float* quaternionInMemory = nullptr;
 
 		// game uses 2 cameras, one for gameplay and one for photomode. We'll write to both, if found. We have to write the coords to more places, as the game does that too.
-		coordsInMemory = coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET);
+		coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET);
 		coordsInMemory[0] = newCoords.x;
 		coordsInMemory[1] = newCoords.y;
 		coordsInMemory[2] = newCoords.z;
 
-		coordsInMemory = coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS2_IN_STRUCT_OFFSET);
+		coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS2_IN_STRUCT_OFFSET);
 		coordsInMemory[0] = newCoords.x;
 		coordsInMemory[1] = newCoords.y;
 		coordsInMemory[2] = newCoords.z;
@@ -270,7 +270,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 
 		if (isPhotomodeCameraFound())
 		{
-			coordsInMemory = coordsInMemory = reinterpret_cast<float*>(g_cameraPhotoModeStructAddress + COORDS_IN_PM_STRUCT_OFFSET);
+			coordsInMemory = reinterpret_cast<float*>(g_cameraPhotoModeStructAddress + COORDS_IN_PM_STRUCT_OFFSET);
 			coordsInMemory[0] = newCoords.x;
 			coordsInMemory[1] = newCoords.y;
 			coordsInMemory[2] = newCoords.z;
