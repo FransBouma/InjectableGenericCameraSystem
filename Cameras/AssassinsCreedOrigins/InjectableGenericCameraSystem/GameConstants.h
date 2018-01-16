@@ -30,8 +30,8 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Assassin's Creed Origins v1.1+"
-	#define CAMERA_VERSION								"1.0.7"
+	#define GAME_NAME									"Assassin's Creed Origins v1.2+"
+	#define CAMERA_VERSION								"1.0.8"
 	#define CAMERA_CREDITS								"Otis_Inf. Thanks to DeadEndThrills for HUD render location."
 	#define GAME_WINDOW_TITLE							"Assassin's Creed Origins"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
