@@ -293,23 +293,27 @@ resolutionScaleReadInterceptor ENDP
 
 
 todWriteInterceptor PROC
-;ACOrigins.exe+1185730 - F3 0F5E C7            - divss xmm0,xmm7
-;ACOrigins.exe+1185734 - 0F28 7C 24 30         - movaps xmm7,[rsp+30]
-;ACOrigins.exe+1185739 - F3 0F59 C6            - mulss xmm0,xmm6
-;ACOrigins.exe+118573D - F3 41 0F58 C0         - addss xmm0,xmm8
-;ACOrigins.exe+1185742 - 44 0F28 44 24 20      - movaps xmm8,[rsp+20]
-;ACOrigins.exe+1185748 - F3 0F11 00            - movss [rax],xmm0					<<< INTERCEPT HERE <<< Write of ToD.
-;ACOrigins.exe+118574C - 48 8B 83 40020000     - mov rax,[rbx+00000240]
-;ACOrigins.exe+1185753 - F3 0F10 08            - movss xmm1,[rax]
-;ACOrigins.exe+1185757 - 0F2F CA               - comiss xmm1,xmm2					<<< CONTINUE HERE
+; // v1.2
+;ACOrigins.exe+138FB44 - F3 0F59 0D 3C481B02   - mulss xmm1,[ACOrigins.exe+3544388] { [1440.00] }
+;ACOrigins.exe+138FB4C - F3 0F10 15 34A20E02   - movss xmm2,[ACOrigins.exe+3479D88] { [24.00] }
+;ACOrigins.exe+138FB54 - F3 0F59 C1            - mulss xmm0,xmm1					<< INTERCEPT HERE
+;ACOrigins.exe+138FB58 - F3 0F58 00            - addss xmm0,[rax]
+;ACOrigins.exe+138FB5C - F3 0F11 00            - movss [rax],xmm0					<< Write TOD
+;ACOrigins.exe+138FB60 - 48 8B 81 40020000     - mov rax,[rcx+00000240]
+;ACOrigins.exe+138FB67 - F3 0F10 08            - movss xmm1,[rax]					<< CONTINUE HERE
+;ACOrigins.exe+138FB6B - 0F2F CA               - comiss xmm1,xmm2
+;ACOrigins.exe+138FB6E - 72 13                 - jb ACOrigins.exe+138FB83
+;ACOrigins.exe+138FB70 - F3 0F5C CA            - subss xmm1,xmm2
+;ACOrigins.exe+138FB74 - 0F57 C0               - xorps xmm0,xmm0
+	mulss xmm0, xmm1
+	addss xmm0, dword ptr [rax]
 	mov [g_todStructAddress], rax
 	cmp byte ptr [g_cameraEnabled], 1
 	je exit
 originalCode:
-	movss dword ptr [rax],xmm0		
+	movss dword ptr [rax], xmm0
 exit:
-	mov rax, [rbx+00000240h]
-	movss xmm1, dword ptr [rax]
+	mov rax,[rcx+00000240h]
 	jmp qword ptr [_todWriteInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 todWriteInterceptor ENDP
 

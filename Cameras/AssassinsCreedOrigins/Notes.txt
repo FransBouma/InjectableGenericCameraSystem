@@ -361,6 +361,20 @@ F3 0F 11 5A 08 F3 0F 5C DD F3 0F 11 0A F3 0F 11 52 04 F3 0F 11 62 0C
 
 Requires viewport invalidation though. Which might be triggered by sending an invalidaterect message or resize message. 
 
+Cheats:
+---------------
+
+XP
+ACOrigins.exe+1D6330E - 48 03 13              - add rdx,[rbx]
+ACOrigins.exe+1D63311 - 48 3B C2              - cmp rax,rdx
+ACOrigins.exe+1D63314 - 74 0C                 - je ACOrigins.exe+1D63322
+ACOrigins.exe+1D63316 - 48 8B 00              - mov rax,[rax]
+ACOrigins.exe+1D63319 - 44 8B 88 1C010000     - mov r9d,[rax+0000011C]				<< READ XP
+ACOrigins.exe+1D63320 - EB 03                 - jmp ACOrigins.exe+1D63325
+ACOrigins.exe+1D63322 - 44 8B C9              - mov r9d,ecx
+ACOrigins.exe+1D63325 - 44 8B 47 10           - mov r8d,[rdi+10]
+ACOrigins.exe+1D63329 - 41 C1 E8 11           - shr r8d,11 { 17 }
+
 
 
 
