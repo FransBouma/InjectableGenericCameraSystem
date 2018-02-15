@@ -52,10 +52,11 @@ namespace IGCS
 	}
 
 
-	void System::start(HMODULE hostBaseAddress)
+	void System::start(LPBYTE hostBaseAddress, DWORD hostImageSize)
 	{
 		Globals::instance().systemActive(true);
-		_hostImageAddress = (LPBYTE)hostBaseAddress;
+		_hostImageAddress = hostBaseAddress;
+		_hostImageSize = hostImageSize;
 		Globals::instance().gamePad().setInvertLStickY(CONTROLLER_Y_INVERT);
 		Globals::instance().gamePad().setInvertRStickY(CONTROLLER_Y_INVERT);
 		displayHelp();
@@ -132,7 +133,7 @@ namespace IGCS
 				CameraManipulator::cacheOriginalCameraValues();
 				_camera.resetAngles();
 			}
-			g_cameraEnabled = g_cameraEnabled == 0 ? (byte)1 : (byte)0;
+			g_cameraEnabled = g_cameraEnabled == 0 ? (BYTE)1 : (BYTE)0;
 			displayCameraState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
@@ -141,14 +142,9 @@ namespace IGCS
 			toggleTimestopState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
-		if (!g_cameraEnabled)
-		{
-			// camera is disabled. We simply disable all input to the camera movement, by returning now.
-			return;
-		}
 		if (Input::keyDown(IGCS_KEY_FOV_RESET))
 		{
-			CameraManipulator::resetFOV();
+			CameraManipulator::resetFoV();
 		}
 		if (Input::keyDown(IGCS_KEY_FOV_DECREASE))
 		{
@@ -158,12 +154,26 @@ namespace IGCS
 		{
 			CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
 		}
+		if (Input::keyDown(IGCS_KEY_TOGGLE_HUD))
+		{
+			toggleHudRenderState();
+			Sleep(350);
+		}
+		if (!g_cameraEnabled)
+		{
+			// camera is disabled. We simply disable all input to the camera movement, by returning now.
+			return;
+		}
 		if (Input::keyDown(IGCS_KEY_BLOCK_INPUT))
 		{
 			toggleInputBlockState(!Globals::instance().inputBlocked());
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
-
+		if (Input::keyDown(IGCS_KEY_SKIP_FRAMES))
+		{
+			skipFramesAhead();
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
 		_camera.resetMovement();
 		float multiplier = altPressed ? FASTER_MULTIPLIER : controlPressed ? SLOWER_MULTIPLIER : 1.0f;
 		if (Input::keyDown(IGCS_KEY_CAMERA_LOCK))
@@ -208,9 +218,9 @@ namespace IGCS
 			{
 				_camera.roll(-multiplier);
 			}
-			if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_RESET))
+			if (gamePad.isButtonPressed(IGCS_BUTTON_RESET_FOV))
 			{
-				CameraManipulator::resetFOV();
+				CameraManipulator::resetFoV();
 			}
 			if (gamePad.isButtonPressed(IGCS_BUTTON_FOV_DECREASE))
 			{
@@ -228,11 +238,11 @@ namespace IGCS
 	{
 		long mouseDeltaX = Input::getMouseDeltaX();
 		long mouseDeltaY = Input::getMouseDeltaY();
-		if (abs(mouseDeltaY) > 1)
+		if (mouseDeltaY != 0)
 		{
 			_camera.pitch(static_cast<float>(mouseDeltaY) * MOUSE_SPEED_CORRECTION * multiplier);
 		}
-		if (abs(mouseDeltaX) > 1)
+		if (mouseDeltaX != 0)
 		{
 			_camera.yaw(static_cast<float>(mouseDeltaX) * MOUSE_SPEED_CORRECTION * multiplier);
 		}
@@ -297,18 +307,18 @@ namespace IGCS
 	void System::initialize()
 	{
 		InputHooker::setInputHooks();
-		Input::registerRawInput();
-		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_hostImageAddress);
+		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
+		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);
 		GameSpecific::CameraManipulator::waitForCameraStructAddresses();		// blocks till camera is found.
 		// camera struct found, init our own camera object now and hook into game code which uses camera.
 		_cameraStructFound = true;
 		_camera.setPitch(INITIAL_PITCH_RADIANS);
 		_camera.setRoll(INITIAL_ROLL_RADIANS);
 		_camera.setYaw(INITIAL_YAW_RADIANS);
-		// initialize the writes after the camera has been found and initialized, as they rely on the camera struct address.
-		GameSpecific::InterceptorHelper::setFoVInterceptorHook(_hostImageAddress);
+		// initialize the rest of the hooks the camera has been found and initialized, as they could rely on the camera struct address.
+		GameSpecific::InterceptorHelper::setPostCameraStructHooks(_aobBlocks);
 	}
-
+	
 
 	void System::toggleInputBlockState(bool newValue)
 	{
@@ -320,7 +330,6 @@ namespace IGCS
 		Globals::instance().inputBlocked(newValue);
 		Console::WriteLine(newValue ? "Input to game blocked" : "Input to game enabled");
 	}
-
 
 	void System::toggleCameraMovementLockState(bool newValue)
 	{
@@ -336,9 +345,9 @@ namespace IGCS
 
 	void System::toggleTimestopState()
 	{
-		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
+		_timeStopped = !_timeStopped;
 		Console::WriteLine(_timeStopped ? "Game paused" : "Game unpaused");
-		CameraManipulator::setTimeStopValue(_hostImageAddress, _timeStopped);
+		CameraManipulator::setStopTimeValue(_timeStopped);
 	}
 
 
@@ -355,16 +364,37 @@ namespace IGCS
 	}
 
 
+	void System::toggleHudRenderState()
+	{
+		_hudVisible = !_hudVisible;
+		Console::WriteLine(_hudVisible ? "HUD Visible" : "HUD hidden");
+		CameraManipulator::setShowHudValue(_hudVisible);
+	}
+
+
+	void System::skipFramesAhead()
+	{
+		if (_timeStopped)
+		{
+			CameraManipulator::setRunFramesValue(DEFAULT_SKIP_FRAMES_COUNT);
+			Console::WriteLine("Skipped " + std::to_string(DEFAULT_SKIP_FRAMES_COUNT) + " frames ahead");
+		}
+		else
+		{
+			Console::WriteLine("Frame skipping only works when the game is paused (NUMPAD 0)");
+		}
+	}
+
 	void System::displayHelp()
 	{
 						  //0         1         2         3         4         5         6         7
 						  //01234567890123456789012345678901234567890123456789012345678901234567890123456789
-		Console::WriteLine("---[IGCS Help]---------------------------------------------------------------", CONSOLE_WHITE);
+		Console::WriteLine("---[IGCS Help]-----------------------------------------------------------------", CONSOLE_WHITE);
 		Console::WriteLine("INS                                   : Enable/Disable camera");
 		Console::WriteLine("HOME                                  : Lock/unlock camera movement");
 		Console::WriteLine("ALT + rotate/move                     : Faster rotate / move");
 		Console::WriteLine("Right-CTRL + rotate/move              : Slower rotate / move");
-		Console::WriteLine("Controller A-button + l/r-stick       : Faster rotate / move");
+		Console::WriteLine("Controller Y-button + l/r-stick       : Faster rotate / move");
 		Console::WriteLine("Controller X-button + l/r-stick       : Slower rotate / move");
 		Console::WriteLine("Arrow up/down or mouse or r-stick     : Rotate camera up/down");
 		Console::WriteLine("Arrow left/right or mouse or r-stick  : Rotate camera left/right");
@@ -377,8 +407,10 @@ namespace IGCS
 		Console::WriteLine("Numpad 0                              : Pause / Continue game");
 		Console::WriteLine("Numpad /                              : Toggle Y look direction");
 		Console::WriteLine("Numpad .                              : Block keyboard/mouse input to game");
+		Console::WriteLine("DEL                                   : Toggle HUD");
+		Console::WriteLine("END                                   : Skip 5 frames ahead when game is paused");
 		Console::WriteLine("ALT+H                                 : This help");
-		Console::WriteLine("-----------------------------------------------------------------------------", CONSOLE_WHITE);
+		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
 		// wait for 350ms to avoid fast keyboard hammering
 		Sleep(350);
 	}

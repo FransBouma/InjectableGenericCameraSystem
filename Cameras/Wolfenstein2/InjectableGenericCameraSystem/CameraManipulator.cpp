@@ -29,34 +29,78 @@
 #include "CameraManipulator.h"
 #include "GameConstants.h"
 #include "Console.h"
-#include "Globals.h"
 
 using namespace DirectX;
 using namespace std;
 
 extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
-	LPBYTE g_timestopStructAddress = nullptr;
 	LPBYTE g_fovStructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
 {
-	static float _originalLookData[12];	// 3x3 matrix
+	static float _originalRotationMatrixData[9];
 	static float _originalCoordsData[3];
 	static float _originalFoV;
 	static bool _timeHasBeenStopped = false;
-
-	// newValue: 1 == time should be frozen, 0 == normal gameplay
-	void setTimeStopValue(LPBYTE hostImageAddress, byte newValue)
+	static LPBYTE _showHudAddress = nullptr;
+	static LPBYTE _stopTimeAddress = nullptr;
+	static LPBYTE _runFramesAddress = nullptr;
+	
+	void setShowHudAddress(LPBYTE address)
 	{
-		LPBYTE timestopAddress = hostImageAddress + TIMESTOP_IN_IMAGE_OFFSET;
-		*timestopAddress = newValue;
+		_showHudAddress = address;
 	}
+
+
+	void setStopTimeAddress(LPBYTE address)
+	{
+		_stopTimeAddress = address;
+	}
+
+
+	void setRunFramesAddress(LPBYTE address)
+	{
+		_runFramesAddress = address;
+	}
+	
+
+	void setRunFramesValue(BYTE newValue)
+	{
+		if (nullptr == _runFramesAddress)
+		{
+			return;
+		}
+		*_runFramesAddress = newValue;
+	}
+
+
+	// newValue: 1 == time should be frozen, 0 == normal gameplay. There are 3 values possible for this variable (g_stopTime). 2 stops everything, also the player, 
+	// I opted for 1, as it leaves a bit freedom for what to do with the player after pausing the game. 
+	void setStopTimeValue(BYTE newValue)
+	{
+		if (nullptr == _stopTimeAddress)
+		{
+			return;
+		}
+		*_stopTimeAddress = newValue;
+	}
+
+
+	// 1== show hud, 0 is hide hud.
+	void setShowHudValue(BYTE newValue)
+	{
+		if (nullptr == _showHudAddress)
+		{
+			return;
+		}
+		*_showHudAddress = newValue;
+	}
+
 
 	XMFLOAT3 getCurrentCameraCoords()
 	{
-		// This particular game uses 2 camera buffers, to which we write the same data. So we pick the first as it doesn't matter. 
 		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
 		XMFLOAT3 currentCoords = XMFLOAT3(coordsInMemory);
 		return currentCoords;
@@ -67,13 +111,16 @@ namespace IGCS::GameSpecific::CameraManipulator
 	// newCoords are the new coordinates for the camera in worldspace.
 	void writeNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoords)
 	{
+		XMFLOAT4 qAsFloat4;
+		XMStoreFloat4(&qAsFloat4, newLookQuaternion);
+
 		// game uses a 3x3 matrix for look data. We have to calculate a rotation matrix from our quaternion and store the upper 3x3 matrix (_11-_33) in memory.
 		XMMATRIX rotationMatrixPacked = XMMatrixRotationQuaternion(newLookQuaternion);
 		XMFLOAT4X4 rotationMatrix;
 		XMStoreFloat4x4(&rotationMatrix, rotationMatrixPacked);
 
 		// 3x3 rotation part of matrix
-		float* matrixInMemory = reinterpret_cast<float*>(g_cameraStructAddress + LOOK_DATA_IN_CAMERA_STRUCT_OFFSET);
+		float* matrixInMemory = reinterpret_cast<float*>(g_cameraStructAddress + ROTATION_MATRIX_IN_CAMERA_STRUCT_OFFSET);
 		matrixInMemory[0] = rotationMatrix._11;
 		matrixInMemory[1] = rotationMatrix._12;
 		matrixInMemory[2] = rotationMatrix._13;
@@ -103,59 +150,68 @@ namespace IGCS::GameSpecific::CameraManipulator
 		Console::WriteLine("Camera found.");
 
 #ifdef _DEBUG
-		cout << "Camera struct address: " << hex << (void*)g_cameraStructAddress << endl;
+		cout << "Camera address: " << hex << (void*)g_cameraStructAddress << endl;
 #endif
+	}
+
+
+	// Resets the FOV to the default
+	void resetFoV()
+	{
+		if (nullptr == g_fovStructAddress)
+		{
+			return;
+		}
+		float* fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_FOV_STRUCT_OFFSET);
+		*fovInMemory = _originalFoV;
 	}
 
 
 	// changes the FoV with the specified amount
 	void changeFoV(float amount)
 	{
-		if (g_fovStructAddress == nullptr)
-		{
-			return;
-		}
-		float* fovAddress = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
-		*fovAddress += amount;
-	}
-
-
-	void resetFOV()
-	{
 		if (nullptr == g_fovStructAddress)
 		{
 			return;
 		}
-		float* fovAddress = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
-		*fovAddress = DEFAULT_FOV_DEGREES;
+		float* fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_FOV_STRUCT_OFFSET);
+		*fovInMemory += amount;
 	}
 
 
 	// should restore the camera values in the camera structures to the cached values. This assures the free camera is always enabled at the original camera location.
 	void restoreOriginalCameraValues()
 	{
-		float* lookInMemory = reinterpret_cast<float*>(g_cameraStructAddress + LOOK_DATA_IN_CAMERA_STRUCT_OFFSET);
+		if (nullptr == g_cameraStructAddress)
+		{
+			return;
+		}
+		float* matrixInMemory = reinterpret_cast<float*>(g_cameraStructAddress + ROTATION_MATRIX_IN_CAMERA_STRUCT_OFFSET);
 		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-		memcpy(lookInMemory, _originalLookData, 12 * sizeof(float));
+		memcpy(matrixInMemory, _originalRotationMatrixData, 9 * sizeof(float));
 		memcpy(coordsInMemory, _originalCoordsData, 3 * sizeof(float));
 		if (nullptr != g_fovStructAddress)
 		{
-			float *fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
-			*fovInMemory = _originalFoV;
+			float* floatInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_FOV_STRUCT_OFFSET);
+			*floatInMemory = _originalFoV;
 		}
 	}
 
 
 	void cacheOriginalCameraValues()
 	{
-		float* lookInMemory = reinterpret_cast<float*>(g_cameraStructAddress + LOOK_DATA_IN_CAMERA_STRUCT_OFFSET);
+		if (nullptr == g_cameraStructAddress)
+		{
+			return;
+		}
+		float* matrixInMemory = reinterpret_cast<float*>(g_cameraStructAddress + ROTATION_MATRIX_IN_CAMERA_STRUCT_OFFSET);
 		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET);
-		memcpy(_originalLookData, lookInMemory, 12 * sizeof(float));
+		memcpy(_originalRotationMatrixData, matrixInMemory, 9 * sizeof(float));
 		memcpy(_originalCoordsData, coordsInMemory, 3 * sizeof(float));
 		if (nullptr != g_fovStructAddress)
 		{
-			float *fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
-			_originalFoV = *fovInMemory;
+			float* floatInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_FOV_STRUCT_OFFSET);
+			_originalFoV = *floatInMemory;
 		}
 	}
 }

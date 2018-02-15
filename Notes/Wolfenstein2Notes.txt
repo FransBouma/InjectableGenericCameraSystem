@@ -1,0 +1,151 @@
+FOV:
+NewColossus_x64vk.exe+9552A4 - F3 0F5C C4            - subss xmm0,xmm4
+NewColossus_x64vk.exe+9552A8 - F3 0F59 D4            - mulss xmm2,xmm4
+NewColossus_x64vk.exe+9552AC - F3 0F59 C3            - mulss xmm0,xmm3
+NewColossus_x64vk.exe+9552B0 - F3 0F58 C2            - addss xmm0,xmm2
+NewColossus_x64vk.exe+9552B4 - F3 0F11 41 28         - movss [rcx+28],xmm0							<< FOV WRITE 
+NewColossus_x64vk.exe+9552B9 - F3 0F10 41 28         - movss xmm0,[rcx+28]							<< FOV READ
+NewColossus_x64vk.exe+9552BE - C3                    - ret 
+
+Address for FOV is in rcx after this code:
+Real fov is at index 0x18.
+NewColossus_x64vk.exe+FE8C58 - 81 25 1ED4FA01 FFFFFBFF - and [NewColossus_x64vk.exe+2F96080],FFFBFFFF
+NewColossus_x64vk.exe+FE8C62 - 48 8B 06              - mov rax,[rsi]					; Intercept here
+NewColossus_x64vk.exe+FE8C65 - 48 8D 8B C04F0000     - lea rcx,[rbx+00004FC0]			; Load FoV Address
+NewColossus_x64vk.exe+FE8C6C - 48 8D 55 67           - lea rdx,[rbp+67]
+NewColossus_x64vk.exe+FE8C70 - 48 89 45 67           - mov [rbp+67],rax	
+NewColossus_x64vk.exe+FE8C74 - E8 37C596FF           - call NewColossus_x64vk.exe+9551B0		; call FoV function; Continue here
+NewColossus_x64vk.exe+FE8C79 - 65 48 8B 04 25 58000000  - mov rax,gs:[00000058]
+NewColossus_x64vk.exe+FE8C82 - 48 8D 8F 98000000     - lea rcx,[rdi+00000098]
+NewColossus_x64vk.exe+FE8C89 - 0F57 E4               - xorps xmm4,xmm4
+
+Player xyz
+NewColossus_x64vk.exe+FEA03C - F3 0F58 B7 0C010000   - addss xmm6,[rdi+0000010C]
+NewColossus_x64vk.exe+FEA044 - F3 0F58 9F 08010000   - addss xmm3,[rdi+00000108]
+NewColossus_x64vk.exe+FEA04C - F3 0F11 AB 90FF0000   - movss [rbx+0000FF90],xmm5					<< WRITE Player X
+NewColossus_x64vk.exe+FEA054 - F3 0F11 B3 98FF0000   - movss [rbx+0000FF98],xmm6
+NewColossus_x64vk.exe+FEA05C - F3 0F11 9B 94FF0000   - movss [rbx+0000FF94],xmm3
+NewColossus_x64vk.exe+FEA064 - 80 BB F0FF0000 00     - cmp byte ptr [rbx+0000FFF0],00 { 0 }
+NewColossus_x64vk.exe+FEA06B - 0F84 E9050000         - je NewColossus_x64vk.exe+FEA65A
+NewColossus_x64vk.exe+FEA071 - F3 0F10 B3 D0FF0000   - movss xmm6,[rbx+0000FFD0]
+NewColossus_x64vk.exe+FEA079 - F3 0F10 93 CCFF0000   - movss xmm2,[rbx+0000FFCC]
+
+Camera:
+NewColossus_x64vk.exe+FE8EC2 - F3 0F10 45 C7         - movss xmm0,[rbp-39]
+NewColossus_x64vk.exe+FE8EC7 - F3 0F10 4D CB         - movss xmm1,[rbp-35]
+NewColossus_x64vk.exe+FE8ECC - F3 0F11 87 E8000000   - movss [rdi+000000E8],xmm0    ; WRITE X. Intercept here
+NewColossus_x64vk.exe+FE8ED4 - F3 0F10 45 CF         - movss xmm0,[rbp-31]          ;
+NewColossus_x64vk.exe+FE8ED9 - F3 0F11 87 F0000000   - movss [rdi+000000F0],xmm0    ; WRITE Z
+NewColossus_x64vk.exe+FE8EE1 - 0F10 45 E7            - movups xmm0,[rbp-19]         ;
+NewColossus_x64vk.exe+FE8EE5 - F3 0F11 8F EC000000   - movss [rdi+000000EC],xmm1    ; WRITE Y
+NewColossus_x64vk.exe+FE8EED - 0F11 87 F4000000      - movups [rdi+000000F4],xmm0   ; WRITE Matrix values 0-3
+NewColossus_x64vk.exe+FE8EF4 - 0F10 45 F7            - movups xmm0,[rbp-09]         ;
+NewColossus_x64vk.exe+FE8EF8 - 0F11 87 04010000      - movups [rdi+00000104],xmm0   ; WRITE Matrix values 3-7
+NewColossus_x64vk.exe+FE8EFF - F3 0F10 45 07         - movss xmm0,[rbp+07]          ;
+NewColossus_x64vk.exe+FE8F04 - F3 0F11 87 14010000   - movss [rdi+00000114],xmm0    ; WRITE Matrix value 8
+NewColossus_x64vk.exe+FE8F0C - 48 8B CF              - mov rcx,rdi                  ; Continue here
+
+Hud toggle:
+NewColossus_x64vk.exe+2F960E0 (byte)
+code: 
+NewColossus_x64vk.exe+F9C158 - 48 8B 40 60           - mov rax,[rax+60]
+NewColossus_x64vk.exe+F9C15C - 48 89 44 24 38        - mov [rsp+38],rax
+NewColossus_x64vk.exe+F9C161 - 48 8D 54 24 40        - lea rdx,[rsp+40]
+NewColossus_x64vk.exe+F9C166 - 48 89 44 24 40        - mov [rsp+40],rax
+NewColossus_x64vk.exe+F9C16B - 48 8B CB              - mov rcx,rbx
+NewColossus_x64vk.exe+F9C16E - E8 6D8EFEFF           - call NewColossus_x64vk.exe+F84FE0
+NewColossus_x64vk.exe+F9C173 - 83 3D 669FFF01 00     - cmp dword ptr [NewColossus_x64vk.exe+2F960E0],00 	<<< HUD TOGGLE READ (g_showhud)
+NewColossus_x64vk.exe+F9C17A - 74 4E                 - je NewColossus_x64vk.exe+F9C1CA
+NewColossus_x64vk.exe+F9C17C - 48 8B 83 D08A0000     - mov rax,[rbx+00008AD0]
+
+Timestop: 
+NewColossus_x64vk.exe+11B417B - 48 8B 48 50           - mov rcx,[rax+50]
+NewColossus_x64vk.exe+11B417F - 83 79 30 00           - cmp dword ptr [rcx+30],00 { 0 }					<<< READ TIMESTOP.
+NewColossus_x64vk.exe+11B4183 - 0F84 F3000000         - je NewColossus_x64vk.exe+11B427C
+NewColossus_x64vk.exe+11B4189 - 48 8B 40 48           - mov rax,[rax+48]
+NewColossus_x64vk.exe+11B418D - 83 78 30 00           - cmp dword ptr [rax+30],00 { 0 }
+NewColossus_x64vk.exe+11B4191 - 0F85 E5000000         - jne NewColossus_x64vk.exe+11B427C
+NewColossus_x64vk.exe+11B4197 - E8 A4368EFF           - call NewColossus_x64vk.exe+A97840
+NewColossus_x64vk.exe+11B419C - 48 8B C8              - mov rcx,rax
+
+other location: 
+NewColossus_x64vk.exe+A8F86F - 48 89 5C 24 40        - mov [rsp+40],rbx
+NewColossus_x64vk.exe+A8F874 - 48 89 6C 24 48        - mov [rsp+48],rbp
+NewColossus_x64vk.exe+A8F879 - 48 89 74 24 50        - mov [rsp+50],rsi
+NewColossus_x64vk.exe+A8F87E - 48 89 7C 24 58        - mov [rsp+58],rdi
+NewColossus_x64vk.exe+A8F883 - 48 8B D9              - mov rbx,rcx
+NewColossus_x64vk.exe+A8F886 - 83 3D 839E4A02 00     - cmp dword ptr [NewColossus_x64vk.exe+2F39710],00		<<< READ TIMESTOP
+NewColossus_x64vk.exe+A8F88D - 74 0D                 - je NewColossus_x64vk.exe+A8F89C
+
+g_freezeTime: 
+NewColossus_x64vk.exe+11B402D - E8 1E2EE3FF           - call NewColossus_x64vk.exe+FE6E50
+NewColossus_x64vk.exe+11B4032 - 48 8B 06              - mov rax,[rsi]
+NewColossus_x64vk.exe+11B4035 - 48 8B CE              - mov rcx,rsi
+NewColossus_x64vk.exe+11B4038 - FF 90 80000000        - call qword ptr [rax+00000080]
+NewColossus_x64vk.exe+11B403E - 81 25 182BE101 FFFFFBFF - and [NewColossus_x64vk.exe+2FC6B60],FFFBFFFF { [0.01] }
+NewColossus_x64vk.exe+11B4048 - 83 3D E12AE101 00     - cmp dword ptr [NewColossus_x64vk.exe+2FC6B30],00		<< READ g_freezeTime
+NewColossus_x64vk.exe+11B404F - 0F84 FD000000         - je NewColossus_x64vk.exe+11B4152
+NewColossus_x64vk.exe+11B4055 - 48 85 F6              - test rsi,rsi
+NewColossus_x64vk.exe+11B4058 - 0F84 A1000000         - je NewColossus_x64vk.exe+11B40FF
+NewColossus_x64vk.exe+11B405E - 49 63 57 08           - movsxd  rdx,dword ptr [r15+08]
+NewColossus_x64vk.exe+11B4062 - 48 C1 E2 06           - shl rdx,06 { 6 }
+NewColossus_x64vk.exe+11B4066 - 48 03 54 24 50        - add rdx,[rsp+50]
+
+
+
+cvar commands: 
+00007FF6C025AA24 | 48 8D 1D 1D 1A 6A 02             | lea rbx,qword ptr ds:[7FF6C28FC448]                   | 0x00007FF6C28FC448:"cam_cutsceneFreecam"
+00007FF6C025AA2B | 40 38 35 A3 F8 E2 02             | cmp byte ptr ds:[7FF6C308A2D5],sil                    |
+00007FF6C025AA32 | 74 56                            | je newcolossus_x64vk_dump.7FF6C025AA8A                |
+00007FF6C025AA34 | 48 8B CB                         | mov rcx,rbx                                           |
+00007FF6C025AA37 | E8 54 98 F9 00                   | call <newcolossus_x64vk_dump.sub_7FF6C11F4290>        |
+00007FF6C025AA3C | 48 89 05 45 7C D2 02             | mov qword ptr ds:[7FF6C2F82688],rax                   |
+00007FF6C025AA43 | 48 8D 3D C6 CF 37 02             | lea rdi,qword ptr ds:[7FF6C25D7A10]                   |
+00007FF6C025AA4A | 48 8B CF                         | mov rcx,rdi                                           |
+00007FF6C025AA4D | E8 3E 98 F9 00                   | call <newcolossus_x64vk_dump.sub_7FF6C11F4290>        |
+00007FF6C025AA52 | 48 89 05 37 7C D2 02             | mov qword ptr ds:[7FF6C2F82690],rax                   |
+00007FF6C025AA59 | 48 8D 0D 1E E4 E1 01             | lea rcx,qword ptr ds:[7FF6C2078E7E]                   |
+00007FF6C025AA60 | 48 89 0D 31 7C D2 02             | mov qword ptr ds:[7FF6C2F82698],rcx                   |
+00007FF6C025AA67 | 48 89 35 42 7C D2 02             | mov qword ptr ds:[7FF6C2F826B0],rsi                   |
+00007FF6C025AA6E | 48 89 35 43 7C D2 02             | mov qword ptr ds:[7FF6C2F826B8],rsi                   |
+00007FF6C025AA75 | 48 85 C0                         | test rax,rax                                          |
+00007FF6C025AA78 | 75 41                            | jne newcolossus_x64vk_dump.7FF6C025AABB               |
+00007FF6C025AA7A | 48 8B D3                         | mov rdx,rbx                                           |
+00007FF6C025AA7D | 48 8D 0D 2C CE 6F 02             | lea rcx,qword ptr ds:[7FF6C29578B0]                   | 0x00007FF6C29578B0:"Invalid Reset String for Cvar %s"
+00007FF6C025AA84 | E8 37 47 FC 00                   | call <newcolossus_x64vk_dump.sub_7FF6C121F1C0>        |
+00007FF6C025AA89 | CC                               | int3                                                  |
+00007FF6C025AA8A | 48 89 1D F7 7B D2 02             | mov qword ptr ds:[7FF6C2F82688],rbx                   |
+00007FF6C025AA91 | 48 8D 3D 78 CF 37 02             | lea rdi,qword ptr ds:[7FF6C25D7A10]                   |
+00007FF6C025AA98 | 48 89 3D F1 7B D2 02             | mov qword ptr ds:[7FF6C2F82690],rdi                   |
+00007FF6C025AA9F | 48 8D 05 BA 19 6A 02             | lea rax,qword ptr ds:[7FF6C28FC460]                   | 0x00007FF6C28FC460:"0 = Normal debug free cam, 1 = Use the cutscene camera to setup camera effects when in freecam, 2 = Use cutscene setup excluding fov & dof"
+00007FF6C025AAA6 | 48 89 05 EB 7B D2 02             | mov qword ptr ds:[7FF6C2F82698],rax                   |
+00007FF6C025AAAD | 48 89 35 FC 7B D2 02             | mov qword ptr ds:[7FF6C2F826B0],rsi                   |
+00007FF6C025AAB4 | 48 89 35 FD 7B D2 02             | mov qword ptr ds:[7FF6C2F826B8],rsi                   |
+00007FF6C025AABB | 48 8B D7                         | mov rdx,rdi                                           |
+00007FF6C025AABE | 48 8D 1D 7B 7B D2 02             | lea rbx,qword ptr ds:[7FF6C2F82640]                   |	<<< START STRUCT
+00007FF6C025AAC5 | 48 8B CB                         | mov rcx,rbx                                           |
+00007FF6C025AAC8 | E8 C3 99 F9 00                   | call <newcolossus_x64vk_dump.sub_7FF6C11F4490>        |
+00007FF6C025AACD | C7 05 C9 7B D2 02 0A 00 00 00    | mov dword ptr ds:[7FF6C2F826A0],A                     | 0x0A:'\n'
+00007FF6C025AAD7 | F3 0F 10 05 1D 92 71 02          | movss xmm0,dword ptr ds:[7FF6C2973CFC]                |
+00007FF6C025AADF | F3 0F 11 05 BD 7B D2 02          | movss dword ptr ds:[7FF6C2F826A4],xmm0                |
+00007FF6C025AAE7 | F3 0F 10 0D 71 9A 71 02          | movss xmm1,dword ptr ds:[7FF6C2974560]                |
+00007FF6C025AAEF | F3 0F 11 0D B1 7B D2 02          | movss dword ptr ds:[7FF6C2F826A8],xmm1                |
+00007FF6C025AAF7 | 89 35 73 7B D2 02                | mov dword ptr ds:[7FF6C2F82670],esi                   |	<< VARIABLE (start struct + 0x30).
+00007FF6C025AAFD | 0F 57 C0                         | xorps xmm0,xmm0                                       |
+00007FF6C025AB00 | F3 0F 11 05 6C 7B D2 02          | movss dword ptr ds:[7FF6C2F82674],xmm0                |
+00007FF6C025AB08 | 48 89 35 B1 7B D2 02             | mov qword ptr ds:[7FF6C2F826C0],rsi                   |
+00007FF6C025AB0F | 48 8B 05 DA F7 E2 02             | mov rax,qword ptr ds:[7FF6C308A2F0]                   |
+00007FF6C025AB16 | 48 89 05 AB 7B D2 02             | mov qword ptr ds:[7FF6C2F826C8],rax                   |
+00007FF6C025AB1D | 48 89 1D CC F7 E2 02             | mov qword ptr ds:[7FF6C308A2F0],rbx                   |
+
+g_runFrames:
+NewColossus_x64vk.exe+11B5365 - FF D2                 - call rdx
+NewColossus_x64vk.exe+11B5367 - 48 8B 48 48           - mov rcx,[rax+48]
+NewColossus_x64vk.exe+11B536B - 8B 51 30              - mov edx,[rcx+30]					<< READ g_runFrames.
+NewColossus_x64vk.exe+11B536E - 85 D2                 - test edx,edx
+NewColossus_x64vk.exe+11B5370 - 7E 07                 - jle NewColossus_x64vk.exe+11B5379
+NewColossus_x64vk.exe+11B5372 - FF CA                 - dec edx
+NewColossus_x64vk.exe+11B5374 - E8 07AC0700           - call NewColossus_x64vk.exe+122FF80
+NewColossus_x64vk.exe+11B5379 - 49 8D 96 182D0D00     - lea rdx,[r14+000D2D18]
+NewColossus_x64vk.exe+11B5380 - 49 8B 8E 100C0D00     - mov rcx,[r14+000D0C10]
+
