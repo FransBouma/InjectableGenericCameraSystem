@@ -44,6 +44,10 @@ automatically when you clone the repo. The camera uses DirectXMath for the 3D ma
 * Tomb Raider 2013: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Tombraider
 * Watch_Dogs: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Watch_Dogs
 * Watch_Dogs2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Watch_Dogs2
+* Wolfenstein II: The new colossus (Demo): https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Wolfenstein2
+
+## In-depth article about IGCS and how to create camera tools
+I've written a long, in-depth article about how to create camera tools and how IGCS works [on my blog](https://weblogs.asp.net/fbouma/let-s-add-a-photo-mode-to-wolfenstein-ii-the-new-colossus-pc).
 
 ## Acknowledgements
 Some camera code uses [MinHook](https://github.com/TsudaKageyu/minhook) by Tsuda Kageyu.
