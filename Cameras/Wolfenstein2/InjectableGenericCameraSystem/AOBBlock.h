@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2018, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -56,7 +56,7 @@ namespace IGCS
 		char* _patternMask;
 		int _patternSize;
 		int _customOffset;
-		int _occurrence;		// starts at 1: if there are more occurrences, and e.g. the 3rd has to be picked, set this to 3.
+		int _occurrence;			// starts at 1: if there are more occurrences, and e.g. the 3rd has to be picked, set this to 3.
 		LPBYTE _locationInImage;	// the location to use after the scan has been completed.
 	};
 

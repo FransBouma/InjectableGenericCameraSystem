@@ -139,13 +139,20 @@ cvar commands:
 00007FF6C025AB1D | 48 89 1D CC F7 E2 02             | mov qword ptr ds:[7FF6C308A2F0],rbx                   |
 
 g_runFrames:
+NewColossus_x64vk.exe+11B5343 - 48 8B C8              - mov rcx,rax
+NewColossus_x64vk.exe+11B5346 - 48 8B 00              - mov rax,[rax]
+NewColossus_x64vk.exe+11B5349 - 48 8B 90 B8000000     - mov rdx,[rax+000000B8]
+NewColossus_x64vk.exe+11B5350 - 4C 8D 05 31195001     - lea r8,[NewColossus_x64vk.exe+26B6C88]
+NewColossus_x64vk.exe+11B5357 - 49 3B C0              - cmp rax,r8								<< INTERCEPT HERE
+NewColossus_x64vk.exe+11B535A - 75 09                 - jne NewColossus_x64vk.exe+11B5365
+NewColossus_x64vk.exe+11B535C - 48 8D 81 F0010000     - lea rax,[rcx+000001F0]
+NewColossus_x64vk.exe+11B5363 - EB 02                 - jmp NewColossus_x64vk.exe+11B5367
 NewColossus_x64vk.exe+11B5365 - FF D2                 - call rdx
 NewColossus_x64vk.exe+11B5367 - 48 8B 48 48           - mov rcx,[rax+48]
 NewColossus_x64vk.exe+11B536B - 8B 51 30              - mov edx,[rcx+30]					<< READ g_runFrames.
-NewColossus_x64vk.exe+11B536E - 85 D2                 - test edx,edx
+NewColossus_x64vk.exe+11B536E - 85 D2                 - test edx,edx							<< CONTINUE HERE
 NewColossus_x64vk.exe+11B5370 - 7E 07                 - jle NewColossus_x64vk.exe+11B5379
 NewColossus_x64vk.exe+11B5372 - FF CA                 - dec edx
 NewColossus_x64vk.exe+11B5374 - E8 07AC0700           - call NewColossus_x64vk.exe+122FF80
-NewColossus_x64vk.exe+11B5379 - 49 8D 96 182D0D00     - lea rdx,[r14+000D2D18]
-NewColossus_x64vk.exe+11B5380 - 49 8B 8E 100C0D00     - mov rcx,[r14+000D0C10]
+
 

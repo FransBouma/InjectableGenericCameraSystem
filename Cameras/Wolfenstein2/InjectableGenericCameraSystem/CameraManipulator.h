@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2018, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -35,7 +35,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void writeNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoords);
 	void setShowHudAddress(LPBYTE address);
 	void setStopTimeAddress(LPBYTE address);
-	void setRunFramesAddress(LPBYTE address);
 	void waitForCameraStructAddresses();
 	void restoreOriginalCameraValues();
 	void cacheOriginalCameraValues();

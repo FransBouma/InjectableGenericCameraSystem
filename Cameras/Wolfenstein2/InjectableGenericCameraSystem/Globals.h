@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2018, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -31,7 +31,6 @@
 #include "Gamepad.h"
 
 extern "C" BYTE g_cameraEnabled;
-extern "C" BYTE g_aimFrozen;
 
 namespace IGCS
 {

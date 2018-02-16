@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2018, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -34,8 +34,10 @@ using namespace DirectX;
 using namespace std;
 
 extern "C" {
+	// global variables which are accessed in Interceptor.asm and therefore need to be defined as 'extern "C"'
 	LPBYTE g_cameraStructAddress = nullptr;
 	LPBYTE g_fovStructAddress = nullptr;
+	LPBYTE g_runFramesStructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -46,8 +48,8 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static bool _timeHasBeenStopped = false;
 	static LPBYTE _showHudAddress = nullptr;
 	static LPBYTE _stopTimeAddress = nullptr;
-	static LPBYTE _runFramesAddress = nullptr;
 	
+
 	void setShowHudAddress(LPBYTE address)
 	{
 		_showHudAddress = address;
@@ -58,21 +60,16 @@ namespace IGCS::GameSpecific::CameraManipulator
 	{
 		_stopTimeAddress = address;
 	}
-
-
-	void setRunFramesAddress(LPBYTE address)
-	{
-		_runFramesAddress = address;
-	}
 	
 
+	// newValue is the amount of frames to skip ahead when g_stopTime (via setStopTimeValue) is set to a value > 0
 	void setRunFramesValue(BYTE newValue)
 	{
-		if (nullptr == _runFramesAddress)
+		if (nullptr == g_runFramesStructAddress)
 		{
 			return;
 		}
-		*_runFramesAddress = newValue;
+		*(g_runFramesStructAddress + RUNFRAMES_CVAR_IN_STRUCT_OFFSET) = newValue;
 	}
 
 
@@ -107,7 +104,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 	}
 
 
-	// newLookQuaternion: newly calculated quaternion of camera view space. Can be used to construct a 4x4 matrix if the game uses a matrix instead of a quaternion
+	// newLookQuaternion: newly calculated quaternion of camera view space. Used here to construct a 4x4 matrix as the game uses a matrix instead of a quaternion
 	// newCoords are the new coordinates for the camera in worldspace.
 	void writeNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoords)
 	{
@@ -155,7 +152,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 	}
 
 
-	// Resets the FOV to the default
 	void resetFoV()
 	{
 		if (nullptr == g_fovStructAddress)
@@ -167,7 +163,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 	}
 
 
-	// changes the FoV with the specified amount
 	void changeFoV(float amount)
 	{
 		if (nullptr == g_fovStructAddress)
@@ -179,7 +174,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 	}
 
 
-	// should restore the camera values in the camera structures to the cached values. This assures the free camera is always enabled at the original camera location.
 	void restoreOriginalCameraValues()
 	{
 		if (nullptr == g_cameraStructAddress)

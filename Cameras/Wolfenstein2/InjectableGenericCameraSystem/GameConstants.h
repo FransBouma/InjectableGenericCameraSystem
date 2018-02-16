@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2018, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -38,12 +38,11 @@ namespace IGCS::GameSpecific
 	#define INITIAL_YAW_RADIANS							0.0f
 	#define INITIAL_ROLL_RADIANS						0.0f
 	#define CONTROLLER_Y_INVERT							true
-	#define FASTER_MULTIPLIER							5.0f
-	#define SLOWER_MULTIPLIER							0.05f
+	#define FASTER_MULTIPLIER							6.0f
+	#define SLOWER_MULTIPLIER							0.04f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
-	#define DEFAULT_MOVEMENT_SPEED						0.01f
-	#define DEFAULT_ROTATION_SPEED						0.01f
-	#define DEFAULT_FOV_DEGREES							40.0f
+	#define DEFAULT_MOVEMENT_SPEED						0.015f
+	#define DEFAULT_ROTATION_SPEED						0.015f
 	#define DEFAULT_FOV_SPEED							0.1f
 	#define DEFAULT_Z_MOVEMENT_MULTIPLIER				0.5f
 	#define DEFAULT_SKIP_FRAMES_COUNT					5
@@ -60,4 +59,5 @@ namespace IGCS::GameSpecific
 	#define ROTATION_MATRIX_IN_CAMERA_STRUCT_OFFSET		0xF4		
 	#define CAMERA_COORDS_IN_CAMERA_STRUCT_OFFSET		0xE8		
 	#define FOV_IN_FOV_STRUCT_OFFSET					0x18
+	#define RUNFRAMES_CVAR_IN_STRUCT_OFFSET				0x30
 }

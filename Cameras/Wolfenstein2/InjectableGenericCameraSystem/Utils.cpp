@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2018, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -179,8 +179,7 @@ namespace IGCS::Utils
 		}
 		return toReturn;
 	}
-
-
+	
 
 	// locationData is the AOB block with the address of the rip relative value to read for the calculation.
 	// nextOpCodeOffset is used to calculate the address of the next instruction as that's the address the rip relative value is relative off. In general
@@ -194,18 +193,4 @@ namespace IGCS::Utils
 		LPBYTE ripRelativeValueAddress = locationData->locationInImage() + locationData->customOffset();
 		return  ripRelativeValueAddress + nextOpCodeOffset + *((__int32*)ripRelativeValueAddress);
 	}
-
-
-	string formatString(const char *fmt, va_list args)
-	{
-		va_list args_copy;
-		va_copy(args_copy, args);
-
-		int len = vsnprintf(NULL, 0, fmt, args_copy);
-		char* buffer = new char[len + 2];
-		vsnprintf(buffer, len + 1, fmt, args_copy);
-		string toReturn(buffer, len + 1);
-		return toReturn;
-	}
-
 }

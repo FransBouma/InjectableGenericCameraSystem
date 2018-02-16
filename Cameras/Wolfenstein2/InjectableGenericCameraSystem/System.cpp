@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2018, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -142,6 +142,21 @@ namespace IGCS
 			toggleTimestopState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
+		if (Input::keyDown(IGCS_KEY_SKIP_FRAMES))
+		{
+			skipFramesAhead();
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
+		if (Input::keyDown(IGCS_KEY_TOGGLE_HUD))
+		{
+			toggleHudRenderState();
+			Sleep(350);
+		}
+		if (!g_cameraEnabled)
+		{
+			// camera is disabled. We simply disable all input to the camera movement, by returning now.
+			return;
+		}
 		if (Input::keyDown(IGCS_KEY_FOV_RESET))
 		{
 			CameraManipulator::resetFoV();
@@ -154,24 +169,9 @@ namespace IGCS
 		{
 			CameraManipulator::changeFoV(DEFAULT_FOV_SPEED);
 		}
-		if (Input::keyDown(IGCS_KEY_TOGGLE_HUD))
-		{
-			toggleHudRenderState();
-			Sleep(350);
-		}
-		if (!g_cameraEnabled)
-		{
-			// camera is disabled. We simply disable all input to the camera movement, by returning now.
-			return;
-		}
 		if (Input::keyDown(IGCS_KEY_BLOCK_INPUT))
 		{
 			toggleInputBlockState(!Globals::instance().inputBlocked());
-			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
-		}
-		if (Input::keyDown(IGCS_KEY_SKIP_FRAMES))
-		{
-			skipFramesAhead();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
 		_camera.resetMovement();
@@ -331,6 +331,7 @@ namespace IGCS
 		Console::WriteLine(newValue ? "Input to game blocked" : "Input to game enabled");
 	}
 
+
 	void System::toggleCameraMovementLockState(bool newValue)
 	{
 		if (_cameraMovementLocked == newValue)
@@ -390,26 +391,29 @@ namespace IGCS
 						  //0         1         2         3         4         5         6         7
 						  //01234567890123456789012345678901234567890123456789012345678901234567890123456789
 		Console::WriteLine("---[IGCS Help]-----------------------------------------------------------------", CONSOLE_WHITE);
-		Console::WriteLine("INS                                   : Enable/Disable camera");
-		Console::WriteLine("HOME                                  : Lock/unlock camera movement");
-		Console::WriteLine("ALT + rotate/move                     : Faster rotate / move");
-		Console::WriteLine("Right-CTRL + rotate/move              : Slower rotate / move");
-		Console::WriteLine("Controller Y-button + l/r-stick       : Faster rotate / move");
-		Console::WriteLine("Controller X-button + l/r-stick       : Slower rotate / move");
-		Console::WriteLine("Arrow up/down or mouse or r-stick     : Rotate camera up/down");
-		Console::WriteLine("Arrow left/right or mouse or r-stick  : Rotate camera left/right");
-		Console::WriteLine("Numpad 8/Numpad 5 or l-stick          : Move camera forward/backward");
-		Console::WriteLine("Numpad 4/Numpad 6 or l-stick          : Move camera left / right");
-		Console::WriteLine("Numpad 7/Numpad 9 or l/r-trigger      : Move camera up / down");
-		Console::WriteLine("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
-		Console::WriteLine("Numpad +/- d-pad up/down              : Increase / decrease FoV (w/ freecam)");
-		Console::WriteLine("Numpad * or controller B-button       : Reset FoV (w/ freecam)");
-		Console::WriteLine("Numpad 0                              : Pause / Continue game");
-		Console::WriteLine("Numpad /                              : Toggle Y look direction");
-		Console::WriteLine("Numpad .                              : Block keyboard/mouse input to game");
-		Console::WriteLine("DEL                                   : Toggle HUD");
-		Console::WriteLine("END                                   : Skip 5 frames ahead when game is paused");
-		Console::WriteLine("ALT+H                                 : This help");
+		Console::WriteLine("Options always available:");
+		Console::WriteLine("    INS                                   : Enable/Disable camera");
+		Console::WriteLine("    DEL                                   : Toggle HUD");
+		Console::WriteLine("    Numpad 0                              : Pause / Continue game");
+		Console::WriteLine("    END                                   : Skip 5 frames ahead (/w game pause)");
+		Console::WriteLine("    ALT+H                                 : This help");
+		Console::WriteLine("");
+		Console::WriteLine("Options available when camera is enabled:");
+		Console::WriteLine("    HOME                                  : Lock/unlock camera movement");
+		Console::WriteLine("    ALT + rotate/move                     : Faster rotate / move");
+		Console::WriteLine("    Right-CTRL + rotate/move              : Slower rotate / move");
+		Console::WriteLine("    Controller Y-button + l/r-stick       : Faster rotate / move");
+		Console::WriteLine("    Controller X-button + l/r-stick       : Slower rotate / move");
+		Console::WriteLine("    Arrow up/down or mouse or r-stick     : Rotate camera up/down");
+		Console::WriteLine("    Arrow left/right or mouse or r-stick  : Rotate camera left/right");
+		Console::WriteLine("    Numpad 8/Numpad 5 or l-stick          : Move camera forward/backward");
+		Console::WriteLine("    Numpad 4/Numpad 6 or l-stick          : Move camera left / right");
+		Console::WriteLine("    Numpad 7/Numpad 9 or l/r-trigger      : Move camera up / down");
+		Console::WriteLine("    Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
+		Console::WriteLine("    Numpad +/- d-pad up/down              : Increase / decrease FoV");
+		Console::WriteLine("    Numpad * or controller B-button       : Reset FoV");
+		Console::WriteLine("    Numpad /                              : Toggle Y look direction");
+		Console::WriteLine("    Numpad .                              : Block keyboard/mouse input to game");
 		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
 		// wait for 350ms to avoid fast keyboard hammering
 		Sleep(350);

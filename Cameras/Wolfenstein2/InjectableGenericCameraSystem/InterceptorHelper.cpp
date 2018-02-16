@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2018, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -38,16 +38,18 @@
 using namespace std;
 
 //--------------------------------------------------------------------------------------------------------------------------------
-// external asm functions
+// external asm functions, defined in Interceptor.asm
 extern "C" {
 	void cameraAddressInterceptor();
 	void fovAddressInterceptor();
+	void runFramesAddressInterceptor();
 }
 
-// external addresses used in asm.
+// external addresses used in functions in Interceptor.asm
 extern "C" {
 	LPBYTE _cameraStructInterceptionContinue = nullptr;
 	LPBYTE _fovAddressInterceptionContinue = nullptr;
+	LPBYTE _runFramesAddressInterceptionContinue = nullptr;
 }
 
 
@@ -59,8 +61,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[FOV_ADDRESS_INTERCEPT_KEY] = new AOBBlock(FOV_ADDRESS_INTERCEPT_KEY, "48 8B 06 48 8D 8B ?? ?? ?? ?? 48 8D 55 67 48 89 45", 1);
 		aobBlocks[SHOWHUD_CVAR_ADDRESS_INTERCEPT_KEY] = new AOBBlock(SHOWHUD_CVAR_ADDRESS_INTERCEPT_KEY, "48 8D 54 24 ?? 48 89 44 24 ?? 48 8B CB E8 ?? ?? ?? ?? 83 3D | ?? ?? ?? ?? 00", 1);
 		aobBlocks[STOPTIME_CVAR_ADDRESS_INTERCEPT_KEY] = new AOBBlock(STOPTIME_CVAR_ADDRESS_INTERCEPT_KEY, "48 89 6C 24 ?? 48 89 74 24 ?? 48 89 7C 24 ?? 48 8B D9 83 3D | ?? ?? ?? ?? 00 74", 1);
-#error THIS IS FREEZETIME, WE NEED TO INTERCEPT RUNFRAMES
-		aobBlocks[RUNFRAMES_CVAR_ADDRESS_INTERCEPT_KEY] = new AOBBlock(RUNFRAMES_CVAR_ADDRESS_INTERCEPT_KEY, "48 8B 06 48 8B CE FF 90 ?? ?? ?? ?? 81 25 ?? ?? ?? ?? FFFFFBFF 83 3D | ?? ?? ?? ?? 00", 1);
+		aobBlocks[RUNFRAMES_CVAR_ADDRESS_INTERCEPT_KEY] = new AOBBlock(RUNFRAMES_CVAR_ADDRESS_INTERCEPT_KEY, "49 3B C0 75 ?? 48 8D 81 ?? ?? ?? ?? EB ?? FF D2 48 8B 48 ?? 8B 51", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -88,8 +89,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void setPostCameraStructHooks(map<string, AOBBlock*> &aobBlocks)
 	{
 		GameImageHooker::setHook(aobBlocks[FOV_ADDRESS_INTERCEPT_KEY], 0x12, &_fovAddressInterceptionContinue, &fovAddressInterceptor);
+		GameImageHooker::setHook(aobBlocks[RUNFRAMES_CVAR_ADDRESS_INTERCEPT_KEY], 0x17, &_runFramesAddressInterceptionContinue, &runFramesAddressInterceptor);
 		CameraManipulator::setShowHudAddress(Utils::calculateAbsoluteAddress(aobBlocks[SHOWHUD_CVAR_ADDRESS_INTERCEPT_KEY], 5));		//NewColossus_x64vk.exe+F9C173 - 83 3D 669FFF01 00  - cmp dword ptr [NewColossus_x64vk.exe+2F960E0],00 << g_showhud read here.
 		CameraManipulator::setStopTimeAddress(Utils::calculateAbsoluteAddress(aobBlocks[STOPTIME_CVAR_ADDRESS_INTERCEPT_KEY], 5));		//NewColossus_x64vk.exe+A8F886 - 83 3D 839E4A02 00  - cmp dword ptr [NewColossus_x64vk.exe+2F39710],00 << g_stopTime read here.
-		CameraManipulator::setRunFramesAddress(Utils::calculateAbsoluteAddress(aobBlocks[RUNFRAMES_CVAR_ADDRESS_INTERCEPT_KEY], 5));	//NewColossus_x64vk.exe+11B4048 - 83 3D E12AE101 00 - cmp dword ptr [NewColossus_x64vk.exe+2FC6B30],00 << g_runFrames read here.
 	}
 }

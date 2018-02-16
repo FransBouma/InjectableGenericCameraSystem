@@ -1,6 +1,6 @@
 ;////////////////////////////////////////////////////////////////////////////////////////////////////////
 ;// Part of Injectable Generic Camera System
-;// Copyright(c) 2017, Frans Bouma
+;// Copyright(c) 2018, Frans Bouma
 ;// All rights reserved.
 ;// https://github.com/FransBouma/InjectableGenericCameraSystem
 ;//
@@ -32,6 +32,8 @@
 ;---------------------------------------------------------------
 ; Public definitions so the linker knows which names are present in this file
 PUBLIC cameraAddressInterceptor
+PUBLIC fovAddressInterceptor
+PUBLIC runFramesAddressInterceptor
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -39,6 +41,7 @@ PUBLIC cameraAddressInterceptor
 ; values in asm to communicate with the system
 EXTERN g_cameraStructAddress: qword
 EXTERN g_fovStructAddress: qword
+EXTERN g_runFramesStructAddress: qword
 EXTERN g_cameraEnabled: byte
 ;---------------------------------------------------------------
 
@@ -46,6 +49,7 @@ EXTERN g_cameraEnabled: byte
 ; Own externs, defined in InterceptorHelper.cpp
 EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _fovAddressInterceptionContinue: qword
+EXTERN _runFramesAddressInterceptionContinue: qword
 
 ; Scratch pad
 ;
@@ -103,5 +107,36 @@ exit:
 	mov [g_fovStructAddress], rcx    ; Store the address in the variable
 	jmp qword ptr [_fovAddressInterceptionContinue] ; jmp back into the original game code, which is the location after the original statements above.
 fovAddressInterceptor ENDP
+
+runFramesAddressInterceptor PROC
+;NewColossus_x64vk.exe+11B5343 - 48 8B C8              - mov rcx,rax
+;NewColossus_x64vk.exe+11B5346 - 48 8B 00              - mov rax,[rax]
+;NewColossus_x64vk.exe+11B5349 - 48 8B 90 B8000000     - mov rdx,[rax+000000B8]
+;NewColossus_x64vk.exe+11B5350 - 4C 8D 05 31195001     - lea r8,[NewColossus_x64vk.exe+26B6C88]
+;NewColossus_x64vk.exe+11B5357 - 49 3B C0              - cmp rax,r8								<< INTERCEPT HERE
+;NewColossus_x64vk.exe+11B535A - 75 09                 - jne NewColossus_x64vk.exe+11B5365
+;NewColossus_x64vk.exe+11B535C - 48 8D 81 F0010000     - lea rax,[rcx+000001F0]
+;NewColossus_x64vk.exe+11B5363 - EB 02                 - jmp NewColossus_x64vk.exe+11B5367
+;NewColossus_x64vk.exe+11B5365 - FF D2                 - call rdx
+;NewColossus_x64vk.exe+11B5367 - 48 8B 48 48           - mov rcx,[rax+48]
+;NewColossus_x64vk.exe+11B536B - 8B 51 30              - mov edx,[rcx+30]						<< READ g_runFrames.
+;NewColossus_x64vk.exe+11B536E - 85 D2                 - test edx,edx							<< CONTINUE HERE
+;NewColossus_x64vk.exe+11B5370 - 7E 07                 - jle NewColossus_x64vk.exe+11B5379
+;NewColossus_x64vk.exe+11B5372 - FF CA                 - dec edx
+;NewColossus_x64vk.exe+11B5374 - E8 07AC0700           - call NewColossus_x64vk.exe+122FF80
+originalCode:
+	cmp rax,r8							
+	jne c1
+	lea rax,[rcx+000001F0h]
+	jmp c2
+c1:
+	call rdx
+c2:
+	mov rcx,[rax+48h]
+	mov edx,[rcx+30h]
+exit:
+	mov [g_runFramesStructAddress], rcx    ; Store the address in the variable
+	jmp qword ptr [_runFramesAddressInterceptionContinue] ; jmp back into the original game code, which is the location after the original statements above.
+runFramesAddressInterceptor ENDP
 
 END
