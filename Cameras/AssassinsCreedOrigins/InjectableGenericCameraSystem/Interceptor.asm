@@ -259,11 +259,18 @@ fovReadInterceptor PROC
 ;00000001409FFA9F | F3 41 0F 10 8E 64 02 00 00       | movss xmm1,dword ptr ds:[r14+264]		<< FOV READ
 ;00000001409FFAA8 | F3 0F 10 05 74 9E A2 02          | movss xmm0,dword ptr ds:[143429924]		<< CONTINUE HERE
 ;00000001409FFAB0 | 76 41                            | jbe acorigins_dump.1409FFAF3        
+; v1.4
+;ACOrigins.exe+A0E27D - F3 41 0F10 94 24 24010000  - movss xmm2,[r12+00000124]					<< INTERCEPT HERE
+;ACOrigins.exe+A0E287 - 45 0F57 D2		           - xorps xmm10,xmm10
+;ACOrigins.exe+A0E28B - 41 0F2F D2				   - comiss xmm2,xmm10
+;ACOrigins.exe+A0E28F - F3 41 0F10 8E 64020000	   - movss xmm1,[r14+00000264]
+;ACOrigins.exe+A0E298 - F3 0F10 05 34C3A702		   - movss xmm0,[ACOrigins.exe+348A5D4]			<< CONTINUE HERE
+;ACOrigins.exe+A0E2A0 - 76 41					   - jna ACOrigins.exe+A0E2E3
 	mov [g_fovStructAddress], r14
 originalCode:
 	movss xmm2,dword ptr [r12+124h]
-	xorps xmm15,xmm15                
-	comiss xmm2,xmm15                
+	xorps xmm10,xmm10 
+	comiss xmm2,xmm10                
 	movss xmm1,dword ptr [r14+264h]
 exit:
 	jmp qword ptr [_fovReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.

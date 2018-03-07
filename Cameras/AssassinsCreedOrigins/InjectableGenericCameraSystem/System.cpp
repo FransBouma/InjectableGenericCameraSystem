@@ -268,6 +268,7 @@ namespace IGCS
 		{
 			_camera.yaw(static_cast<float>(mouseDeltaX) * MOUSE_SPEED_CORRECTION * multiplier);
 		}
+		Input::resetMouseDeltas();
 	}
 
 
