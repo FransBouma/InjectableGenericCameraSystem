@@ -1128,7 +1128,7 @@
 				0x 00007FFF546A95EA movzx rax, word ptr [rdx]
 				0x 00007FFF546A95EE mov ecx, [rdx+2]
 				0x 00007FFF546A95F1 mov rdx, [rdx+6]
-				0x 00007FFF546A95F5 mov [r10], ax
+				0x 00007FFF546A95F5 mov [r10], ax							; Possible value write. (copy from 3 previous statements)
 				0x 00007FFF546A95F9 mov [r10+2], ecx
 				0x 00007FFF546A95FD mov [r10+6], rdx
 				0x 00007FFF546A9601 mov rax, r11
