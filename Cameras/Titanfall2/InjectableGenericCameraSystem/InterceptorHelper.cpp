@@ -42,6 +42,8 @@ extern "C" {
 	void cameraWrite1Interceptor();
 	void cameraWrite2Interceptor();
 	void cameraWrite3Interceptor();
+	void cameraWrite4Interceptor();
+	void cameraWrite5Interceptor();
 }
 
 // external addresses used in asm.
@@ -50,6 +52,8 @@ extern "C" {
 	LPBYTE _cameraWrite1InterceptionContinue = nullptr;
 	LPBYTE _cameraWrite2InterceptionContinue = nullptr;
 	LPBYTE _cameraWrite3InterceptionContinue = nullptr;
+	LPBYTE _cameraWrite4InterceptionContinue = nullptr;
+	LPBYTE _cameraWrite5InterceptionContinue = nullptr;
 }
 
 
@@ -61,10 +65,12 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE1_INTERCEPT_KEY, "F3 0F 11 07 F3 0F 10 44 24 4C F3 0F 11 4F 04 F3 0F 11 47 08 4C 8D 9C 24", 1);
 		aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE2_INTERCEPT_KEY, "F3 0F 11 07 F3 0F 10 44 24 6C F3 0F 11 4F 04 F3 0F 11 47 08 4C 8D 9C 24", 1);
 		aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE3_INTERCEPT_KEY, "8B 08 89 0F 8B 48 04 89 4F 04 8B 40 08 89 47 08 E8 ?? ?? ?? ?? 33 D2", 1);
+		aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE4_INTERCEPT_KEY, "89 0F 8B 48 04 89 4F 04 8B 40 08 48 8B CE 89 47 08 C7 46 08 00 00 00 00 F3 0F 11 06 F3 0F 11 4E 04 E8", 1);
+		aobBlocks[CAMERA_WRITE5_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE5_INTERCEPT_KEY, "F3 0F 11 7F 08 0F 28 7C 24 70 F3 0F 11 07 F3 0F 11 4F 04 49 8B E3 5F", 1);
 		aobBlocks[FOV_MIN_CLAMP_LOCATION_KEY] = new AOBBlock(FOV_MIN_CLAMP_LOCATION_KEY, "F3 0F 10 58 58 | F3 0F 5F 1D ?? ?? ?? ?? 0F 28 C3 F3 0F 5D 05 ?? ?? ?? ?? 48", 1);
 		aobBlocks[FOV_MAX_CLAMP_LOCATION_KEY] = new AOBBlock(FOV_MAX_CLAMP_LOCATION_KEY, "F3 0F 10 58 58 F3 0F 5F 1D ?? ?? ?? ?? 0F 28 C3 | F3 0F 5D 05 ?? ?? ?? ?? 48", 1);
 		aobBlocks[FOV_ADDRESS_LOCATION_KEY] = new AOBBlock(FOV_ADDRESS_LOCATION_KEY, "48 8B 05 | ?? ?? ?? ?? F3 0F 10 58 58 F3 0F5F 1D ?? ?? ?? ?? 0F 28 C3 F3 0F 5D 05 ?? ?? ?? ?? 48", 1);
-		aobBlocks[CAMERA_TO_MODEL_ATTACH_KEY] = new AOBBlock(CAMERA_TO_MODEL_ATTACH_KEY, "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 49 8B F8 48 8B F2 48 8B D9 E8 ?? ?? ?? ?? 48 85 C0 74 ?? 4C 8B CF 4C 8B C6", 1);
+		aobBlocks[DRAWVIEWMODEL_LOCATION_KEY] = new AOBBlock(DRAWVIEWMODEL_LOCATION_KEY, "48 83 EC 28 48 8B 05 | ?? ?? ?? ?? 83 78 5C 00 75 07 32 C0 48 83 C4 28 C3 83 C9 FF", 1);
 		aobBlocks[CAMERA_ANGLE_WRITE_YAW_KEY] = new AOBBlock(CAMERA_ANGLE_WRITE_YAW_KEY, "41 0F 28 CA F3 0F 59 C6 | F3 0F 11 47 04 41 0F 28 C0 E8 9C 3D 1D 00 41 0F 28 CC F3 0F 59 C6 F3 0F 11 07 41 0F 28 C3 E8 87 3D 1D 00 F3 0F 59 C6 F3 0F 11 47 08", 1);
 		aobBlocks[CAMERA_ANGLE_WRITE_PITCH_KEY] = new AOBBlock(CAMERA_ANGLE_WRITE_PITCH_KEY, "41 0F 28 CA F3 0F 59 C6 F3 0F 11 47 04 41 0F 28 C0 E8 9C 3D 1D 00 41 0F 28 CC F3 0F 59 C6 | F3 0F 11 07 41 0F 28 C3 E8 87 3D 1D 00 F3 0F 59 C6 F3 0F 11 47 08", 1);
 		aobBlocks[CAMERA_ANGLE_WRITE_ROLL_KEY] = new AOBBlock(CAMERA_ANGLE_WRITE_ROLL_KEY, "41 0F 28 CA F3 0F 59 C6 F3 0F 11 47 04 41 0F 28 C0 E8 9C 3D 1D 00 41 0F 28 CC F3 0F 59 C6 F3 0F 11 07 41 0F 28 C3 E8 87 3D 1D 00 F3 0F 59 C6 | F3 0F 11 47 08", 1);
@@ -98,39 +104,45 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY], 0x14, &_cameraWrite1InterceptionContinue, &cameraWrite1Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY], 0x14, &_cameraWrite2InterceptionContinue, &cameraWrite2Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY], 0x10, &_cameraWrite3InterceptionContinue, &cameraWrite3Interceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY], 0x21, &_cameraWrite4InterceptionContinue, &cameraWrite4Interceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE5_INTERCEPT_KEY], 0x13, &_cameraWrite5InterceptionContinue, &cameraWrite5Interceptor);
 		CameraManipulator::setFoVAddress(Utils::calculateAbsoluteAddress(aobBlocks[FOV_ADDRESS_LOCATION_KEY], 4));	// client.dll+2C5A44 - 48 8B 05 E5CAF200     - mov rax,[client.dll+11F2530]
 		CameraManipulator::setPauseUnpauseGameFunctionPointers(Utils::calculateAbsoluteAddress(aobBlocks[PAUSE_UNPAUSE_ROOTOBJECT_LOCATION_KEY], 4));
 		nopFoVClamps(aobBlocks);
 	}
 
 
-	void toggleCameraAttachmentToModel(map<string, AOBBlock*> &aobBlocks, bool detach)
+	void toggleHideModelInFirstPerson(map<string, AOBBlock*> &aobBlocks, bool hide)
 	{
-		// simple place a RET at the start of the code if detach is true, or restore the original code if detach is false.
-		//client.dll+2C1920 - 48 89 5C 24 08        - mov [rsp+08],rbx
-		//client.dll+2C1925 - 48 89 74 24 10        - mov [rsp+10],rsi
-		//client.dll+2C192A - 57                    - push rdi
-		//client.dll+2C192B - 48 83 EC 20           - sub rsp,20 { 32 }
-		//client.dll+2C192F - 49 8B F8              - mov rdi,r8
-		//client.dll+2C1932 - 48 8B F2              - mov rsi,rdx
-		//client.dll+2C1935 - 48 8B D9              - mov rbx,rcx
-		//client.dll+2C1938 - E8 63E6E8FF           - call client.dll+14FFA0
-		//client.dll+2C193D - 48 85 C0              - test rax,rax
-		//client.dll+2C1940 - 74 11                 - je client.dll+2C1953
-		//client.dll+2C1942 - 4C 8B CF              - mov r9,rdi
-		//client.dll+2C1945 - 4C 8B C6              - mov r8,rsi
+		// we're going to pull the address of r_drawviewmodel from memory and set its value. 
+		//client.dll+374CE0 - 48 83 EC 28           - sub rsp,28 { 40 }
+		//client.dll+374CE4 - 48 8B 05 1DEAF201     - mov rax,[client.dll+22A3708] 			<< Read root address of object which contains r_drawviewmodel
+		//client.dll+374CEB - 83 78 5C 00           - cmp dword ptr [rax+5C],00 { 0 }			<< read r_drawviewmodel Set to 0 to disable model in 1st person.
+		//client.dll+374CEF - 75 07                 - jne client.dll+374CF8
+		//client.dll+374CF1 - 32 C0                 - xor al,al
+		//client.dll+374CF3 - 48 83 C4 28           - add rsp,28 { 40 }
+		//client.dll+374CF7 - C3                    - ret 
+		//client.dll+374CF8 - 83 C9 FF              - or ecx,-01 { 255 }
+		//client.dll+374CFB - 48 89 5C 24 20        - mov [rsp+20],rbx
+		//client.dll+374D00 - E8 3BA2DDFF           - call client.dll+14EF40
+		//client.dll+374D05 - 48 8B D8              - mov rbx,rax
+		//client.dll+374D08 - 48 85 C0              - test rax,rax
+		//client.dll+374D0B - 0F84 AA000000         - je client.dll+374DBB
+		//client.dll+374D11 - 80 B8 D9270000 00     - cmp byte ptr [rax+000027D9],00 { 0 }
+		//client.dll+374D18 - 0F85 9D000000         - jne client.dll+374DBB
+		//client.dll+374D1E - 8B 90 582C0000        - mov edx,[rax+00002C58]
+		//client.dll+374D24 - 83 FA FF              - cmp edx,-01 { 255 }
+		//client.dll+374D27 - 74 28                 - je client.dll+374D51
 
-		if (detach)
+		__int64* pRootObject = (__int64*)Utils::calculateAbsoluteAddress(aobBlocks[DRAWVIEWMODEL_LOCATION_KEY], 4);
+		DWORD* drawViewModel = (DWORD*)((*pRootObject) + 0x5C);
+		if (hide)
 		{
-			// set ret
-			BYTE statementBytes[1] = { 0xC3 };						//client.dll+2C1920 - 48 89 5C 24 08        - mov [rsp+08],rbx
-			GameImageHooker::writeRange(aobBlocks[CAMERA_TO_MODEL_ATTACH_KEY], statementBytes, 1);
+			*drawViewModel = 0;
 		}
 		else
 		{
-			// set original byte overwritten by ret
-			BYTE statementBytes[1] = { 0x48 };			//client.dll+2C1920 - 48 89 5C 24 08        - mov [rsp+08],rbx
-			GameImageHooker::writeRange(aobBlocks[CAMERA_TO_MODEL_ATTACH_KEY], statementBytes, 1);
+			*drawViewModel = 1;
 		}
 	}
 

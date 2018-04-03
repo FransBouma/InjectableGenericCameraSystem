@@ -50,6 +50,10 @@ namespace IGCS::InputHooker
 	typedef BOOL(WINAPI *GETMESSAGEW)(LPMSG, HWND, UINT, UINT);
 	typedef BOOL(WINAPI *PEEKMESSAGEA)(LPMSG, HWND, UINT, UINT, UINT);
 	typedef BOOL(WINAPI *PEEKMESSAGEW)(LPMSG, HWND, UINT, UINT, UINT);
+	typedef BOOL(WINAPI *POSTMESSAGEA)(HWND, UINT, WPARAM, LPARAM);
+	typedef BOOL(WINAPI *POSTMESSAGEW)(HWND, UINT, WPARAM, LPARAM);
+	typedef BOOL(WINAPI *SETCURSORPOS)(int, int);
+	typedef BOOL(WINAPI *GETCURSORPOS)(LPPOINT);
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Pointers to the original hooked functions
@@ -58,10 +62,16 @@ namespace IGCS::InputHooker
 	static GETMESSAGEW hookedGetMessageW = nullptr;
 	static PEEKMESSAGEA hookedPeekMessageA = nullptr;
 	static PEEKMESSAGEW hookedPeekMessageW = nullptr;
+	static POSTMESSAGEA hookedPostMessageA = nullptr;
+	static POSTMESSAGEW hookedPostMessageW = nullptr;
+	static SETCURSORPOS hookedSetCursorPos = nullptr;
+	static GETCURSORPOS hookedGetCursorPos = nullptr;
 
 	//-----------------------------------------------
 	// statics
 	static CRITICAL_SECTION _messageProcessCriticalSection;
+
+	POINT _lastCursorPositionWhenBlocked = {};
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Implementations
@@ -148,6 +158,50 @@ namespace IGCS::InputHooker
 		return TRUE;
 	}
 
+	// Our own version of PostMessageA
+	BOOL WINAPI detourPostMessageA(HWND hWnd, UINT wMsgFilterMin, WPARAM wParam, LPARAM lParam)
+	{
+		if (wMsgFilterMin==WM_MOUSEMOVE && ((Globals::instance().inputBlocked() && Globals::instance().keyboardMouseControlCamera()) || OverlayControl::isMainMenuVisible()))
+		{
+			return TRUE;
+		}
+		return hookedPostMessageA(hWnd, wMsgFilterMin, wParam, lParam);
+	}
+
+	// Our own version of PostMessageW
+	BOOL WINAPI detourPostMessageW(HWND hWnd, UINT wMsgFilterMin, WPARAM wParam, LPARAM lParam)
+	{
+		if (wMsgFilterMin == WM_MOUSEMOVE && ((Globals::instance().inputBlocked() && Globals::instance().keyboardMouseControlCamera()) || OverlayControl::isMainMenuVisible()))
+		{
+			return TRUE;
+		}
+		return hookedPostMessageW(hWnd, wMsgFilterMin, wParam, lParam);
+	}
+	
+	BOOL WINAPI detourSetCursorPos(int X, int Y)
+	{
+		if ((Globals::instance().inputBlocked() && Globals::instance().keyboardMouseControlCamera()) || OverlayControl::isMainMenuVisible())
+		{
+			_lastCursorPositionWhenBlocked.x = X;
+			_lastCursorPositionWhenBlocked.y = Y;
+			return TRUE;
+		}
+		return hookedSetCursorPos(X, Y);
+	}
+
+	BOOL WINAPI detourGetCursorPos(LPPOINT lpPoint)
+	{
+		if ((Globals::instance().inputBlocked() && Globals::instance().keyboardMouseControlCamera()) || OverlayControl::isMainMenuVisible())
+		{
+			if (nullptr != lpPoint)
+			{
+				*lpPoint = _lastCursorPositionWhenBlocked;
+			}
+			return TRUE;
+		}
+		return hookedGetCursorPos(lpPoint);
+	}
+
 
 	void processMessage(LPMSG lpMsg, bool removeIfRequired)
 	{
@@ -199,6 +253,30 @@ namespace IGCS::InputHooker
 			OverlayConsole::instance().logError("Hooking PeekMessageW failed!");
 		}
 		OverlayConsole::instance().logDebug("Hook set to PeekMessageW");
+
+		if (MH_CreateHookApiEx(L"user32", "PostMessageA", &detourPostMessageA, &hookedPostMessageA) != MH_OK)
+		{
+			OverlayConsole::instance().logError("Hooking PostMessageA failed!");
+		}
+		OverlayConsole::instance().logDebug("Hook set to PostMessageA");
+
+		if (MH_CreateHookApiEx(L"user32", "PostMessageW", &detourPostMessageW, &hookedPostMessageW) != MH_OK)
+		{
+			OverlayConsole::instance().logError("Hooking PostMessageW failed!");
+		}
+		OverlayConsole::instance().logDebug("Hook set to PostMessageW");
+
+		if (MH_CreateHookApiEx(L"user32", "SetCursorPos", &detourSetCursorPos, &hookedSetCursorPos) != MH_OK)
+		{
+			OverlayConsole::instance().logError("Hooking SetCursorPos failed!");
+		}
+		OverlayConsole::instance().logDebug("Hook set to SetCursorPos");
+
+		if (MH_CreateHookApiEx(L"user32", "GetCursorPos", &detourGetCursorPos, &hookedGetCursorPos) != MH_OK)
+		{
+			OverlayConsole::instance().logError("Hooking GetCursorPos failed!");
+		}
+		OverlayConsole::instance().logDebug("Hook set to GetCursorPos");
 
 		// Enable all hooks
 		if (MH_EnableHook(MH_ALL_HOOKS) == MH_OK)

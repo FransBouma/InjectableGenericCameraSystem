@@ -137,13 +137,13 @@ namespace IGCS
 				// it's going to be disabled, make sure things are alright when we give it back to the host
 				CameraManipulator::restoreOriginalValuesAfterCameraDisable();
 				toggleCameraMovementLockState(false);
-				InterceptorHelper::toggleCameraAttachmentToModel(_aobBlocks, false);	// attach model to camera
+				InterceptorHelper::toggleHideModelInFirstPerson(_aobBlocks, false);	// attach model to camera
 				InterceptorHelper::toggleAngleWrites(_aobBlocks, true);
 			}
 			else
 			{
 				// it's going to be enabled, so cache the original values before we enable it so we can restore it afterwards
-				InterceptorHelper::toggleCameraAttachmentToModel(_aobBlocks, true);	// detach model from camera
+				InterceptorHelper::toggleHideModelInFirstPerson(_aobBlocks, true);	// detach model from camera
 				CameraManipulator::cacheOriginalValuesBeforeCameraEnable();
 				InterceptorHelper::toggleAngleWrites(_aobBlocks, false);
 				_camera.resetAngles();

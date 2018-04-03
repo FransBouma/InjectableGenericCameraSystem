@@ -75,7 +75,68 @@ client.dll+4E3EB1 - 49 8B 5B 10           - mov rbx,[r11+10]
 client.dll+4E3EB5 - 49 8B 73 18           - mov rsi,[r11+18]
 client.dll+4E3EB9 - 49 8B E3              - mov rsp,r11
 
+PLAYER write 4: (3rd person)
+client.dll+14FB77 - 4C 8D 4C 24 40        - lea r9,[rsp+40]
+client.dll+14FB7C - 4C 8D 44 24 30        - lea r8,[rsp+30]
+client.dll+14FB81 - F3 0F10 44 24 20      - movss xmm0,[rsp+20]
+client.dll+14FB87 - F3 0F10 4C 24 24      - movss xmm1,[rsp+24]
+client.dll+14FB8D - 8B 08                 - mov ecx,[rax]
+client.dll+14FB8F - 48 8D 54 24 50        - lea rdx,[rsp+50]
+client.dll+14FB94 - 89 0F                 - mov [rdi],ecx						<< WRITE X
+client.dll+14FB96 - 8B 48 04              - mov ecx,[rax+04]
+client.dll+14FB99 - 89 4F 04              - mov [rdi+04],ecx					<< Y
+client.dll+14FB9C - 8B 40 08              - mov eax,[rax+08]
+client.dll+14FB9F - 48 8B CE              - mov rcx,rsi
+client.dll+14FBA2 - 89 47 08              - mov [rdi+08],eax					<< Z
+client.dll+14FBA5 - C7 46 08 00000000     - mov [rsi+08],00000000 { 0 }			<< ROLL
+client.dll+14FBAC - F3 0F11 06            - movss [rsi],xmm0					<< PITCH
+client.dll+14FBB0 - F3 0F11 4E 04         - movss [rsi+04],xmm1					<< YAW
+client.dll+14FBB5 - E8 D6764D00           - call client.dll+627290
+client.dll+14FBBA - 8B 0D C00BAE00        - mov ecx,[client.dll+C30780] { [00000001] }
+client.dll+14FBC0 - F3 0F10 7C 24 28      - movss xmm7,[rsp+28]
+
+Player write 5: (3rd person)
+client.dll+14FD66 - 49 8B 73 18           - mov rsi,[r11+18]
+client.dll+14FD6A - 0F28 C7               - movaps xmm0,xmm7
+client.dll+14FD6D - 0F28 CF               - movaps xmm1,xmm7
+client.dll+14FD70 - F3 0F59 7C 24 58      - mulss xmm7,[rsp+58]
+client.dll+14FD76 - F3 0F59 44 24 50      - mulss xmm0,[rsp+50]
+client.dll+14FD7C - F3 0F59 4C 24 54      - mulss xmm1,[rsp+54]
+client.dll+14FD82 - F3 0F58 7F 08         - addss xmm7,[rdi+08]
+client.dll+14FD87 - F3 0F58 07            - addss xmm0,[rdi]
+client.dll+14FD8B - F3 0F58 4F 04         - addss xmm1,[rdi+04]
+client.dll+14FD90 - F3 0F11 7F 08         - movss [rdi+08],xmm7						<< Z
+client.dll+14FD95 - 0F28 7C 24 70         - movaps xmm7,[rsp+70]
+client.dll+14FD9A - F3 0F11 07            - movss [rdi],xmm0						<< X
+client.dll+14FD9E - F3 0F11 4F 04         - movss [rdi+04],xmm1
+client.dll+14FDA3 - 49 8B E3              - mov rsp,r11
+client.dll+14FDA6 - 5F                    - pop rdi
+client.dll+14FDA7 - C3                    - ret 
+
 Disable Player model:
+Preferable: 
+client.dll+374CE0 - 48 83 EC 28           - sub rsp,28 { 40 }
+client.dll+374CE4 - 48 8B 05 1DEAF201     - mov rax,[client.dll+22A3708] 			<< Read root address of object which contains r_drawviewmodel
+client.dll+374CEB - 83 78 5C 00           - cmp dword ptr [rax+5C],00 { 0 }			<< read r_drawviewmodel Set to 0 to disable model in 1st person.
+client.dll+374CEF - 75 07                 - jne client.dll+374CF8
+client.dll+374CF1 - 32 C0                 - xor al,al
+client.dll+374CF3 - 48 83 C4 28           - add rsp,28 { 40 }
+client.dll+374CF7 - C3                    - ret 
+client.dll+374CF8 - 83 C9 FF              - or ecx,-01 { 255 }
+client.dll+374CFB - 48 89 5C 24 20        - mov [rsp+20],rbx
+client.dll+374D00 - E8 3BA2DDFF           - call client.dll+14EF40
+client.dll+374D05 - 48 8B D8              - mov rbx,rax
+client.dll+374D08 - 48 85 C0              - test rax,rax
+client.dll+374D0B - 0F84 AA000000         - je client.dll+374DBB
+client.dll+374D11 - 80 B8 D9270000 00     - cmp byte ptr [rax+000027D9],00 { 0 }
+client.dll+374D18 - 0F85 9D000000         - jne client.dll+374DBB
+client.dll+374D1E - 8B 90 582C0000        - mov edx,[rax+00002C58]
+client.dll+374D24 - 83 FA FF              - cmp edx,-01 { 255 }
+client.dll+374D27 - 74 28                 - je client.dll+374D51
+
+
+
+Alternative:
 NOP this, which is the call to update the player model:
 client.dll+2C194E - E8 CD06E1FF           - call client.dll+D2020
 function part starts: 

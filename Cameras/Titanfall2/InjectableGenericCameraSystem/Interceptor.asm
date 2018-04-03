@@ -35,6 +35,8 @@ PUBLIC cameraStructInterceptor
 PUBLIC cameraWrite1Interceptor
 PUBLIC cameraWrite2Interceptor
 PUBLIC cameraWrite3Interceptor
+PUBLIC cameraWrite4Interceptor
+PUBLIC cameraWrite5Interceptor
 
 ;---------------------------------------------------------------
 
@@ -51,6 +53,8 @@ EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _cameraWrite1InterceptionContinue: qword
 EXTERN _cameraWrite2InterceptionContinue: qword
 EXTERN _cameraWrite3InterceptionContinue: qword
+EXTERN _cameraWrite4InterceptionContinue: qword
+EXTERN _cameraWrite5InterceptionContinue: qword
 
 .data
 
@@ -167,5 +171,70 @@ originalCode:
 exit:
 	jmp qword ptr [_cameraWrite3InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite3Interceptor ENDP
+
+cameraWrite4Interceptor PROC
+; 3rd person camera / cutscenes
+;client.dll+14FB77 - 4C 8D 4C 24 40        - lea r9,[rsp+40]
+;client.dll+14FB7C - 4C 8D 44 24 30        - lea r8,[rsp+30]
+;client.dll+14FB81 - F3 0F10 44 24 20      - movss xmm0,[rsp+20]
+;client.dll+14FB87 - F3 0F10 4C 24 24      - movss xmm1,[rsp+24]
+;client.dll+14FB8D - 8B 08                 - mov ecx,[rax]
+;client.dll+14FB8F - 48 8D 54 24 50        - lea rdx,[rsp+50]
+;client.dll+14FB94 - 89 0F                 - mov [rdi],ecx						<< INTERCEPT HERE << WRITE X
+;client.dll+14FB96 - 8B 48 04              - mov ecx,[rax+04]
+;client.dll+14FB99 - 89 4F 04              - mov [rdi+04],ecx					<< Y
+;client.dll+14FB9C - 8B 40 08              - mov eax,[rax+08]
+;client.dll+14FB9F - 48 8B CE              - mov rcx,rsi
+;client.dll+14FBA2 - 89 47 08              - mov [rdi+08],eax					<< Z
+;client.dll+14FBA5 - C7 46 08 00000000     - mov [rsi+08],00000000				<< ROLL
+;client.dll+14FBAC - F3 0F11 06            - movss [rsi],xmm0					<< PITCH
+;client.dll+14FBB0 - F3 0F11 4E 04         - movss [rsi+04],xmm1				<< YAW
+;client.dll+14FBB5 - E8 D6764D00           - call client.dll+627290				<< CONTINUE HERE
+;client.dll+14FBBA - 8B 0D C00BAE00        - mov ecx,[client.dll+C30780] { [00000001] }
+;client.dll+14FBC0 - F3 0F10 7C 24 28      - movss xmm7,[rsp+28]
+	cmp byte ptr [g_cameraEnabled], 1
+	je exit
+originalCode:
+	mov [rdi],ecx
+	mov ecx,[rax+04h]
+	mov [rdi+04h],ecx		
+	mov eax,[rax+08h]
+	mov [rdi+08h],eax		
+	mov dword ptr [rsi+08h],00000000h
+	movss dword ptr [rsi],xmm0		
+	movss dword ptr [rsi+04h],xmm1	
+exit:
+	mov rcx,rsi
+	jmp qword ptr [_cameraWrite4InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+cameraWrite4Interceptor ENDP
+
+cameraWrite5Interceptor PROC
+; 3rd person camera / cutscenes
+;client.dll+14FD66 - 49 8B 73 18           - mov rsi,[r11+18]
+;client.dll+14FD6A - 0F28 C7               - movaps xmm0,xmm7
+;client.dll+14FD6D - 0F28 CF               - movaps xmm1,xmm7
+;client.dll+14FD70 - F3 0F59 7C 24 58      - mulss xmm7,[rsp+58]
+;client.dll+14FD76 - F3 0F59 44 24 50      - mulss xmm0,[rsp+50]
+;client.dll+14FD7C - F3 0F59 4C 24 54      - mulss xmm1,[rsp+54]
+;client.dll+14FD82 - F3 0F58 7F 08         - addss xmm7,[rdi+08]
+;client.dll+14FD87 - F3 0F58 07            - addss xmm0,[rdi]
+;client.dll+14FD8B - F3 0F58 4F 04         - addss xmm1,[rdi+04]
+;client.dll+14FD90 - F3 0F11 7F 08         - movss [rdi+08],xmm7					<< INTERCEPT HERE << Z
+;client.dll+14FD95 - 0F28 7C 24 70         - movaps xmm7,[rsp+70]
+;client.dll+14FD9A - F3 0F11 07            - movss [rdi],xmm0						<< X
+;client.dll+14FD9E - F3 0F11 4F 04         - movss [rdi+04],xmm1					<< Y
+;client.dll+14FDA3 - 49 8B E3              - mov rsp,r11							<< CONTINUE HERE
+;client.dll+14FDA6 - 5F                    - pop rdi
+;client.dll+14FDA7 - C3                    - ret 
+	cmp byte ptr [g_cameraEnabled], 1
+	je exit
+originalCode:
+	movss dword ptr [rdi+08h],xmm7	
+	movss dword ptr [rdi],xmm0		
+	movss dword ptr [rdi+04h],xmm1	
+exit:
+	movaps xmm7, xmmword ptr [rsp+70h]
+	jmp qword ptr [_cameraWrite5InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+cameraWrite5Interceptor ENDP
 
 END

@@ -36,6 +36,6 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void setCameraStructInterceptorHook(std::map<std::string, AOBBlock*> &aobBlocks);
 	void setPostCameraStructHooks(std::map<std::string, AOBBlock*> &aobBlocks);
 	void nopFoVClamps(std::map<std::string, AOBBlock*> &aobBlocks);
-	void toggleCameraAttachmentToModel(std::map<std::string, AOBBlock*> &aobBlocks, bool detach);
+	void toggleHideModelInFirstPerson(std::map<std::string, AOBBlock*> &aobBlocks, bool hide);
 	void toggleAngleWrites(std::map<std::string, AOBBlock*> &aobBlocks, bool enabled);
 }
