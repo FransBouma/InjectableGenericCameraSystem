@@ -37,6 +37,7 @@ PUBLIC cameraWrite2Interceptor
 PUBLIC cameraWrite3Interceptor
 PUBLIC cameraWrite4Interceptor
 PUBLIC cameraWrite5Interceptor
+PUBLIC cameraWrite6Interceptor
 
 ;---------------------------------------------------------------
 
@@ -55,6 +56,7 @@ EXTERN _cameraWrite2InterceptionContinue: qword
 EXTERN _cameraWrite3InterceptionContinue: qword
 EXTERN _cameraWrite4InterceptionContinue: qword
 EXTERN _cameraWrite5InterceptionContinue: qword
+EXTERN _cameraWrite6InterceptionContinue: qword
 
 .data
 
@@ -236,5 +238,60 @@ exit:
 	movaps xmm7, xmmword ptr [rsp+70h]
 	jmp qword ptr [_cameraWrite5InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite5Interceptor ENDP
+
+cameraWrite6Interceptor PROC
+; cutscenes
+;client.dll+35B30D - 74 5C                 - je client.dll+35B36B
+;client.dll+35B30F - 48 8B 10              - mov rdx,[rax]
+;client.dll+35B312 - 48 8B C8              - mov rcx,rax
+;client.dll+35B315 - FF 52 40              - call qword ptr [rdx+40]
+;client.dll+35B318 - 49 8B 14 24           - mov rdx,[r12]
+;client.dll+35B31C - 8B 08                 - mov ecx,[rax]
+;client.dll+35B31E - 89 0B                 - mov [rbx],ecx				<< INTERCEPT HERE <<X
+;client.dll+35B320 - 8B 48 04              - mov ecx,[rax+04]
+;client.dll+35B323 - 89 4B 04              - mov [rbx+04],ecx			<<Y
+;client.dll+35B326 - 8B 48 08              - mov ecx,[rax+08]
+;client.dll+35B329 - 89 4B 08              - mov [rbx+08],ecx			<<Z
+;client.dll+35B32C - 49 8B CC              - mov rcx,r12
+;client.dll+35B32F - FF 52 48              - call qword ptr [rdx+48]
+;client.dll+35B332 - 8B 08                 - mov ecx,[rax]
+;client.dll+35B334 - 89 0F                 - mov [rdi],ecx				<< pitch
+;client.dll+35B336 - 8B 48 04              - mov ecx,[rax+04]
+;client.dll+35B339 - 89 4F 04              - mov [rdi+04],ecx			<< yaw
+;client.dll+35B33C - 8B 40 08              - mov eax,[rax+08]
+;client.dll+35B33F - 49 8B CC              - mov rcx,r12
+;client.dll+35B342 - 89 47 08              - mov [rdi+08],eax			<< roll
+;client.dll+35B345 - 49 8B 04 24           - mov rax,[r12]				<< CONTINUE HERE
+;client.dll+35B349 - FF 90 28050000        - call qword ptr [rax+00000528]
+	cmp byte ptr [g_cameraEnabled], 1
+	je nowrites
+originalCode:
+	mov [rbx],ecx			
+	mov ecx,[rax+04h]
+	mov [rbx+04h],ecx		
+	mov ecx,[rax+08h]
+	mov [rbx+08h],ecx		
+	mov rcx,r12
+	call qword ptr [rdx+48h]
+	mov ecx,[rax]
+	mov [rdi],ecx			
+	mov ecx,[rax+04h]
+	mov [rdi+04h],ecx		
+	mov eax,[rax+08h]
+	mov rcx,r12
+	mov [rdi+08h],eax		
+	jmp exit
+nowrites:
+	mov ecx,[rax+04h]
+	mov ecx,[rax+08h]
+	mov rcx,r12
+	call qword ptr [rdx+48h]
+	mov ecx,[rax]
+	mov ecx,[rax+04h]
+	mov eax,[rax+08h]
+	mov rcx,r12
+exit:
+	jmp qword ptr [_cameraWrite6InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+cameraWrite6Interceptor ENDP
 
 END

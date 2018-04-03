@@ -113,6 +113,31 @@ client.dll+14FDA3 - 49 8B E3              - mov rsp,r11
 client.dll+14FDA6 - 5F                    - pop rdi
 client.dll+14FDA7 - C3                    - ret 
 
+Player write 6:
+client.dll+35B30D - 74 5C                 - je client.dll+35B36B
+client.dll+35B30F - 48 8B 10              - mov rdx,[rax]
+client.dll+35B312 - 48 8B C8              - mov rcx,rax
+client.dll+35B315 - FF 52 40              - call qword ptr [rdx+40]
+client.dll+35B318 - 49 8B 14 24           - mov rdx,[r12]
+client.dll+35B31C - 8B 08                 - mov ecx,[rax]
+client.dll+35B31E - 89 0B                 - mov [rbx],ecx				<<X
+client.dll+35B320 - 8B 48 04              - mov ecx,[rax+04]
+client.dll+35B323 - 89 4B 04              - mov [rbx+04],ecx			<<Y
+client.dll+35B326 - 8B 48 08              - mov ecx,[rax+08]
+client.dll+35B329 - 89 4B 08              - mov [rbx+08],ecx			<<Z
+client.dll+35B32C - 49 8B CC              - mov rcx,r12
+client.dll+35B32F - FF 52 48              - call qword ptr [rdx+48]
+client.dll+35B332 - 8B 08                 - mov ecx,[rax]
+client.dll+35B334 - 89 0F                 - mov [rdi],ecx				<< pitch
+client.dll+35B336 - 8B 48 04              - mov ecx,[rax+04]
+client.dll+35B339 - 89 4F 04              - mov [rdi+04],ecx			<< yaw
+client.dll+35B33C - 8B 40 08              - mov eax,[rax+08]
+client.dll+35B33F - 49 8B CC              - mov rcx,r12
+client.dll+35B342 - 89 47 08              - mov [rdi+08],eax			<< roll
+client.dll+35B345 - 49 8B 04 24           - mov rax,[r12]
+client.dll+35B349 - FF 90 28050000        - call qword ptr [rax+00000528]
+
+
 Disable Player model:
 Preferable: 
 client.dll+374CE0 - 48 83 EC 28           - sub rsp,28 { 40 }
