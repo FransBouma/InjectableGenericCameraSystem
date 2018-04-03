@@ -1,0 +1,410 @@
+TitanFall 2
+
+Player struct: x, y, z, a, b, c. where a, b, c are angles in degrees around x, y and z. The angles are between -180.0 and 180.0
+Per value 3 writes are enough to block the writes from the game even though there are 6-8 of them per value. 
+
+Coordinate system: Zpos up, Ypos into the screen, Xpos right.
+
+Horizontal FOV write 1:
+client.dll+35B536 - F3 41 0F59 FA         - mulss xmm7,xmm10
+client.dll+35B53B - F3 41 0F59 FB         - mulss xmm7,xmm11
+client.dll+35B540 - 44 0F28 E0            - movaps xmm12,xmm0
+client.dll+35B544 - 0F28 C7               - movaps xmm0,xmm7
+client.dll+35B547 - E8 C8324A00           - call client.dll+7FE814
+client.dll+35B54C - F3 45 0F59 C2         - mulss xmm8,xmm10
+client.dll+35B551 - F3 45 0F11 A7 DC000000  - movss [r15+000000DC],xmm12				<< WRITE FOV
+client.dll+35B55A - F3 45 0F59 C3         - mulss xmm8,xmm11
+client.dll+35B55F - 0F28 F8               - movaps xmm7,xmm0
+client.dll+35B562 - F3 41 0F11 BF E4000000  - movss [r15+000000E4],xmm7
+client.dll+35B56B - 41 0F28 C0            - movaps xmm0,xmm8
+client.dll+35B56F - E8 A0324A00           - call client.dll+7FE814
+client.dll+35B574 - 0F2F 35 C5795400      - comiss xmm6,[client.dll+8A2F40] { [0.00] }
+client.dll+35B57B - 44 0F28 84 24 00020000  - movaps xmm8,[rsp+00000200]
+
+Real FOV READ: Works on two locations, one on the stack and one on 7FF.... 
+Might skip the stack one, but not sure. 
+client.dll+2C5A26 - 75 1C                 - jne client.dll+2C5A44
+client.dll+2C5A28 - 83 C8 01              - or eax,01 { 1 }
+client.dll+2C5A2B - 48 8D 15 36896400     - lea rdx,[client.dll+90E368] { ["cl_fovScale"] }
+client.dll+2C5A32 - 48 8D 0D EFCAF200     - lea rcx,[client.dll+11F2528] { [7FF89021DE30] }
+client.dll+2C5A39 - 89 05 F9CAF200        - mov [client.dll+11F2538],eax { [00000001] }
+client.dll+2C5A3F - E8 7C1E4700           - call client.dll+7378C0
+client.dll+2C5A44 - 48 8B 05 E5CAF200     - mov rax,[client.dll+11F2530] { [7FF89021DE00] }
+client.dll+2C5A4B - F3 0F10 58 58         - movss xmm3,[rax+58]									<<< READ FOV
+client.dll+2C5A50 - F3 0F5F 1D 20277400   - maxss xmm3,[client.dll+A08178] { [1.00] }			<< CLAMP MIN
+client.dll+2C5A58 - 0F28 C3               - movaps xmm0,xmm3
+client.dll+2C5A5B - F3 0F5D 05 D9906400   - minss xmm0,[client.dll+90EB3C] { [1.70] }			<< CLAMP MAX
+client.dll+2C5A63 - 48 83 C4 28           - add rsp,28 { 40 }
+client.dll+2C5A67 - C3                    - ret 
+
+PLAYER write1
+client.dll+142C4A - FF 90 A0050000        - call qword ptr [rax+000005A0]
+client.dll+142C50 - 48 8D 55 B7           - lea rdx,[rbp-49]
+client.dll+142C54 - 8B 08                 - mov ecx,[rax]
+client.dll+142C56 - 89 0E                 - mov [rsi],ecx						<< WRITE X
+client.dll+142C58 - 8B 48 04              - mov ecx,[rax+04]
+client.dll+142C5B - 89 4E 04              - mov [rsi+04],ecx					<< WRITE Y
+client.dll+142C5E - 8B 40 08              - mov eax,[rax+08]
+client.dll+142C61 - 48 8B CB              - mov rcx,rbx
+client.dll+142C64 - 89 46 08              - mov [rsi+08],eax					<< WRITE Z
+client.dll+142C67 - 48 8B 03              - mov rax,[rbx]
+client.dll+142C6A - FF 90 B0050000        - call qword ptr [rax+000005B0]
+client.dll+142C70 - 8B 08                 - mov ecx,[rax]
+client.dll+142C72 - 89 0F                 - mov [rdi],ecx
+
+PLAYER write2:
+client.dll+10E093 - 48 8B D5              - mov rdx,rbp
+client.dll+10E096 - E8 45F35100           - call client.dll+62D3E0
+client.dll+10E09B - F3 0F10 44 24 2C      - movss xmm0,[rsp+2C]
+client.dll+10E0A1 - F3 0F10 4C 24 3C      - movss xmm1,[rsp+3C]
+client.dll+10E0A7 - F3 0F11 07            - movss [rdi],xmm0					<< WRITE X
+client.dll+10E0AB - F3 0F10 44 24 4C      - movss xmm0,[rsp+4C]
+client.dll+10E0B1 - F3 0F11 4F 04         - movss [rdi+04],xmm1					<< WRITE Y
+client.dll+10E0B6 - F3 0F11 47 08         - movss [rdi+08],xmm0					<< WRITE Z
+client.dll+10E0BB - 4C 8D 9C 24 90010000  - lea r11,[rsp+00000190]
+
+PLAYER write 3:
+client.dll+4E3E89 - F3 0F10 44 24 4C      - movss xmm0,[rsp+4C]
+client.dll+4E3E8F - F3 0F10 4C 24 5C      - movss xmm1,[rsp+5C]
+client.dll+4E3E95 - F3 0F11 07            - movss [rdi],xmm0					<< WRITE X
+client.dll+4E3E99 - F3 0F10 44 24 6C      - movss xmm0,[rsp+6C]
+client.dll+4E3E9F - F3 0F11 4F 04         - movss [rdi+04],xmm1					<< WRITE Y
+client.dll+4E3EA4 - F3 0F11 47 08         - movss [rdi+08],xmm0					<< WRITE Z
+client.dll+4E3EA9 - 4C 8D 9C 24 60010000  - lea r11,[rsp+00000160]
+client.dll+4E3EB1 - 49 8B 5B 10           - mov rbx,[r11+10]
+client.dll+4E3EB5 - 49 8B 73 18           - mov rsi,[r11+18]
+client.dll+4E3EB9 - 49 8B E3              - mov rsp,r11
+
+PLAYER write 4: (3rd person)
+client.dll+14FB77 - 4C 8D 4C 24 40        - lea r9,[rsp+40]
+client.dll+14FB7C - 4C 8D 44 24 30        - lea r8,[rsp+30]
+client.dll+14FB81 - F3 0F10 44 24 20      - movss xmm0,[rsp+20]
+client.dll+14FB87 - F3 0F10 4C 24 24      - movss xmm1,[rsp+24]
+client.dll+14FB8D - 8B 08                 - mov ecx,[rax]
+client.dll+14FB8F - 48 8D 54 24 50        - lea rdx,[rsp+50]
+client.dll+14FB94 - 89 0F                 - mov [rdi],ecx						<< WRITE X
+client.dll+14FB96 - 8B 48 04              - mov ecx,[rax+04]
+client.dll+14FB99 - 89 4F 04              - mov [rdi+04],ecx					<< Y
+client.dll+14FB9C - 8B 40 08              - mov eax,[rax+08]
+client.dll+14FB9F - 48 8B CE              - mov rcx,rsi
+client.dll+14FBA2 - 89 47 08              - mov [rdi+08],eax					<< Z
+client.dll+14FBA5 - C7 46 08 00000000     - mov [rsi+08],00000000 { 0 }			<< ROLL
+client.dll+14FBAC - F3 0F11 06            - movss [rsi],xmm0					<< PITCH
+client.dll+14FBB0 - F3 0F11 4E 04         - movss [rsi+04],xmm1					<< YAW
+client.dll+14FBB5 - E8 D6764D00           - call client.dll+627290
+client.dll+14FBBA - 8B 0D C00BAE00        - mov ecx,[client.dll+C30780] { [00000001] }
+client.dll+14FBC0 - F3 0F10 7C 24 28      - movss xmm7,[rsp+28]
+
+Player write 5: (3rd person)
+client.dll+14FD66 - 49 8B 73 18           - mov rsi,[r11+18]
+client.dll+14FD6A - 0F28 C7               - movaps xmm0,xmm7
+client.dll+14FD6D - 0F28 CF               - movaps xmm1,xmm7
+client.dll+14FD70 - F3 0F59 7C 24 58      - mulss xmm7,[rsp+58]
+client.dll+14FD76 - F3 0F59 44 24 50      - mulss xmm0,[rsp+50]
+client.dll+14FD7C - F3 0F59 4C 24 54      - mulss xmm1,[rsp+54]
+client.dll+14FD82 - F3 0F58 7F 08         - addss xmm7,[rdi+08]
+client.dll+14FD87 - F3 0F58 07            - addss xmm0,[rdi]
+client.dll+14FD8B - F3 0F58 4F 04         - addss xmm1,[rdi+04]
+client.dll+14FD90 - F3 0F11 7F 08         - movss [rdi+08],xmm7						<< Z
+client.dll+14FD95 - 0F28 7C 24 70         - movaps xmm7,[rsp+70]
+client.dll+14FD9A - F3 0F11 07            - movss [rdi],xmm0						<< X
+client.dll+14FD9E - F3 0F11 4F 04         - movss [rdi+04],xmm1
+client.dll+14FDA3 - 49 8B E3              - mov rsp,r11
+client.dll+14FDA6 - 5F                    - pop rdi
+client.dll+14FDA7 - C3                    - ret 
+
+Player write 6:
+client.dll+35B30D - 74 5C                 - je client.dll+35B36B
+client.dll+35B30F - 48 8B 10              - mov rdx,[rax]
+client.dll+35B312 - 48 8B C8              - mov rcx,rax
+client.dll+35B315 - FF 52 40              - call qword ptr [rdx+40]
+client.dll+35B318 - 49 8B 14 24           - mov rdx,[r12]
+client.dll+35B31C - 8B 08                 - mov ecx,[rax]
+client.dll+35B31E - 89 0B                 - mov [rbx],ecx				<<X
+client.dll+35B320 - 8B 48 04              - mov ecx,[rax+04]
+client.dll+35B323 - 89 4B 04              - mov [rbx+04],ecx			<<Y
+client.dll+35B326 - 8B 48 08              - mov ecx,[rax+08]
+client.dll+35B329 - 89 4B 08              - mov [rbx+08],ecx			<<Z
+client.dll+35B32C - 49 8B CC              - mov rcx,r12
+client.dll+35B32F - FF 52 48              - call qword ptr [rdx+48]
+client.dll+35B332 - 8B 08                 - mov ecx,[rax]
+client.dll+35B334 - 89 0F                 - mov [rdi],ecx				<< pitch
+client.dll+35B336 - 8B 48 04              - mov ecx,[rax+04]
+client.dll+35B339 - 89 4F 04              - mov [rdi+04],ecx			<< yaw
+client.dll+35B33C - 8B 40 08              - mov eax,[rax+08]
+client.dll+35B33F - 49 8B CC              - mov rcx,r12
+client.dll+35B342 - 89 47 08              - mov [rdi+08],eax			<< roll
+client.dll+35B345 - 49 8B 04 24           - mov rax,[r12]
+client.dll+35B349 - FF 90 28050000        - call qword ptr [rax+00000528]
+
+player write 7: (implemented as write3)
+// in-game cutscenes
+client.dll+142CE8 - F3 0F10 45 A7         - movss xmm0,[rbp-59]
+client.dll+142CED - F3 0F10 4D AB         - movss xmm1,[rbp-55]
+client.dll+142CF2 - F3 0F11 06            - movss [rsi],xmm0
+client.dll+142CF6 - F3 0F10 45 AF         - movss xmm0,[rbp-51]
+client.dll+142CFB - F3 0F11 4E 04         - movss [rsi+04],xmm1
+client.dll+142D00 - F3 0F10 4D 97         - movss xmm1,[rbp-69]
+client.dll+142D05 - F3 0F11 46 08         - movss [rsi+08],xmm0
+client.dll+142D0A - F3 0F10 45 9B         - movss xmm0,[rbp-65]
+client.dll+142D0F - F3 0F11 0F            - movss [rdi],xmm1
+client.dll+142D13 - F3 0F10 4D 9F         - movss xmm1,[rbp-61]
+client.dll+142D18 - F3 0F11 47 04         - movss [rdi+04],xmm0
+client.dll+142D1D - F3 0F11 4F 08         - movss [rdi+08],xmm1
+client.dll+142D22 - EB 56                 - jmp client.dll+142D7A
+client.dll+142D24 - 4C 8D 45 97           - lea r8,[rbp-69]
+
+
+Disable Player model:
+Preferable: 
+client.dll+374CE0 - 48 83 EC 28           - sub rsp,28 { 40 }
+client.dll+374CE4 - 48 8B 05 1DEAF201     - mov rax,[client.dll+22A3708] 			<< Read root address of object which contains r_drawviewmodel
+client.dll+374CEB - 83 78 5C 00           - cmp dword ptr [rax+5C],00 { 0 }			<< read r_drawviewmodel Set to 0 to disable model in 1st person.
+client.dll+374CEF - 75 07                 - jne client.dll+374CF8
+client.dll+374CF1 - 32 C0                 - xor al,al
+client.dll+374CF3 - 48 83 C4 28           - add rsp,28 { 40 }
+client.dll+374CF7 - C3                    - ret 
+client.dll+374CF8 - 83 C9 FF              - or ecx,-01 { 255 }
+client.dll+374CFB - 48 89 5C 24 20        - mov [rsp+20],rbx
+client.dll+374D00 - E8 3BA2DDFF           - call client.dll+14EF40
+client.dll+374D05 - 48 8B D8              - mov rbx,rax
+client.dll+374D08 - 48 85 C0              - test rax,rax
+client.dll+374D0B - 0F84 AA000000         - je client.dll+374DBB
+client.dll+374D11 - 80 B8 D9270000 00     - cmp byte ptr [rax+000027D9],00 { 0 }
+client.dll+374D18 - 0F85 9D000000         - jne client.dll+374DBB
+client.dll+374D1E - 8B 90 582C0000        - mov edx,[rax+00002C58]
+client.dll+374D24 - 83 FA FF              - cmp edx,-01 { 255 }
+client.dll+374D27 - 74 28                 - je client.dll+374D51
+
+
+
+Alternative:
+NOP this, which is the call to update the player model:
+client.dll+2C194E - E8 CD06E1FF           - call client.dll+D2020
+function part starts: 
+client.dll+2C1920 - 48 89 5C 24 08        - mov [rsp+08],rbx
+so place a RET there to get rid of model moving.
+Call originates from:
+client.dll+143CF8 - E8 B3EDFFFF           - call client.dll+142AB0
+
+Angle writes: (merged with write 1)
+client.dll+142C6A - FF 90 B0050000        - call qword ptr [rax+000005B0]
+client.dll+142C70 - 8B 08                 - mov ecx,[rax]
+client.dll+142C72 - 89 0F                 - mov [rdi],ecx					<< WRITE X rot value  (right)
+client.dll+142C74 - 8B 48 04              - mov ecx,[rax+04]
+client.dll+142C77 - 89 4F 04              - mov [rdi+04],ecx				<< WRITE Z rot value  (up)
+client.dll+142C7A - 8B 40 08              - mov eax,[rax+08]
+client.dll+142C7D - 89 47 08              - mov [rdi+08],eax				<< WRITE Y rot value  (into the screen)
+client.dll+142C80 - E8 8BAA3A00           - call client.dll+4ED710
+client.dll+142C85 - 33 D2                 - xor edx,edx
+client.dll+142C87 - 48 8B CB              - mov rcx,rbx
+client.dll+142C8A - E8 41E01700           - call client.dll+2C0CD0
+
+Pause/Unpause:
+A script function is available which can be used using a hook.
+This is from PauseGame:
+00007FFED44B5CCE | 48 8B 0D D3 7C 88 00             | mov rcx,qword ptr ds:[7FFED4D3D9A8]                   | Arg1
+00007FFED44B5CD5 | 48 8B 01                         | mov rax,qword ptr ds:[rcx]                            |
+00007FFED44B5CD8 | FF 50 28                         | call qword ptr ds:[rax+28]                            | sub_[rax+28]
+00007FFED44B5CDB | 48 8B 0D 5E 7C 88 00             | mov rcx,qword ptr ds:[7FFED4D3D940]                   | Arg1
+00007FFED44B5CE2 | 48 8B 01                         | mov rax,qword ptr ds:[rcx]                            |
+00007FFED44B5CE5 | FF 90 90 06 00 00                | call qword ptr ds:[rax+690]                           | sub_[rax+690]
+00007FFED44B5CEB | 84 C0                            | test al,al                                            |
+00007FFED44B5CED | 74 17                            | je client.7FFED44B5D06                                |
+00007FFED44B5CEF | 48 8B 0D 4A 7C 88 00             | mov rcx,qword ptr ds:[7FFED4D3D940]                   | Arg1
+00007FFED44B5CF6 | 48 8D 15 AB 43 58 00             | lea rdx,qword ptr ds:[7FFED4A3A0A8]                   | Arg2 = "setpause nomsg"
+00007FFED44B5CFD | 48 8B 01                         | mov rax,qword ptr ds:[rcx]                            |
+00007FFED44B5D00 | FF 90 D8 00 00 00                | call qword ptr ds:[rax+D8]                            | Call RunFunction. 
+00007FFED44B5D06 | 48 63 0D 6B 21 03 02             | movsxd rcx,dword ptr ds:[7FFED64E7E78]                |
+00007FFED44B5D0D | 48 8B D9                         | mov rbx,rcx                                           |
+00007FFED44B5D10 | 8D 41 01                         | lea eax,qword ptr ds:[rcx+1]                          |
+00007FFED44B5D13 | 48 63 D0                         | movsxd rdx,eax                                        |
+00007FFED44B5D16 | 48 2B 15 4B 21 03 02             | sub rdx,qword ptr ds:[7FFED64E7E68]                   |
+00007FFED44B5D1D | 48 85 D2                         | test rdx,rdx                                          |
+00007FFED44B5D20 | 7E 12                            | jle client.7FFED44B5D34                               |
+
+This is from UnpauseGame:
+00007FFED44B5504 | 48 8B 0D 9D 84 88 00             | mov rcx,qword ptr ds:[7FFED4D3D9A8]                   | Arg1
+00007FFED44B550B | 48 8B 01                         | mov rax,qword ptr ds:[rcx]                            |
+00007FFED44B550E | FF 50 30                         | call qword ptr ds:[rax+30]                            | sub_[rax+30]
+00007FFED44B5511 | 48 8B 0D 28 84 88 00             | mov rcx,qword ptr ds:[7FFED4D3D940]                   | Arg1
+00007FFED44B5518 | 48 8B 01                         | mov rax,qword ptr ds:[rcx]                            |
+00007FFED44B551B | FF 90 90 06 00 00                | call qword ptr ds:[rax+690]                           | sub_[rax+690]
+00007FFED44B5521 | 84 C0                            | test al,al                                            |
+00007FFED44B5523 | 74 17                            | je client.7FFED44B553C                                |
+00007FFED44B5525 | 48 8B 0D 14 84 88 00             | mov rcx,qword ptr ds:[7FFED4D3D940]                   | Arg1
+00007FFED44B552C | 48 8D 15 85 4B 58 00             | lea rdx,qword ptr ds:[7FFED4A3A0B8]                   | Arg2 = "unpause nomsg"
+00007FFED44B5533 | 48 8B 01                         | mov rax,qword ptr ds:[rcx]                            |
+00007FFED44B5536 | FF 90 D8 00 00 00                | call qword ptr ds:[rax+D8]                            | Call RunFunction. 
+00007FFED44B553C | C6 05 51 15 03 02 00             | mov byte ptr ds:[7FFED64E6A94],0                      |
+00007FFED44B5543 | EB 07                            | jmp client.7FFED44B554C                               |
+00007FFED44B5545 | 40 88 35 48 15 03 02             | mov byte ptr ds:[7FFED64E6A94],sil                    |
+00007FFED44B554C | 48 8B 5C 24 30                   | mov rbx,qword ptr ss:[rsp+30]                         |
+00007FFED44B5551 | 48 8B 74 24 38                   | mov rsi,qword ptr ss:[rsp+38]                         |
+00007FFED44B5556 | 48 8B 7C 24 40                   | mov rdi,qword ptr ss:[rsp+40]                         |
+00007FFED44B555B | 48 83 C4 20                      | add rsp,20                                            |
+
+
+HUD for player coords write (some elements. Can lead to full hud toggle)
+client.dll+35B0EA - 48 8B CE              - mov rcx,rsi
+client.dll+35B0ED - 41 89 87 80010000     - mov [r15+00000180],eax			<< WRITE X
+client.dll+35B0F4 - 8B 43 08              - mov eax,[rbx+08]
+client.dll+35B0F7 - 41 89 87 84010000     - mov [r15+00000184],eax			<< WRITE Y
+client.dll+35B0FE - 41 8B 04 24           - mov eax,[r12]
+client.dll+35B102 - 41 89 87 88010000     - mov [r15+00000188],eax
+client.dll+35B109 - 41 8B 44 24 04        - mov eax,[r12+04]
+client.dll+35B10E - 41 89 87 8C010000     - mov [r15+0000018C],eax
+client.dll+35B115 - 41 8B 44 24 08        - mov eax,[r12+08]
+client.dll+35B11A - 41 89 87 90010000     - mov [r15+00000190],eax
+client.dll+35B121 - E8 FA76DEFF           - call client.dll+142820
+
+Other player writes: 
+client.dll+142DAD - 48 8B CB              - mov rcx,rbx
+client.dll+142DB0 - F3 0F11 06            - movss [rsi],xmm0
+client.dll+142DB4 - F3 0F10 45 AF         - movss xmm0,[rbp-51]
+client.dll+142DB9 - F3 0F11 4E 04         - movss [rsi+04],xmm1
+client.dll+142DBE - F3 0F58 46 08         - addss xmm0,[rsi+08]
+client.dll+142DC3 - F3 0F11 4D AB         - movss [rbp-55],xmm1
+client.dll+142DC8 - F3 0F11 46 08         - movss [rsi+08],xmm0				<< Write Z. Game player not moved, camera with model moves.
+client.dll+142DCD - F3 0F10 06            - movss xmm0,[rsi]
+client.dll+142DD1 - F3 0F10 4F 04         - movss xmm1,[rdi+04]
+client.dll+142DD6 - F3 0F11 45 A7         - movss [rbp-59],xmm0
+client.dll+142DDB - F3 0F10 46 08         - movss xmm0,[rsi+08]
+client.dll+142DE0 - F3 0F11 4D 9B         - movss [rbp-65],xmm1
+client.dll+142DE5 - F3 0F11 45 AF         - movss [rbp-51],xmm0
+client.dll+142DEA - F3 0F10 07            - movss xmm0,[rdi]
+client.dll+142DEE - F3 0F11 45 97         - movss [rbp-69],xmm0
+
+Rotate Z, write 1
+client.dll+142C70 - 8B 08                 - mov ecx,[rax]
+client.dll+142C72 - 89 0F                 - mov [rdi],ecx
+client.dll+142C74 - 8B 48 04              - mov ecx,[rax+04]
+client.dll+142C77 - 89 4F 04              - mov [rdi+04],ecx
+client.dll+142C7A - 8B 40 08              - mov eax,[rax+08]
+client.dll+142C7D - 89 47 08              - mov [rdi+08],eax				<< WRITE Rot Z
+client.dll+142C80 - E8 8BAA3A00           - call client.dll+4ED710
+client.dll+142C85 - 33 D2                 - xor edx,edx
+client.dll+142C87 - 48 8B CB              - mov rcx,rbx
+client.dll+142C8A - E8 41E01700           - call client.dll+2C0CD0
+
+Rotate Z, write 2
+client.dll+62D494 - F3 0F59 C6            - mulss xmm0,xmm6
+client.dll+62D498 - F3 0F11 07            - movss [rdi],xmm0
+client.dll+62D49C - 41 0F28 C3            - movaps xmm0,xmm11
+client.dll+62D4A0 - E8 873D1D00           - call client.dll+80122C
+client.dll+62D4A5 - F3 0F59 C6            - mulss xmm0,xmm6
+client.dll+62D4A9 - F3 0F11 47 08         - movss [rdi+08],xmm0				<< WRITE Rot z
+client.dll+62D4AE - EB 49                 - jmp client.dll+62D4F9
+client.dll+62D4B0 - 0F57 35 F9AC3D00      - xorps xmm6,[client.dll+A081B0] { [80000000] }
+client.dll+62D4B7 - F3 0F10 4B 14         - movss xmm1,[rbx+14]
+client.dll+62D4BC - 0F28 C6               - movaps xmm0,xmm6
+
+HUD render:
+client.dll+35B0ED - 41 89 87 80010000     - mov [r15+00000180],eax
+client.dll+35B0F4 - 8B 43 08              - mov eax,[rbx+08]				<< NOP -> no hud in the 3d field.
+client.dll+35B0F7 - 41 89 87 84010000     - mov [r15+00000184],eax
+client.dll+35B0FE - 41 8B 04 24           - mov eax,[r12]
+client.dll+35B102 - 41 89 87 88010000     - mov [r15+00000188],eax
+client.dll+35B109 - 41 8B 44 24 04        - mov eax,[r12+04]
+client.dll+35B10E - 41 89 87 8C010000     - mov [r15+0000018C],eax
+client.dll+35B115 - 41 8B 44 24 08        - mov eax,[r12+08]
+client.dll+35B11A - 41 89 87 90010000     - mov [r15+00000190],eax
+
+
+--------------------------------------
+
+
+Cam matrix write:
+client.dll+6364D2 - 41 0F28 E4            - movaps xmm4,xmm12
+client.dll+6364D6 - 44 0F28 D8            - movaps xmm11,xmm0
+client.dll+6364DA - 41 0F28 F5            - movaps xmm6,xmm13
+client.dll+6364DE - 41 0F28 ED            - movaps xmm5,xmm13
+client.dll+6364E2 - F3 41 0F59 C2         - mulss xmm0,xmm10
+client.dll+6364E7 - F3 41 0F59 E2         - mulss xmm4,xmm10
+client.dll+6364EC - 41 0F28 D1            - movaps xmm2,xmm9
+client.dll+6364F0 - F3 41 0F59 F0         - mulss xmm6,xmm8
+client.dll+6364F5 - F3 41 0F59 EA         - mulss xmm5,xmm10
+client.dll+6364FA - 0F28 CE               - movaps xmm1,xmm6
+client.dll+6364FD - 0F28 DD               - movaps xmm3,xmm5
+client.dll+636500 - F3 41 0F59 F4         - mulss xmm6,xmm12
+client.dll+636505 - F3 41 0F59 CB         - mulss xmm1,xmm11
+client.dll+63650A - F3 41 0F59 DB         - mulss xmm3,xmm11
+client.dll+63650F - F3 0F5C E1            - subss xmm4,xmm1
+client.dll+636513 - 41 0F28 C9            - movaps xmm1,xmm9
+client.dll+636517 - F3 0F11 26            - movss [rsi],xmm4
+client.dll+63651B - 0F57 F7               - xorps xmm6,xmm7
+client.dll+63651E - F3 41 0F59 EC         - mulss xmm5,xmm12
+client.dll+636523 - F3 41 0F59 D0         - mulss xmm2,xmm8
+client.dll+636528 - F3 0F5C F0            - subss xmm6,xmm0
+client.dll+63652C - 41 0F28 C4            - movaps xmm0,xmm12
+client.dll+636530 - F3 0F11 76 04         - movss [rsi+04],xmm6
+client.dll+636535 - F3 41 0F59 C0         - mulss xmm0,xmm8
+client.dll+63653A - 0F57 D7               - xorps xmm2,xmm7
+client.dll+63653D - F3 41 0F59 CA         - mulss xmm1,xmm10
+client.dll+636542 - F3 0F11 56 08         - movss [rsi+08],xmm2
+client.dll+636547 - F3 0F58 D8            - addss xmm3,xmm0
+client.dll+63654B - 41 0F28 C3            - movaps xmm0,xmm11
+client.dll+63654F - F3 0F59 77 04         - mulss xmm6,[rdi+04]
+client.dll+636554 - F3 0F59 27            - mulss xmm4,[rdi]
+client.dll+636558 - F3 0F59 57 08         - mulss xmm2,[rdi+08]
+client.dll+63655D - F3 0F11 5E 10         - movss [rsi+10],xmm3
+client.dll+636562 - F3 0F11 4E 18         - movss [rsi+18],xmm1
+client.dll+636567 - F3 0F58 F4            - addss xmm6,xmm4
+client.dll+63656B - F3 0F58 F2            - addss xmm6,xmm2
+client.dll+63656F - F3 41 0F59 C0         - mulss xmm0,xmm8
+client.dll+636574 - F3 45 0F59 D9         - mulss xmm11,xmm9
+client.dll+636579 - F3 45 0F59 E1         - mulss xmm12,xmm9
+client.dll+63657E - F3 0F5C E8            - subss xmm5,xmm0
+client.dll+636582 - F3 0F11 6E 14         - movss [rsi+14],xmm5
+client.dll+636587 - 0F57 F7               - xorps xmm6,xmm7
+client.dll+63658A - 44 0F57 DF            - xorps xmm11,xmm7
+client.dll+63658E - 44 0F57 E7            - xorps xmm12,xmm7
+client.dll+636592 - F3 0F11 76 0C         - movss [rsi+0C],xmm6					<< WRITE X
+client.dll+636597 - F3 0F59 6F 04         - mulss xmm5,[rdi+04]
+client.dll+63659C - F3 0F59 1F            - mulss xmm3,[rdi]
+client.dll+6365A0 - F3 0F59 4F 08         - mulss xmm1,[rdi+08]
+client.dll+6365A5 - 4C 8D 9C 24 A0000000  - lea r11,[rsp+000000A0]
+client.dll+6365AD - F3 44 0F11 66 24      - movss [rsi+24],xmm12
+client.dll+6365B3 - F3 44 0F11 5E 20      - movss [rsi+20],xmm11
+client.dll+6365B9 - 33 C0                 - xor eax,eax
+client.dll+6365BB - 49 8B 5B 10           - mov rbx,[r11+10]
+client.dll+6365BF - F3 44 0F11 6E 28      - movss [rsi+28],xmm13
+client.dll+6365C5 - F3 0F58 EB            - addss xmm5,xmm3
+client.dll+6365C9 - 41 0F28 73 F0         - movaps xmm6,[r11-10]
+client.dll+6365CE - 45 0F28 43 D0         - movaps xmm8,[r11-30]
+client.dll+6365D3 - 45 0F28 4B C0         - movaps xmm9,[r11-40]
+client.dll+6365D8 - F3 0F58 E9            - addss xmm5,xmm1
+client.dll+6365DC - 45 0F28 53 B0         - movaps xmm10,[r11-50]
+client.dll+6365E1 - 0F57 EF               - xorps xmm5,xmm7
+client.dll+6365E4 - F3 0F11 6E 1C         - movss [rsi+1C],xmm5					<< WRITE Y (DOWN)
+client.dll+6365E9 - F3 44 0F59 67 04      - mulss xmm12,[rdi+04]
+client.dll+6365EF - F3 44 0F59 1F         - mulss xmm11,[rdi]
+client.dll+6365F4 - F3 45 0F58 E3         - addss xmm12,xmm11
+client.dll+6365F9 - 45 0F28 5B A0         - movaps xmm11,[r11-60]
+client.dll+6365FE - F3 44 0F59 6F 08      - mulss xmm13,[rdi+08]
+client.dll+636604 - 48 89 46 30           - mov [rsi+30],rax
+client.dll+636608 - 89 46 38              - mov [rsi+38],eax
+client.dll+63660B - C7 46 3C 0000803F     - mov [rsi+3C],3F800000 { 1.00 }
+client.dll+636612 - F3 45 0F58 E5         - addss xmm12,xmm13
+client.dll+636617 - 45 0F28 6B 80         - movaps xmm13,[r11-80]
+client.dll+63661C - 44 0F57 E7            - xorps xmm12,xmm7
+client.dll+636620 - 41 0F28 7B E0         - movaps xmm7,[r11-20]
+client.dll+636625 - F3 44 0F11 66 2C      - movss [rsi+2C],xmm12				<< WRITE Z 
+client.dll+63662B - 49 8B 73 18           - mov rsi,[r11+18]
+client.dll+63662F - 45 0F28 63 90         - movaps xmm12,[r11-70]
+client.dll+636634 - 49 8B E3              - mov rsp,r11
+client.dll+636637 - 5F                    - pop rdi
+client.dll+636638 - C3                    - ret 
+
+Matrix copy constructor:
+client.dll+633BF0 - 0F10 02               - movups xmm0,[rdx]
+client.dll+633BF3 - 48 8B C1              - mov rax,rcx
+client.dll+633BF6 - 0F11 01               - movups [rcx],xmm0
+client.dll+633BF9 - 0F10 42 10            - movups xmm0,[rdx+10]
+client.dll+633BFD - 0F11 41 10            - movups [rcx+10],xmm0
+client.dll+633C01 - 0F10 42 20            - movups xmm0,[rdx+20]
+client.dll+633C05 - 0F11 41 20            - movups [rcx+20],xmm0
+client.dll+633C09 - 0F10 42 30            - movups xmm0,[rdx+30]
+client.dll+633C0D - 0F11 41 30            - movups [rcx+30],xmm0
+client.dll+633C11 - C3                    - ret 
+
