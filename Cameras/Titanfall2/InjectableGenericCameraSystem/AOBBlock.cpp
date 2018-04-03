@@ -54,11 +54,8 @@ namespace IGCS
 			OverlayConsole::instance().logError("Can't find pattern for block '%s'! Hook not set.", _blockName.c_str());
 			return false;
 		}
-		else
-		{
-			OverlayConsole::instance().logDebug("Pattern for block '%s' found at address: %p", _blockName.c_str(), (void*)aobPatternLocation);
-		}
 		_locationInImage = aobPatternLocation;
+		OverlayConsole::instance().logDebug("Pattern for block '%s' found at address: %p. Absolute address: %p", _blockName.c_str(), (void*)aobPatternLocation, (void*)absoluteAddress());
 		return true;
 	}
 	

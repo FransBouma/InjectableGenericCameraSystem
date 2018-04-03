@@ -66,7 +66,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "89 0E 8B 48 04 89 4E 04 8B 40 08 48 8B CB 89 46 08 48 8B 03 FF 90 ?? ?? ?? ?? 8B 08 89 0F 8B 48 04 89 4F 04 8B 40 08 89 47 08 E8 ?? ?? ?? ?? 33 D2", 1);	
 		aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE1_INTERCEPT_KEY, "F3 0F 11 07 F3 0F 10 44 24 4C F3 0F 11 4F 04 F3 0F 11 47 08 4C 8D 9C 24", 1);
 		aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE2_INTERCEPT_KEY, "F3 0F 11 07 F3 0F 10 44 24 6C F3 0F 11 4F 04 F3 0F 11 47 08 4C 8D 9C 24", 1);
-		aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE3_INTERCEPT_KEY, "8B 08 89 0F 8B 48 04 89 4F 04 8B 40 08 89 47 08 E8 ?? ?? ?? ?? 33 D2", 1);
+		aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE3_INTERCEPT_KEY, "F3 0F 11 06 F3 0F 10 45 AF F3 0F 11 4E 04 F3 0F 10 4D 97 F3 0F 11 46 08 F3 0F 10 45 9B F3 0F 11 0F F3 0F 10 4D 9F F3 0F 11 47 04 F3 0F 11 4F 08 EB 56", 1);
 		aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE4_INTERCEPT_KEY, "89 0F 8B 48 04 89 4F 04 8B 40 08 48 8B CE 89 47 08 C7 46 08 00 00 00 00 F3 0F 11 06 F3 0F 11 4E 04 E8", 1);
 		aobBlocks[CAMERA_WRITE5_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE5_INTERCEPT_KEY, "F3 0F 11 7F 08 0F 28 7C 24 70 F3 0F 11 07 F3 0F 11 4F 04 49 8B E3 5F", 1);
 		aobBlocks[CAMERA_WRITE6_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE6_INTERCEPT_KEY, "89 0B 8B 48 04 89 4B 04 8B 48 08 89 4B 08 49 8B CC FF 52 48 8B 08 89 0F 8B 48 04 89 4F 04 8B 40 08 49 8B CC 89 47 08 49 8B 04 24 FF 90", 1);
@@ -77,6 +77,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_ANGLE_WRITE_YAW_KEY] = new AOBBlock(CAMERA_ANGLE_WRITE_YAW_KEY, "41 0F 28 CA F3 0F 59 C6 | F3 0F 11 47 04 41 0F 28 C0 E8 9C 3D 1D 00 41 0F 28 CC F3 0F 59 C6 F3 0F 11 07 41 0F 28 C3 E8 87 3D 1D 00 F3 0F 59 C6 F3 0F 11 47 08", 1);
 		aobBlocks[CAMERA_ANGLE_WRITE_PITCH_KEY] = new AOBBlock(CAMERA_ANGLE_WRITE_PITCH_KEY, "41 0F 28 CA F3 0F 59 C6 F3 0F 11 47 04 41 0F 28 C0 E8 9C 3D 1D 00 41 0F 28 CC F3 0F 59 C6 | F3 0F 11 07 41 0F 28 C3 E8 87 3D 1D 00 F3 0F 59 C6 F3 0F 11 47 08", 1);
 		aobBlocks[CAMERA_ANGLE_WRITE_ROLL_KEY] = new AOBBlock(CAMERA_ANGLE_WRITE_ROLL_KEY, "41 0F 28 CA F3 0F 59 C6 F3 0F 11 47 04 41 0F 28 C0 E8 9C 3D 1D 00 41 0F 28 CC F3 0F 59 C6 F3 0F 11 07 41 0F 28 C3 E8 87 3D 1D 00 F3 0F 59 C6 | F3 0F 11 47 08", 1);
+		aobBlocks[CAMERA_ANGLE_WRITE_CALL1_KEY] = new AOBBlock(CAMERA_ANGLE_WRITE_CALL1_KEY, "41 0F 28 CA F3 0F 59 C6 F3 0F 11 47 04 41 0F 28 C0 | E8 9C 3D 1D 00 41 0F 28 CC F3 0F 59 C6 F3 0F 11 07 41 0F 28 C3 E8 87 3D 1D 00 F3 0F 59 C6 F3 0F 11 47 08", 1);
+		aobBlocks[CAMERA_ANGLE_WRITE_CALL2_KEY] = new AOBBlock(CAMERA_ANGLE_WRITE_CALL2_KEY, "41 0F 28 CA F3 0F 59 C6 F3 0F 11 47 04 41 0F 28 C0 E8 9C 3D 1D 00 41 0F 28 CC F3 0F 59 C6 F3 0F 11 07 41 0F 28 C3 | E8 87 3D 1D 00 F3 0F 59 C6 F3 0F 11 47 08", 1);
 		aobBlocks[PAUSE_UNPAUSE_ROOTOBJECT_LOCATION_KEY] = new AOBBlock(PAUSE_UNPAUSE_ROOTOBJECT_LOCATION_KEY, "48 8B 0D | ?? ?? ?? ?? 48 8D 15 ?? ?? ?? ?? 48 8B 01 FF 90 D8 00 00 00 48 63 0D ?? ?? ?? ?? 48 8B D9", 1);
 
 		map<string, AOBBlock*>::iterator it;
@@ -98,7 +100,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 
 	void setCameraStructInterceptorHook(map<string, AOBBlock*> &aobBlocks)
 	{
-		GameImageHooker::setHook(aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY], 0x11, &_cameraStructInterceptionContinue, &cameraStructInterceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY], 0x2A, &_cameraStructInterceptionContinue, &cameraStructInterceptor);
 	}
 
 
@@ -106,7 +108,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	{
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY], 0x14, &_cameraWrite1InterceptionContinue, &cameraWrite1Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY], 0x14, &_cameraWrite2InterceptionContinue, &cameraWrite2Interceptor);
-		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY], 0x10, &_cameraWrite3InterceptionContinue, &cameraWrite3Interceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY], 0x30, &_cameraWrite3InterceptionContinue, &cameraWrite3Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY], 0x21, &_cameraWrite4InterceptionContinue, &cameraWrite4Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE5_INTERCEPT_KEY], 0x13, &_cameraWrite5InterceptionContinue, &cameraWrite5Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE6_INTERCEPT_KEY], 0x27, &_cameraWrite6InterceptionContinue, &cameraWrite6Interceptor);
@@ -139,7 +141,15 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		//client.dll+374D27 - 74 28                 - je client.dll+374D51
 
 		__int64* pRootObject = (__int64*)Utils::calculateAbsoluteAddress(aobBlocks[DRAWVIEWMODEL_LOCATION_KEY], 4);
+		if (pRootObject == nullptr)
+		{
+			return;
+		}
 		DWORD* drawViewModel = (DWORD*)((*pRootObject) + 0x5C);
+		if (drawViewModel == nullptr)
+		{
+			return;
+		}
 		if (hide)
 		{
 			*drawViewModel = 0;
@@ -159,12 +169,12 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		//client.dll+62D47E - F3 0F59 C6            - mulss xmm0,xmm6
 		//client.dll+62D482 - F3 0F11 47 04         - movss [rdi+04],xmm0					<< WRITE yaw rot
 		//client.dll+62D487 - 41 0F28 C0            - movaps xmm0,xmm8
-		//client.dll+62D48B - E8 9C3D1D00           - call client.dll+80122C
+		//client.dll+62D48B - E8 9C3D1D00           - call client.dll+80122C				<< These calls have to be NOPed when the camera is enabled (and the writes are thus nopped)
 		//client.dll+62D490 - 41 0F28 CC            - movaps xmm1,xmm12
 		//client.dll+62D494 - F3 0F59 C6            - mulss xmm0,xmm6
 		//client.dll+62D498 - F3 0F11 07            - movss [rdi],xmm0						<< WRITE pitch rot
 		//client.dll+62D49C - 41 0F28 C3            - movaps xmm0,xmm11
-		//client.dll+62D4A0 - E8 873D1D00           - call client.dll+80122C
+		//client.dll+62D4A0 - E8 873D1D00           - call client.dll+80122C				<< These calls have to be NOPed when the camera is enabled (and the writes are thus nopped)
 		//client.dll+62D4A5 - F3 0F59 C6            - mulss xmm0,xmm6
 		//client.dll+62D4A9 - F3 0F11 47 08         - movss [rdi+08],xmm0					<< WRITE roll rot
 		//client.dll+62D4AE - EB 49                 - jmp client.dll+62D4F9
@@ -174,14 +184,25 @@ namespace IGCS::GameSpecific::InterceptorHelper
 			// pitch
 			BYTE statementBytesPitch[4] = { 0xF3, 0x0F, 0x11, 0x07 };						//client.dll+62D498 - F3 0F11 07            - movss [rdi],xmm0
 			GameImageHooker::writeRange(aobBlocks[CAMERA_ANGLE_WRITE_PITCH_KEY], statementBytesPitch, 4);
-			BYTE statementBytesYaw[5] = { 0xF3, 0x0F, 0x11, 0x47, 0x04 };							//client.dll+62D482 - F3 0F11 47 04         - movss [rdi+04],xmm0
+			// yaw
+			BYTE statementBytesYaw[5] = { 0xF3, 0x0F, 0x11, 0x47, 0x04 };					//client.dll+62D482 - F3 0F11 47 04         - movss [rdi+04],xmm0
 			GameImageHooker::writeRange(aobBlocks[CAMERA_ANGLE_WRITE_YAW_KEY], statementBytesYaw, 5);
-			BYTE statementBytesRoll[5] = { 0xF3, 0x0F, 0x11, 0x47, 0x08 };							//client.dll+62D482 - F3 0F11 47 04         - movss [rdi+04],xmm0
+			// roll
+			BYTE statementBytesRoll[5] = { 0xF3, 0x0F, 0x11, 0x47, 0x08 };					// client.dll + 62D4A9 - F3 0F11 47 08		- movss [rdi + 08], xmm0
 			GameImageHooker::writeRange(aobBlocks[CAMERA_ANGLE_WRITE_ROLL_KEY], statementBytesRoll, 5);
+			// then the calls
+			BYTE call1Bytes[5] = { 0xE8, 0x9C, 0x3D, 0x1D, 0x00 };							// client.dll+62D48B - E8 9C3D1D00           - call client.dll+80122C
+			GameImageHooker::writeRange(aobBlocks[CAMERA_ANGLE_WRITE_CALL1_KEY], call1Bytes, 5);
+			BYTE call2Bytes[5] = { 0xE8, 0x87, 0x3D, 0x1D, 0x00 };							// client.dll+62D4A0 - E8 873D1D00           - call client.dll+80122C
+			GameImageHooker::writeRange(aobBlocks[CAMERA_ANGLE_WRITE_CALL2_KEY], call2Bytes, 5);
 		}
 		else
 		{
-			// nop ranges
+			// nop ranges. First the calls. 
+			// call1
+			GameImageHooker::nopRange(aobBlocks[CAMERA_ANGLE_WRITE_CALL1_KEY], 5);		// client.dll+62D48B - E8 9C3D1D00           - call client.dll+80122C
+			// call2
+			GameImageHooker::nopRange(aobBlocks[CAMERA_ANGLE_WRITE_CALL2_KEY], 5);		// client.dll+62D4A0 - E8 873D1D00           - call client.dll+80122C
 			// pitch
 			GameImageHooker::nopRange(aobBlocks[CAMERA_ANGLE_WRITE_PITCH_KEY], 4);		//client.dll+62D498 - F3 0F11 07            - movss [rdi],xmm0
 			// yaw

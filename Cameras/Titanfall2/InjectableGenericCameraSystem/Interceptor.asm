@@ -77,29 +77,47 @@ cameraStructInterceptor PROC
 ;client.dll+142C5E - 8B 40 08              - mov eax,[rax+08]
 ;client.dll+142C61 - 48 8B CB              - mov rcx,rbx
 ;client.dll+142C64 - 89 46 08              - mov [rsi+08],eax					<< WRITE Z
-;client.dll+142C67 - 48 8B 03              - mov rax,[rbx]						<< CONTINUE HERE
+;client.dll+142C67 - 48 8B 03              - mov rax,[rbx]						
 ;client.dll+142C6A - FF 90 B0050000        - call qword ptr [rax+000005B0]
 ;client.dll+142C70 - 8B 08                 - mov ecx,[rax]
-;client.dll+142C72 - 89 0F                 - mov [rdi],ecx
+;client.dll+142C72 - 89 0F                 - mov [rdi],ecx						<< PITCH
 ;client.dll+142C74 - 8B 48 04              - mov ecx,[rax+04]
-;client.dll+142C77 - 89 4F 04              - mov [rdi+04],ecx
+;client.dll+142C77 - 89 4F 04              - mov [rdi+04],ecx					<< YAW
 ;client.dll+142C7A - 8B 40 08              - mov eax,[rax+08]
-;client.dll+142C7D - 89 47 08              - mov [rdi+08],eax
-;client.dll+142C80 - E8 8BAA3A00           - call client.dll+4ED710
+;client.dll+142C7D - 89 47 08              - mov [rdi+08],eax					<< ROLL
+;client.dll+142C80 - E8 8BAA3A00           - call client.dll+4ED710				<< CONTINUE HERE
 ;client.dll+142C85 - 33 D2                 - xor edx,edx
 ;client.dll+142C87 - 48 8B CB              - mov rcx,rbx
 
 	mov [g_cameraStructAddress], rsi
 	cmp byte ptr [g_cameraEnabled], 1
-	je exit
+	je nowrites
 originalCode:
-	mov [rsi],ecx	
+	mov [rsi],ecx		
 	mov ecx,[rax+04h]
-	mov [rsi+04h],ecx
+	mov [rsi+04h],ecx	
 	mov eax,[rax+08h]
-	mov [rsi+08h],eax
-exit:
 	mov rcx,rbx
+	mov [rsi+08h],eax	
+	mov rax,[rbx]			
+	call qword ptr [rax+000005B0h]
+	mov ecx,[rax]
+	mov [rdi],ecx					
+	mov ecx,[rax+04h]
+	mov [rdi+04h],ecx				
+	mov eax,[rax+08h]
+	mov [rdi+08h],eax
+	jmp exit
+nowrites:
+	mov ecx,[rax+04h]
+	mov eax,[rax+08h]
+	mov rcx,rbx
+	mov rax,[rbx]			
+	call qword ptr [rax+000005B0h]
+	mov ecx,[rax]
+	mov ecx,[rax+04h]
+	mov eax,[rax+08h]
+exit:
 	jmp qword ptr [_cameraStructInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraStructInterceptor ENDP
 
@@ -150,26 +168,33 @@ cameraWrite2Interceptor ENDP
 
 
 cameraWrite3Interceptor PROC
-;client.dll+142C6A - FF 90 B0050000        - call qword ptr [rax+000005B0]
-;client.dll+142C70 - 8B 08                 - mov ecx,[rax]					<< INTERCEPT HERE
-;client.dll+142C72 - 89 0F                 - mov [rdi],ecx					<< WRITE X rot value  (x is right)
-;client.dll+142C74 - 8B 48 04              - mov ecx,[rax+04]
-;client.dll+142C77 - 89 4F 04              - mov [rdi+04],ecx				<< WRITE Z rot value  (z is up)
-;client.dll+142C7A - 8B 40 08              - mov eax,[rax+08]
-;client.dll+142C7D - 89 47 08              - mov [rdi+08],eax				<< WRITE Y rot value  (y is into the screen)
-;client.dll+142C80 - E8 8BAA3A00           - call client.dll+4ED710			<< CONTINUE HERE
-;client.dll+142C85 - 33 D2                 - xor edx,edx
-;client.dll+142C87 - 48 8B CB              - mov rcx,rbx
-;client.dll+142C8A - E8 41E01700           - call client.dll+2C0CD0
+;client.dll+142CE8 - F3 0F10 45 A7         - movss xmm0,[rbp-59]
+;client.dll+142CED - F3 0F10 4D AB         - movss xmm1,[rbp-55]
+;client.dll+142CF2 - F3 0F11 06            - movss [rsi],xmm0				<< INTERCEPT HERE<< X
+;client.dll+142CF6 - F3 0F10 45 AF         - movss xmm0,[rbp-51]
+;client.dll+142CFB - F3 0F11 4E 04         - movss [rsi+04],xmm1			<< Y
+;client.dll+142D00 - F3 0F10 4D 97         - movss xmm1,[rbp-69]
+;client.dll+142D05 - F3 0F11 46 08         - movss [rsi+08],xmm0			<< Z
+;client.dll+142D0A - F3 0F10 45 9B         - movss xmm0,[rbp-65]
+;client.dll+142D0F - F3 0F11 0F            - movss [rdi],xmm1				<< PITCH
+;client.dll+142D13 - F3 0F10 4D 9F         - movss xmm1,[rbp-61]
+;client.dll+142D18 - F3 0F11 47 04         - movss [rdi+04],xmm0			<< YAW
+;client.dll+142D1D - F3 0F11 4F 08         - movss [rdi+08],xmm1			<< ROLL
+;client.dll+142D22 - EB 56                 - jmp client.dll+142D7A			<< CONTINUE HERE
+;client.dll+142D24 - 4C 8D 45 97           - lea r8,[rbp-69]
 	cmp byte ptr [g_cameraEnabled], 1
 	je exit
 originalCode:
-	mov ecx,[rax]	
-	mov [rdi],ecx	
-	mov ecx,[rax+04h]
-	mov [rdi+04h],ecx
-	mov eax,[rax+08h]
-	mov [rdi+08h],eax
+	movss dword ptr [rsi], xmm0	
+	movss xmm0,dword ptr [rbp-51h]
+	movss dword ptr [rsi+04h],xmm1
+	movss xmm1,dword ptr [rbp-69h]
+	movss dword ptr [rsi+08h],xmm0
+	movss xmm0,dword ptr [rbp-65h]
+	movss dword ptr [rdi],xmm1	
+	movss xmm1,dword ptr [rbp-61h]
+	movss dword ptr [rdi+04h],xmm0
+	movss dword ptr [rdi+08h],xmm1
 exit:
 	jmp qword ptr [_cameraWrite3InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite3Interceptor ENDP
