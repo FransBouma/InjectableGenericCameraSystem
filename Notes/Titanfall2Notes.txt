@@ -5,6 +5,10 @@ Per value 3 writes are enough to block the writes from the game even though ther
 
 Coordinate system: Zpos up, Ypos into the screen, Xpos right.
 
+A different approach can be used to use VEngineClient013 interface. This is obtained here: 
+https://pastebin.com/8eQ5Z2UB
+Which is accidentally the interface we dug up for setpause nomsg. :)
+
 Horizontal FOV write 1:
 client.dll+35B536 - F3 41 0F59 FA         - mulss xmm7,xmm10
 client.dll+35B53B - F3 41 0F59 FB         - mulss xmm7,xmm11
