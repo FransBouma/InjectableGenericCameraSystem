@@ -18,8 +18,9 @@ configurable ball. Additionally, cameras are often written once and perhaps fixe
 the code for each camera and adapting it makes possible to add new features to future cameras without affecting the older ones. 
 
 ## Requirements to build the code
-To build the code, you need to have VC++ 2015 update 3 or higher. Additionally you need to have installed the Windows SDK, at least the 
-windows 8 version. The VC++ installer should install this. The SDK is needed for DirectXMath.h
+To build the code, you need to have VC++ 2015 update 3 or higher, newer cameras need VC++ 2017. 
+Additionally you need to have installed the Windows SDK, at least the windows 8 version. The VC++ installer should install this. 
+The SDK is needed for DirectXMath.h
 
 ### External dependencies
 There's an external dependency on [MinHook](https://github.com/TsudaKageyu/minhook) through a git submodule. This should be downloaded
@@ -41,10 +42,11 @@ automatically when you clone the repo. The camera uses DirectXMath for the 3D ma
 * Prey (2017): https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Prey
 * Ryse: Son of Rome: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/RyseSonOfRome
 * The Evil Within 2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/TEW2
+* Titanfall 2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Titanfall2
 * Tomb Raider 2013: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Tombraider
 * Watch_Dogs: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Watch_Dogs
 * Watch_Dogs2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Watch_Dogs2
-* Wolfenstein II: The new colossus (Demo): https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Wolfenstein2
+* Wolfenstein II: The new colossus: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Wolfenstein2
 
 ## In-depth article about IGCS and how to create camera tools
 I've written a long, in-depth article about how to create camera tools and how IGCS works [on my blog](https://weblogs.asp.net/fbouma/let-s-add-a-photo-mode-to-wolfenstein-ii-the-new-colossus-pc).

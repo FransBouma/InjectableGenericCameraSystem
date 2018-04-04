@@ -106,6 +106,9 @@
     <ClInclude Include="CDataFile.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="EngineClient.h">
+      <Filter>Game Specific</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InterceptorHelper.cpp">

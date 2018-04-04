@@ -31,6 +31,7 @@
 #include "InterceptorHelper.h"
 #include "Globals.h"
 #include "OverlayConsole.h"
+#include "EngineClient.h"
 
 using namespace DirectX;
 using namespace std;
@@ -43,14 +44,16 @@ namespace IGCS::GameSpecific::CameraManipulator
 {
 	// typedef of signatures of function we'll call from our own code to pause/unpause the game properly. 
 	typedef void(__stdcall *RunCommandFunction) (LPVOID pRootObject, LPVOID pCommandString);
-	// the function pointer of the function we'll call to pause/unpause the game. 
-	static RunCommandFunction _runCommandFunc = nullptr;
-	// the pointer to the root object we have to pass as 1st argument to the RunCommand function to pause/unpause the game. 
-	static __int64* _rootObjectAddress = nullptr;
+	//// the function pointer of the function we'll call to pause/unpause the game. 
+	//static RunCommandFunction _runCommandFunc = nullptr;
+	//// the pointer to the root object we have to pass as 1st argument to the RunCommand function to pause/unpause the game. 
+	//static __int64* _rootObjectAddress = nullptr;
+	static EngineClient* _engineClient;
 	static LPBYTE _fovStructAddress = nullptr;
 
 	static float _originalCameraData[6];	// 3 floats (x, y, z) and 3 angles (degrees)
 	static float _originalFoV;
+	static bool _firstPersonMode = true;		// true is first person, false is third person
 
 	void setFoVAddress(LPBYTE fovStructAddress)
 	{
@@ -72,71 +75,52 @@ namespace IGCS::GameSpecific::CameraManipulator
 	}
 
 
-	void setPauseUnpauseGameFunctionPointers(LPBYTE pRootObjectAddress)
+	void setEngineClientLocationAddress(LPBYTE pEngineClientLocationAddress)
 	{
-		// pause/unpause uses a runcommand function which parses the input we pass to it. We need to pass a struct pointer (which also contains the runcommand function pointer) 
-		// and a pointer to the command, be it either "setpause nomsg\0" or "unpause nomsg\0". 
-		// Pause:
-		//00007FFED44B5CDB | 48 8B 0D 5E 7C 88 00             | mov rcx,qword ptr ds:[7FFED4D3D940]                   | Arg1
-		//00007FFED44B5CE2 | 48 8B 01                         | mov rax,qword ptr ds:[rcx]                            |
-		//00007FFED44B5CE5 | FF 90 90 06 00 00                | call qword ptr ds:[rax+690]                           | sub_[rax+690]
-		//00007FFED44B5CEB | 84 C0                            | test al,al                                            |
-		//00007FFED44B5CED | 74 17                            | je client.7FFED44B5D06                                |
 		//00007FFED44B5CEF | 48 8B 0D 4A 7C 88 00             | mov rcx,qword ptr ds:[7FFED4D3D940]                   | Arg1
 		//00007FFED44B5CF6 | 48 8D 15 AB 43 58 00             | lea rdx,qword ptr ds:[7FFED4A3A0A8]                   | Arg2 = "setpause nomsg"
 		//00007FFED44B5CFD | 48 8B 01                         | mov rax,qword ptr ds:[rcx]                            |
 		//00007FFED44B5D00 | FF 90 D8 00 00 00                | call qword ptr ds:[rax+D8]                            | Call RunFunction. 
-		//00007FFED44B5D06 | 48 63 0D 6B 21 03 02             | movsxd rcx,dword ptr ds:[7FFED64E7E78]                |
-		//00007FFED44B5D0D | 48 8B D9                         | mov rbx,rcx                                           |
-		//00007FFED44B5D10 | 8D 41 01                         | lea eax,qword ptr ds:[rcx+1]                          |
-		//00007FFED44B5D13 | 48 63 D0                         | movsxd rdx,eax                                        |
-		//00007FFED44B5D16 | 48 2B 15 4B 21 03 02             | sub rdx,qword ptr ds:[7FFED64E7E68]                   |
-		//00007FFED44B5D1D | 48 85 D2                         | test rdx,rdx                                          |
-		//00007FFED44B5D20 | 7E 12                            | jle client.7FFED44B5D34                               |
-		//
-		// Unpause:
-		//00007FFED44B5511 | 48 8B 0D 28 84 88 00             | mov rcx,qword ptr ds:[7FFED4D3D940]                   | Arg1
-		//00007FFED44B5518 | 48 8B 01                         | mov rax,qword ptr ds:[rcx]                            |
-		//00007FFED44B551B | FF 90 90 06 00 00                | call qword ptr ds:[rax+690]                           | sub_[rax+690]
-		//00007FFED44B5521 | 84 C0                            | test al,al                                            |
-		//00007FFED44B5523 | 74 17                            | je client.7FFED44B553C                                |
-		//00007FFED44B5525 | 48 8B 0D 14 84 88 00             | mov rcx,qword ptr ds:[7FFED4D3D940]                   | Arg1
-		//00007FFED44B552C | 48 8D 15 85 4B 58 00             | lea rdx,qword ptr ds:[7FFED4A3A0B8]                   | Arg2 = "unpause nomsg"
-		//00007FFED44B5533 | 48 8B 01                         | mov rax,qword ptr ds:[rcx]                            |
-		//00007FFED44B5536 | FF 90 D8 00 00 00                | call qword ptr ds:[rax+D8]                            | Call RunFunction. 
-		//00007FFED44B553C | C6 05 51 15 03 02 00             | mov byte ptr ds:[7FFED64E6A94],0                      |
-		//00007FFED44B5543 | EB 07                            | jmp client.7FFED44B554C                               |
-		//00007FFED44B5545 | 40 88 35 48 15 03 02             | mov byte ptr ds:[7FFED64E6A94],sil                    |
-		//00007FFED44B554C | 48 8B 5C 24 30                   | mov rbx,qword ptr ss:[rsp+30]                         |
-		//00007FFED44B5551 | 48 8B 74 24 38                   | mov rsi,qword ptr ss:[rsp+38]                         |
-		//00007FFED44B5556 | 48 8B 7C 24 40                   | mov rdi,qword ptr ss:[rsp+40]                         |
-		//00007FFED44B555B | 48 83 C4 20                      | add rsp,20                                            |
-		// the pointer to pass as Arg1 is pointed to by the rootObjectAddress passed to this function.
-		__int64* pRootObjectAsP64 = (__int64*)(pRootObjectAddress);
-		_rootObjectAddress = (__int64*)*pRootObjectAsP64;
-		__int64* pRunCommandLocation = (__int64*)((*_rootObjectAddress)+ 0xD8);
-		_runCommandFunc = (RunCommandFunction)(*pRunCommandLocation);
-		OverlayConsole::instance().logDebug("runCommandFunc: %p", (void*)_runCommandFunc);
+		_engineClient = EngineClient::GetInstance(pEngineClientLocationAddress);
+		OverlayConsole::instance().logDebug("EngineClient: %p", (void*)_engineClient);
+		if (nullptr != _engineClient)
+		{
+			// issue sv_cheats 1 so all commands work
+			runCommand("sv_cheats 1");
+		}
 	}
-	
 
-	// newValue: 1 == time should be frozen, 0 == normal gameplay
-	// returns true if the game was stopped by this call, false if the game was either already stopped or the state didn't change.
-	bool setTimeStopValue(BYTE newValue)
+
+	void toggleFirstThirdPerson()
 	{
-		if (nullptr == _rootObjectAddress)
-		{
-			return false;
-		}
-		if (nullptr == _runCommandFunc)
-		{
-			return false;
-		}
-		char* setPauseCommand = "setpause nomsg\0";
-		char* unpauseCommand = "unpause nomsg\0";
+		_firstPersonMode = !_firstPersonMode;
+		runCommand(_firstPersonMode ? "firstperson" : "thirdperson");
+	}
 
-		_runCommandFunc((LPVOID)_rootObjectAddress, newValue ? (LPVOID)setPauseCommand : (LPVOID)unpauseCommand);
-		return newValue;
+
+	void pauseUnpauseGame(bool pauseGame)
+	{
+		runCommand(pauseGame ? "setpause nomsg" : "unpause nomsg");
+	}
+
+
+	void toggleHideModelInFirstPerson(bool hide)
+	{
+		runCommand(hide ? "r_drawviewmodel 0" : "r_drawviewmodel 1");
+	}
+
+
+	void runCommand(const char* command)
+	{
+		if (nullptr == _engineClient)
+		{
+			return;
+		}
+		if (nullptr == command)
+		{
+			return;
+		}
+		_engineClient->ClientCmd(command);
 	}
 
 

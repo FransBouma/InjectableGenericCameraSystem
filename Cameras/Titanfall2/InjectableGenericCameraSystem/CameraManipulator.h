@@ -34,7 +34,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void writeNewCameraValuesToGameData(DirectX::XMFLOAT3 newCoords, float rotationX, float rotationY, float rotationZ);
 	void restoreOriginalValuesAfterCameraDisable();
 	void cacheOriginalValuesBeforeCameraEnable();
-	bool setTimeStopValue(BYTE newValue);
+	void pauseUnpauseGame(bool pauseGame);
 	DirectX::XMFLOAT3 getCurrentCameraCoords();
 	void resetFoV();
 	void changeFoV(float amount);
@@ -42,5 +42,8 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void displayCameraStructAddress();
 	void getSettingsFromGameState();
 	void applySettingsToGameState();
-	void setPauseUnpauseGameFunctionPointers(LPBYTE rootObjectAddress);
+	void setEngineClientLocationAddress(LPBYTE pEngineClientLocationAddress);
+	void runCommand(const char* command);
+	void toggleHideModelInFirstPerson(bool hide);
+	void toggleFirstThirdPerson();
 }

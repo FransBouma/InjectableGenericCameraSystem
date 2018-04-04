@@ -130,6 +130,13 @@ namespace IGCS
 			// stop here, so keys used in the camera system won't affect anything of the camera
 			return;
 		}
+
+		if (Input::keyDown(IGCS_KEY_TOGGLE_CAMERAPOS))
+		{
+			CameraManipulator::toggleFirstThirdPerson();
+			Sleep(350);
+			return;
+		}
 		if (Input::keyDown(IGCS_KEY_CAMERA_ENABLE))
 		{
 			if (g_cameraEnabled)
@@ -137,13 +144,13 @@ namespace IGCS
 				// it's going to be disabled, make sure things are alright when we give it back to the host
 				CameraManipulator::restoreOriginalValuesAfterCameraDisable();
 				toggleCameraMovementLockState(false);
-				InterceptorHelper::toggleHideModelInFirstPerson(_aobBlocks, false);	// attach model to camera
+				CameraManipulator::toggleHideModelInFirstPerson(false);
 				InterceptorHelper::toggleAngleWrites(_aobBlocks, true);
 			}
 			else
 			{
 				// it's going to be enabled, so cache the original values before we enable it so we can restore it afterwards
-				InterceptorHelper::toggleHideModelInFirstPerson(_aobBlocks, true);	// detach model from camera
+				CameraManipulator::toggleHideModelInFirstPerson(true);
 				CameraManipulator::cacheOriginalValuesBeforeCameraEnable();
 				InterceptorHelper::toggleAngleWrites(_aobBlocks, false);
 				_camera.resetAngles();
@@ -398,6 +405,6 @@ namespace IGCS
 	{
 		_timeStopped = !_timeStopped;
 		OverlayControl::addNotification(_timeStopped ? "Game paused" : "Game unpaused");
-		CameraManipulator::setTimeStopValue(_timeStopped);
+		CameraManipulator::pauseUnpauseGame(_timeStopped);
 	}
 }

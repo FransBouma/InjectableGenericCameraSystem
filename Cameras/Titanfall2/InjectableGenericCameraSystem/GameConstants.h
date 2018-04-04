@@ -34,8 +34,8 @@ namespace IGCS::GameSpecific
 	// Game coordinate system: Z up, Y left, X into the screen
 	//
 	//
-	#define GAME_NAME									"Titanfall 2 v1.0+"
-	#define CAMERA_VERSION								"1.0.0"
+	#define GAME_NAME									"Titanfall 2 v2.0.11+"
+	#define CAMERA_VERSION								"1.0.1"
 	#define CAMERA_CREDITS								"Otis_Inf."
 	#define GAME_WINDOW_TITLE							"Titanfall 2"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around Y axis	(Y is left, so rotate up/down).
@@ -45,8 +45,8 @@ namespace IGCS::GameSpecific
 	#define FASTER_MULTIPLIER							5.0f
 	#define SLOWER_MULTIPLIER							0.1f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
-	#define DEFAULT_MOVEMENT_SPEED						2.0f
-	#define DEFAULT_ROTATION_SPEED						0.01f
+	#define DEFAULT_MOVEMENT_SPEED						1.5f
+	#define DEFAULT_ROTATION_SPEED						0.02f
 	#define DEFAULT_FOV_SPEED							0.005f
 	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f
 	// End Mandatory constants
@@ -67,8 +67,7 @@ namespace IGCS::GameSpecific
 	#define FOV_MIN_CLAMP_LOCATION_KEY					"AOB_FOV_MIN_CLAMP_LOCATION"
 	#define FOV_MAX_CLAMP_LOCATION_KEY					"AOB_FOV_MAX_CLAMP_LOCATION"
 	#define FOV_ADDRESS_LOCATION_KEY					"AOB_FOV_ADDRESS_LOCATION"
-	#define DRAWVIEWMODEL_LOCATION_KEY					"AOB_DRAWVIEWMODEL_LOCATION"
-	#define PAUSE_UNPAUSE_ROOTOBJECT_LOCATION_KEY		"AOB_PAUSE_UNPAUSE_ROOTOBJECT"
+	#define ENGINECLIENT_LOCATION_KEY					"AOB_ENGINECLIENT_LOCATION"
 
 	// Indices in the structures read by interceptors 
 	#define COORDS_IN_STRUCT_OFFSET						0x0
