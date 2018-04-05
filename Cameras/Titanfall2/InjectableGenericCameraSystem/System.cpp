@@ -145,14 +145,12 @@ namespace IGCS
 				CameraManipulator::restoreOriginalValuesAfterCameraDisable();
 				toggleCameraMovementLockState(false);
 				CameraManipulator::toggleHideModelInFirstPerson(false);
-				InterceptorHelper::toggleAngleWrites(_aobBlocks, true);
 			}
 			else
 			{
 				// it's going to be enabled, so cache the original values before we enable it so we can restore it afterwards
 				CameraManipulator::toggleHideModelInFirstPerson(true);
 				CameraManipulator::cacheOriginalValuesBeforeCameraEnable();
-				InterceptorHelper::toggleAngleWrites(_aobBlocks, false);
 				_camera.resetAngles();
 			}
 			g_cameraEnabled = g_cameraEnabled == 0 ? (BYTE)1 : (BYTE)0;

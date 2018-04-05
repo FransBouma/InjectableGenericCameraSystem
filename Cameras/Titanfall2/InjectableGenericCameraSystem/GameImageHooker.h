@@ -32,8 +32,9 @@ namespace IGCS::GameImageHooker
 {
 	void nopRange(LPBYTE startAddress, int length);
 	void nopRange(AOBBlock* hookData, int length);
-	void setHook(LPBYTE hostImageAddress, DWORD startOffset, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction);
+	void setHook(LPBYTE hostImageAddress, DWORD startOffset, DWORD continueOffset1, LPBYTE* interceptionContinue1, void* asmFunction, DWORD continueOffset2, LPBYTE* interceptionContinue2);
 	void setHook(AOBBlock* hookData, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction);
+	void setHook(AOBBlock* hookData, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction, DWORD continueOffset2, LPBYTE* interceptionContinue2);
 	void writeRange(LPBYTE startAddress, BYTE* bufferToWrite, int length);
 	void writeRange(AOBBlock* hookData, BYTE* bufferToWrite, int length);
 }

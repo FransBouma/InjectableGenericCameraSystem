@@ -177,6 +177,9 @@
     <ClCompile Include="CDataFile.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="CommandConsole.h">
+      <Filter>Overlay</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="Interceptor.asm">

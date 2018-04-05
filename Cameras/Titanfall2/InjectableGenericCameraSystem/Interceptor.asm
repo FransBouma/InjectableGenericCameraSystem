@@ -38,6 +38,8 @@ PUBLIC cameraWrite3Interceptor
 PUBLIC cameraWrite4Interceptor
 PUBLIC cameraWrite5Interceptor
 PUBLIC cameraWrite6Interceptor
+PUBLIC cameraWrite7Interceptor
+PUBLIC cameraWrite8Interceptor
 
 ;---------------------------------------------------------------
 
@@ -57,6 +59,9 @@ EXTERN _cameraWrite3InterceptionContinue: qword
 EXTERN _cameraWrite4InterceptionContinue: qword
 EXTERN _cameraWrite5InterceptionContinue: qword
 EXTERN _cameraWrite6InterceptionContinue: qword
+EXTERN _cameraWrite7InterceptionContinue1: qword
+EXTERN _cameraWrite7InterceptionContinue2: qword
+EXTERN _cameraWrite8InterceptionContinue: qword
 
 .data
 
@@ -318,5 +323,79 @@ nowrites:
 exit:
 	jmp qword ptr [_cameraWrite6InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite6Interceptor ENDP
+
+cameraWrite7Interceptor PROC
+;client.dll+62D46A - F3 0F10 35 06302A00   - movss xmm6,[client.dll+8D0478] { [57.30] }
+;client.dll+62D472 - 44 0F57 05 36AD3D00   - xorps xmm8,[client.dll+A081B0] { [80000000] }
+;client.dll+62D47A - 41 0F28 CA            - movaps xmm1,xmm10						<< INTERCEPT HERE
+;client.dll+62D47E - F3 0F59 C6            - mulss xmm0,xmm6
+;client.dll+62D482 - F3 0F11 47 04         - movss [rdi+04],xmm0					<< Yaw
+;client.dll+62D487 - 41 0F28 C0            - movaps xmm0,xmm8
+;client.dll+62D48B - E8 9C3D1D00           - call client.dll+80122C					<< CONTINUE1 HERE (Camera is disabled, or rdi isn't our camera)
+;client.dll+62D490 - 41 0F28 CC            - movaps xmm1,xmm12
+;client.dll+62D494 - F3 0F59 C6            - mulss xmm0,xmm6
+;client.dll+62D498 - F3 0F11 07            - movss [rdi],xmm0						<< Pitch
+;client.dll+62D49C - 41 0F28 C3            - movaps xmm0,xmm11
+;client.dll+62D4A0 - E8 873D1D00           - call client.dll+80122C
+;client.dll+62D4A5 - F3 0F59 C6            - mulss xmm0,xmm6
+;client.dll+62D4A9 - F3 0F11 47 08         - movss [rdi+08],xmm0					<< Roll
+;client.dll+62D4AE - EB 49                 - jmp client.dll+62D4F9					<< CONTINUE2 HERE (Camera is enabled and rdi is our camera)
+;client.dll+62D4B0 - 0F57 35 F9AC3D00      - xorps xmm6,[client.dll+A081B0] { [80000000] }
+	push rcx
+	cmp byte ptr [g_cameraEnabled], 1
+	jne originalCode
+	; check if the value in rdi + 0x0C is our camera (as this code is used by many datablocks). 
+	mov qword ptr rcx, [g_cameraStructAddress]
+	add rcx, 0Ch
+	cmp qword ptr rdi, rcx
+	je exit2			; camera is enabled and it's targeting our camera struct, skip the complete block of statements
+originalCode:
+	movaps xmm1,xmm10	
+	mulss xmm0,xmm6
+	movss dword ptr [rdi+04h],xmm0
+	movaps xmm0,xmm8
+exit1:
+	pop rcx
+	; jmp back to the original code right after our injected jmp statement so the original code will run
+	jmp qword ptr [_cameraWrite7InterceptionContinue1]
+exit2:
+	pop rcx
+	; jmp back to the end of the block we want to intercept, skipping all calls too. 
+	jmp qword ptr [_cameraWrite7InterceptionContinue2]
+cameraWrite7Interceptor ENDP
+
+cameraWrite8Interceptor PROC
+;client.dll+142D36 - 74 42                 - je client.dll+142D7A
+;client.dll+142D38 - F3 0F10 45 A7         - movss xmm0,[rbp-59]
+;client.dll+142D3D - F3 0F10 4D AB         - movss xmm1,[rbp-55]
+;client.dll+142D42 - 48 8B CB              - mov rcx,rbx
+;client.dll+142D45 - F3 0F11 06            - movss [rsi],xmm0					<< Intercept here << X
+;client.dll+142D49 - F3 0F10 45 AF         - movss xmm0,[rbp-51]
+;client.dll+142D4E - F3 0F11 4E 04         - movss [rsi+04],xmm1				<< Y
+;client.dll+142D53 - F3 0F10 4D 97         - movss xmm1,[rbp-69]
+;client.dll+142D58 - F3 0F11 46 08         - movss [rsi+08],xmm0				<< Z
+;client.dll+142D5D - F3 0F10 45 9B         - movss xmm0,[rbp-65]
+;client.dll+142D62 - F3 0F11 0F            - movss [rdi],xmm1					<< Pitch
+;client.dll+142D66 - F3 0F10 4D 9F         - movss xmm1,[rbp-61]
+;client.dll+142D6B - F3 0F11 47 04         - movss [rdi+04],xmm0				<< Yaw
+;client.dll+142D70 - F3 0F11 4F 08         - movss [rdi+08],xmm1				<< Roll
+;client.dll+142D75 - E8 866D0000           - call client.dll+149B00				<< Continue here
+;client.dll+142D7A - 48 8B 05 4F3D9C00     - mov rax,[client.dll+B06AD0] { [7FFD04D65C30] }
+	cmp byte ptr [g_cameraEnabled], 1
+	je exit
+originalCode:
+	movss dword ptr [rsi],xmm0	
+	movss xmm0,dword ptr [rbp-51h]
+	movss dword ptr [rsi+04h],xmm1
+	movss xmm1,dword ptr [rbp-69h]
+	movss dword ptr [rsi+08h],xmm0
+	movss xmm0,dword ptr [rbp-65h]
+	movss dword ptr [rdi],xmm1	
+	movss xmm1,dword ptr [rbp-61h]
+	movss dword ptr [rdi+04h],xmm0
+	movss dword ptr [rdi+08h],xmm1
+exit:
+	jmp qword ptr [_cameraWrite8InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+cameraWrite8Interceptor ENDP
 
 END

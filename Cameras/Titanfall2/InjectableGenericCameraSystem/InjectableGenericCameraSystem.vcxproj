@@ -186,6 +186,7 @@
     <ClCompile Include="AOBBlock.cpp" />
     <ClCompile Include="CameraManipulator.cpp" />
     <ClCompile Include="CDataFile.cpp" />
+    <ClCompile Include="CommandConsole.h" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="GameImageHooker.cpp" />
     <ClCompile Include="Globals.cpp" />

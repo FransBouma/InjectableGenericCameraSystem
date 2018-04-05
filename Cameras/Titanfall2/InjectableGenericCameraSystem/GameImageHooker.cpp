@@ -32,15 +32,19 @@
 
 namespace IGCS::GameImageHooker
 {
-	// Sets a jmp qword ptr [address] statement at hostImageAddress + startOffset for x64 and a jmp <relative address> for x86
-	void setHook(LPBYTE hostImageAddress, DWORD startOffset, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction)
+	// Sets a jmp qword ptr [address] statement at hostImageAddress + startOffset for x64 and a jmp <relative address> for x86. Version for 2 continue offset. 
+	void setHook(LPBYTE hostImageAddress, DWORD startOffset, DWORD continueOffset1, LPBYTE* interceptionContinue1, void* asmFunction, DWORD continueOffset2, LPBYTE* interceptionContinue2)
 	{
 		if (hostImageAddress == nullptr)
 		{
 			return;
 		}
 		LPBYTE startOfHookAddress = hostImageAddress + startOffset;
-		*interceptionContinue = startOfHookAddress + continueOffset;
+		*interceptionContinue1 = startOfHookAddress + continueOffset1;
+		if (nullptr != interceptionContinue2)
+		{
+			*interceptionContinue2 = startOfHookAddress + continueOffset2;
+		}
 #ifdef _WIN64
 		// x64
 		BYTE instruction[14];	// 6 bytes of the jmp qword ptr [0] and 8 bytes for the real address which is stored right after the 6 bytes of jmp qword ptr [0] bytes 
@@ -75,7 +79,13 @@ namespace IGCS::GameImageHooker
 	// Sets a jmp qword ptr [address] statement at baseAddress + startOffset for x64 and a jmp <relative address> for x86
 	void setHook(AOBBlock* hookData, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction)
 	{
-		setHook(hookData->locationInImage(), hookData->customOffset(), continueOffset, interceptionContinue, asmFunction);
+		setHook(hookData->locationInImage(), hookData->customOffset(), continueOffset, interceptionContinue, asmFunction, 0, nullptr);
+	}
+
+	// Sets a jmp qword ptr [address] statement at baseAddress + startOffset for x64 and a jmp <relative address> for x86
+	void setHook(AOBBlock* hookData, DWORD continueOffset, LPBYTE* interceptionContinue, void* asmFunction, DWORD continueOffset2, LPBYTE* interceptionContinue2)
+	{
+		setHook(hookData->locationInImage(), hookData->customOffset(), continueOffset, interceptionContinue, asmFunction, continueOffset2, interceptionContinue2);
 	}
 
 

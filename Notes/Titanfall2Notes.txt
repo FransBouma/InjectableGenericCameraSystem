@@ -159,6 +159,57 @@ client.dll+142D22 - EB 56                 - jmp client.dll+142D7A
 client.dll+142D24 - 4C 8D 45 97           - lea r8,[rbp-69]
 
 
+Write8:
+client.dll+142D36 - 74 42                 - je client.dll+142D7A
+client.dll+142D38 - F3 0F10 45 A7         - movss xmm0,[rbp-59]
+client.dll+142D3D - F3 0F10 4D AB         - movss xmm1,[rbp-55]
+client.dll+142D42 - 48 8B CB              - mov rcx,rbx
+client.dll+142D45 - F3 0F11 06            - movss [rsi],xmm0					<< X
+client.dll+142D49 - F3 0F10 45 AF         - movss xmm0,[rbp-51]
+client.dll+142D4E - F3 0F11 4E 04         - movss [rsi+04],xmm1
+client.dll+142D53 - F3 0F10 4D 97         - movss xmm1,[rbp-69]
+client.dll+142D58 - F3 0F11 46 08         - movss [rsi+08],xmm0
+client.dll+142D5D - F3 0F10 45 9B         - movss xmm0,[rbp-65]
+client.dll+142D62 - F3 0F11 0F            - movss [rdi],xmm1
+client.dll+142D66 - F3 0F10 4D 9F         - movss xmm1,[rbp-61]
+client.dll+142D6B - F3 0F11 47 04         - movss [rdi+04],xmm0
+client.dll+142D70 - F3 0F11 4F 08         - movss [rdi+08],xmm1
+client.dll+142D75 - E8 866D0000           - call client.dll+149B00
+client.dll+142D7A - 48 8B 05 4F3D9C00     - mov rax,[client.dll+B06AD0] { [7FFD04D65C30] }
+
+Write 9:
+client.dll+14302F - E8 2C421800           - call client.dll+2C7260
+client.dll+143034 - F3 0F10 07            - movss xmm0,[rdi]
+client.dll+143038 - F3 0F58 00            - addss xmm0,[rax]
+client.dll+14303C - F3 0F11 07            - movss [rdi],xmm0
+client.dll+143040 - F3 0F10 48 04         - movss xmm1,[rax+04]
+client.dll+143045 - F3 0F58 4F 04         - addss xmm1,[rdi+04]
+client.dll+14304A - F3 0F11 4F 04         - movss [rdi+04],xmm1
+client.dll+14304F - F3 0F10 40 08         - movss xmm0,[rax+08]
+client.dll+143054 - F3 0F58 47 08         - addss xmm0,[rdi+08]
+client.dll+143059 - F3 0F11 47 08         - movss [rdi+08],xmm0
+client.dll+14305E - 48 8D 4D B7           - lea rcx,[rbp-49]
+client.dll+143062 - 48 8B D3              - mov rdx,rbx
+client.dll+143065 - E8 46281800           - call client.dll+2C58B0
+
+
+Write 10:
+client.dll+143065 - E8 46281800           - call client.dll+2C58B0
+client.dll+14306A - 48 8B D7              - mov rdx,rdi
+client.dll+14306D - 48 8B CB              - mov rcx,rbx
+client.dll+143070 - 41 0F28 D0            - movaps xmm2,xmm8
+client.dll+143074 - F3 0F10 00            - movss xmm0,[rax]
+client.dll+143078 - F3 0F58 07            - addss xmm0,[rdi]
+client.dll+14307C - F3 0F11 07            - movss [rdi],xmm0
+client.dll+143080 - F3 0F10 48 04         - movss xmm1,[rax+04]
+client.dll+143085 - F3 0F58 4F 04         - addss xmm1,[rdi+04]
+client.dll+14308A - F3 0F11 4F 04         - movss [rdi+04],xmm1
+client.dll+14308F - F3 0F10 40 08         - movss xmm0,[rax+08]
+client.dll+143094 - F3 0F58 47 08         - addss xmm0,[rdi+08]
+client.dll+143099 - F3 0F11 47 08         - movss [rdi+08],xmm0
+client.dll+14309E - E8 CDE81700           - call client.dll+2C1970
+
+
 Disable Player model:
 Preferable: 
 client.dll+374CE0 - 48 83 EC 28           - sub rsp,28 { 40 }

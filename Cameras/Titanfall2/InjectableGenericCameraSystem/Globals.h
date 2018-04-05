@@ -53,7 +53,12 @@ namespace IGCS
 
 		// settings not persisted to config file.
 		// add settings to edit here.
-		// nothing for now.
+		bool dofEnable;
+		int dofBlurStrength;
+		int dofNearStart;
+		int dofNearEnd;
+		int dofFarStart;
+		int dofFarEnd;
 
 		void loadFromFile()
 		{
@@ -106,7 +111,12 @@ namespace IGCS
 
 			if (!persistedOnly)
 			{
-				// not hing for now.
+				dofEnable = false;
+				dofBlurStrength = 4;
+				dofNearStart = 0;
+				dofNearEnd = 100;
+				dofFarStart = 300;
+				dofFarEnd = 1000;
 			}
 		}
 	};

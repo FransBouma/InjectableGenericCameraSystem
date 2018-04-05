@@ -134,7 +134,30 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void applySettingsToGameState()
 	{
 		Settings& currentSettings = Globals::instance().settings();
-		// nothing for now.
+		
+		// dof
+		if (currentSettings.dofEnable)
+		{
+			runCommand("dof_overrideParams 1");
+			runCommand("dof_enable 1");
+		}
+		else
+		{
+			runCommand("dof_overrideParams 0");
+			// done
+			return;
+		}
+		char buffer[1024];			// if it crashes, too bad.
+		sprintf_s(buffer, 1024, "dof_variable_blur %d\0", currentSettings.dofBlurStrength);
+		runCommand(buffer);
+		sprintf_s(buffer, 1024, "dof_nearDepthStart %d\0", currentSettings.dofNearStart);
+		runCommand(buffer);
+		sprintf_s(buffer, 1024, "dof_nearDepthEnd %d\0", currentSettings.dofNearEnd);
+		runCommand(buffer);
+		sprintf_s(buffer, 1024, "dof_farDepthStart %d\0", currentSettings.dofFarStart);
+		runCommand(buffer);
+		sprintf_s(buffer, 1024, "dof_farDepthEnd %d\0", currentSettings.dofFarEnd);
+		runCommand(buffer);
 	}
 
 
