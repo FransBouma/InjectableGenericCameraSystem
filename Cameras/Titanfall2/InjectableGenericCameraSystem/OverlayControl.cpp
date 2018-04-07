@@ -47,7 +47,7 @@ namespace IGCS::OverlayControl
 	void renderSplash();
 	void updateNotificationStore();
 	void ShowHelpMarker(const char* desc);
-	void ShowCommandConsole(bool* p_open);
+	void renderCommandConsole();
 
 	//-----------------------------------------------
 	// code
@@ -69,7 +69,6 @@ namespace IGCS::OverlayControl
 	}
 
 
-	bool popen = true;
 	void renderOverlay()
 	{
 		// set io values FIRST, as NewFrame will reset IO values otherwise and it looks at the values for mousewheel for sizing in... new frame!
@@ -82,6 +81,7 @@ namespace IGCS::OverlayControl
 		io.MouseDrawCursor = _showMainWindow;
 		renderSplash();
 		renderMainWindow();
+		renderCommandConsole();
 		renderNotifications();
 		ImGui::Render();
 	}
@@ -257,13 +257,12 @@ Special thanks to:
 			currentSettings.init(true);
 			settingsChanged = true;
 		}
-#ERROR needs to be toggle, but doesn't work
 		if (!_showCommandConsole)
 		{
 			ImGui::SameLine();
 			if (ImGui::Button("Open command console"))
 			{
-				ShowCommandConsole(&_showCommandConsole);
+				_showCommandConsole = true;
 			}
 		}
 		if (ImGui::CollapsingHeader("Camera movement options", ImGuiTreeNodeFlags_DefaultOpen))
@@ -417,9 +416,13 @@ Special thanks to:
 		}
 	}
 
-	void ShowCommandConsole(bool* p_open)
+	void renderCommandConsole()
 	{
+		if (!_showCommandConsole)
+		{
+			return;
+		}
 		static CommandConsole console;
-		console.Draw("Command Console", p_open);
+		console.Draw("Command Console", &_showCommandConsole);
 	}
 }
