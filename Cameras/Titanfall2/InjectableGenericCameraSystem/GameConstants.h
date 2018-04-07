@@ -35,7 +35,7 @@ namespace IGCS::GameSpecific
 	//
 	//
 	#define GAME_NAME									"Titanfall 2 v2.0.11+"
-	#define CAMERA_VERSION								"1.0.2"
+	#define CAMERA_VERSION								"1.0.3"
 	#define CAMERA_CREDITS								"Otis_Inf."
 	#define GAME_WINDOW_TITLE							"Titanfall 2"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around Y axis	(Y is left, so rotate up/down).
@@ -67,6 +67,7 @@ namespace IGCS::GameSpecific
 	#define CAMERA_WRITE12_INTERCEPT_KEY				"AOB_CAMERA_WRITE12_INTERCEPT"
 	#define CAMERA_WRITE13_INTERCEPT_KEY				"AOB_CAMERA_WRITE13_INTERCEPT"
 	#define CAMERA_WRITE14_INTERCEPT_KEY				"AOB_CAMERA_WRITE14_INTERCEPT"
+	#define CAMERA_WRITE15_INTERCEPT_KEY				"AOB_CAMERA_WRITE15_INTERCEPT"
 	#define FOV_MIN_CLAMP_LOCATION_KEY					"AOB_FOV_MIN_CLAMP_LOCATION"
 	#define FOV_MAX_CLAMP_LOCATION_KEY					"AOB_FOV_MAX_CLAMP_LOCATION"
 	#define FOV_ADDRESS_LOCATION_KEY					"AOB_FOV_ADDRESS_LOCATION"

@@ -53,6 +53,7 @@ extern "C" {
 	void cameraWrite12Interceptor();
 	void cameraWrite13Interceptor();
 	void cameraWrite14Interceptor();
+	void cameraWrite15Interceptor();
 }
 
 // external addresses used in asm.
@@ -73,6 +74,7 @@ extern "C" {
 	LPBYTE _cameraWrite12InterceptionContinue = nullptr;
 	LPBYTE _cameraWrite13InterceptionContinue = nullptr;
 	LPBYTE _cameraWrite14InterceptionContinue = nullptr;
+	LPBYTE _cameraWrite15InterceptionContinue = nullptr;
 }
 
 
@@ -95,6 +97,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE12_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE12_INTERCEPT_KEY, "F3 0F 11 02 F3 0F 59 89 FC 03 00 00 F3 0F 58 4A 04 F3 0F 11 4A 04 F3 0F 10 4C 24 28 F3 0F 59 99 00 04 00 00", 1);
 		aobBlocks[CAMERA_WRITE13_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE13_INTERCEPT_KEY, "F3 0F 11 03 F3 0F 10 8F 14 1E 00 00 F3 0F 58 4B 04 F3 0F 11 4B 04 F3 0F 10 87 18 1E 00 00 F3 0F 58 43 08 F3 0F 11 43 08 48 8B 5C 24 30", 1);
 		aobBlocks[CAMERA_WRITE14_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE14_INTERCEPT_KEY, "F3 0F 11 07 F3 0F 10 44 24 5C F3 0F 11 4F 04 F3 0F 11 47 08 E8 AD 5F 01 00", 1);
+		aobBlocks[CAMERA_WRITE15_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE15_INTERCEPT_KEY, "41 89 8F EC 00 00 00 8B 48 04 41 89 8F F0 00 00 00 8B 48 08 41 89 8F F4 00 00 00 48 8B CB FF 52 48 8B 08", 1);
 		aobBlocks[FOV_MIN_CLAMP_LOCATION_KEY] = new AOBBlock(FOV_MIN_CLAMP_LOCATION_KEY, "F3 0F 10 58 58 | F3 0F 5F 1D ?? ?? ?? ?? 0F 28 C3 F3 0F 5D 05 ?? ?? ?? ?? 48", 1);
 		aobBlocks[FOV_MAX_CLAMP_LOCATION_KEY] = new AOBBlock(FOV_MAX_CLAMP_LOCATION_KEY, "F3 0F 10 58 58 F3 0F 5F 1D ?? ?? ?? ?? 0F 28 C3 | F3 0F 5D 05 ?? ?? ?? ?? 48", 1);
 		aobBlocks[FOV_ADDRESS_LOCATION_KEY] = new AOBBlock(FOV_ADDRESS_LOCATION_KEY, "48 8B 05 | ?? ?? ?? ?? F3 0F 10 58 58 F3 0F5F 1D ?? ?? ?? ?? 0F 28 C3 F3 0F 5D 05 ?? ?? ?? ?? 48", 1);
@@ -139,6 +142,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE12_INTERCEPT_KEY], 0x57, &_cameraWrite12InterceptionContinue, &cameraWrite12Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE13_INTERCEPT_KEY], 0x28, &_cameraWrite13InterceptionContinue, &cameraWrite13Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE14_INTERCEPT_KEY], 0x14, &_cameraWrite14InterceptionContinue, &cameraWrite14Interceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE15_INTERCEPT_KEY], 0x3A, &_cameraWrite15InterceptionContinue, &cameraWrite15Interceptor);
 
 		CameraManipulator::setFoVAddress(Utils::calculateAbsoluteAddress(aobBlocks[FOV_ADDRESS_LOCATION_KEY], 4));	// client.dll+2C5A44 - 48 8B 05 E5CAF200     - mov rax,[client.dll+11F2530]
 		CameraManipulator::setEngineClientLocationAddress(Utils::calculateAbsoluteAddress(aobBlocks[ENGINECLIENT_LOCATION_KEY], 4));
