@@ -288,10 +288,10 @@ Special thanks to:
 			ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.3f) - 11.0f);
 			gameStateSettingsChanged |= ImGui::Checkbox("Enable in-game Depth of Field (DoF)", &currentSettings.dofEnable);
 			gameStateSettingsChanged |= ImGui::SliderInt("DoF blur strength", &currentSettings.dofBlurStrength, 1, 100);
-			gameStateSettingsChanged |= ImGui::SliderInt("DoF near start", &currentSettings.dofNearStart, 0, 2000);
+			gameStateSettingsChanged |= ImGui::SliderInt("DoF near start", &currentSettings.dofNearStart, -100, 2000);
 			gameStateSettingsChanged |= ImGui::SliderInt("DoF near end", &currentSettings.dofNearEnd, 0, 2000);
-			gameStateSettingsChanged |= ImGui::SliderInt("DoF far start", &currentSettings.dofFarStart, 1, 10000);
-			gameStateSettingsChanged |= ImGui::SliderInt("DoF far end", &currentSettings.dofFarEnd, 1, 10000);
+			gameStateSettingsChanged |= ImGui::SliderInt("DoF far start", &currentSettings.dofFarStart, 1, 5000);
+			gameStateSettingsChanged |= ImGui::SliderInt("DoF far end", &currentSettings.dofFarEnd, 1, 5000);
 		}
 		ImGui::PopItemWidth();
 		if (settingsChanged)

@@ -40,6 +40,12 @@ PUBLIC cameraWrite5Interceptor
 PUBLIC cameraWrite6Interceptor
 PUBLIC cameraWrite7Interceptor
 PUBLIC cameraWrite8Interceptor
+PUBLIC cameraWrite9Interceptor
+PUBLIC cameraWrite10Interceptor
+PUBLIC cameraWrite11Interceptor
+PUBLIC cameraWrite12Interceptor
+PUBLIC cameraWrite13Interceptor
+PUBLIC cameraWrite14Interceptor
 
 ;---------------------------------------------------------------
 
@@ -62,6 +68,12 @@ EXTERN _cameraWrite6InterceptionContinue: qword
 EXTERN _cameraWrite7InterceptionContinue1: qword
 EXTERN _cameraWrite7InterceptionContinue2: qword
 EXTERN _cameraWrite8InterceptionContinue: qword
+EXTERN _cameraWrite9InterceptionContinue: qword
+EXTERN _cameraWrite10InterceptionContinue: qword
+EXTERN _cameraWrite11InterceptionContinue: qword
+EXTERN _cameraWrite12InterceptionContinue: qword
+EXTERN _cameraWrite13InterceptionContinue: qword
+EXTERN _cameraWrite14InterceptionContinue: qword
 
 .data
 
@@ -397,5 +409,197 @@ originalCode:
 exit:
 	jmp qword ptr [_cameraWrite8InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite8Interceptor ENDP
+
+
+cameraWrite9Interceptor PROC
+;client.dll+14302F - E8 2C421800           - call client.dll+2C7260
+;client.dll+143034 - F3 0F10 07            - movss xmm0,[rdi]
+;client.dll+143038 - F3 0F58 00            - addss xmm0,[rax]
+;client.dll+14303C - F3 0F11 07            - movss [rdi],xmm0					<< INTERCEPT HERE << Pitch
+;client.dll+143040 - F3 0F10 48 04         - movss xmm1,[rax+04]
+;client.dll+143045 - F3 0F58 4F 04         - addss xmm1,[rdi+04]
+;client.dll+14304A - F3 0F11 4F 04         - movss [rdi+04],xmm1				<< Yaw
+;client.dll+14304F - F3 0F10 40 08         - movss xmm0,[rax+08]
+;client.dll+143054 - F3 0F58 47 08         - addss xmm0,[rdi+08]
+;client.dll+143059 - F3 0F11 47 08         - movss [rdi+08],xmm0				<< Roll
+;client.dll+14305E - 48 8D 4D B7           - lea rcx,[rbp-49]					<< CONTINUE HERE
+;client.dll+143062 - 48 8B D3              - mov rdx,rbx
+;client.dll+143065 - E8 46281800           - call client.dll+2C58B0
+	cmp byte ptr [g_cameraEnabled], 1
+	je exit
+originalCode:
+	movss dword ptr [rdi],xmm0	
+	movss xmm1,dword ptr [rax+04h]
+	addss xmm1,dword ptr [rdi+04h]
+	movss dword ptr [rdi+04h],xmm1
+	movss xmm0,dword ptr [rax+08h]
+	addss xmm0,dword ptr [rdi+08h]
+	movss dword ptr [rdi+08h],xmm0
+exit:
+	jmp qword ptr [_cameraWrite9InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+cameraWrite9Interceptor ENDP
+
+cameraWrite10Interceptor PROC
+;client.dll+143065 - E8 46281800           - call client.dll+2C58B0
+;client.dll+14306A - 48 8B D7              - mov rdx,rdi
+;client.dll+14306D - 48 8B CB              - mov rcx,rbx
+;client.dll+143070 - 41 0F28 D0            - movaps xmm2,xmm8
+;client.dll+143074 - F3 0F10 00            - movss xmm0,[rax]
+;client.dll+143078 - F3 0F58 07            - addss xmm0,[rdi]
+;client.dll+14307C - F3 0F11 07            - movss [rdi],xmm0					<< INTERCEPT HERE << Pitch
+;client.dll+143080 - F3 0F10 48 04         - movss xmm1,[rax+04]
+;client.dll+143085 - F3 0F58 4F 04         - addss xmm1,[rdi+04]
+;client.dll+14308A - F3 0F11 4F 04         - movss [rdi+04],xmm1				<< Yaw
+;client.dll+14308F - F3 0F10 40 08         - movss xmm0,[rax+08]
+;client.dll+143094 - F3 0F58 47 08         - addss xmm0,[rdi+08]
+;client.dll+143099 - F3 0F11 47 08         - movss [rdi+08],xmm0				<< Roll
+;client.dll+14309E - E8 CDE81700           - call client.dll+2C1970				<< CONTINUE HERE
+	cmp byte ptr [g_cameraEnabled], 1
+	je exit
+originalCode:
+	movss dword ptr [rdi],xmm0	
+	movss xmm1,dword ptr [rax+04h]
+	addss xmm1,dword ptr [rdi+04h]
+	movss dword ptr [rdi+04h],xmm1
+	movss xmm0,dword ptr [rax+08h]
+	addss xmm0,dword ptr [rdi+08h]
+	movss dword ptr [rdi+08h],xmm0
+exit:
+	jmp qword ptr [_cameraWrite10InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+cameraWrite10Interceptor ENDP
+
+cameraWrite11Interceptor PROC
+;client.dll+142DA0 - 48 8D 55 A7           - lea rdx,[rbp-59]
+;client.dll+142DA4 - F3 0F58 06            - addss xmm0,[rsi]
+;client.dll+142DA8 - F3 0F58 4E 04         - addss xmm1,[rsi+04]
+;client.dll+142DAD - 48 8B CB              - mov rcx,rbx
+;client.dll+142DB0 - F3 0F11 06            - movss [rsi],xmm0					<< INTERCEPT HERE << X
+;client.dll+142DB4 - F3 0F10 45 AF         - movss xmm0,[rbp-51]
+;client.dll+142DB9 - F3 0F11 4E 04         - movss [rsi+04],xmm1				<< Y
+;client.dll+142DBE - F3 0F58 46 08         - addss xmm0,[rsi+08]
+;client.dll+142DC3 - F3 0F11 4D AB         - movss [rbp-55],xmm1
+;client.dll+142DC8 - F3 0F11 46 08         - movss [rsi+08],xmm0				<< Z
+;client.dll+142DCD - F3 0F10 06            - movss xmm0,[rsi]					<< CONTINUE HERE
+;client.dll+142DD1 - F3 0F10 4F 04         - movss xmm1,[rdi+04]
+;client.dll+142DD6 - F3 0F11 45 A7         - movss [rbp-59],xmm0
+	cmp byte ptr [g_cameraEnabled], 1
+	je exit
+originalCode:
+	movss dword ptr [rsi],xmm0	
+	movss xmm0,dword ptr [rbp-51h]
+	movss dword ptr [rsi+04h],xmm1
+	addss xmm0,dword ptr [rsi+08h]
+	movss dword ptr [rbp-55h],xmm1
+	movss dword ptr [rsi+08h],xmm0
+exit:
+	jmp qword ptr [_cameraWrite11InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+cameraWrite11Interceptor ENDP
+
+cameraWrite12Interceptor PROC
+;client.dll+3628B3 - 0F28 CB               - movaps xmm1,xmm3
+;client.dll+3628B6 - F3 0F59 81 F8030000   - mulss xmm0,[rcx+000003F8]
+;client.dll+3628BE - F3 0F58 02            - addss xmm0,[rdx]
+;client.dll+3628C2 - F3 0F11 02            - movss [rdx],xmm0					<< INTERCEPT HERE << X
+;client.dll+3628C6 - F3 0F59 89 FC030000   - mulss xmm1,[rcx+000003FC]
+;client.dll+3628CE - F3 0F58 4A 04         - addss xmm1,[rdx+04]
+;client.dll+3628D3 - F3 0F11 4A 04         - movss [rdx+04],xmm1				<< Y
+;client.dll+3628D8 - F3 0F10 4C 24 28      - movss xmm1,[rsp+28]
+;client.dll+3628DE - F3 0F59 99 00040000   - mulss xmm3,[rcx+00000400]
+;client.dll+3628E6 - F3 0F58 5A 08         - addss xmm3,[rdx+08]
+;client.dll+3628EB - 0F28 C1               - movaps xmm0,xmm1
+;client.dll+3628EE - F3 0F11 5A 08         - movss [rdx+08],xmm3				<< Z
+;client.dll+3628F3 - F3 0F59 81 04040000   - mulss xmm0,[rcx+00000404]
+;client.dll+3628FB - F3 41 0F58 00         - addss xmm0,[r8]
+;client.dll+362900 - F3 41 0F11 00         - movss [r8],xmm0					<< Pitch
+;client.dll+362905 - F3 0F59 89 08040000   - mulss xmm1,[rcx+00000408]
+;client.dll+36290D - F3 41 0F58 48 08      - addss xmm1,[r8+08]
+;client.dll+362913 - F3 41 0F11 48 08      - movss [r8+08],xmm1					<< Roll
+;client.dll+362919 - C3                    - ret								<< CONTINUE HERE
+	cmp byte ptr [g_cameraEnabled], 1
+	je nowrites 
+originalCode:
+	movss dword ptr [rdx],xmm0			
+	mulss xmm1,dword ptr [rcx+000003FCh]
+	addss xmm1,dword ptr [rdx+04h]
+	movss dword ptr [rdx+04h],xmm1		
+	movss xmm1,dword ptr [rsp+28h]
+	mulss xmm3,dword ptr [rcx+00000400h]
+	addss xmm3,dword ptr [rdx+08h]
+	movaps xmm0,xmm1
+	movss dword ptr [rdx+08h],xmm3		
+	mulss xmm0,dword ptr [rcx+00000404h]
+	addss xmm0,dword ptr [r8]
+	movss dword ptr [r8],xmm0			
+	mulss xmm1,dword ptr [rcx+00000408h]
+	addss xmm1,dword ptr [r8+08h]
+	movss dword ptr [r8+08h],xmm1
+	jmp exit
+nowrites:
+	mulss xmm1,dword ptr [rcx+000003FCh]
+	addss xmm1,dword ptr [rdx+04h]
+	movss xmm1,dword ptr [rsp+28h]
+	mulss xmm3,dword ptr [rcx+00000400h]
+	addss xmm3,dword ptr [rdx+08h]
+	movaps xmm0,xmm1
+	mulss xmm0,dword ptr [rcx+00000404h]
+	addss xmm0,dword ptr [r8]
+	mulss xmm1,dword ptr [rcx+00000408h]
+	addss xmm1,dword ptr [r8+08h]
+exit:
+	jmp qword ptr [_cameraWrite12InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+cameraWrite12Interceptor ENDP
+
+cameraWrite13Interceptor PROC
+;client.dll+2CDB44 - 75 34                 - jne client.dll+2CDB7A
+;client.dll+2CDB46 - F3 0F10 87 101E0000   - movss xmm0,[rdi+00001E10]
+;client.dll+2CDB4E - F3 0F58 03            - addss xmm0,[rbx]
+;client.dll+2CDB52 - F3 0F11 03            - movss [rbx],xmm0					<< INTERCEPT HERE << X
+;client.dll+2CDB56 - F3 0F10 8F 141E0000   - movss xmm1,[rdi+00001E14]
+;client.dll+2CDB5E - F3 0F58 4B 04         - addss xmm1,[rbx+04]
+;client.dll+2CDB63 - F3 0F11 4B 04         - movss [rbx+04],xmm1				<< Y
+;client.dll+2CDB68 - F3 0F10 87 181E0000   - movss xmm0,[rdi+00001E18]
+;client.dll+2CDB70 - F3 0F58 43 08         - addss xmm0,[rbx+08]
+;client.dll+2CDB75 - F3 0F11 43 08         - movss [rbx+08],xmm0				<< Z
+;client.dll+2CDB7A - 48 8B 5C 24 30        - mov rbx,[rsp+30]					<< CONTINUE HERE
+;client.dll+2CDB7F - 48 83 C4 20           - add rsp,20 { 32 }
+;client.dll+2CDB83 - 5F                    - pop rdi
+;client.dll+2CDB84 - C3                    - ret 
+	cmp byte ptr [g_cameraEnabled], 1
+	je exit
+originalCode:
+	movss dword ptr [rbx],xmm0			
+	movss xmm1,dword ptr [rdi+00001E14h]
+	addss xmm1,dword ptr [rbx+04h]
+	movss dword ptr [rbx+04h],xmm1		
+	movss xmm0,dword ptr [rdi+00001E18h]
+	addss xmm0,dword ptr [rbx+08h]
+	movss dword ptr [rbx+08h],xmm0		
+exit:
+	jmp qword ptr [_cameraWrite13InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+cameraWrite13Interceptor ENDP
+
+cameraWrite14Interceptor PROC
+;client.dll+142980 - E8 5BAA4E00           - call client.dll+62D3E0
+;client.dll+142985 - 4C 8B C6              - mov r8,rsi
+;client.dll+142988 - 48 8B D7              - mov rdx,rdi
+;client.dll+14298B - F3 0F10 44 24 3C      - movss xmm0,[rsp+3C]
+;client.dll+142991 - F3 0F10 4C 24 4C      - movss xmm1,[rsp+4C]
+;client.dll+142997 - 48 8B CD              - mov rcx,rbp
+;client.dll+14299A - F3 0F11 07            - movss [rdi],xmm0					<< INTERCEPT HERE << X
+;client.dll+14299E - F3 0F10 44 24 5C      - movss xmm0,[rsp+5C]
+;client.dll+1429A4 - F3 0F11 4F 04         - movss [rdi+04],xmm1				<< Y
+;client.dll+1429A9 - F3 0F11 47 08         - movss [rdi+08],xmm0				<< Z
+;client.dll+1429AE - E8 AD5F0100           - call client.dll+158960				<< CONTINUE HERE
+;client.dll+1429B3 - 4C 8D 9C 24 C0000000  - lea r11,[rsp+000000C0]
+	cmp byte ptr [g_cameraEnabled], 1
+	je exit
+originalCode:
+	movss dword ptr [rdi],xmm0
+	movss xmm0,dword ptr [rsp+5Ch]
+	movss dword ptr [rdi+04h],xmm1
+	movss dword ptr [rdi+08h],xmm0
+exit:
+	jmp qword ptr [_cameraWrite14InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+cameraWrite14Interceptor ENDP
 
 END

@@ -2,8 +2,8 @@ Injectable camera for Titanfall 2
 ============================
 
 Current supported game version: v2.0.11+ (Origin version)  
-Camera version: 1.0.1  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/TF2_101  
+Camera version: 1.0.2  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/TF2_102  
 Credits: Otis_Inf. 
 
 **USE IN SINGLE PLAYER ONLY. NO EXCEPTIONS / EXCUSES**
