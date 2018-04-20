@@ -1,0 +1,47 @@
+DOF enable:
+MassEffectAndromeda.exe+1543B90 - 41 80 78 58 00        - cmp byte ptr [r8+58],00 					<< CHECK DOF Enabled (1== enabled)
+MassEffectAndromeda.exe+1543B95 - 48 8B 42 10           - mov rax,[rdx+10]
+MassEffectAndromeda.exe+1543B99 - 0F57 C0               - xorps xmm0,xmm0
+MassEffectAndromeda.exe+1543B9C - 74 08                 - je MassEffectAndromeda.exe+1543BA6
+MassEffectAndromeda.exe+1543B9E - F3 41 0F10 48 08      - movss xmm1,[r8+08]
+MassEffectAndromeda.exe+1543BA4 - EB 03                 - jmp MassEffectAndromeda.exe+1543BA9
+MassEffectAndromeda.exe+1543BA6 - 0F28 C8               - movaps xmm1,xmm0
+MassEffectAndromeda.exe+1543BA9 - F3 0F10 90 C4000000   - movss xmm2,[rax+000000C4]
+MassEffectAndromeda.exe+1543BB1 - F3 0F10 1D 3BB3B201   - movss xmm3,[MassEffectAndromeda.exe+306EEF4] { [-1.00] }
+MassEffectAndromeda.exe+1543BB9 - 0F2E D3               - ucomiss xmm2,xmm3
+MassEffectAndromeda.exe+1543BBC - 74 03                 - je MassEffectAndromeda.exe+1543BC1
+MassEffectAndromeda.exe+1543BBE - 0F28 CA               - movaps xmm1,xmm2
+MassEffectAndromeda.exe+1543BC1 - 0FB6 88 18020000      - movzx ecx,byte ptr [rax+00000218]
+MassEffectAndromeda.exe+1543BC8 - F3 0F10 15 F0A5B201   - movss xmm2,[MassEffectAndromeda.exe+306E1C0] { [1.00] }
+MassEffectAndromeda.exe+1543BD0 - F3 0F10 2D 109CB201   - movss xmm5,[MassEffectAndromeda.exe+306D7E8] { [0.00] }
+
+MassEffectAndromeda.exe+1696086 - 41 0FB6 84 24 C80A0000  - movzx eax,byte ptr [r12+00000AC8]		<< READ DOF Enable (1==enable)
+MassEffectAndromeda.exe+169608F - 88 44 24 4A           - mov [rsp+4A],al
+MassEffectAndromeda.exe+1696093 - 84 C0                 - test al,al
+MassEffectAndromeda.exe+1696095 - 74 05                 - je MassEffectAndromeda.exe+169609C
+MassEffectAndromeda.exe+1696097 - 83 FA 01              - cmp edx,01 { 1 }
+MassEffectAndromeda.exe+169609A - 74 37                 - je MassEffectAndromeda.exe+16960D3
+MassEffectAndromeda.exe+169609C - 41 83 F8 01           - cmp r8d,01 { 1 }
+
+
+ANSEL enable everywhere: 
+MassEffectAndromeda.exe+10DE861 - FF 90 F8000000        - call qword ptr [rax+000000F8]
+MassEffectAndromeda.exe+10DE867 - 84 C0                 - test al,al
+MassEffectAndromeda.exe+10DE869 - 75 DD                 - jne MassEffectAndromeda.exe+10DE848				<<< NOP
+MassEffectAndromeda.exe+10DE86B - 48 8B 3D D67F1F03     - mov rdi,[MassEffectAndromeda.exe+42D6848]
+MassEffectAndromeda.exe+10DE872 - 48 8B 05 175C3203     - mov rax,[MassEffectAndromeda.exe+4404490]
+
+MassEffectAndromeda.exe+10DE879 - 0F29 B4 24 80000000   - movaps [rsp+00000080],xmm6
+MassEffectAndromeda.exe+10DE881 - 0F57 F6               - xorps xmm6,xmm6
+MassEffectAndromeda.exe+10DE884 - 0F2F B0 DC000000      - comiss xmm6,[rax+000000DC]
+MassEffectAndromeda.exe+10DE88B - 72 56                 - jb MassEffectAndromeda.exe+10DE8E3				<<< NOP
+MassEffectAndromeda.exe+10DE88D - 66 C7 46 04 0101      - mov word ptr [rsi+04],0101
+MassEffectAndromeda.exe+10DE893 - C6 46 06 01           - mov byte ptr [rsi+06],01
+MassEffectAndromeda.exe+10DE897 - 4C 89 35 82821F03     - mov [MassEffectAndromeda.exe+42D6B20],r14
+MassEffectAndromeda.exe+10DE89E - 48 85 FF              - test rdi,rdi
+MassEffectAndromeda.exe+10DE8A1 - 74 47                 - je MassEffectAndromeda.exe+10DE8EA
+
+To find this function, trace from nvcamera64.dll:
+NvCamera64.dll+4D6F2 - je NvCamera64.dll+4D920
+
+this will eventually call into the game to see whether ansel can be enabled. 
