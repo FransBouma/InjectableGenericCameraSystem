@@ -12,7 +12,7 @@ Release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/re
 Credits: Otis_Inf
 
 ### How to use
-Configure the ini file by specifying the game exe and the dll to inject, then run the exe to inject the dll into the exe.
+Configure the ini file by specifying the game exe and the dll to inject, then run the IGCSInjector.exe to inject the camera dll into the game's exe.
 
 Example: 
 To inject the hellblade tools into the hellblade game process at runtime, simply change the IGCSInjector.ini file to:
