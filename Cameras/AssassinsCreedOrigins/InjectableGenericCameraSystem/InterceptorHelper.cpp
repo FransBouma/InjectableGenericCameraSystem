@@ -77,11 +77,11 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE5_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE5_INTERCEPT_KEY, "0F 29 1F 48 8B 43 38 0F 28 80 A0 0B 00 00 0F 29 45 00 48 8B 43 38", 1);
 		aobBlocks[FOV_WRITE1_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE1_INTERCEPT_KEY, "F3 0F 11 B7 64 02 00 00 48 8B CF 89 87 ?? 07 00 00 E8", 1);
 		aobBlocks[FOV_WRITE2_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE2_INTERCEPT_KEY, "F3 44 0F 11 93 64 02 00 00 49 8B D5 89 83 ?? 07 00 00 48 8B CB E8", 1);
-		aobBlocks[FOV_READ_INTERCEPT_KEY] = new AOBBlock(FOV_READ_INTERCEPT_KEY, "F3 41 0F 10 94 24 24 01 00 00 45 0F 57 ?? 41 0F 2F ?? F3 41 0F 10 8E 64 02 00 00", 1);
+		aobBlocks[FOV_READ_INTERCEPT_KEY] = new AOBBlock(FOV_READ_INTERCEPT_KEY, "F3 0F 10 97 24 01 00 00 0F 57 C0 0F 2F D0 F3 41 0F 10 8E 64 02 00 00", 1);
 		aobBlocks[PHOTOMODE_ENABLE_ALWAYS_KEY] = new AOBBlock(PHOTOMODE_ENABLE_ALWAYS_KEY, "74 ?? E8 ?? ?? ?? ?? 80 B8 A9 02 00 00 00 74 ?? B8 01 00 00 00 48 81 C4", 1);
 		aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY] = new AOBBlock(RESOLUTION_SCALE_INTERCEPT_KEY, "41 8B 86 A8 00 00 00 48 8B CD 89 85 ?? 07 00 00", 1);
 		aobBlocks[RESOLUTION_SCALE_MENU_KEY] = new AOBBlock(RESOLUTION_SCALE_MENU_KEY, "F3 0F 5C 05 | ?? ?? ?? ?? 0F 54 05 ?? ?? ?? ?? 0F 2F 05 ?? ?? ?? ?? 0F 96 C0 22 D0 84 D2 0F 94 C0", 1);
-		aobBlocks[TOD_WRITE_INTERCEPT_KEY] = new AOBBlock(TOD_WRITE_INTERCEPT_KEY, "F3 0F 59 C1 F3 0F 58 00 F3 0F 11 00 48 8B 81 40 02 00 00", 1);
+		aobBlocks[TOD_WRITE_INTERCEPT_KEY] = new AOBBlock(TOD_WRITE_INTERCEPT_KEY, "F3 0F 59 C6 F3 41 0F 58 C0 44 0F 28 44 24 20 F3 0F 11 00", 1);
 		aobBlocks[TIMESTOP_READ_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_READ_INTERCEPT_KEY, "44 8B 85 C4 61 00 00 48 8B 95 BC 61 00 00 83 B9 58 14 00 00 00", 1);
 		aobBlocks[HUD_RENDER_INTERCEPT_KEY] = new AOBBlock(HUD_RENDER_INTERCEPT_KEY, "48 8B C4 48 89 58 18 48 89 48 08 55 56 57 41 54 41 55 41 56 41 57 48 8D 68 98", 1);
 		aobBlocks[PAUSE_FUNCTION_LOCATION_KEY] = new AOBBlock(PAUSE_FUNCTION_LOCATION_KEY, "48 89 5C 24 08 57 48 83 EC 20 48 8B F9 0F 31 48 C1 E2 20 48 8D 0D ?? ?? ?? ?? 48 0B C2 48 8B D8 E8 ?? ?? ?? ?? 0F 31 48 C1 E2 20 48 8D 0D ?? ?? ?? ?? 48 0B C2 48 8B D3 4C 8B C0 E8 ?? ?? ?? ?? FF 87 3C 15 00 00", 1);
@@ -117,7 +117,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY], 0x10, &_cameraWrite3InterceptionContinue, &cameraWrite3Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY], 0x10, &_cameraWrite4InterceptionContinue, &cameraWrite4Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE5_INTERCEPT_KEY], 0x12, &_cameraWrite5InterceptionContinue, &cameraWrite5Interceptor);
-		GameImageHooker::setHook(aobBlocks[FOV_READ_INTERCEPT_KEY], 0x1B, &_fovReadInterceptionContinue, &fovReadInterceptor);
+		GameImageHooker::setHook(aobBlocks[FOV_READ_INTERCEPT_KEY], 0x17, &_fovReadInterceptionContinue, &fovReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY], 0x10, &_resolutionScaleReadInterceptionContinue, &resolutionScaleReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[TOD_WRITE_INTERCEPT_KEY], 0x13, &_todWriteInterceptionContinue, &todWriteInterceptor);
 		GameImageHooker::setHook(aobBlocks[TIMESTOP_READ_INTERCEPT_KEY], 0x15, &_timestopReadInterceptionContinue, &timestopReadInterceptor);

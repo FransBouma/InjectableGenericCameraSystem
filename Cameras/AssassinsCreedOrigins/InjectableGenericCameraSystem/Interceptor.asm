@@ -249,6 +249,14 @@ cameraWrite5Interceptor ENDP
 
 
 fovReadInterceptor PROC
+; v1.51
+;ACOrigins.exe+A16B38 - E8 33F5BBFF				 - call ACOrigins.exe+5D6070
+;ACOrigins.exe+A16B3D - F3 0F10 97 24010000		 - movss xmm2,[rdi+00000124]					<< INTERCEPT HERE
+;ACOrigins.exe+A16B45 - 0F57 C0					 - xorps xmm0,xmm0
+;ACOrigins.exe+A16B48 - 0F2F D0					 - comiss xmm2,xmm0
+;ACOrigins.exe+A16B4B - F3 41 0F10 8E 64020000   - movss xmm1,[r14+00000264]					<< FOV READ
+;ACOrigins.exe+A16B54 - F3 0F10 1D 1838AB02		 - movss xmm3,[ACOrigins.exe+34CA374]			<< CONTINUE HERE
+;ACOrigins.exe+A16B5C - 76 39					 - jna ACOrigins.exe+A16B97
 ;v1.10
 ;00000001409FFA7A | 0F 29 85 00 03 00 00             | movaps xmmword ptr ss:[rbp+300],xmm0
 ;00000001409FFA81 | 0F 29 8D F0 02 00 00             | movaps xmmword ptr ss:[rbp+2F0],xmm1
@@ -259,19 +267,12 @@ fovReadInterceptor PROC
 ;00000001409FFA9F | F3 41 0F 10 8E 64 02 00 00       | movss xmm1,dword ptr ds:[r14+264]		<< FOV READ
 ;00000001409FFAA8 | F3 0F 10 05 74 9E A2 02          | movss xmm0,dword ptr ds:[143429924]		<< CONTINUE HERE
 ;00000001409FFAB0 | 76 41                            | jbe acorigins_dump.1409FFAF3        
-; v1.4
-;ACOrigins.exe+A0E27D - F3 41 0F10 94 24 24010000  - movss xmm2,[r12+00000124]					<< INTERCEPT HERE
-;ACOrigins.exe+A0E287 - 45 0F57 D2		           - xorps xmm10,xmm10
-;ACOrigins.exe+A0E28B - 41 0F2F D2				   - comiss xmm2,xmm10
-;ACOrigins.exe+A0E28F - F3 41 0F10 8E 64020000	   - movss xmm1,[r14+00000264]
-;ACOrigins.exe+A0E298 - F3 0F10 05 34C3A702		   - movss xmm0,[ACOrigins.exe+348A5D4]			<< CONTINUE HERE
-;ACOrigins.exe+A0E2A0 - 76 41					   - jna ACOrigins.exe+A0E2E3
 	mov [g_fovStructAddress], r14
 originalCode:
-	movss xmm2,dword ptr [r12+124h]
-	xorps xmm10,xmm10 
-	comiss xmm2,xmm10                
-	movss xmm1,dword ptr [r14+264h]
+	movss xmm2, dword ptr [rdi+00000124h]
+	xorps xmm0,xmm0
+	comiss xmm2,xmm0
+	movss xmm1, dword ptr [r14+00000264h]
 exit:
 	jmp qword ptr [_fovReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 fovReadInterceptor ENDP
@@ -300,6 +301,18 @@ resolutionScaleReadInterceptor ENDP
 
 
 todWriteInterceptor PROC
+; // v1.51
+;ACOrigins.exe+13AAEB0 - F3 0F5E C7            - divss xmm0,xmm7
+;ACOrigins.exe+13AAEB4 - 0F28 7C 24 30         - movaps xmm7,[rsp+30]
+;ACOrigins.exe+13AAEB9 - F3 0F59 C6            - mulss xmm0,xmm6					<< INTERCEPT HERE
+;ACOrigins.exe+13AAEBD - F3 41 0F58 C0         - addss xmm0,xmm8
+;ACOrigins.exe+13AAEC2 - 44 0F28 44 24 20      - movaps xmm8,[rsp+20]
+;ACOrigins.exe+13AAEC8 - F3 0F11 00            - movss [rax],xmm0					<< ToD Write
+;ACOrigins.exe+13AAECC - 48 8B 83 40020000     - mov rax,[rbx+00000240]				<< CONTINUE HERE
+;ACOrigins.exe+13AAED3 - F3 0F10 08            - movss xmm1,[rax]
+;ACOrigins.exe+13AAED7 - 0F2F CA               - comiss xmm1,xmm2
+;ACOrigins.exe+13AAEDA - 72 13                 - jb ACOrigins.exe+13AAEEF
+;ACOrigins.exe+13AAEDC - F3 0F5C CA            - subss xmm1,xmm2
 ; // v1.2
 ;ACOrigins.exe+138FB44 - F3 0F59 0D 3C481B02   - mulss xmm1,[ACOrigins.exe+3544388] { [1440.00] }
 ;ACOrigins.exe+138FB4C - F3 0F10 15 34A20E02   - movss xmm2,[ACOrigins.exe+3479D88] { [24.00] }
@@ -312,15 +325,15 @@ todWriteInterceptor PROC
 ;ACOrigins.exe+138FB6E - 72 13                 - jb ACOrigins.exe+138FB83
 ;ACOrigins.exe+138FB70 - F3 0F5C CA            - subss xmm1,xmm2
 ;ACOrigins.exe+138FB74 - 0F57 C0               - xorps xmm0,xmm0
-	mulss xmm0, xmm1
-	addss xmm0, dword ptr [rax]
+	mulss xmm0,xmm6		
+	addss xmm0,xmm8
+	movaps xmm8,[rsp+20h]
 	mov [g_todStructAddress], rax
 	cmp byte ptr [g_cameraEnabled], 1
 	je exit
 originalCode:
 	movss dword ptr [rax], xmm0
 exit:
-	mov rax,[rcx+00000240h]
 	jmp qword ptr [_todWriteInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 todWriteInterceptor ENDP
 
