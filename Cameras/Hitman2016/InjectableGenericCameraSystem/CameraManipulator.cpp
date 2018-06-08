@@ -86,7 +86,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 	}
 
 	// newValue: 1 == time should be frozen, 0 == normal gameplay
-	void setTimeStopValue(byte newValue)
+	void setTimeStopValue(BYTE newValue)
 	{
 		// set flag so camera works during menu driven timestop
 		_timeHasBeenStopped = (newValue == 1);

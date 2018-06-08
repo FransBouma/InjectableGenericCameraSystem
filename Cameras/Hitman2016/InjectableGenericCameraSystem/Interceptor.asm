@@ -45,8 +45,8 @@ PUBLIC fovWriteInterceptor
 ; values in asm to communicate with the system
 EXTERN g_cameraStructAddress: qword
 EXTERN g_gamespeedStructAddress: qword
-EXTERN g_cameraEnabled: byte
-EXTERN g_aimFrozen: byte
+EXTERN g_cameraEnabled: BYTE
+EXTERN g_aimFrozen: BYTE
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -77,10 +77,10 @@ cameraAddressInterceptor PROC
 ;hitman.exe+43B9E40 - F3 0F11 8B 94000000   - movss [rbx+00000094],xmm1
 ;
 	; Game jmps to this location due to the hook set in C function SetCameraStructInterceptorHook
-	cmp byte ptr [rbx+038h], 0 							; check if this is the camera in rbx. For this game: Check with a 0-check. Could also check +20 or +24 for 0 if the above fails
+	cmp BYTE ptr [rbx+038h], 0 							; check if this is the camera in rbx. For this game: Check with a 0-check. Could also check +20 or +24 for 0 if the above fails
 	jne originalCode
 	mov [g_cameraStructAddress], rbx					; intercept address of camera struct
-	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
+	cmp BYTE ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
 	movss dword ptr [rbx+090h], xmm0					; original statement
@@ -120,7 +120,7 @@ cameraWriteInterceptor1 PROC
 	; first check if this is really a call for the camera. Other logic will use this code too. Check rbx with our known cameraStruct address to be sure
 	cmp qword ptr rbx, [g_cameraStructAddress]
 	jne originalCode
-	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
+	cmp BYTE ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
 	movaps xmm0, xmmword ptr [rax]						; original statement
@@ -140,7 +140,7 @@ cameraWriteInterceptor2 PROC
 	; first check if this is really a call for the camera. Other logic will use this code too. Check rbx with our known cameraStruct address to be sure
 	cmp qword ptr rbx, [g_cameraStructAddress]
 	jne originalCode
-	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
+	cmp BYTE ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
 	movss dword ptr [rbx+98h],xmm0						; original statement
@@ -164,7 +164,7 @@ cameraWriteInterceptor3 PROC
 	; first check if this is really a call for the camera. Other logic will use this code too. Check rbx with our known cameraStruct address to be sure
 	cmp qword ptr rbx, [g_cameraStructAddress]
 	jne originalCode
-	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
+	cmp BYTE ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	je exit												; our own camera is enabled, just skip the writes
 originalCode:
 	movups xmmword ptr [rbx+80h],xmm0  					; original statement
@@ -183,7 +183,7 @@ cameraReadInterceptor1 PROC
 ; v1.13.2
 ;0000000140BDE4C0 | 40 53                    | push rbx										<< INTERCEPT HERE
 ;0000000140BDE4C2 | 48 81 EC 80 00 00 00     | sub rsp,80                            
-;0000000140BDE4C9 | F6 81 AE 00 00 00 02     | test byte ptr ds:[rcx+AE],2           
+;0000000140BDE4C9 | F6 81 AE 00 00 00 02     | test BYTE ptr ds:[rcx+AE],2           
 ;0000000140BDE4D0 | 48 8B D9                 | mov rbx,rcx									<< CONTINUE
 ;0000000140BDE4D3 | 0F 84 53 02 00 00        | je hitman_dump.140BDE72C              
 ;0000000140BDE4D9 | 48 8B 41 18              | mov rax,qword ptr ds:[rcx+18]         
@@ -194,9 +194,9 @@ cameraReadInterceptor1 PROC
 ;0000000140BDE4F8 | 0F C6 F8 04              | shufps xmm7,xmm0,4                    
 ;0000000140BDE4FC | 44 0F 10 81 80 00 00 00  | movups xmm8,xmmword ptr ds:[rcx+80]   
 ;0000000140BDE504 | 48 85 C0                 | test rax,rax                          
-	cmp byte ptr [g_cameraEnabled], 1					
+	cmp BYTE ptr [g_cameraEnabled], 1					
 	jne originalCode
-	cmp byte ptr [g_aimFrozen], 1
+	cmp BYTE ptr [g_aimFrozen], 1
 	jne originalCode
 	; aim is frozen and camera is enabled. We now issue a 'ret', which means it will return to the caller of the original code as we jmp-ed to this location
 	; from there. This means we won't continue in the original code. 
@@ -204,7 +204,7 @@ cameraReadInterceptor1 PROC
 originalCode:
 	push rbx
 	sub rsp, 00000080h
-	test byte ptr [rcx+000000AEh],02h
+	test BYTE ptr [rcx+000000AEh],02h
 exit:
 	jmp qword ptr [_cameraReadInterceptionContinue1]	; jmp back into the original game code which is the location after the original statements above.
 cameraReadInterceptor1 ENDP
@@ -222,7 +222,7 @@ fovWriteInterceptor PROC
 ; hitman.exe+3987B8 - 48 8B CB              - mov rcx,rbx
 ; hitman.exe+3987BB - 48 83 C4 20           - add rsp,20 { 32 }
 ; hitman.exe+3987BF - 5B                    - pop rbx								<< CONTINUE HERE
-	cmp byte ptr [g_cameraEnabled], 1					
+	cmp BYTE ptr [g_cameraEnabled], 1					
 	je exit
 originalCode:
 	movss dword ptr [rbx+00000700h],xmm0

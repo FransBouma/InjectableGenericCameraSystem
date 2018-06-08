@@ -36,7 +36,7 @@ namespace IGCS::Input
 	using namespace std;
 
 	// I know, multi-threaded programming, but these two values are scalars, and read/write of multiple threads (which is the case) doesn't really 
-	// matter: wrapping this in mutexes is overkill: x86 processors can write up to 7 bytes in an atomic instruction, more than enough for a long, 
+	// matter: wrapping this in mutexes is overkill: x86 processors can write up to 7 BYTEs in an atomic instruction, more than enough for a long, 
 	// and the values are used in a system which is updated rapidly, so if a write overlaps a read, the next frame will correct that. The 'volatile'
 	// keyword should be enough to mark them for the optimizer not to mess with them. 
 	volatile static long _deltaMouseX = 0;

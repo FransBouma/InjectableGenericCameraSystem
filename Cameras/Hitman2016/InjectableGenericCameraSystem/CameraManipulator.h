@@ -41,6 +41,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void changeFoV(float amount);
 	void changeSupersampling(LPBYTE hostImageAddress, float amount);
 	XMFLOAT3 getCurrentCameraCoords();
-	void setTimeStopValue(byte newValue);
+	void setTimeStopValue(BYTE newValue);
 	void modifyGameSpeed(bool decrease);
 }

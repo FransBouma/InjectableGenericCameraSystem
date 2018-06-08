@@ -30,8 +30,8 @@
 #include "Console.h"
 #include "Gamepad.h"
 
-extern "C" byte g_cameraEnabled;
-extern "C" byte g_aimFrozen;
+extern "C" BYTE g_cameraEnabled;
+extern "C" BYTE g_aimFrozen;
 
 namespace IGCS
 {

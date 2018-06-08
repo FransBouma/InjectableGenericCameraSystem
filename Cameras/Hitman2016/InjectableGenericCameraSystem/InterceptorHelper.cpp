@@ -69,7 +69,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE_INTERCEPT1_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT1_KEY, "0F 28 00 0F 11 83 80 00 00 00 F3 0F 10 44 24 50 F3 0F 11 83 90 00 00 00", 3);
 		aobBlocks[CAMERA_WRITE_INTERCEPT2_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT2_KEY, "F3 0F 11 83 98 00 00 00 F3 0F 11 8B 94 00 00 00 EB", 3);
 		aobBlocks[CAMERA_WRITE_INTERCEPT3_KEY] = new AOBBlock(CAMERA_WRITE_INTERCEPT3_KEY, "0F 11 83 80 00 00 00 0F 28 4F 30 0F 28 C1 F3 0F 11 8B 90 00 00 00 0F C6 C1 55 0F C6 C9 AA", 3);
-		aobBlocks[CAMERA_READ_INTERCEPT_KEY] = new AOBBlock(CAMERA_READ_INTERCEPT_KEY, "53 48 81 EC ?? 00 00 00 F6 81 ?? 00 00 00 ??", 1);
+		aobBlocks[CAMERA_READ_INTERCEPT_KEY] = new AOBBlock(CAMERA_READ_INTERCEPT_KEY, "40 53 48 81 EC ?? 00 00 00 F6 81 ?? 00 00 00 ??", 1);
 		aobBlocks[GAMESPEED_ADDRESS_INTERCEPT_KEY] = new AOBBlock(GAMESPEED_ADDRESS_INTERCEPT_KEY, "48 89 43 28 48 8B 4B 18 48 89 4B 20 48 01 43 18 EB", 1);
 		aobBlocks[FOV_WRITE_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE_INTERCEPT_KEY, "F3 0F 11 83 00 07 00 00 48 8B CB 48 83 C4 20", 1);
 		aobBlocks[SUPERSAMPLING_ADDRESS_KEY] = new AOBBlock(SUPERSAMPLING_ADDRESS_KEY, "8B 0D ?? ?? ?? ?? F3 0F 10 05 | ?? ?? ?? ?? 85 C9", 1);
@@ -103,7 +103,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE_INTERCEPT1_KEY], 0x10, &_cameraWriteInterceptionContinue1, &cameraWriteInterceptor1);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE_INTERCEPT2_KEY], 0x10, &_cameraWriteInterceptionContinue2, &cameraWriteInterceptor2);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE_INTERCEPT3_KEY], 0x2E, &_cameraWriteInterceptionContinue3, &cameraWriteInterceptor3);
-		GameImageHooker::setHook(aobBlocks[CAMERA_READ_INTERCEPT_KEY], 0xF, &_cameraReadInterceptionContinue1, &cameraReadInterceptor1);
+		GameImageHooker::setHook(aobBlocks[CAMERA_READ_INTERCEPT_KEY], 0x10, &_cameraReadInterceptionContinue1, &cameraReadInterceptor1);
 		GameImageHooker::setHook(aobBlocks[FOV_WRITE_INTERCEPT_KEY], 0xF, &_fovWriteInterceptionContinue, &fovWriteInterceptor);
 		CameraManipulator::setResolutionScaleMenuValueAddress(Utils::calculateAbsoluteAddress(aobBlocks[SUPERSAMPLING_ADDRESS_KEY], 4));	//hitman.exe+E609E3 - F3 0F10 05 9D6C0C02   - movss xmm0,[hitman.exe+2F27688] << supersampling read here
 	}

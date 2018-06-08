@@ -70,5 +70,5 @@ namespace IGCS
 	#define IGCS_BUTTON_FASTER			Gamepad::button_t::A
 	#define IGCS_BUTTON_SLOWER			Gamepad::button_t::X
 
-	static const byte jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]
+	static const BYTE jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction BYTEs for jmp qword ptr [0000]
 }

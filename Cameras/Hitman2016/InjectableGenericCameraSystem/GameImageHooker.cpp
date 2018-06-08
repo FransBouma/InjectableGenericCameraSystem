@@ -43,8 +43,8 @@ namespace IGCS::GameImageHooker
 		*interceptionContinue = baseAddress + continueOffset;
 #ifdef _WIN64
 		// x64
-		byte instruction[14];	// 6 bytes of the jmp qword ptr [0] and 8 bytes for the real address which is stored right after the 6 bytes of jmp qword ptr [0] bytes 
-								// write bytes of jmp qword ptr [address], which is jmp qword ptr 0 offset.
+		BYTE instruction[14];	// 6 BYTEs of the jmp qword ptr [0] and 8 BYTEs for the real address which is stored right after the 6 BYTEs of jmp qword ptr [0] BYTEs 
+								// write BYTEs of jmp qword ptr [address], which is jmp qword ptr 0 offset.
 		memcpy(instruction, jmpFarInstructionBytes, sizeof(jmpFarInstructionBytes));
 		// now write the address. Do this with a recast of the pointer to an __int64 pointer to avoid endianmess.
 		__int64* targetAddressLocationInInstruction = (__int64*)(&instruction[6]);
@@ -52,13 +52,13 @@ namespace IGCS::GameImageHooker
 #else	
 		// x86
 		// we will write a jmp <relative address> as x86 doesn't have a jmp <absolute address>. 
-		// calculate this relative address by using Destination - Current, which is: &asmFunction - (<base> + startOffset + 5), as jmp <relative> is 5 bytes.
-		byte instruction[5];
+		// calculate this relative address by using Destination - Current, which is: &asmFunction - (<base> + startOffset + 5), as jmp <relative> is 5 BYTEs.
+		BYTE instruction[5];
 		instruction[0] = 0xE9;	// JMP relative
 		DWORD targetAddress = (DWORD)asmFunction - (((DWORD)startOfHookAddress) + 5);
 		DWORD* targetAddressLocationInInstruction = (DWORD*)&instruction[1];
 #endif
-		targetAddressLocationInInstruction[0] = targetAddress;	// write bytes this way to avoid endianess
+		targetAddressLocationInInstruction[0] = targetAddress;	// write BYTEs this way to avoid endianess
 		SIZE_T noBytesWritten;
 		WriteProcessMemory(OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_WRITE, FALSE, GetCurrentProcessId()), startOfHookAddress, instruction, sizeof(instruction), &noBytesWritten);
 	}
@@ -67,13 +67,13 @@ namespace IGCS::GameImageHooker
 	// Writes NOP opcodes to a range of memory.
 	void nopRange(AOBBlock* hookData, int length)
 	{
-		byte* nopBuffer;
+		BYTE* nopBuffer;
 		if (length < 0 || length>1024)
 		{
 			// no can/wont do 
 			return;
 		}
-		nopBuffer = (byte*)malloc(length * sizeof(byte));
+		nopBuffer = (BYTE*)malloc(length * sizeof(BYTE));
 		for (int i = 0; i < length; i++)
 		{
 			nopBuffer[i] = 0x90;

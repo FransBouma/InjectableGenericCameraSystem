@@ -109,11 +109,11 @@ namespace IGCS::Utils
 	}
 
 
-	bool DataCompare(LPBYTE image, LPBYTE bytePattern, char* patternMask)
+	bool DataCompare(LPBYTE image, LPBYTE BYTEPattern, char* patternMask)
 	{
-		for (; *patternMask; ++patternMask, ++image, ++bytePattern)
+		for (; *patternMask; ++patternMask, ++image, ++BYTEPattern)
 		{
-			if (*patternMask == 'x' && *image != *bytePattern)
+			if (*patternMask == 'x' && *image != *BYTEPattern)
 			{
 				return false;
 			}
@@ -124,7 +124,7 @@ namespace IGCS::Utils
 
 	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, AOBBlock* const toScanFor)
 	{
-		register BYTE firstByte = *(toScanFor->bytePattern());
+		register BYTE firstByte = *(toScanFor->BYTEPattern());
 		__int64 length = (__int64)imageAddress + imageSize - toScanFor->patternSize();
 
 		LPBYTE toReturn = nullptr;
@@ -139,7 +139,7 @@ namespace IGCS::Utils
 
 				if ((x & 0xFF) == firstByte)
 				{
-					if (DataCompare(reinterpret_cast<BYTE*>(i), toScanFor->bytePattern(), toScanFor->patternMask()))
+					if (DataCompare(reinterpret_cast<BYTE*>(i), toScanFor->BYTEPattern(), toScanFor->patternMask()))
 					{
 						toReturn = reinterpret_cast<BYTE*>(i);
 						break;
@@ -147,7 +147,7 @@ namespace IGCS::Utils
 				}
 				if ((x & 0xFF00) >> 8 == firstByte)
 				{
-					if (DataCompare(reinterpret_cast<BYTE*>(i + 1), toScanFor->bytePattern(), toScanFor->patternMask()))
+					if (DataCompare(reinterpret_cast<BYTE*>(i + 1), toScanFor->BYTEPattern(), toScanFor->patternMask()))
 					{
 						toReturn = reinterpret_cast<BYTE*>(i + 1);
 						break;
@@ -155,7 +155,7 @@ namespace IGCS::Utils
 				}
 				if ((x & 0xFF0000) >> 16 == firstByte)
 				{
-					if (DataCompare(reinterpret_cast<BYTE*>(i + 2), toScanFor->bytePattern(), toScanFor->patternMask()))
+					if (DataCompare(reinterpret_cast<BYTE*>(i + 2), toScanFor->BYTEPattern(), toScanFor->patternMask()))
 					{
 						toReturn = reinterpret_cast<BYTE*>(i + 2);
 						break;
@@ -163,7 +163,7 @@ namespace IGCS::Utils
 				}
 				if ((x & 0xFF000000) >> 24 == firstByte)
 				{
-					if (DataCompare(reinterpret_cast<BYTE*>(i + 3), toScanFor->bytePattern(), toScanFor->patternMask()))
+					if (DataCompare(reinterpret_cast<BYTE*>(i + 3), toScanFor->BYTEPattern(), toScanFor->patternMask()))
 					{
 						toReturn = reinterpret_cast<BYTE*>(i + 3);
 						break;
@@ -184,7 +184,7 @@ namespace IGCS::Utils
 
 	// locationData is the AOB block with the address of the rip relative value to read for the calculation.
 	// nextOpCodeOffset is used to calculate the address of the next instruction as that's the address the rip relative value is relative off. In general
-	// this is 4 (the size of the int32 for the rip relative value), but sometimes the rip relative value is inside an instruction following one or more bytes before the 
+	// this is 4 (the size of the int32 for the rip relative value), but sometimes the rip relative value is inside an instruction following one or more BYTEs before the 
 	// next instruction starts.
 	LPBYTE calculateAbsoluteAddress(AOBBlock* locationData, int nextOpCodeOffset)
 	{

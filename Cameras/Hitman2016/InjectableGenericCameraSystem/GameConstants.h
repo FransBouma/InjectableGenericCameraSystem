@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Hitman 2016 v1.13.2"
-	#define CAMERA_VERSION								"1.0.10"
+	#define CAMERA_VERSION								"1.0.11"
 	#define CAMERA_CREDITS								"Otis_Inf, Jim2Point0. Special thanks to: One3rd"
 	#define GAME_WINDOW_TITLE							"HITMAN"
 	#define INITIAL_PITCH_RADIANS						(-90.0f * XM_PI) / 180.f	// World has Z up and Y out of the screen, so rotate around X (pitch) -90 degrees.

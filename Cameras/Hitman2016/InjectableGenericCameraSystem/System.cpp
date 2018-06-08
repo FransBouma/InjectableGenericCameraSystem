@@ -134,7 +134,7 @@ namespace IGCS
 				CameraManipulator::cacheOriginalCameraValues();
 				_camera.resetAngles();
 			}
-			g_cameraEnabled = g_cameraEnabled == 0 ? (byte)1 : (byte)0;
+			g_cameraEnabled = g_cameraEnabled == 0 ? (BYTE)1 : (BYTE)0;
 			displayCameraState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
@@ -188,7 +188,7 @@ namespace IGCS
 		}
 		if (Input::keyDown(IGCS_KEY_FREEZE_47))
 		{
-			toggleFreeze47AimState(g_aimFrozen ? (byte)0 : (byte)1);
+			toggleFreeze47AimState(g_aimFrozen ? (BYTE)0 : (BYTE)1);
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
 
@@ -350,7 +350,7 @@ namespace IGCS
 	}
 
 
-	void System::toggleFreeze47AimState(byte newValue)
+	void System::toggleFreeze47AimState(BYTE newValue)
 	{
 		if (g_aimFrozen == newValue)
 		{
@@ -376,7 +376,7 @@ namespace IGCS
 
 	void System::toggleTimestopState()
 	{
-		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
+		_timeStopped = _timeStopped == 0 ? (BYTE)1 : (BYTE)0;
 		Console::WriteLine(_timeStopped ? "Game paused" : "Game unpaused");
 		CameraManipulator::setTimeStopValue(_timeStopped);
 	}

@@ -32,9 +32,9 @@
 
 namespace IGCS
 {
-	AOBBlock::AOBBlock(string blockName, string bytePatternAsString, int occurrence)
-									: _blockName{ blockName }, _bytePatternAsString{ bytePatternAsString }, _customOffset{ 0 }, _occurrence{ occurrence },
-									  _bytePattern{ nullptr }, _patternMask{ nullptr }, _locationInImage{ nullptr }
+	AOBBlock::AOBBlock(string blockName, string BYTEPatternAsString, int occurrence)
+									: _blockName{ blockName }, _BYTEPatternAsString{ BYTEPatternAsString }, _customOffset{ 0 }, _occurrence{ occurrence },
+									  _BYTEPattern{ nullptr }, _patternMask{ nullptr }, _locationInImage{ nullptr }
 	{
 	}
 
@@ -46,7 +46,7 @@ namespace IGCS
 
 	bool AOBBlock::scan(LPBYTE imageAddress, DWORD imageSize)
 	{
-		createAOBPatternFromStringPattern(_bytePatternAsString);
+		createAOBPatternFromStringPattern(_BYTEPatternAsString);
 		LPBYTE aobPatternLocation = Utils::findAOBPattern(imageAddress, imageSize, this);
 		if (nullptr == aobPatternLocation)
 		{
@@ -64,17 +64,17 @@ namespace IGCS
 	}
 	
 
-	// Creates an aob_pattern struct which is usable with an aob scan. The pattern given is in the form of "aa bb ??" where '??' is a byte
-	// which has to be skipped in the comparison, and 'aa' and 'bb' are hexadecimal bytes which have to have that value at that position.
-	// If a '|' is specified in the pattern, the position of the byte following it is the start offset returned by the aob scanner, instead of
-	// the position of the first byte of the pattern. 
+	// Creates an aob_pattern struct which is usable with an aob scan. The pattern given is in the form of "aa bb ??" where '??' is a BYTE
+	// which has to be skipped in the comparison, and 'aa' and 'bb' are hexadecimal BYTEs which have to have that value at that position.
+	// If a '|' is specified in the pattern, the position of the BYTE following it is the start offset returned by the aob scanner, instead of
+	// the position of the first BYTE of the pattern. 
 	void AOBBlock::createAOBPatternFromStringPattern(string pattern)
 	{
 		int index = 0;
 		char* pChar = &pattern[0];
 
 		_patternSize = pattern.size();
-		_bytePattern = (LPBYTE)calloc(0x1, _patternSize);
+		_BYTEPattern = (LPBYTE)calloc(0x1, _patternSize);
 		_patternMask = (char*)calloc(0x1, _patternSize);
 		_customOffset = 0;
 
@@ -101,7 +101,7 @@ namespace IGCS
 			}
 
 			_patternMask[index] = 'x';
-			_bytePattern[index++] = (Utils::CharToByte(pChar[0]) << 4) + Utils::CharToByte(pChar[1]);
+			_BYTEPattern[index++] = (Utils::CharToByte(pChar[0]) << 4) + Utils::CharToByte(pChar[1]);
 			pChar += 2;
 		}
 	}
