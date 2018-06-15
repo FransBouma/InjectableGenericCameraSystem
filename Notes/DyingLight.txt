@@ -1,0 +1,179 @@
+Dying Light
+=====================
+
+Timestop:
+engine_x64_rwdi.dll+28FFC0 - 48 8B 41 08           - mov rax,[rcx+08]
+engine_x64_rwdi.dll+28FFC4 - 48 05 280F0000        - add rax,00000F28 { 3880 }
+engine_x64_rwdi.dll+28FFCA - 80 78 30 00           - cmp byte ptr [rax+30],00						<< Read pause byte. 
+engine_x64_rwdi.dll+28FFCE - 74 09                 - je engine_x64_rwdi.dll+28FFD9
+engine_x64_rwdi.dll+28FFD0 - 80 78 48 00           - cmp byte ptr [rax+48],00						<< Read second pause byte. Keep byte at 0 for pause.
+engine_x64_rwdi.dll+28FFD4 - 75 03                 - jne engine_x64_rwdi.dll+28FFD9
+engine_x64_rwdi.dll+28FFD6 - B0 01                 - mov al,01 { 1 }
+engine_x64_rwdi.dll+28FFD8 - C3                    - ret 
+engine_x64_rwdi.dll+28FFD9 - 32 C0                 - xor al,al
+engine_x64_rwdi.dll+28FFDB - C3                    - ret 
+
+Gamespeed: (actors etc. particles, wind, keep normal speed)
+engine_x64_rwdi.dll+28FFE0 - 48 8B 41 08           - mov rax,[rcx+08]
+engine_x64_rwdi.dll+28FFE4 - F3 0F11 88 500F0000   - movss [rax+00000F50],xmm1						<< Write game speed (1.0f is normal speed, 0.0f is frozen). 
+engine_x64_rwdi.dll+28FFEC - C3                    - ret 
+
+GetViewMatrix (for camera address)
+engine_x64_rwdi.dll+121E90 - 48 8B 41 08           - mov rax,[rcx+08]								<< Get pointer to matrix struct. 
+engine_x64_rwdi.dll+121E94 - 48 85 C0              - test rax,rax
+engine_x64_rwdi.dll+121E97 - 74 05                 - je engine_x64_rwdi.dll+121E9E
+engine_x64_rwdi.dll+121E99 - 48 83 C0 10           - add rax,10										<< Calculate base address from original pointer.
+engine_x64_rwdi.dll+121E9D - C3                    - ret 
+engine_x64_rwdi.dll+121E9E - 48 8D 05 0B248E00     - lea rax,[engine_x64_rwdi.dll+A042B0]
+engine_x64_rwdi.dll+121EA5 - C3                    - ret 
+engine_x64_rwdi.dll+121EA6 - CC                    - int 3 
+
+GetFoV
+engine_x64_rwdi.dll+121A00 - 48 8B 41 08           - mov rax,[rcx+08]
+engine_x64_rwdi.dll+121A04 - F3 0F10 80 D4020000   - movss xmm0,[rax+000002D4]						<< Get FOV
+engine_x64_rwdi.dll+121A0C - F3 0F59 05 606B7900   - mulss xmm0,[engine_x64_rwdi.dll+8B8574]
+engine_x64_rwdi.dll+121A14 - F3 0F59 05 946B7900   - mulss xmm0,[engine_x64_rwdi.dll+8B85B0]
+engine_x64_rwdi.dll+121A1C - C3                    - ret 
+
+FOV Write
+engine_x64_rwdi.dll+11F573 - F3 0F11 B3 D4020000   - movss [rbx+000002D4],xmm6						<< WRITE FOV
+engine_x64_rwdi.dll+11F57B - F3 0F59 35 B1A26C00   - mulss xmm6,[engine_x64_rwdi.dll+7E9834]
+engine_x64_rwdi.dll+11F583 - 0F28 C6               - movaps xmm0,xmm6
+engine_x64_rwdi.dll+11F586 - E8 DB606900           - call engine_x64_rwdi.dll+7B5666
+engine_x64_rwdi.dll+11F58B - 48 8B 05 76A69000     - mov rax,[engine_x64_rwdi.dll+A29C08]
+engine_x64_rwdi.dll+11F592 - F3 0F59 C7            - mulss xmm0,xmm7
+
+Generic matrix write code:. Test if RCX points to our camera struct. If so, skip, otherwise proceed.
+engine_x64_rwdi.dll+676EF0 - 48 8B C4              - mov rax,rsp
+engine_x64_rwdi.dll+676EF3 - 48 83 EC 58           - sub rsp,58 { 88 }
+engine_x64_rwdi.dll+676EF7 - F3 0F10 42 24         - movss xmm0,[rdx+24]
+engine_x64_rwdi.dll+676EFC - F3 0F10 6A 14         - movss xmm5,[rdx+14]
+engine_x64_rwdi.dll+676F01 - 0F29 70 E8            - movaps [rax-18],xmm6
+engine_x64_rwdi.dll+676F05 - 0F29 78 D8            - movaps [rax-28],xmm7
+engine_x64_rwdi.dll+676F09 - 44 0F29 40 C8         - movaps [rax-38],xmm8
+engine_x64_rwdi.dll+676F0E - 44 0F29 48 B8         - movaps [rax-48],xmm9
+engine_x64_rwdi.dll+676F13 - F3 0F59 42 18         - mulss xmm0,[rdx+18]
+engine_x64_rwdi.dll+676F18 - F3 0F59 6A 28         - mulss xmm5,[rdx+28]
+engine_x64_rwdi.dll+676F1D - F3 0F5C E8            - subss xmm5,xmm0
+engine_x64_rwdi.dll+676F21 - F3 0F11 29            - movss [rcx],xmm5
+engine_x64_rwdi.dll+676F25 - F3 0F10 62 20         - movss xmm4,[rdx+20]
+engine_x64_rwdi.dll+676F2A - F3 0F10 42 28         - movss xmm0,[rdx+28]
+engine_x64_rwdi.dll+676F2F - 44 0F29 14 24         - movaps [rsp],xmm10
+engine_x64_rwdi.dll+676F34 - F3 0F59 42 10         - mulss xmm0,[rdx+10]
+engine_x64_rwdi.dll+676F39 - F3 0F59 62 18         - mulss xmm4,[rdx+18]
+engine_x64_rwdi.dll+676F3E - F3 0F5C E0            - subss xmm4,xmm0
+engine_x64_rwdi.dll+676F42 - F3 0F11 61 10         - movss [rcx+10],xmm4
+engine_x64_rwdi.dll+676F47 - F3 0F10 5A 24         - movss xmm3,[rdx+24]
+engine_x64_rwdi.dll+676F4C - F3 0F10 42 14         - movss xmm0,[rdx+14]
+engine_x64_rwdi.dll+676F51 - F3 0F59 42 20         - mulss xmm0,[rdx+20]
+engine_x64_rwdi.dll+676F56 - F3 0F59 5A 10         - mulss xmm3,[rdx+10]
+engine_x64_rwdi.dll+676F5B - F3 0F5C D8            - subss xmm3,xmm0
+engine_x64_rwdi.dll+676F5F - 0F28 C4               - movaps xmm0,xmm4
+engine_x64_rwdi.dll+676F62 - F3 0F11 59 20         - movss [rcx+20],xmm3
+engine_x64_rwdi.dll+676F67 - F3 0F10 12            - movss xmm2,[rdx]
+engine_x64_rwdi.dll+676F6B - F3 0F59 42 04         - mulss xmm0,[rdx+04]
+engine_x64_rwdi.dll+676F70 - 0F28 CB               - movaps xmm1,xmm3
+engine_x64_rwdi.dll+676F73 - F3 0F59 4A 08         - mulss xmm1,[rdx+08]
+engine_x64_rwdi.dll+676F78 - F3 0F59 D5            - mulss xmm2,xmm5
+engine_x64_rwdi.dll+676F7C - F3 0F58 D0            - addss xmm2,xmm0
+engine_x64_rwdi.dll+676F80 - F3 0F58 D1            - addss xmm2,xmm1
+engine_x64_rwdi.dll+676F84 - F3 0F10 0D 702D1700   - movss xmm1,[engine_x64_rwdi.dll+7E9CFC] { [1.00] }
+engine_x64_rwdi.dll+676F8C - F3 0F5E CA            - divss xmm1,xmm2
+engine_x64_rwdi.dll+676F90 - 44 0F28 C1            - movaps xmm8,xmm1
+engine_x64_rwdi.dll+676F94 - 44 0F28 D1            - movaps xmm10,xmm1
+engine_x64_rwdi.dll+676F98 - 44 0F28 C9            - movaps xmm9,xmm1
+engine_x64_rwdi.dll+676F9C - F3 44 0F59 C5         - mulss xmm8,xmm5
+engine_x64_rwdi.dll+676FA1 - F3 44 0F59 CB         - mulss xmm9,xmm3
+engine_x64_rwdi.dll+676FA6 - F3 44 0F59 D4         - mulss xmm10,xmm4
+engine_x64_rwdi.dll+676FAB - F3 44 0F11 01         - movss [rcx],xmm8
+engine_x64_rwdi.dll+676FB0 - F3 44 0F11 51 10      - movss [rcx+10],xmm10
+engine_x64_rwdi.dll+676FB6 - F3 44 0F11 49 20      - movss [rcx+20],xmm9
+engine_x64_rwdi.dll+676FBC - F3 0F10 6A 24         - movss xmm5,[rdx+24]
+engine_x64_rwdi.dll+676FC1 - F3 0F10 42 28         - movss xmm0,[rdx+28]
+engine_x64_rwdi.dll+676FC6 - F3 0F59 42 04         - mulss xmm0,[rdx+04]
+engine_x64_rwdi.dll+676FCB - F3 0F59 6A 08         - mulss xmm5,[rdx+08]
+engine_x64_rwdi.dll+676FD0 - F3 0F5C E8            - subss xmm5,xmm0
+engine_x64_rwdi.dll+676FD4 - F3 0F59 E9            - mulss xmm5,xmm1
+engine_x64_rwdi.dll+676FD8 - F3 0F11 69 04         - movss [rcx+04],xmm5
+engine_x64_rwdi.dll+676FDD - F3 0F10 32            - movss xmm6,[rdx]
+engine_x64_rwdi.dll+676FE1 - F3 0F10 42 08         - movss xmm0,[rdx+08]
+engine_x64_rwdi.dll+676FE6 - F3 0F59 42 20         - mulss xmm0,[rdx+20]
+engine_x64_rwdi.dll+676FEB - F3 0F59 72 28         - mulss xmm6,[rdx+28]
+engine_x64_rwdi.dll+676FF0 - F3 0F5C F0            - subss xmm6,xmm0
+engine_x64_rwdi.dll+676FF4 - F3 0F59 F1            - mulss xmm6,xmm1
+engine_x64_rwdi.dll+676FF8 - F3 0F11 71 14         - movss [rcx+14],xmm6
+engine_x64_rwdi.dll+676FFD - F3 0F10 7A 20         - movss xmm7,[rdx+20]
+engine_x64_rwdi.dll+677002 - F3 0F10 42 24         - movss xmm0,[rdx+24]
+engine_x64_rwdi.dll+677007 - F3 0F59 02            - mulss xmm0,[rdx]
+engine_x64_rwdi.dll+67700B - F3 0F59 7A 04         - mulss xmm7,[rdx+04]
+engine_x64_rwdi.dll+677010 - F3 0F5C F8            - subss xmm7,xmm0
+engine_x64_rwdi.dll+677014 - F3 0F59 F9            - mulss xmm7,xmm1
+engine_x64_rwdi.dll+677018 - F3 0F11 79 24         - movss [rcx+24],xmm7
+engine_x64_rwdi.dll+67701D - F3 0F10 52 18         - movss xmm2,[rdx+18]
+engine_x64_rwdi.dll+677022 - F3 0F10 42 08         - movss xmm0,[rdx+08]
+engine_x64_rwdi.dll+677027 - F3 0F59 42 14         - mulss xmm0,[rdx+14]
+engine_x64_rwdi.dll+67702C - F3 0F59 52 04         - mulss xmm2,[rdx+04]
+engine_x64_rwdi.dll+677031 - F3 0F5C D0            - subss xmm2,xmm0
+engine_x64_rwdi.dll+677035 - F3 0F59 D1            - mulss xmm2,xmm1
+engine_x64_rwdi.dll+677039 - F3 0F11 51 08         - movss [rcx+08],xmm2
+engine_x64_rwdi.dll+67703E - F3 0F10 5A 08         - movss xmm3,[rdx+08]
+engine_x64_rwdi.dll+677043 - F3 0F10 02            - movss xmm0,[rdx]
+engine_x64_rwdi.dll+677047 - F3 0F59 42 18         - mulss xmm0,[rdx+18]
+engine_x64_rwdi.dll+67704C - F3 0F59 5A 10         - mulss xmm3,[rdx+10]
+engine_x64_rwdi.dll+677051 - F3 0F5C D8            - subss xmm3,xmm0
+engine_x64_rwdi.dll+677055 - F3 0F59 D9            - mulss xmm3,xmm1
+engine_x64_rwdi.dll+677059 - F3 0F11 59 18         - movss [rcx+18],xmm3
+engine_x64_rwdi.dll+67705E - F3 0F10 62 14         - movss xmm4,[rdx+14]
+engine_x64_rwdi.dll+677063 - F3 0F10 42 10         - movss xmm0,[rdx+10]
+engine_x64_rwdi.dll+677068 - F3 0F59 22            - mulss xmm4,[rdx]
+engine_x64_rwdi.dll+67706C - F3 0F59 42 04         - mulss xmm0,[rdx+04]
+engine_x64_rwdi.dll+677071 - F3 0F5C E0            - subss xmm4,xmm0
+engine_x64_rwdi.dll+677075 - F3 0F59 E1            - mulss xmm4,xmm1
+engine_x64_rwdi.dll+677079 - F3 0F11 61 28         - movss [rcx+28],xmm4
+engine_x64_rwdi.dll+67707E - F3 0F59 52 2C         - mulss xmm2,[rdx+2C]
+engine_x64_rwdi.dll+677083 - F3 44 0F59 42 0C      - mulss xmm8,[rdx+0C]
+engine_x64_rwdi.dll+677089 - F3 0F10 0D 5F142400   - movss xmm1,[engine_x64_rwdi.dll+8B84F0]
+engine_x64_rwdi.dll+677091 - F3 0F59 6A 1C         - mulss xmm5,[rdx+1C]
+engine_x64_rwdi.dll+677096 - 44 0F57 C1            - xorps xmm8,xmm1
+engine_x64_rwdi.dll+67709A - F3 44 0F5C C5         - subss xmm8,xmm5
+engine_x64_rwdi.dll+67709F - F3 44 0F5C C2         - subss xmm8,xmm2
+engine_x64_rwdi.dll+6770A4 - F3 44 0F11 41 0C      - movss [rcx+0C],xmm8
+engine_x64_rwdi.dll+6770AA - F3 0F10 42 2C         - movss xmm0,[rdx+2C]
+engine_x64_rwdi.dll+6770AF - F3 44 0F59 52 0C      - mulss xmm10,[rdx+0C]
+engine_x64_rwdi.dll+6770B5 - F3 0F59 72 1C         - mulss xmm6,[rdx+1C]
+engine_x64_rwdi.dll+6770BA - 44 0F28 40 C8         - movaps xmm8,[rax-38]
+engine_x64_rwdi.dll+6770BF - 44 0F57 D1            - xorps xmm10,xmm1
+engine_x64_rwdi.dll+6770C3 - F3 0F59 C3            - mulss xmm0,xmm3
+engine_x64_rwdi.dll+6770C7 - F3 44 0F5C D6         - subss xmm10,xmm6
+engine_x64_rwdi.dll+6770CC - 0F28 70 E8            - movaps xmm6,[rax-18]
+engine_x64_rwdi.dll+6770D0 - F3 44 0F5C D0         - subss xmm10,xmm0
+engine_x64_rwdi.dll+6770D5 - F3 44 0F11 51 1C      - movss [rcx+1C],xmm10
+engine_x64_rwdi.dll+6770DB - F3 0F10 52 0C         - movss xmm2,[rdx+0C]
+engine_x64_rwdi.dll+6770E0 - F3 0F10 42 1C         - movss xmm0,[rdx+1C]
+engine_x64_rwdi.dll+6770E5 - 44 0F28 14 24         - movaps xmm10,[rsp]
+engine_x64_rwdi.dll+6770EA - F3 41 0F59 D1         - mulss xmm2,xmm9
+engine_x64_rwdi.dll+6770EF - 44 0F28 48 B8         - movaps xmm9,[rax-48]
+engine_x64_rwdi.dll+6770F4 - F3 0F59 C7            - mulss xmm0,xmm7
+engine_x64_rwdi.dll+6770F8 - 0F28 78 D8            - movaps xmm7,[rax-28]
+engine_x64_rwdi.dll+6770FC - 0F57 D1               - xorps xmm2,xmm1
+engine_x64_rwdi.dll+6770FF - F3 0F10 4A 2C         - movss xmm1,[rdx+2C]
+engine_x64_rwdi.dll+677104 - F3 0F59 CC            - mulss xmm1,xmm4
+engine_x64_rwdi.dll+677108 - F3 0F5C D0            - subss xmm2,xmm0
+engine_x64_rwdi.dll+67710C - F3 0F5C D1            - subss xmm2,xmm1
+engine_x64_rwdi.dll+677110 - F3 0F11 51 2C         - movss [rcx+2C],xmm2
+engine_x64_rwdi.dll+677115 - 48 83 C4 58           - add rsp,58 { 88 }
+engine_x64_rwdi.dll+677119 - C3                    - ret 
+
+LOD value read
+engine_x64_rwdi.dll+5098A5 - F3 0F10 88 30020000   - movss xmm1,[rax+00000230]
+engine_x64_rwdi.dll+5098AD - F3 0F59 4A 28         - mulss xmm1,[rdx+28]							<< LOD1 Read. set to 10000.0f
+engine_x64_rwdi.dll+5098B2 - F3 0F59 C9            - mulss xmm1,xmm1
+engine_x64_rwdi.dll+5098B6 - F3 0F5E C1            - divss xmm0,xmm1
+engine_x64_rwdi.dll+5098BA - F3 41 0F11 86 84010000  - movss [r14+00000184],xmm0
+engine_x64_rwdi.dll+5098C3 - 49 8B 40 30           - mov rax,[r8+30]
+engine_x64_rwdi.dll+5098C7 - F3 0F10 88 30020000   - movss xmm1,[rax+00000230]
+engine_x64_rwdi.dll+5098CF - F3 0F59 4A 2C         - mulss xmm1,[rdx+2C]							<< LOD2 Read. set to 10000.0f
+engine_x64_rwdi.dll+5098D4 - F3 0F59 C9            - mulss xmm1,xmm1
+engine_x64_rwdi.dll+5098D8 - F3 0F5E D9            - divss xmm3,xmm1
+engine_x64_rwdi.dll+5098DC - F3 41 0F11 9E 88010000  - movss [r14+00000188],xmm3
+engine_x64_rwdi.dll+5098E5 - 49 8B 48 08           - mov rcx,[r8+08]

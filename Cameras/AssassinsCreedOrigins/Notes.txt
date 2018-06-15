@@ -375,6 +375,12 @@ ACOrigins.exe+1D63322 - 44 8B C9              - mov r9d,ecx
 ACOrigins.exe+1D63325 - 44 8B 47 10           - mov r8d,[rdi+10]
 ACOrigins.exe+1D63329 - 41 C1 E8 11           - shr r8d,11 { 17 }
 
+-------------------------------------------------------------------------------------------------------------------
+v1.51
+
+Some higher LoD's: 
+ACOrigins.exe+931B3C		-> Change 1.0f to 0.0f. 
+
 
 
 
