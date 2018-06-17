@@ -16,19 +16,11 @@ you owe me a new AAA game. Easy, right?
 
 ### FAQ
 
-**Should I use this camera in multiplayer?**
-:	No, it's for single player only
-
-**Will you update the camera when an update breaks it?**
-:	When I'm still playing the game, I'll update it. However after that I likely won't, unless you're one of
+* **Should I use this camera in multiplayer?** No, it's for single player only
+* **Will you update the camera when an update breaks it?** When I'm still playing the game, I'll update it. However after that I likely won't, unless you're one of
 my friends and I really have no other things to do with my sparse free time (read: even then likely not)
-
-**It doesn't work!**
-:	That's unfortunate.
-
-**I'm too stupid to read the readme and ToD doesn't seem to work!**
-:	Read the readme. Oh and you owe me an AAA game now. 
-
+* **It doesn't work!** That's unfortunate.
+* **I'm too stupid to read the readme and ToD doesn't seem to work!** Read the readme. Oh and you owe me an AAA game now. 
 
 ### Acknowledgements
 This camera uses [MinHook](https://github.com/TsudaKageyu/minhook) by Tsuda Kageyu.

@@ -33,6 +33,7 @@ automatically when you clone the repo. The camera uses DirectXMath for the 3D ma
 * Bulletstorm Full Clip Edition: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/BulletstormFCE
 * Deus Ex: Mankind Divided: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/DXMD
 * DOOM x64: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/DOOM
+* Dying Light: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/DyingLight
 * Hellblade: Senua's Sacrifice: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Hellblade
 * Hitman 2016: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Hitman2016
 * Homefront: The Revolution: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/HomefrontTheRevolution
