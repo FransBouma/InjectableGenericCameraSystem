@@ -36,6 +36,7 @@ PUBLIC cameraWrite1Interceptor
 PUBLIC lodReadInterceptor
 PUBLIC timestopReadInterceptor
 PUBLIC todWriteInterceptor
+PUBLIC todReadInterceptor
 
 ;---------------------------------------------------------------
 
@@ -56,6 +57,7 @@ EXTERN _cameraWrite1InterceptionContinue: qword
 EXTERN _lodReadInterceptionContinue: qword
 EXTERN _timestopReadInterceptionContinue: qword
 EXTERN _todWriteInterceptionContinue: qword
+EXTERN _todReadInterceptionContinue: qword
 
 .data
 
@@ -170,11 +172,13 @@ todWriteInterceptor PROC
 ;engine_x64_rwdi.dll+254441 - F3 C3                 - repe ret 
 	test rax,rax					
 	je nullptr										; we have to do it this way, as the original code doesn't allow a 14 byte jump statement otherwise, and we can't copy the calls as they're RIP relative
-	mov [g_todStructAddress], rax
+	cmp qword ptr rax, [g_todStructAddress]			; if we're not targeting the address we found, we are not writing to the real value so we can just proceed with the original code
+	jne originalCode
 	cmp byte ptr [g_cameraEnabled], 1
-	je originalCode
-	movss dword ptr [rax],xmm6				
+	je nowrite
 originalCode:
+	movss dword ptr [rax],xmm6				
+nowrite:
 	mov eax,[rbx+08h]
 	cmp eax,-02h
 exit:
@@ -185,6 +189,30 @@ nullptr:
 	pop rbx
 	ret							; masm doesn't know what 'repe ret' means, so we just issue a 'ret' here, which is fine. the prefix is only needed on very old AMD CPUs and ppl using these can't run the game anyway. 
 todWriteInterceptor ENDP
+
+
+todReadInterceptor PROC
+;gamedll_x64_rwdi.dll+109C791 - 48 8B 93 A8090000     - mov rdx,[rbx+000009A8]
+;gamedll_x64_rwdi.dll+109C798 - 41 B8 04000000        - mov r8d,00000004 { 4 }
+;gamedll_x64_rwdi.dll+109C79E - 8B 52 50              - mov edx,[rdx+50]
+;gamedll_x64_rwdi.dll+109C7A1 - 48 8B C8              - mov rcx,rax
+;gamedll_x64_rwdi.dll+109C7A4 - E8 47291D00           - call gamedll_x64_rwdi.dll+126F0F0
+;gamedll_x64_rwdi.dll+109C7A9 - 48 8B CF              - mov rcx,rdi								<< INTERCEPT HERE
+;gamedll_x64_rwdi.dll+109C7AC - 48 85 C0              - test rax,rax
+;gamedll_x64_rwdi.dll+109C7AF - 48 0F45 C8            - cmovne rcx,rax
+;gamedll_x64_rwdi.dll+109C7B3 - F3 0F10 39            - movss xmm7,[rcx]			<< READ ToD (float: hour (0/24) is value > 0, fraction is minutes % of hour)
+;gamedll_x64_rwdi.dll+109C7B7 - EB 03                 - jmp gamedll_x64_rwdi.dll+109C7BC		<< CONTINUE HERE
+;gamedll_x64_rwdi.dll+109C7B9 - 0F28 FE               - movaps xmm7,xmm6			<< A relative jump lands here!
+;gamedll_x64_rwdi.dll+109C7BC - 48 83 BB B0090000 00  - cmp qword ptr [rbx+000009B0],00 
+;gamedll_x64_rwdi.dll+109C7C4 - 74 2C                 - je gamedll_x64_rwdi.dll+109C7F2
+	mov rcx,rdi		
+	test rax,rax
+	cmovne rcx,rax
+	mov [g_todStructAddress], rcx
+	movss xmm7, dword ptr [rcx]
+exit:
+	jmp qword ptr [_todReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+todReadInterceptor ENDP
 
 
 timestopReadInterceptor PROC

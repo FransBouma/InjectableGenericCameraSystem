@@ -43,6 +43,7 @@ extern "C" {
 	void lodReadInterceptor();
 	void timestopReadInterceptor();
 	void todWriteInterceptor();
+	void todReadInterceptor();
 }
 
 // external addresses used in asm.
@@ -52,6 +53,7 @@ extern "C" {
 	LPBYTE _lodReadInterceptionContinue = nullptr;
 	LPBYTE _timestopReadInterceptionContinue = nullptr;
 	LPBYTE _todWriteInterceptionContinue = nullptr;
+	LPBYTE _todReadInterceptionContinue = nullptr;
 }
 
 
@@ -72,6 +74,21 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		for (it = aobBlocks.begin(); it != aobBlocks.end(); it++)
 		{
 			result &= it->second->scan(hostImageAddress, hostImageSize);
+		}
+
+		// we need to do a separate scan here, as it's done on another in-memory image. This is specific for this camera so we have some custom code here which pulls the address of the
+		// particular dll and makes the scan here. 
+		MODULEINFO gamedllModuleInfo = Utils::getModuleInfoOfDll(L"gamedll_x64_rwdi.dll");
+		if (nullptr == gamedllModuleInfo.lpBaseOfDll)
+		{
+			OverlayConsole::instance().logError("Can't determine the address for the gamedll, can't apply gamedll specific hooks");
+			result = false;
+		}
+		else
+		{
+			auto todReadAOB = new AOBBlock(TOD_READ_INTERCEPT_KEY, "48 8B CF 48 85 C0 48 0F 45 C8 F3 0F 10 39", 1);
+			aobBlocks[TOD_READ_INTERCEPT_KEY] = todReadAOB;
+			result &= todReadAOB->scan((LPBYTE)gamedllModuleInfo.lpBaseOfDll, gamedllModuleInfo.SizeOfImage);
 		}
 		if (result)
 		{
@@ -96,6 +113,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[LOD_READ_INTERCEPT_KEY], 0x11, &_lodReadInterceptionContinue, &lodReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[TIMESTOP_READ_INTERCEPT_KEY], 0x0E, &_timestopReadInterceptionContinue, &timestopReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[TOD_WRITE_INTERCEPT_KEY], 0x0F, &_todWriteInterceptionContinue, &todWriteInterceptor);
+		GameImageHooker::setHook(aobBlocks[TOD_READ_INTERCEPT_KEY], 0x0E, &_todReadInterceptionContinue, &todReadInterceptor);
 	}
 
 
