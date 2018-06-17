@@ -212,3 +212,39 @@ engine_x64_rwdi.dll+5B8B47 - 48 8D 83 9C010000     - lea rax,[rbx+0000019C]
 engine_x64_rwdi.dll+5B8B4E - 75 07                 - jne engine_x64_rwdi.dll+5B8B57
 engine_x64_rwdi.dll+5B8B50 - 48 8D 83 60010000     - lea rax,[rbx+00000160]
 
+// Time of Day
+// READ. Important: in different DLL so we need to obtain the image address for the AOB scan!
+gamedll_x64_rwdi.dll+109C791 - 48 8B 93 A8090000     - mov rdx,[rbx+000009A8]
+gamedll_x64_rwdi.dll+109C798 - 41 B8 04000000        - mov r8d,00000004 { 4 }
+gamedll_x64_rwdi.dll+109C79E - 8B 52 50              - mov edx,[rdx+50]
+gamedll_x64_rwdi.dll+109C7A1 - 48 8B C8              - mov rcx,rax
+gamedll_x64_rwdi.dll+109C7A4 - E8 47291D00           - call gamedll_x64_rwdi.dll+126F0F0
+gamedll_x64_rwdi.dll+109C7A9 - 48 8B CF              - mov rcx,rdi
+gamedll_x64_rwdi.dll+109C7AC - 48 85 C0              - test rax,rax
+gamedll_x64_rwdi.dll+109C7AF - 48 0F45 C8            - cmovne rcx,rax
+gamedll_x64_rwdi.dll+109C7B3 - F3 0F10 39            - movss xmm7,[rcx]			<< READ ToD (float: hour (0/24) is value > 0, fraction is minutes % of hour)
+gamedll_x64_rwdi.dll+109C7B7 - EB 03                 - jmp gamedll_x64_rwdi.dll+109C7BC
+gamedll_x64_rwdi.dll+109C7B9 - 0F28 FE               - movaps xmm7,xmm6			<< A relative jump lands here!
+gamedll_x64_rwdi.dll+109C7BC - 48 83 BB B0090000 00  - cmp qword ptr [rbx+000009B0],00 { 0 }
+gamedll_x64_rwdi.dll+109C7C4 - 74 2C                 - je gamedll_x64_rwdi.dll+109C7F2
+
+// WRITE. Used for many addresses, so we need to filter the target address first!
+engine_x64_rwdi.dll+254409 - 0F29 74 24 20         - movaps [rsp+20],xmm6
+engine_x64_rwdi.dll+25440E - 0F28 F2               - movaps xmm6,xmm2
+engine_x64_rwdi.dll+254411 - E8 1A204F00           - call engine_x64_rwdi.dll+746430
+engine_x64_rwdi.dll+254416 - 48 85 C0              - test rax,rax
+engine_x64_rwdi.dll+254419 - 74 1C                 - je engine_x64_rwdi.dll+254437
+engine_x64_rwdi.dll+25441B - F3 0F11 30            - movss [rax],xmm6			<< WRITE TOD. Used for *many* objects. Filter out our address!
+engine_x64_rwdi.dll+25441F - 8B 43 08              - mov eax,[rbx+08]
+engine_x64_rwdi.dll+254422 - 83 F8 FE              - cmp eax,-02
+engine_x64_rwdi.dll+254425 - 72 10                 - jb engine_x64_rwdi.dll+254437
+engine_x64_rwdi.dll+254427 - E8 14AADDFF           - call engine_x64_rwdi.dll+2EE40
+engine_x64_rwdi.dll+25442C - 48 8B D3              - mov rdx,rbx
+engine_x64_rwdi.dll+25442F - 48 8B C8              - mov rcx,rax
+engine_x64_rwdi.dll+254432 - E8 89A8DDFF           - call engine_x64_rwdi.dll+2ECC0
+engine_x64_rwdi.dll+254437 - 0F28 74 24 20         - movaps xmm6,[rsp+20]
+engine_x64_rwdi.dll+25443C - 48 83 C4 30           - add rsp,30 { 48 }
+engine_x64_rwdi.dll+254440 - 5B                    - pop rbx
+engine_x64_rwdi.dll+254441 - F3 C3                 - repe ret 
+
+

@@ -53,7 +53,6 @@ namespace IGCS
 
 		// settings not persisted to config file.
 		// add settings to edit here.
-		float resolutionScale;			// 0.5-4.0
 		int todHour;					// 0-23
 		int todMinute;					// 0-59
 
@@ -108,7 +107,6 @@ namespace IGCS
 
 			if (!persistedOnly)
 			{
-				resolutionScale = 1.0f;
 				todHour = 12;
 				todMinute = 0;
 			}

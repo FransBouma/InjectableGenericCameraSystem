@@ -39,6 +39,7 @@ extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
 	LPBYTE g_lodStructAddress = nullptr;
 	LPBYTE g_timestopStructAddress = nullptr;
+	LPBYTE g_todStructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -74,27 +75,27 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void getSettingsFromGameState()
 	{
 		Settings& currentSettings = Globals::instance().settings();
-		//if (nullptr != g_todStructAddress)
-		//{
-		//	float* todInMemory = reinterpret_cast<float*>(g_todStructAddress);
-		//	float valueInMemory = *todInMemory;
-		//	currentSettings.todHour = (int)floor(valueInMemory);
-		//	float valueWithoutMinuteFraction = valueInMemory - floor(valueInMemory);
-		//	currentSettings.todMinute = (int)(valueWithoutMinuteFraction * 60.0f);
-		//}
+		if (nullptr != g_todStructAddress)
+		{
+			float* todInMemory = reinterpret_cast<float*>(g_todStructAddress);
+			float valueInMemory = *todInMemory;
+			currentSettings.todHour = (int)floor(valueInMemory);
+			float valueWithoutMinuteFraction = valueInMemory - floor(valueInMemory);
+			currentSettings.todMinute = (int)(valueWithoutMinuteFraction * 60.0f);
+		}
 	}
 
 
 	void applySettingsToGameState()
 	{
 		Settings& currentSettings = Globals::instance().settings();
-		//if (nullptr != g_todStructAddress)
-		//{
-		//	float* todInMemory = reinterpret_cast<float*>(g_todStructAddress);
-		//	float valueToStore = (static_cast<float>(currentSettings.todHour) + (static_cast<float>(currentSettings.todMinute) / 60.0f));
-		//	valueToStore = Utils::clamp(valueToStore, 0.0f, 24.0f, 0.0f);
-		//	*todInMemory = valueToStore;
-		//}
+		if (nullptr != g_todStructAddress)
+		{
+			float* todInMemory = reinterpret_cast<float*>(g_todStructAddress);
+			float valueToStore = (static_cast<float>(currentSettings.todHour) + (static_cast<float>(currentSettings.todMinute) / 60.0f));
+			valueToStore = Utils::clamp(valueToStore, 0.0f, 24.0f, 0.0f);
+			*todInMemory = valueToStore;
+		}
 	}
 
 
@@ -152,15 +153,15 @@ namespace IGCS::GameSpecific::CameraManipulator
 
 		float* matrixInMemory = reinterpret_cast<float*>(g_cameraStructAddress + MATRIX_IN_STRUCT_OFFSET);
 		matrixInMemory[0] = rotationMatrix._11;
-		matrixInMemory[1] = rotationMatrix._12;
-		matrixInMemory[2] = rotationMatrix._13;
+		matrixInMemory[1] = rotationMatrix._21;
+		matrixInMemory[2] = rotationMatrix._31;
 		matrixInMemory[3] = newCoords.x;
-		matrixInMemory[4] = rotationMatrix._21;
+		matrixInMemory[4] = rotationMatrix._12;
 		matrixInMemory[5] = rotationMatrix._22;
-		matrixInMemory[6] = rotationMatrix._23;
+		matrixInMemory[6] = rotationMatrix._32;
 		matrixInMemory[7] = newCoords.y;
-		matrixInMemory[8] = rotationMatrix._31;
-		matrixInMemory[9] = rotationMatrix._32;
+		matrixInMemory[8] = rotationMatrix._13;
+		matrixInMemory[9] = rotationMatrix._23;
 		matrixInMemory[10] = rotationMatrix._33;
 		matrixInMemory[11] = newCoords.z;
 	}

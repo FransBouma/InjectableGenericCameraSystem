@@ -42,6 +42,7 @@ extern "C" {
 	void cameraWrite1Interceptor();
 	void lodReadInterceptor();
 	void timestopReadInterceptor();
+	void todWriteInterceptor();
 }
 
 // external addresses used in asm.
@@ -50,6 +51,7 @@ extern "C" {
 	LPBYTE _cameraWrite1InterceptionContinue = nullptr;
 	LPBYTE _lodReadInterceptionContinue = nullptr;
 	LPBYTE _timestopReadInterceptionContinue = nullptr;
+	LPBYTE _todWriteInterceptionContinue = nullptr;
 }
 
 
@@ -61,6 +63,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE1_INTERCEPT_KEY, "48 83 EC 48 0F 29 74 24 30 F3 41 0F 10 70 08 0F 29 7C 24 20 F3 41 0F 10 38 44 0F 29 44 24 10", 1);
 		aobBlocks[FOV_WRITE_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE_INTERCEPT_KEY, "F3 0F 11 B3 D4 02 00 00 F3 0F 59 35 B1 A2 6C 00 0F 28 C6", 1);
 		aobBlocks[LOD_READ_INTERCEPT_KEY] = new AOBBlock(LOD_READ_INTERCEPT_KEY, "F3 0F 10 88 30 02 00 00 F3 0F 59 4A 28 F3 0F 59 C9 F3 0F 5E C1 F3 41 0F 11 86 84 01 00 00", 1);
+		aobBlocks[TOD_WRITE_INTERCEPT_KEY] = new AOBBlock(TOD_WRITE_INTERCEPT_KEY, "48 85 C0 74 1C F3 0F 11 30 8B 43 08 83 F8 FE 72 10 E8 14 AA DD FF 48 8B D3", 1);
 		aobBlocks[TIMESTOP_READ_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_READ_INTERCEPT_KEY, "48 8B 41 08 48 05 28 0F 00 00 80 78 30 00 74 09 80 78 48 00", 1);
 		aobBlocks[HUD_RENDER_INTERCEPT_KEY] = new AOBBlock(HUD_RENDER_INTERCEPT_KEY, "40 53 48 83 EC 40 0F 29 74 24 30 0F 29 7C 24 20 48 8B D9 0F 28 FB", 1);
 
@@ -92,7 +95,9 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY], 0x0F, &_cameraWrite1InterceptionContinue, &cameraWrite1Interceptor);
 		GameImageHooker::setHook(aobBlocks[LOD_READ_INTERCEPT_KEY], 0x11, &_lodReadInterceptionContinue, &lodReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[TIMESTOP_READ_INTERCEPT_KEY], 0x0E, &_timestopReadInterceptionContinue, &timestopReadInterceptor);
+		GameImageHooker::setHook(aobBlocks[TOD_WRITE_INTERCEPT_KEY], 0x0F, &_todWriteInterceptionContinue, &todWriteInterceptor);
 	}
+
 
 	// if enabled is true, we'll place a 'ret' at the start of the code block, making the game skip rendering any hud element. If false, we'll reset
 	// the original first statement so code will proceed as normal. 

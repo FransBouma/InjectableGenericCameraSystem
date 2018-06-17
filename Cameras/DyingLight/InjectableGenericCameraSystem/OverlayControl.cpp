@@ -138,7 +138,7 @@ namespace IGCS::OverlayControl
 		ImGui::Text("Camera credits: %s", CAMERA_CREDITS);
 		ImGui::Spacing();
 		ImGui::Text(R"(Powered by Injectable Generic Camera System (IGCS). 
-Copyright (c) 2017 Otis_Inf (Frans Bouma). All rights reserved.
+Copyright (c) 2018 Otis_Inf (Frans Bouma). All rights reserved.
 https://github.com/FransBouma/InjectableGenericCameraSystem
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -274,8 +274,6 @@ Special thanks to:
 		if (ImGui::CollapsingHeader("Misc. camera options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			settingsChanged |= ImGui::SliderFloat("Field of View (FoV) zoom speed", &currentSettings.fovChangeSpeed, 0.0001f, 0.01f, "%.4f");
-			ImGui::SliderFloat("Resolution scale factor", &currentSettings.resolutionScale, 0.5f, 2.0f, "%.1f");
-			ImGui::SameLine(); ShowHelpMarker("Be careful with values bigger than 2 as it could make\nthe game crash due to too much overhead.\nYou can specify values bigger than 2 by using\nCtrl-click and then type the value.\nMax is 4.0.");
 
 			// Time of Day
 			ImGui::SliderInt("Time of Day (Hour)", &currentSettings.todHour, 0, 23);

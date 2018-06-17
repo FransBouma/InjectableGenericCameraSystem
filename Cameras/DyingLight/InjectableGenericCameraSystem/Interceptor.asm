@@ -35,6 +35,7 @@ PUBLIC cameraStructInterceptor
 PUBLIC cameraWrite1Interceptor
 PUBLIC lodReadInterceptor
 PUBLIC timestopReadInterceptor
+PUBLIC todWriteInterceptor
 
 ;---------------------------------------------------------------
 
@@ -45,6 +46,7 @@ EXTERN g_cameraEnabled: byte
 EXTERN g_cameraStructAddress: qword
 EXTERN g_lodStructAddress: qword
 EXTERN g_timestopStructAddress: qword
+EXTERN g_todStructAddress: qword
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -53,6 +55,7 @@ EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _cameraWrite1InterceptionContinue: qword
 EXTERN _lodReadInterceptionContinue: qword
 EXTERN _timestopReadInterceptionContinue: qword
+EXTERN _todWriteInterceptionContinue: qword
 
 .data
 
@@ -147,9 +150,46 @@ exit:
 lodReadInterceptor ENDP
 
 
+todWriteInterceptor PROC
+;engine_x64_rwdi.dll+254409 - 0F29 74 24 20         - movaps [rsp+20],xmm6
+;engine_x64_rwdi.dll+25440E - 0F28 F2               - movaps xmm6,xmm2
+;engine_x64_rwdi.dll+254411 - E8 1A204F00           - call engine_x64_rwdi.dll+746430
+;engine_x64_rwdi.dll+254416 - 48 85 C0              - test rax,rax									<< INTERCEPT HERE
+;engine_x64_rwdi.dll+254419 - 74 1C                 - je engine_x64_rwdi.dll+254437
+;engine_x64_rwdi.dll+25441B - F3 0F11 30            - movss [rax],xmm6								<< WRITE ToD (float: hour (0/24) is value > 0, fraction is minutes % of hour)
+;engine_x64_rwdi.dll+25441F - 8B 43 08              - mov eax,[rbx+08]
+;engine_x64_rwdi.dll+254422 - 83 F8 FE              - cmp eax,-02
+;engine_x64_rwdi.dll+254425 - 72 10                 - jb engine_x64_rwdi.dll+254437					<< CONTINUE
+;engine_x64_rwdi.dll+254427 - E8 14AADDFF           - call engine_x64_rwdi.dll+2EE40
+;engine_x64_rwdi.dll+25442C - 48 8B D3              - mov rdx,rbx
+;engine_x64_rwdi.dll+25442F - 48 8B C8              - mov rcx,rax
+;engine_x64_rwdi.dll+254432 - E8 89A8DDFF           - call engine_x64_rwdi.dll+2ECC0
+;engine_x64_rwdi.dll+254437 - 0F28 74 24 20         - movaps xmm6,[rsp+20]
+;engine_x64_rwdi.dll+25443C - 48 83 C4 30           - add rsp,30 { 48 }
+;engine_x64_rwdi.dll+254440 - 5B                    - pop rbx
+;engine_x64_rwdi.dll+254441 - F3 C3                 - repe ret 
+	test rax,rax					
+	je nullptr										; we have to do it this way, as the original code doesn't allow a 14 byte jump statement otherwise, and we can't copy the calls as they're RIP relative
+	mov [g_todStructAddress], rax
+	cmp byte ptr [g_cameraEnabled], 1
+	je originalCode
+	movss dword ptr [rax],xmm6				
+originalCode:
+	mov eax,[rbx+08h]
+	cmp eax,-02h
+exit:
+	jmp qword ptr [_todWriteInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+nullptr:
+	movaps xmm6,[rsp+20h]
+	add rsp,30h
+	pop rbx
+	ret							; masm doesn't know what 'repe ret' means, so we just issue a 'ret' here, which is fine. the prefix is only needed on very old AMD CPUs and ppl using these can't run the game anyway. 
+todWriteInterceptor ENDP
+
+
 timestopReadInterceptor PROC
 ;engine_x64_rwdi.dll+28FFC0 - 48 8B 41 08           - mov rax,[rcx+08]								<< INTERCEPT HERE
-;engine_x64_rwdi.dll+28FFC4 - 48 05 280F0000        - add rax,00000F28 { 3880 }
+;engine_x64_rwdi.dll+28FFC4 - 48 05 280F0000        - add rax,00000F28
 ;engine_x64_rwdi.dll+28FFCA - 80 78 30 00           - cmp byte ptr [rax+30],00						<< Read pause byte. 
 ;engine_x64_rwdi.dll+28FFCE - 74 09                 - je engine_x64_rwdi.dll+28FFD9					<< CONTINUE HERE
 ;engine_x64_rwdi.dll+28FFD0 - 80 78 48 00           - cmp byte ptr [rax+48],00						<< Read second pause byte. Keep byte at 0 for pause.

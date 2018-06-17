@@ -32,7 +32,7 @@ namespace IGCS::GameSpecific
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Dying Light v1.16+"
 	#define CAMERA_VERSION								"1.0.0"
-	#define CAMERA_CREDITS								"Otis_Inf. Thanks to Jim2Point0 for LoD location"
+	#define CAMERA_CREDITS								"Otis_Inf. Thanks to Jim2Point0 for LoD override"
 	#define GAME_WINDOW_TITLE							"Dying Light"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
 	#define INITIAL_YAW_RADIANS							0.0f	// around Y axis	(out of the screen)
@@ -54,6 +54,7 @@ namespace IGCS::GameSpecific
 	#define CAMERA_WRITE1_INTERCEPT_KEY					"AOB_CAMERA_WRITE1_INTERCEPT"
 	#define FOV_WRITE_INTERCEPT_KEY						"AOB_FOV_WRITE_INTERCEPT"
 	#define LOD_READ_INTERCEPT_KEY						"AOB_LOD_READ_INTERCEPT"
+	#define TOD_WRITE_INTERCEPT_KEY						"AOB_TOD_WRITE_INTERCEPT"
 	#define TIMESTOP_READ_INTERCEPT_KEY					"AOB_TIMESTOP_READ_INTERCEPT"
 	#define HUD_RENDER_INTERCEPT_KEY					"AOB_HUD_RENDER_INTERCEPT"
 
