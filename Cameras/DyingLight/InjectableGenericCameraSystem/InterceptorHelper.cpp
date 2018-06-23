@@ -139,8 +139,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		if (enabled)
 		{
 			// set ret
-			BYTE statementBytes[1] = { 0xC3 };					// engine_x64_rwdi.dll + 5B8B20 - 40 53 - push rbx
-			GameImageHooker::writeRange(aobBlocks[HUD_RENDER_INTERCEPT_KEY], statementBytes, 1);
+			BYTE statementBytes[2] = { 0xC3, 0xC3 };					// engine_x64_rwdi.dll + 5B8B20 - 40 53 - push rbx. Set 2 times ret, for alignment.
+			GameImageHooker::writeRange(aobBlocks[HUD_RENDER_INTERCEPT_KEY], statementBytes, 2);
 		}
 		else
 		{

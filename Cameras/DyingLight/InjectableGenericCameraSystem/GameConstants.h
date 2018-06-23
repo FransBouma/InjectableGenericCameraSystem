@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Dying Light v1.16+"
-	#define CAMERA_VERSION								"1.0.0"
+	#define CAMERA_VERSION								"1.0.1"
 	#define CAMERA_CREDITS								"Otis_Inf. Thanks to Jim2Point0 for LoD override"
 	#define GAME_WINDOW_TITLE							"Dying Light"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)

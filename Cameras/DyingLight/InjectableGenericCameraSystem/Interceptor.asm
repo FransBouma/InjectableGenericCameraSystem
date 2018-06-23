@@ -122,7 +122,7 @@ cameraWrite1Interceptor PROC
 originalCode:
 	pop rcx
 	sub rsp,48h
-	movaps [rsp+30h],xmm6
+	movaps xmmword ptr [rsp+30h],xmm6
 	movss xmm6, dword ptr [r8+08h]
 exit:
 	jmp qword ptr [_cameraWrite1InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
@@ -184,7 +184,7 @@ nowrite:
 exit:
 	jmp qword ptr [_todWriteInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 nullptr:
-	movaps xmm6,[rsp+20h]
+	movaps xmm6, xmmword ptr [rsp+20h]
 	add rsp,30h
 	pop rbx
 	ret							; masm doesn't know what 'repe ret' means, so we just issue a 'ret' here, which is fine. the prefix is only needed on very old AMD CPUs and ppl using these can't run the game anyway. 
