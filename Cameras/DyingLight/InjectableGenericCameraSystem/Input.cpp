@@ -160,14 +160,14 @@ namespace IGCS::Input
 	// returns true if the message was handled by this method, otherwise false.
 	bool handleMessage(LPMSG lpMsg)
 	{
-		if (lpMsg == nullptr || lpMsg->hwnd == nullptr)
+		// simply use our main window handle.
+		HWND handleToUse = Globals::instance().mainWindowHandle();
+		if (handleToUse == nullptr)
 		{
 			return false;
 		}
 
-		// simply use our main window handle.
-		HWND handleToUse = Globals::instance().mainWindowHandle();
-		if (handleToUse == nullptr)
+		if (lpMsg == nullptr || lpMsg->hwnd == nullptr)
 		{
 			return false;
 		}
