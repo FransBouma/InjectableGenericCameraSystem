@@ -186,9 +186,9 @@ namespace IGCS::InputHooker
 		map<string, LPVOID>& hookedFunctions = Globals::instance().hookedFunctions();
 
 		LPVOID hookedFunction = nullptr;
-		if (MH_CreateHookApiEx(L"xinput9_1_0", "XInputGetState", &detourXInputGetState, &hookedFunction) != MH_OK)
+		if (MH_CreateHookApiEx(L"xinput1_3", "XInputGetState", &detourXInputGetState, &hookedFunction) != MH_OK)
 		{
-			OverlayConsole::instance().logError("Hooking XInput9_1 failed!");
+			OverlayConsole::instance().logError("Hooking XInput1_3 failed!");
 		}
 		hookedFunctions["XInputGetState"] = hookedFunction;
 		OverlayConsole::instance().logDebug("Hook set to XInputSetState");
