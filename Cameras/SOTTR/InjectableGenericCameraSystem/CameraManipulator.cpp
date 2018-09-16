@@ -41,7 +41,8 @@ extern "C" {
 
 namespace IGCS::GameSpecific::CameraManipulator
 {
-	static float _originalMatrix[16];
+	static float _originalCoords[3];
+	static float _originalQuaternion[4];
 	static float _originalFoV;
 
 
@@ -92,8 +93,8 @@ namespace IGCS::GameSpecific::CameraManipulator
 	XMFLOAT3 getCurrentCameraCoords()
 	{
 
-		float* matrixInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET);
-		return XMFLOAT3(matrixInMemory[0], matrixInMemory[1], matrixInMemory[2]);
+		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET);
+		return XMFLOAT3(coordsInMemory[0], coordsInMemory[1], coordsInMemory[2]);
 	}
 
 
@@ -106,28 +107,18 @@ namespace IGCS::GameSpecific::CameraManipulator
 			return;
 		}
 
-		// calculate matrix from quaternion, write that, then write the coords on top of that. 
-		XMMATRIX rotationMatrixPacked = XMMatrixRotationQuaternion(newLookQuaternion);
-		XMFLOAT4X4 rotationMatrix;
-		XMStoreFloat4x4(&rotationMatrix, rotationMatrixPacked);
+		XMFLOAT4 qAsFloat4;
+		XMStoreFloat4(&qAsFloat4, newLookQuaternion);
+		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET);
+		coordsInMemory[0] = newCoords.x;
+		coordsInMemory[1] = newCoords.y;
+		coordsInMemory[2] = newCoords.z;
 
-		float* matrixInMemory = reinterpret_cast<float*>(g_cameraStructAddress + MATRIX_IN_STRUCT_OFFSET);
-		matrixInMemory[0] = rotationMatrix._11;
-		matrixInMemory[1] = rotationMatrix._12;
-		matrixInMemory[2] = rotationMatrix._13;
-		matrixInMemory[3] = rotationMatrix._14;
-		matrixInMemory[4] = rotationMatrix._21;
-		matrixInMemory[5] = rotationMatrix._22;
-		matrixInMemory[6] = rotationMatrix._23;
-		matrixInMemory[7] = rotationMatrix._24;
-		matrixInMemory[8] = rotationMatrix._31;
-		matrixInMemory[9] = rotationMatrix._32;
-		matrixInMemory[10] = rotationMatrix._33;
-		matrixInMemory[11] = rotationMatrix._34;
-		//matrixInMemory[12] = newCoords.x;
-		//matrixInMemory[13] = newCoords.y;
-		//matrixInMemory[14] = newCoords.z;
-		// 15 is left alone as it's not used.
+		float* quaternionInMemory = reinterpret_cast<float*>(g_cameraStructAddress + QUATERNION_IN_STRUCT_OFFSET);
+		quaternionInMemory[0] = qAsFloat4.x;
+		quaternionInMemory[1] = qAsFloat4.y;
+		quaternionInMemory[2] = qAsFloat4.z;
+		quaternionInMemory[3] = qAsFloat4.w;
 	}
 
 
@@ -146,15 +137,18 @@ namespace IGCS::GameSpecific::CameraManipulator
 	// should restore the camera values in the camera structures to the cached values. This assures the free camera is always enabled at the original camera location.
 	void restoreOriginalValuesAfterCameraDisable()
 	{
-		float* matrixInMemory = nullptr;
+		float* quaternionInMemory = nullptr;
+		float* coordsInMemory = nullptr;
 		float *fovInMemory = nullptr;
 
 		if (!isCameraFound())
 		{
 			return;
 		}
-		matrixInMemory = reinterpret_cast<float*>(g_cameraStructAddress + MATRIX_IN_STRUCT_OFFSET);
-		memcpy(matrixInMemory, _originalMatrix, 16 * sizeof(float));
+		quaternionInMemory = reinterpret_cast<float*>(g_cameraStructAddress + QUATERNION_IN_STRUCT_OFFSET);
+		coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET);
+		memcpy(quaternionInMemory, _originalQuaternion, 4 * sizeof(float));
+		memcpy(coordsInMemory, _originalCoords, 3 * sizeof(float));
 		fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
 		*fovInMemory = _originalFoV;
 	}
@@ -162,15 +156,18 @@ namespace IGCS::GameSpecific::CameraManipulator
 
 	void cacheOriginalValuesBeforeCameraEnable()
 	{
-		float* matrixInMemory = nullptr;
+		float* quaternionInMemory = nullptr;
+		float* coordsInMemory = nullptr;
 		float *fovInMemory = nullptr;
 
 		if (!isCameraFound())
 		{
 			return;
 		}
-		matrixInMemory = reinterpret_cast<float*>(g_cameraStructAddress + MATRIX_IN_STRUCT_OFFSET);
-		memcpy(_originalMatrix, matrixInMemory, 16 * sizeof(float));
+		quaternionInMemory = reinterpret_cast<float*>(g_cameraStructAddress + QUATERNION_IN_STRUCT_OFFSET);
+		coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET);
+		memcpy(_originalQuaternion, quaternionInMemory, 4 * sizeof(float));
+		memcpy(_originalCoords, coordsInMemory, 3 * sizeof(float));
 		fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
 		_originalFoV = *fovInMemory;
 	}

@@ -1,4 +1,5 @@
 // Photomode / Ansel coords + quaternion location. Only used when photomode / ansel are active
+// Writes when photomode movement is allowed:
 SOTTR.exe+B12A2F7 - 0F29 8B 10040000      - movaps [rbx+00000410],xmm1
 SOTTR.exe+B12A2FE - 89 15 B8884DF8        - mov [SOTTR.exe+3602BBC],edx { [CA794BBA] }
 SOTTR.exe+B12A304 - 48 8B 83 68010000     - mov rax,[rbx+00000168]
@@ -19,241 +20,55 @@ SOTTR.exe+B12A356 - 0F28 C2               - movaps xmm0,xmm2
 
 // So layout is: X, Y, Z, Dummy, qX, qY, qZ, qW, FOV.
 
-// Opening sequence:
-SOTTR.exe+7F6788C - 0F14 DA               - unpcklps xmm3,xmm2
-SOTTR.exe+7F6788F - 0F29 5C 24 40         - movaps [rsp+40],xmm3
-SOTTR.exe+7F67894 - E8 27362CF8           - call SOTTR.exe+22AEC0
-SOTTR.exe+7F67899 - 48 8B 43 18           - mov rax,[rbx+18]
-SOTTR.exe+7F6789D - 48 89 D9              - mov rcx,rbx
-SOTTR.exe+7F678A0 - 0F29 B0 A0010000      - movaps [rax+000001A0],xmm6					<< WRITE COORDS.
-SOTTR.exe+7F678A7 - 48 8B 43 10           - mov rax,[rbx+10]
-SOTTR.exe+7F678AB - 44 0FB6 43 40         - movzx r8d,byte ptr [rbx+40]
-SOTTR.exe+7F678B0 - 41 D0 E8              - shr r8l,1
-SOTTR.exe+7F678B3 - 41 80 E0 01           - and r8l,01 { 1 }
-SOTTR.exe+7F678B7 - F3 0F10 48 60         - movss xmm1,[rax+60]
-SOTTR.exe+7F678BC - E8 6F9A49F8           - call SOTTR.exe+401330
-SOTTR.exe+7F678C1 - E8 CA3292F8           - call SOTTR.exe+88AB90
-SOTTR.exe+7F678C6 - 48 8B 43 18           - mov rax,[rbx+18]
+// Writes when photomode movement is NOT allowed: (used for many destinations. Test for target address!)
+// It's the only write. 
+SOTTR.exe+5EE33C8 - 66 0F7F 41 60         - movdqa [rcx+60],xmm0
+SOTTR.exe+5EE33CD - 0F28 4A 70            - movaps xmm1,[rdx+70]
+SOTTR.exe+5EE33D1 - 66 0F7F 49 70         - movdqa [rcx+70],xmm1
+SOTTR.exe+5EE33D6 - 0F28 82 80000000      - movaps xmm0,[rdx+00000080]
+SOTTR.exe+5EE33DD - 66 0F7F 81 80000000   - movdqa [rcx+00000080],xmm0					<< WRITE COORDS
+SOTTR.exe+5EE33E5 - 0F28 8A A0000000      - movaps xmm1,[rdx+000000A0]
+SOTTR.exe+5EE33EC - 0F29 89 A0000000      - movaps [rcx+000000A0],xmm1					<< WRITE QUATERNION
+SOTTR.exe+5EE33F3 - 8B 82 B0000000        - mov eax,[rdx+000000B0]						<< WRITE FOV
+SOTTR.exe+5EE33F9 - 89 81 B0000000        - mov [rcx+000000B0],eax
+SOTTR.exe+5EE33FF - 8B 82 B4000000        - mov eax,[rdx+000000B4]
+SOTTR.exe+5EE3405 - 89 81 B4000000        - mov [rcx+000000B4],eax
+SOTTR.exe+5EE340B - 8B 82 B8000000        - mov eax,[rdx+000000B8]
+SOTTR.exe+5EE3411 - 89 81 B8000000        - mov [rcx+000000B8],eax
+SOTTR.exe+5EE3417 - 8B 82 BC000000        - mov eax,[rdx+000000BC]
+SOTTR.exe+5EE341D - 89 81 BC000000        - mov [rcx+000000BC],eax
+SOTTR.exe+5EE3423 - 0F28 82 C0000000      - movaps xmm0,[rdx+000000C0]
+SOTTR.exe+5EE342A - 66 0F7F 81 C0000000   - movdqa [rcx+000000C0],xmm0
+SOTTR.exe+5EE3432 - 0F28 8A D0000000      - movaps xmm1,[rdx+000000D0]
 
+//... which is the game coords+quaternion. But to reliably get the address, use:
+SOTTR.exe+5D3F16A - 48 85 C0              - test rax,rax
+SOTTR.exe+5D3F16D - 0F84 74010000         - je SOTTR.exe+5D3F2E7
+SOTTR.exe+5D3F173 - 0F28 50 30            - movaps xmm2,[rax+30]
+SOTTR.exe+5D3F177 - 41 0F5C 94 24 80000000  - subps xmm2,[r12+00000080]					<< Camera struct address in r12
+SOTTR.exe+5D3F180 - 49 8B 87 60060000     - mov rax,[r15+00000660]
+SOTTR.exe+5D3F187 - 0F59 D2               - mulps xmm2,xmm2
+SOTTR.exe+5D3F18A - 0F28 CA               - movaps xmm1,xmm2
+SOTTR.exe+5D3F18D - 0F28 C2               - movaps xmm0,xmm2
+SOTTR.exe+5D3F190 - 0FC6 CA 02            - shufps xmm1,xmm202 { 2 }
+SOTTR.exe+5D3F194 - 0FC6 C2 01            - shufps xmm0,xmm201 { 1 }
+SOTTR.exe+5D3F198 - F3 0F58 C1            - addss xmm0,xmm1
+SOTTR.exe+5D3F19C - F3 0F10 88 D0000000   - movss xmm1,[rax+000000D0]
+SOTTR.exe+5D3F1A4 - F3 0F59 C9            - mulss xmm1,xmm1
 
-
-
-// Camera address location: 
-// Read of real matrix, copy to matrix used by other elements. Only intercept address, leave write in tact.
-// Best to sub 60 from rbx value then store it.
-SOTTR.exe+BB1A147 - 89 83 80FFFFFF        - mov [rbx-00000080],eax
-SOTTR.exe+BB1A14D - 8B 83 7CFFFFFF        - mov eax,[rbx-00000084]						<< FOV READ
-SOTTR.exe+BB1A153 - 89 83 84FFFFFF        - mov [rbx-0000007C],eax
-SOTTR.exe+BB1A159 - 0F28 83 A0FFFFFF      - movaps xmm0,[rbx-00000060]					<< MAT1 READ
-SOTTR.exe+BB1A160 - 66 0F7F 83 E0FFFFFF   - movdqa [rbx-00000020],xmm0
-SOTTR.exe+BB1A168 - 0F28 8B B0FFFFFF      - movaps xmm1,[rbx-00000050]					<< MAT2 READ
-SOTTR.exe+BB1A16F - 66 0F7F 8B F0FFFFFF   - movdqa [rbx-00000010],xmm1
-SOTTR.exe+BB1A177 - 0F28 83 C0FFFFFF      - movaps xmm0,[rbx-00000040]					<< MAT3 READ
-SOTTR.exe+BB1A17E - 66 0F7F 03            - movdqa [rbx],xmm0
-SOTTR.exe+BB1A182 - 0F28 8B D0FFFFFF      - movaps xmm1,[rbx-00000030]					<< MAT4, coords READ
-SOTTR.exe+BB1A189 - 66 0F7F 4B 10         - movdqa [rbx+10],xmm1
-SOTTR.exe+BB1A18E - 44 38 A3 DD010000     - cmp [rbx+000001DD],r12l
-
-// WRITE1. Test for our address.
-SOTTR.exe+BB1A1A1 - 74 09                 - je SOTTR.exe+BB1A1AC
-SOTTR.exe+BB1A1A3 - 44 39 A0 900F0000     - cmp [rax+00000F90],r12d
-SOTTR.exe+BB1A1AA - 75 13                 - jne SOTTR.exe+BB1A1BF
-SOTTR.exe+BB1A1AC - 48 8B 93 88030000     - mov rdx,[rbx+00000388]
-SOTTR.exe+BB1A1B3 - 48 8D 8B E0010000     - lea rcx,[rbx+000001E0]
-SOTTR.exe+BB1A1BA - E8 818965F4           - call SOTTR.exe+172B40
-SOTTR.exe+BB1A1BF - 0F28 83 E0010000      - movaps xmm0,[rbx+000001E0]					<< JUMP END POINT
-SOTTR.exe+BB1A1C6 - 89 F8                 - mov eax,edi
-SOTTR.exe+BB1A1C8 - 66 0F7F 83 A0FFFFFF   - movdqa [rbx-00000060],xmm0					<< MAT1
-SOTTR.exe+BB1A1D0 - 0F28 8B F0010000      - movaps xmm1,[rbx+000001F0]
-SOTTR.exe+BB1A1D7 - 66 0F7F 8B B0FFFFFF   - movdqa [rbx-00000050],xmm1					<< MAT2
-SOTTR.exe+BB1A1DF - 0F28 83 00020000      - movaps xmm0,[rbx+00000200]
-SOTTR.exe+BB1A1E6 - 66 0F7F 83 C0FFFFFF   - movdqa [rbx-00000040],xmm0					<< MAT3
-SOTTR.exe+BB1A1EE - 0F28 8B 10020000      - movaps xmm1,[rbx+00000210]
-SOTTR.exe+BB1A1F5 - 66 0F7F 8B D0FFFFFF   - movdqa [rbx-00000030],xmm1					<< MAT4, coords
-SOTTR.exe+BB1A1FD - 83 FF FF              - cmp edi,-01 { 255 }
-SOTTR.exe+BB1A200 - 7F 06                 - jg SOTTR.exe+BB1A208
-
-// WRITE2. Test for our address, writes to more structs. Split up in multiple parts due to RIP relative reads. 
-SOTTR.exe+6DF4A2F - 0FC6 C0 00            - shufps xmm0,xmm000 { 0 }
-SOTTR.exe+6DF4A33 - 0F59 D8               - mulps xmm3,xmm0
-SOTTR.exe+6DF4A36 - 0F28 C4               - movaps xmm0,xmm4
-SOTTR.exe+6DF4A39 - 0FC6 C1 FE            - shufps xmm0,xmm1-02 { 254 }
-SOTTR.exe+6DF4A3D - 0FC6 E0 84            - shufps xmm4,xmm0-7C { 132 }
-SOTTR.exe+6DF4A41 - 41 0F29 67 60         - movaps [r15+60],xmm4				<< MAT1 WRITE
-SOTTR.exe+6DF4A46 - 0F28 C3               - movaps xmm0,xmm3
-SOTTR.exe+6DF4A49 - 0FC6 C1 FE            - shufps xmm0,xmm1-02 { 254 }
-SOTTR.exe+6DF4A4D - 0FC6 D8 84            - shufps xmm3,xmm0-7C { 132 }
-SOTTR.exe+6DF4A51 - 0F28 C5               - movaps xmm0,xmm5
-SOTTR.exe+6DF4A54 - 41 0F29 5F 70         - movaps [r15+70],xmm3				<< MAT2 WRITE
-SOTTR.exe+6DF4A59 - 0FC6 C1 FE            - shufps xmm0,xmm1-02 { 254 }
-SOTTR.exe+6DF4A5D - 0FC6 E8 84            - shufps xmm5,xmm0-7C { 132 }
-SOTTR.exe+6DF4A61 - 0F28 C2               - movaps xmm0,xmm2
-
-// WRITE3. Test for our address, writes to more structs. Split up in multiple parts due to RIP relative reads. 
-SOTTR.exe+6DF4A64 - 0FC6 05 44E11FFA FE   - shufps xmm0,[SOTTR.exe+FF2BB0]-02 { 254 }
-SOTTR.exe+6DF4A6C - 41 0F29 AF 80000000   - movaps [r15+00000080],xmm5				<< INTERCEPT HERE. MAT3 WRITE
-SOTTR.exe+6DF4A74 - 0FC6 D0 84            - shufps xmm2,xmm0-7C { 132 }
-SOTTR.exe+6DF4A78 - 41 0F29 97 90000000   - movaps [r15+00000090],xmm2				<< MAT4 WRITE, coords.
-SOTTR.exe+6DF4A80 - 48 8B 86 B8FC0100     - mov rax,[rsi+0001FCB8]
-SOTTR.exe+6DF4A87 - C6 86 64020000 01     - mov byte ptr [rsi+00000264],01 { 1 }
-SOTTR.exe+6DF4A8E - 48 85 C0              - test rax,rax
-SOTTR.exe+6DF4A91 - 74 06                 - je SOTTR.exe+6DF4A99
-
-// WRITE4:
-SOTTR.exe+BB1A25C - E8 8F72E8F4           - call SOTTR.exe+9A14F0
-SOTTR.exe+BB1A261 - 0F57 D2               - xorps xmm2,xmm2
-SOTTR.exe+BB1A264 - F3 0F11 83 8CFFFFFF   - movss [rbx-00000074],xmm0
-SOTTR.exe+BB1A26C - 0F5C 93 B0FFFFFF      - subps xmm2,[rbx-00000050]
-SOTTR.exe+BB1A273 - 0F28 C2               - movaps xmm0,xmm2
-SOTTR.exe+BB1A276 - 0FC6 83 B0FFFFFF FE   - shufps xmm0,[rbx-00000050]-02 { 254 }
-SOTTR.exe+BB1A27E - 0FC6 D0 84            - shufps xmm2,xmm0-7C { 132 }
-SOTTR.exe+BB1A282 - 0F29 93 B0FFFFFF      - movaps [rbx-00000050],xmm2					<< MAT2 WRITE
-SOTTR.exe+BB1A289 - E8 92E743F5           - call SOTTR.exe+F58A20
-SOTTR.exe+BB1A28E - 48 89 C1              - mov rcx,rax
-SOTTR.exe+BB1A291 - 48 8B 10              - mov rdx,[rax]
-
-
-
-// FOV WRITE
-SOTTR.exe+BB1A228 - EB 13                 - jmp SOTTR.exe+BB1A23D
-SOTTR.exe+BB1A22A - 48 8D 4C 24 60        - lea rcx,[rsp+60]
-SOTTR.exe+BB1A22F - E8 2C3A65F4           - call SOTTR.exe+16DC60
-SOTTR.exe+BB1A234 - F3 0F10 84 24 10010000  - movss xmm0,[rsp+00000110]
-SOTTR.exe+BB1A23D - 89 FA                 - mov edx,edi								<< ENDPOINT OF JUMP
-SOTTR.exe+BB1A23F - F3 0F11 83 78FFFFFF   - movss [rbx-00000088],xmm0				<< FOV WRITE. NOP instead of intercept.
-SOTTR.exe+BB1A247 - 48 89 E9              - mov rcx,rbp
-SOTTR.exe+BB1A24A - E8 E16FE8F4           - call SOTTR.exe+9A1230
-SOTTR.exe+BB1A24F - 89 FA                 - mov edx,edi
-SOTTR.exe+BB1A251 - F3 0F11 83 88FFFFFF   - movss [rbx-00000078],xmm0
-SOTTR.exe+BB1A259 - 48 89 E9              - mov rcx,rbp
-
-
-
-
-
-
-Test for pause ?:
-SOTTR.exe+B04CB00 - 31 C0                 - xor eax,eax
-SOTTR.exe+B04CB02 - 48 81 C1 D8000000     - add rcx,000000D8 { 216 }
-SOTTR.exe+B04CB09 - 0F1F 80 00000000      - nop [rax+00000000]
-SOTTR.exe+B04CB10 - F6 01 01              - test byte ptr [rcx],01 { 1 }
-SOTTR.exe+B04CB13 - 75 13                 - jne SOTTR.exe+B04CB28
-SOTTR.exe+B04CB15 - 48 FF C0              - inc rax
-SOTTR.exe+B04CB18 - 48 81 C1 D0000000     - add rcx,000000D0 { 208 }
-SOTTR.exe+B04CB1F - 48 83 F8 10           - cmp rax,10 { 16 }
-SOTTR.exe+B04CB23 - 7C EB                 - jl SOTTR.exe+B04CB10
-SOTTR.exe+B04CB25 - 30 C0                 - xor al,al
-SOTTR.exe+B04CB27 - C3                    - ret 
-SOTTR.exe+B04CB28 - B0 01                 - mov al,01 { 1 }
-SOTTR.exe+B04CB2A - C3                    - ret 
-
-
-
-
-
-Temp stuff:
-Ansel enable check
-
-NvCamera64.AnselGetFunctionTable+43D5 - 48 8B 96 A0000000     - mov rdx,[rsi+000000A0]
-NvCamera64.AnselGetFunctionTable+43DC - 48 8B 42 60           - mov rax,[rdx+60]
-NvCamera64.AnselGetFunctionTable+43E0 - 48 8B 52 50           - mov rdx,[rdx+50]
-NvCamera64.AnselGetFunctionTable+43E4 - 48 8B 8E B0000000     - mov rcx,[rsi+000000B0]
-NvCamera64.AnselGetFunctionTable+43EB - FF 15 CFC32D00        - call qword ptr [NvCamera64.dll+300910] << Call ansel check
-NvCamera64.AnselGetFunctionTable+43F1 - 3C 01                 - cmp al,01 { 1 }
-NvCamera64.AnselGetFunctionTable+43F3 - 0F85 21050000         - jne NvCamera64.AnselGetFunctionTable+491A
-NvCamera64.AnselGetFunctionTable+43F9 - 88 45 D7              - mov [rbp-29],al
-NvCamera64.AnselGetFunctionTable+43FC - 48 8B 9E A0000000     - mov rbx,[rsi+000000A0]
-NvCamera64.AnselGetFunctionTable+4403 - B9 18010000           - mov ecx,00000118 { 280 }
-NvCamera64.AnselGetFunctionTable+4408 - E8 C3B51E00           - call NvCamera64.dll+20FB20
-NvCamera64.AnselGetFunctionTable+440D - 48 8B F8              - mov rdi,rax
-
-
-StartSession: 0000000140FA2340 
-StopSession: 0000000140FA2390 
-
-Ansel checks further: 
-SOTTR.exe+61CE510 - 48 8D 15 61FFE2FA     - lea rdx,[SOTTR.exe+FFE478] { ["Ansel"] }
-SOTTR.exe+61CE517 - 4C 8B 10              - mov r10,[rax]
-SOTTR.exe+61CE51A - 44 0FB6 CB            - movzx r9d,bl
-SOTTR.exe+61CE51E - 41 FF 52 38           - call qword ptr [r10+38]			>> LONG routine, checks
-SOTTR.exe+61CE522 - E8 B9D880FA           - call SOTTR.exe+9DBDE0
-SOTTR.exe+61CE527 - 84 DB                 - test bl,bl
-SOTTR.exe+61CE529 - 48 8B 9C 24 90000000  - mov rbx,[rsp+00000090]
-SOTTR.exe+61CE531 - 0F84 85010000         - je SOTTR.exe+61CE6BC
-SOTTR.exe+61CE537 - 40 84 F6              - test sil,sil
-SOTTR.exe+61CE53A - 0F85 7C010000         - jne SOTTR.exe+61CE6BC
-SOTTR.exe+61CE540 - 40 84 ED              - test bpl,bpl
-SOTTR.exe+61CE543 - 0F85 73010000         - jne SOTTR.exe+61CE6BC
-SOTTR.exe+61CE549 - 45 84 F6              - test r14l,r14l
-SOTTR.exe+61CE54C - 0F85 6A010000         - jne SOTTR.exe+61CE6BC
-SOTTR.exe+61CE552 - 48 83 78 28 00        - cmp qword ptr [rax+28],00 { 0 }
-SOTTR.exe+61CE557 - 0F85 5F010000         - jne SOTTR.exe+61CE6BC
-SOTTR.exe+61CE55D - 31 D2                 - xor edx,edx
-SOTTR.exe+61CE55F - 0F29 74 24 70         - movaps [rsp+70],xmm6
-
-SOTTR.exe+61CE6A5 - C6 47 02 00           - mov byte ptr [rdi+02],00 { 0 }
-SOTTR.exe+61CE6A9 - B9 0B000000           - mov ecx,0000000B { 11 }
-SOTTR.exe+61CE6AE - E8 6D0C2DFA           - call SOTTR.exe+49F320
-SOTTR.exe+61CE6B3 - E8 781902FA           - call SOTTR.exe+1F0030
-SOTTR.exe+61CE6B8 - B0 01                 - mov al,01 { 1 }						>> Set of flag whether ansel is OK
-SOTTR.exe+61CE6BA - EB 02                 - jmp SOTTR.exe+61CE6BE
-SOTTR.exe+61CE6BC - 30 C0                 - xor al,al
-SOTTR.exe+61CE6BE - 4C 8D 9C 24 80000000  - lea r11,[rsp+00000080]
-SOTTR.exe+61CE6C6 - 49 8B 6B 18           - mov rbp,[r11+18]
-SOTTR.exe+61CE6CA - 49 8B 73 20           - mov rsi,[r11+20]
-SOTTR.exe+61CE6CE - 49 8B 7B 28           - mov rdi,[r11+28]
-SOTTR.exe+61CE6D2 - 4C 89 DC              - mov rsp,r11
-SOTTR.exe+61CE6D5 - 41 5E                 - pop r14
-
-/////////////
-Update ansel camera every frame:
-SOTTR.exe+FA3180 - 40 53                 - push rbx
-SOTTR.exe+FA3182 - 48 83 EC 20           - sub rsp,20 { 32 }
-SOTTR.exe+FA3186 - 80 79 08 00           - cmp byte ptr [rcx+08],00 { 0 }
-SOTTR.exe+FA318A - 48 8B D9              - mov rbx,rcx
-SOTTR.exe+FA318D - 74 4D                 - je SOTTR.exe+FA31DC
-SOTTR.exe+FA318F - 80 79 48 00           - cmp byte ptr [rcx+48],00 { 0 }
-SOTTR.exe+FA3193 - 74 47                 - je SOTTR.exe+FA31DC
-SOTTR.exe+FA3195 - 45 84 C0              - test r8l,r8l
-SOTTR.exe+FA3198 - 75 42                 - jne SOTTR.exe+FA31DC
-SOTTR.exe+FA319A - 48 8D 0D 4FAE6702     - lea rcx,[SOTTR.exe+361DFF0] { [00000102] }
-SOTTR.exe+FA31A1 - FF 15 81F80300        - call qword ptr [SOTTR.exe+FE2A28]
-SOTTR.exe+FA31A7 - 85 C0                 - test eax,eax
-SOTTR.exe+FA31A9 - 74 08                 - je SOTTR.exe+FA31B3
-SOTTR.exe+FA31AB - 8B C8                 - mov ecx,eax
-SOTTR.exe+FA31AD - FF 15 ADF80300        - call qword ptr [SOTTR.exe+FE2A60]
-SOTTR.exe+FA31B3 - 48 8D 4B 0C           - lea rcx,[rbx+0C]
-SOTTR.exe+FA31B7 - FF 15 EBEE0300        - call qword ptr [SOTTR.exe+FE20A8]						 { ->anselsdk64.ansel::updateCamera }
-SOTTR.exe+FA31BD - 48 8D 0D 2CAE6702     - lea rcx,[SOTTR.exe+361DFF0] { [00000102] }
-SOTTR.exe+FA31C4 - FF 15 66F80300        - call qword ptr [SOTTR.exe+FE2A30]
-SOTTR.exe+FA31CA - 85 C0                 - test eax,eax
-SOTTR.exe+FA31CC - 74 0E                 - je SOTTR.exe+FA31DC
-SOTTR.exe+FA31CE - 8B C8                 - mov ecx,eax
-SOTTR.exe+FA31D0 - 48 83 C4 20           - add rsp,20 { 32 }
-SOTTR.exe+FA31D4 - 5B                    - pop rbx
-SOTTR.exe+FA31D5 - 48 FF 25 84F80300     - jmp qword ptr [SOTTR.exe+FE2A60]
-SOTTR.exe+FA31DC - 48 83 C4 20           - add rsp,20 { 32 }
-
-////////
-Update every frame: 
-SOTTR.exe+2F25E2 - FF 52 18              - call qword ptr [rdx+18]								>> Call Update camera for ansel (SOTTR.exe+FA3186)
-SOTTR.exe+2F25E5 - 49 8B CE              - mov rcx,r14
-SOTTR.exe+2F25E8 - E8 6398FBFF           - call SOTTR.exe+2ABE50
-SOTTR.exe+2F25ED - 89 AE 08B40200        - mov [rsi+0002B408],ebp
-SOTTR.exe+2F25F3 - E8 0843FCFF           - call SOTTR.exe+2B6900
-SOTTR.exe+2F25F8 - 88 86 0CB40200        - mov [rsi+0002B40C],al
-SOTTR.exe+2F25FE - E8 0D64C600           - call SOTTR.exe+F58A10
-SOTTR.exe+2F2603 - 48 8B C8              - mov rcx,rax
-SOTTR.exe+2F2606 - 48 8B 10              - mov rdx,[rax]
-SOTTR.exe+2F2609 - FF 52 38              - call qword ptr [rdx+38]
-SOTTR.exe+2F260C - 84 C0                 - test al,al
-SOTTR.exe+2F260E - 74 0D                 - je SOTTR.exe+2F261D
-SOTTR.exe+2F2610 - 89 AE 08B40200        - mov [rsi+0002B408],ebp
-SOTTR.exe+2F2616 - 40 88 AE 0CB40200     - mov [rsi+0002B40C],bpl
-SOTTR.exe+2F261D - 83 3D 6C270202 01     - cmp dword ptr [SOTTR.exe+2314D90],01 { 1 }
-SOTTR.exe+2F2624 - 75 0A                 - jne SOTTR.exe+2F2630
-SOTTR.exe+2F2626 - C7 86 08B40200 02000000 - mov [rsi+0002B408],00000002 { 2 }
-SOTTR.exe+2F2630 - 40 84 FF              - test dil,dil
-
-
+// or...
+SOTTR.exe+853FC4E - 48 8D AC 24 B8FFFFFF  - lea rbp,[rsp-00000048]
+SOTTR.exe+853FC56 - 48 81 EC 48010000     - sub rsp,00000148 { 328 }
+SOTTR.exe+853FC5D - 41 B1 01              - mov r9l,01 { 1 }
+SOTTR.exe+853FC60 - 31 DB                 - xor ebx,ebx
+SOTTR.exe+853FC62 - 89 59 28              - mov [rcx+28],ebx
+SOTTR.exe+853FC65 - 45 31 C0              - xor r8d,r8d
+SOTTR.exe+853FC68 - 0F28 82 80000000      - movaps xmm0,[rdx+00000080]					<< Camera struct address in rdx.
+SOTTR.exe+853FC6F - 49 89 CF              - mov r15,rcx
+SOTTR.exe+853FC72 - 41 0FB6 D1            - movzx edx,r9l
+SOTTR.exe+853FC76 - 0F29 44 24 60         - movaps [rsp+60],xmm0
+SOTTR.exe+853FC7B - E8 0060F1F7           - call SOTTR.exe+455C80
+SOTTR.exe+853FC80 - 49 8B 8F E0070000     - mov rcx,[r15+000007E0]
+SOTTR.exe+853FC87 - 49 89 C5              - mov r13,rax
+SOTTR.exe+853FC8A - 48 89 44 24 48        - mov [rsp+48],rax
 
