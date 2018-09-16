@@ -32,6 +32,7 @@
 #include "Defaults.h"
 #include "CDataFile.h"
 #include "Utils.h"
+#include <map>
 
 extern "C" BYTE g_cameraEnabled;
 
@@ -129,10 +130,12 @@ namespace IGCS
 		void mainWindowHandle(HWND handle) { _mainWindowHandle = handle; }
 		Gamepad& gamePad() { return _gamePad; }
 		Settings& settings() { return _settings; }
+		map<string, LPVOID>& hookedFunctions() { return _hookedFunctions; }
 		bool keyboardMouseControlCamera() const { return _settings.cameraControlDevice == DEVICE_ID_KEYBOARD_MOUSE || _settings.cameraControlDevice == DEVICE_ID_ALL; }
 		bool controllerControlsCamera() const { return _settings.cameraControlDevice == DEVICE_ID_GAMEPAD || _settings.cameraControlDevice == DEVICE_ID_ALL; }
 
 	private:
+		map<string, LPVOID> _hookedFunctions;
 		bool _inputBlocked = false;
 		volatile bool _systemActive = false;
 		Gamepad _gamePad;

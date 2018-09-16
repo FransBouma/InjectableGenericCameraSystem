@@ -34,6 +34,7 @@
 #include "OverlayConsole.h"
 #include "OverlayControl.h"
 #include <mutex>
+#include <map>
 
 using namespace std;
 
@@ -83,8 +84,11 @@ namespace IGCS::InputHooker
 	// Our own version of XInputGetState
 	DWORD WINAPI detourXInputGetState(DWORD dwUserIndex, XINPUT_STATE* pState)
 	{
+		map<string, LPVOID>& hookedFunctions = Globals::instance().hookedFunctions();
+		XINPUTGETSTATE toCall = (XINPUTGETSTATE)hookedFunctions["XInputGetState"];
+
 		// first call the original function
-		DWORD toReturn = hookedXInputGetState(dwUserIndex, pState);
+		DWORD toReturn = toCall(dwUserIndex, pState);
 		// check if the passed in pState is equal to our gamestate. If so, always allow.
 		if (g_cameraEnabled && pState != Globals::instance().gamePad().getState())
 		{
@@ -102,7 +106,9 @@ namespace IGCS::InputHooker
 	BOOL WINAPI detourGetMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax)
 	{
 		// first call the original function
-		if (!hookedGetMessageA(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax))
+		map<string, LPVOID>& hookedFunctions = Globals::instance().hookedFunctions();
+		GETMESSAGEA toCall = (GETMESSAGEA)hookedFunctions["GetMessageA"];
+		if (!toCall(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax))
 		{
 			return FALSE;
 		}
@@ -114,8 +120,11 @@ namespace IGCS::InputHooker
 	// Our own version of GetMessageW
 	BOOL WINAPI detourGetMessageW(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax)
 	{
+		map<string, LPVOID>& hookedFunctions = Globals::instance().hookedFunctions();
+		GETMESSAGEW toCall = (GETMESSAGEW)hookedFunctions["GetMessageW"];
+
 		// first call the original function
-		if (!hookedGetMessageW(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax))
+		if (!toCall(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax))
 		{
 			return FALSE;
 		}
@@ -127,8 +136,10 @@ namespace IGCS::InputHooker
 	// Our own version of PeekMessageA
 	BOOL WINAPI detourPeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg)
 	{
+		map<string, LPVOID>& hookedFunctions = Globals::instance().hookedFunctions();
+		PEEKMESSAGEA toCall = (PEEKMESSAGEA)hookedFunctions["PeekMessageA"];
 		// first call the original function
-		if (!hookedPeekMessageA(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg))
+		if (!toCall(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg))
 		{
 			return FALSE;
 		}
@@ -140,6 +151,8 @@ namespace IGCS::InputHooker
 	BOOL WINAPI detourPeekMessageW(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg)
 	{
 		// first call the original function
+		map<string, LPVOID>& hookedFunctions = Globals::instance().hookedFunctions();
+		PEEKMESSAGEW toCall = (PEEKMESSAGEW)hookedFunctions["PeekMessageW"];
 		if (!hookedPeekMessageW(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg))
 		{
 			return FALSE;
@@ -170,44 +183,52 @@ namespace IGCS::InputHooker
 	{
 		InitializeCriticalSectionAndSpinCount(&_messageProcessCriticalSection, 0x400);
 
-		if (MH_CreateHookApiEx(L"xinput9_1_0", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
+		map<string, LPVOID>& hookedFunctions = Globals::instance().hookedFunctions();
+
+		LPVOID hookedFunction = nullptr;
+		if (MH_CreateHookApiEx(L"xinput9_1_0", "XInputGetState", &detourXInputGetState, &hookedFunction) != MH_OK)
 		{
 			OverlayConsole::instance().logError("Hooking XInput9_1 failed!");
 		}
+		hookedFunctions["XInputGetState"] = hookedFunction;
 		OverlayConsole::instance().logDebug("Hook set to XInputSetState");
 
-		if (MH_CreateHookApiEx(L"user32", "GetMessageA", &detourGetMessageA, &hookedGetMessageA) != MH_OK)
+		if (MH_CreateHookApiEx(L"user32", "GetMessageA", &detourGetMessageA, &hookedFunction) != MH_OK)
 		{
 			OverlayConsole::instance().logError("Hooking GetMessageA failed!");
 		}
+		hookedFunctions["GetMessageA"] = hookedFunction;
 		OverlayConsole::instance().logDebug("Hook set to GetMessageA");
 
-		if (MH_CreateHookApiEx(L"user32", "GetMessageW", &detourGetMessageW, &hookedGetMessageW) != MH_OK)
+		if (MH_CreateHookApiEx(L"user32", "GetMessageW", &detourGetMessageW, &hookedFunction) != MH_OK)
 		{
 			OverlayConsole::instance().logError("Hooking GetMessageW failed!");
 		}
+		hookedFunctions["GetMessageW"] = hookedFunction;
 		OverlayConsole::instance().logDebug("Hook set to GetMessageW");
 
-		if (MH_CreateHookApiEx(L"user32", "PeekMessageA", &detourPeekMessageA, &hookedPeekMessageA) != MH_OK)
+		if (MH_CreateHookApiEx(L"user32", "PeekMessageA", &detourPeekMessageA, &hookedFunction) != MH_OK)
 		{
 			OverlayConsole::instance().logError("Hooking PeekMessageA failed!");
 		}
+		hookedFunctions["PeekMessageA"] = hookedFunction;
 		OverlayConsole::instance().logDebug("Hook set to PeekMessageA");
 
-		if (MH_CreateHookApiEx(L"user32", "PeekMessageW", &detourPeekMessageW, &hookedPeekMessageW) != MH_OK)
+		if (MH_CreateHookApiEx(L"user32", "PeekMessageW", &detourPeekMessageW, &hookedFunction) != MH_OK)
 		{
 			OverlayConsole::instance().logError("Hooking PeekMessageW failed!");
 		}
+		hookedFunctions["PeekMessageW"] = hookedFunction;
 		OverlayConsole::instance().logDebug("Hook set to PeekMessageW");
 
 		// Enable all hooks
-		//if (MH_EnableHook(MH_ALL_HOOKS) == MH_OK)
-		//{
-		//	OverlayConsole::instance().logLine("All hooks enabled.");
-		//}
-		//else
-		//{
-		//	OverlayConsole::instance().logError("Enabling hooks failed.");
-		//}
+		if (MH_EnableHook(MH_ALL_HOOKS) == MH_OK)
+		{
+			OverlayConsole::instance().logLine("All hooks enabled.");
+		}
+		else
+		{
+			OverlayConsole::instance().logError("Enabling hooks failed.");
+		}
 	}
 }

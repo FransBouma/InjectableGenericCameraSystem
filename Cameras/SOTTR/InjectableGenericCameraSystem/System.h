@@ -28,6 +28,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Camera.h"
+#include "InputHooker.h"
 #include "Gamepad.h"
 #include <map>
 #include "AOBBlock.h"

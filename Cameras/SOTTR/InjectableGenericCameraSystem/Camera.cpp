@@ -95,7 +95,7 @@ namespace IGCS
 
 	void Camera::moveForward(float amount)
 	{
-		_direction.y += (Globals::instance().settings().movementSpeed * amount);		// z up, into of the screen.
+		_direction.y += (Globals::instance().settings().movementSpeed * amount);		// z up, y into of the screen.
 		_movementOccurred = true;
 	}
 

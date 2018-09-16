@@ -325,10 +325,10 @@ namespace IGCS
 		Globals::instance().mainWindowHandle(Utils::findMainWindow(GetCurrentProcessId()));
 		Input::registerRawInput();
 		DX11Hooker::initializeHook();
+		InputHooker::setInputHooks();
 
 		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
 		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);
-		InputHooker::setInputHooks();
 		waitForCameraStructAddresses();		// blocks till camera is found.
 		GameSpecific::InterceptorHelper::setPostCameraStructHooks(_aobBlocks);
 

@@ -111,7 +111,6 @@ namespace IGCS::OverlayControl
 		}
 
 		ImGui::Spacing();
-_menuItemSelected = 1;
 		switch (_menuItemSelected)
 		{
 		case 0: // settings
