@@ -42,6 +42,7 @@ automatically when you clone the repo. The camera uses DirectXMath for the 3D ma
 * Metal Gear Solid V: The Phantom Pain: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/MGS5
 * Prey (2017): https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Prey
 * Ryse: Son of Rome: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/RyseSonOfRome
+* Shadow of the Tomb Raider: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/SOTTR
 * The Evil Within 2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/TEW2
 * Titanfall 2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Titanfall2
 * Tomb Raider 2013: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Tombraider
