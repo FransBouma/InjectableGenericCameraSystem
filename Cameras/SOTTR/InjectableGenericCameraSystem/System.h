@@ -59,7 +59,6 @@ namespace IGCS
 		Camera _camera;
 		LPBYTE _hostImageAddress;
 		DWORD _hostImageSize;
-		bool _timeStopped = false;
 		bool _cameraMovementLocked = false;
 		bool _cameraStructFound = false;
 		map<string, AOBBlock*> _aobBlocks;

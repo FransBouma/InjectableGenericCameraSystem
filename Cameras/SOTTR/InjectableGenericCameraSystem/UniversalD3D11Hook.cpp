@@ -31,26 +31,32 @@ namespace IGCS::DX11Hooker
 	typedef HRESULT(__stdcall *D3D11PresentHook) (IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
 	typedef HRESULT(__stdcall *D3D11ResizeBuffersHook) (IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags);
 
-	static ID3D11Device* _device = nullptr;
-	static ID3D11DeviceContext* _context = nullptr;
-	static ID3D11RenderTargetView* _mainRenderTargetView = nullptr;
-
-	//--------------------------------------------------------------------------------------------------------------------------------
-	// Pointers to the original hooked functions
-	static D3D11PresentHook hookedD3D11Present = nullptr;
-	static D3D11ResizeBuffersHook hookedD3D11ResizeBuffers = nullptr;
-
-	static bool _tmpSwapChainInitialized = false;
+	static atomic_bool _tmpSwapChainInitialized = false;
 	static atomic_bool _imGuiInitializing = false;
 	static atomic_bool _initializeDeviceAndContext = true;
 	static atomic_bool _presentInProgress = false;
 
+	static CRITICAL_SECTION _presentCriticalSection;
+
+	//--------------------------------------------------------------------------------------------------------------------------------
+	//
+	// For this game, in-lining of functions has been disabled in the C++ optimizations, as it otherwise causes problems in release builds. The cause I don't know but I suspect
+	// the code in this file. I've done everything I could to make things work here, but it appears things are still shaky at times. At least with disabling that particular optimization it works
+	// ok. Function pointers are stored in the globals object, which is a bit of a lame thing but using statics here was an assumption to be a problem so to avoid any cause of the crashes
+	// at runtime I've moved these to a global location. Same goes for the device/context pointers. 
+	//
+	//--------------------------------------------------------------------------------------------------------------------------------
+
+
 	HRESULT __stdcall detourD3D11ResizeBuffers(IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags)
 	{
+		map<string, LPVOID>& hookedFunctions = Globals::instance().hookedFunctions();
+		D3D11ResizeBuffersHook toCall = (D3D11ResizeBuffersHook)hookedFunctions["DxgiResizeBuffers"];
+
 		_imGuiInitializing = true;
 		ImGui_ImplDX11_InvalidateDeviceObjects();
 		cleanupRenderTarget();
-		HRESULT toReturn = hookedD3D11ResizeBuffers(pSwapChain, bufferCount, width, height, newFormat, swapChainFlags);
+		HRESULT toReturn = toCall(pSwapChain, bufferCount, width, height, newFormat, swapChainFlags);
 		createRenderTarget(pSwapChain);
 		ImGui_ImplDX11_CreateDeviceObjects();
 		_imGuiInitializing = false;
@@ -64,6 +70,7 @@ namespace IGCS::DX11Hooker
 		{
 			return S_OK;
 		}
+		EnterCriticalSection(&_presentCriticalSection);
 		_presentInProgress = true;
 		if (_tmpSwapChainInitialized)
 		{
@@ -71,40 +78,46 @@ namespace IGCS::DX11Hooker
 			{
 				if (_initializeDeviceAndContext)
 				{
-					if (FAILED(pSwapChain->GetDevice(__uuidof(_device), (void**)&_device)))
+					ID3D11Device* device = nullptr;
+					ID3D11DeviceContext* context = nullptr;
+					if (FAILED(pSwapChain->GetDevice(__uuidof(device), (void**)&device)))
 					{
 						IGCS::Console::WriteError("Failed to get device from hooked swapchain");
 					}
 					else
 					{
-						OverlayConsole::instance().logDebug("DX11 Device: %p", (void*)_device);
-						_device->GetImmediateContext(&_context);
+						OverlayConsole::instance().logDebug("DX11 Device: %p", (void*)device);
+						device->GetImmediateContext(&context);
 					}
-					if (nullptr == _context)
+					if (nullptr == context)
 					{
 						IGCS::Console::WriteError("Failed to get device context from hooked swapchain");
 					}
 					else
 					{
-						OverlayConsole::instance().logDebug("DX11 Context: %p", (void*)_context);
+						OverlayConsole::instance().logDebug("DX11 Context: %p", (void*)context);
 					}
+					Globals::instance().setHookedD3DObjects(device, context);
 					createRenderTarget(pSwapChain);
 					initImGui();
-
 					_initializeDeviceAndContext = false;
 				}
 				// render our own stuff
-				_context->OMSetRenderTargets(1, &_mainRenderTargetView, NULL);
+				ID3D11RenderTargetView* mainRenderTargetView = Globals::instance().mainRenderTargetView();
+				Globals::instance().context()->OMSetRenderTargets(1, &mainRenderTargetView, NULL);
 				OverlayControl::renderOverlay();
 				Input::resetKeyStates();
 				Input::resetMouseState();
 			}
-
 		}
-		HRESULT toReturn = hookedD3D11Present(pSwapChain, SyncInterval, Flags);
+		map<string, LPVOID>& hookedFunctions = Globals::instance().hookedFunctions();
+		D3D11PresentHook toCall = (D3D11PresentHook)hookedFunctions["DxgiPresent"];
+		HRESULT toReturn = toCall(pSwapChain, SyncInterval, Flags);
 		_presentInProgress = false;
+		LeaveCriticalSection(&_presentCriticalSection);
 		return toReturn;
 	}
+
 
 	void initializeHook()
 	{
@@ -115,7 +128,7 @@ namespace IGCS::DX11Hooker
 		swapChainDesc.BufferCount = 1;
 		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		swapChainDesc.OutputWindow = IGCS::Globals::instance().mainWindowHandle();
+		swapChainDesc.OutputWindow = Globals::instance().mainWindowHandle();
 		swapChainDesc.SampleDesc.Count = 1;
 		swapChainDesc.Windowed = TRUE;
 		swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
@@ -140,10 +153,16 @@ namespace IGCS::DX11Hooker
 
 		OverlayConsole::instance().logDebug("Present Address: %p", (void*)(__int64*)pSwapChainVtable[DXGI_PRESENT_INDEX]);
 
-		if (MH_CreateHook((LPBYTE)pSwapChainVtable[DXGI_PRESENT_INDEX], &detourD3D11Present, reinterpret_cast<LPVOID*>(&hookedD3D11Present)) != MH_OK)
+		InitializeCriticalSectionAndSpinCount(&_presentCriticalSection, 0x400);
+
+		map<string, LPVOID>& hookedFunctions = Globals::instance().hookedFunctions();
+		LPVOID hookedFunction = nullptr;
+
+		if (MH_CreateHook((LPBYTE)pSwapChainVtable[DXGI_PRESENT_INDEX], &detourD3D11Present, &hookedFunction) != MH_OK)
 		{
 			IGCS::Console::WriteError("Hooking Present failed!");
 		}
+		hookedFunctions["DxgiPresent"] = hookedFunction;
 		if (MH_EnableHook((LPBYTE)pSwapChainVtable[DXGI_PRESENT_INDEX]) != MH_OK)
 		{
 			IGCS::Console::WriteError("Enabling of Present hook failed!");
@@ -151,10 +170,11 @@ namespace IGCS::DX11Hooker
 
 		OverlayConsole::instance().logDebug("ResizeBuffers Address: %p", (__int64*)pSwapChainVtable[DXGI_RESIZEBUFFERS_INDEX]);
 
-		if (MH_CreateHook((LPBYTE)pSwapChainVtable[DXGI_RESIZEBUFFERS_INDEX], &detourD3D11ResizeBuffers, reinterpret_cast<LPVOID*>(&hookedD3D11ResizeBuffers)) != MH_OK)
+		if (MH_CreateHook((LPBYTE)pSwapChainVtable[DXGI_RESIZEBUFFERS_INDEX], &detourD3D11ResizeBuffers, &hookedFunction) != MH_OK)
 		{
 			IGCS::Console::WriteError("Hooking ResizeBuffers failed!");
 		}
+		hookedFunctions["DxgiResizeBuffers"] = hookedFunction;
 		if (MH_EnableHook((LPBYTE)pSwapChainVtable[DXGI_RESIZEBUFFERS_INDEX]) != MH_OK)
 		{
 			IGCS::Console::WriteError("Enabling of ResizeBuffers hook failed!");
@@ -179,24 +199,22 @@ namespace IGCS::DX11Hooker
 		render_target_view_desc.Format = sd.BufferDesc.Format;
 		render_target_view_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 		pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-		_device->CreateRenderTargetView(pBackBuffer, &render_target_view_desc, &_mainRenderTargetView);
+		ID3D11RenderTargetView* mainRenderTargetView;
+		Globals::instance().device()->CreateRenderTargetView(pBackBuffer, &render_target_view_desc, &mainRenderTargetView);
+		Globals::instance().mainRenderTargetView(mainRenderTargetView);
 		pBackBuffer->Release();
 	}
 
 
 	void cleanupRenderTarget()
 	{
-		if (nullptr != _mainRenderTargetView)
-		{
-			_mainRenderTargetView->Release();
-			_mainRenderTargetView = nullptr;
-		}
+		Globals::instance().releaseMainRenderTargetView();
 	}
 
 
 	void initImGui()
 	{
-		ImGui_ImplDX11_Init(IGCS::Globals::instance().mainWindowHandle(), _device, _context);
+		ImGui_ImplDX11_Init(IGCS::Globals::instance().mainWindowHandle(), Globals::instance().device(), Globals::instance().context());
 		ImGuiIO& io = ImGui::GetIO();
 		io.IniFilename = IGCS_OVERLAY_INI_FILENAME;
 		initImGuiStyle();

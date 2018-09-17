@@ -33,6 +33,7 @@
 #include "CDataFile.h"
 #include "Utils.h"
 #include <map>
+#include <d3d11.h> 
 
 extern "C" BYTE g_cameraEnabled;
 
@@ -121,6 +122,19 @@ namespace IGCS
 
 		void saveSettingsIfRequired(float delta);
 		void markSettingsDirty();
+		void setHookedD3DObjects(ID3D11Device* device, ID3D11DeviceContext* context)
+		{
+			_device = device;
+			_context = context;
+		}
+		void releaseMainRenderTargetView()
+		{
+			if (nullptr != _mainRenderTargetView)
+			{
+				_mainRenderTargetView->Release();
+				_mainRenderTargetView = nullptr;
+			}
+		}
 
 		bool inputBlocked() const { return _inputBlocked; }
 		void inputBlocked(bool value) { _inputBlocked = value; }
@@ -131,16 +145,23 @@ namespace IGCS
 		Gamepad& gamePad() { return _gamePad; }
 		Settings& settings() { return _settings; }
 		map<string, LPVOID>& hookedFunctions() { return _hookedFunctions; }
+		ID3D11Device* device() const { return _device; }
+		ID3D11DeviceContext* context() const { return _context; }
+		ID3D11RenderTargetView* mainRenderTargetView() const { return _mainRenderTargetView; }
+		void mainRenderTargetView(ID3D11RenderTargetView* view) { _mainRenderTargetView = view; }
 		bool keyboardMouseControlCamera() const { return _settings.cameraControlDevice == DEVICE_ID_KEYBOARD_MOUSE || _settings.cameraControlDevice == DEVICE_ID_ALL; }
 		bool controllerControlsCamera() const { return _settings.cameraControlDevice == DEVICE_ID_GAMEPAD || _settings.cameraControlDevice == DEVICE_ID_ALL; }
 
 	private:
 		map<string, LPVOID> _hookedFunctions;
-		bool _inputBlocked = false;
+		bool _inputBlocked = true;
 		volatile bool _systemActive = false;
 		Gamepad _gamePad;
 		HWND _mainWindowHandle;
 		Settings _settings;
 		float _settingsDirtyTimer=0.0f;			// when settings are marked dirty, this is set with a value > 0 and decremented each frame. If 0, settings are saved. In seconds.
+		ID3D11Device* _device = nullptr;
+		ID3D11DeviceContext* _context = nullptr;
+		ID3D11RenderTargetView* _mainRenderTargetView = nullptr;
 	};
 }
