@@ -34,6 +34,7 @@
 #include "Utils.h"
 #include <map>
 #include <d3d11.h> 
+#include <atomic>
 
 extern "C" BYTE g_cameraEnabled;
 
@@ -154,8 +155,8 @@ namespace IGCS
 
 	private:
 		map<string, LPVOID> _hookedFunctions;
-		bool _inputBlocked = true;
-		volatile bool _systemActive = false;
+		bool _inputBlocked = false;
+		atomic_bool _systemActive = false;
 		Gamepad _gamePad;
 		HWND _mainWindowHandle;
 		Settings _settings;

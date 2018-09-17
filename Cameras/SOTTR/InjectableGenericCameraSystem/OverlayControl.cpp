@@ -188,7 +188,7 @@ Special thanks to:
 			ImGui::TextUnformatted("* When the main window is open, all input of keyboard / mouse to the game is blocked and the camera is locked.");
 			ImGui::TextUnformatted("* All changes you make to the main window (position/size) are saved to a file in the game root folder.");
 			ImGui::TextUnformatted("* Most settings you change will make the settings to be saved to a file in the game root folder.");
-			ImGui::TextUnformatted("* When you block input to the game (input is blocked by default), the device(s) which control the camera are blocked, all other devices are still sending input to the game.");
+			ImGui::TextUnformatted("* When you block input to the game, the device(s) which control the camera are blocked, all other devices are still sending input to the game.");
 			ImGui::TextUnformatted("* You'll get a notification in the top left corner when you change something with the keyboard, like enable/disable the camera.");
 			ImGui::PopTextWrapPos();
 		}
