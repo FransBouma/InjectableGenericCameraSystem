@@ -52,7 +52,7 @@ ACOdyssey.exe+2A6199F - E8 3C1DD1FF           - call ACOdyssey.exe+27736E0
 ACOdyssey.exe+2A619A4 - 84 C0                 - test al,al
 ACOdyssey.exe+2A619A6 - 0F84 91000000         - je ACOdyssey.exe+2A61A3D
 
-Photomode hud toggle:
+Photomode hud toggle: No longer needed. the hud toggle we found works for this too. 
 ACOdyssey.exe+2A6B7A6 - 48 39 01              - cmp [rcx],rax
 ACOdyssey.exe+2A6B7A9 - 0F93 C0               - setae al
 ACOdyssey.exe+2A6B7AC - 84 C0                 - test al,al
@@ -66,24 +66,79 @@ ACOdyssey.exe+2A6B7D0 - 48 83 39 00           - cmp qword ptr [rcx],00 { 0 }
 ACOdyssey.exe+2A6B7D4 - 75 07                 - jne ACOdyssey.exe+2A6B7DD
 ACOdyssey.exe+2A6B7D6 - 48 8B 8B F8050000     - mov rcx,[rbx+000005F8]
 
+// photomode writes are optional. They're only done when there's input. No need to block any writes. 
+// Photomode quaternion write:
+ACOdyssey.exe+2A40772 - 0FC6 C5 D2            - shufps xmm0,xmm5-2E { 210 }
+ACOdyssey.exe+2A40776 - 0F59 C4               - mulps xmm0,xmm4
+ACOdyssey.exe+2A40779 - 0F28 D4               - movaps xmm2,xmm4
+ACOdyssey.exe+2A4077C - 66 0F3A40 DC 7F       - dpps xmm3,xmm4,7F
+ACOdyssey.exe+2A40782 - 0F59 DC               - mulps xmm3,xmm4
+ACOdyssey.exe+2A40785 - 0FC6 D4 D2            - shufps xmm2,xmm4-2E { 210 }
+ACOdyssey.exe+2A40789 - 0F29 A7 E0040000      - movaps [rdi+000004E0],xmm4								<< Quaternion write.
+ACOdyssey.exe+2A40790 - 0F59 D5               - mulps xmm2,xmm5
+ACOdyssey.exe+2A40793 - 0F5C D0               - subps xmm2,xmm0
+ACOdyssey.exe+2A40796 - 0F28 C4               - movaps xmm0,xmm4
+ACOdyssey.exe+2A40799 - 0FC6 C4 FF            - shufps xmm0,xmm4-01 { 255 }
+ACOdyssey.exe+2A4079D - 0F28 25 ACC93301      - movaps xmm4,[ACOdyssey.exe+3D7D150] { [00000000] }
+ACOdyssey.exe+2A407A4 - 0FC6 D2 D2            - shufps xmm2,xmm2-2E { 210 }
+
+// photomode coords write: 
+ACOdyssey.exe+2A40848 - 0F59 C9               - mulps xmm1,xmm1
+ACOdyssey.exe+2A4084B - 0F28 C3               - movaps xmm0,xmm3
+ACOdyssey.exe+2A4084E - 66 0F3A40 C2 7F       - dpps xmm0,xmm2,7F
+ACOdyssey.exe+2A40854 - 0F59 C2               - mulps xmm0,xmm2
+ACOdyssey.exe+2A40857 - 0F5C CF               - subps xmm1,xmm7
+ACOdyssey.exe+2A4085A - 44 0F29 9F D0040000   - movaps [rdi+000004D0],xmm11								<< coords write.
+ACOdyssey.exe+2A40862 - 0F58 E0               - addps xmm4,xmm0
+ACOdyssey.exe+2A40865 - 0F59 CB               - mulps xmm1,xmm3
+ACOdyssey.exe+2A40868 - 0F58 E1               - addps xmm4,xmm1
+ACOdyssey.exe+2A4086B - 0F59 E6               - mulps xmm4,xmm6
+ACOdyssey.exe+2A4086E - 0F29 A7 90050000      - movaps [rdi+00000590],xmm4
+
+photomode fov write: 
+ACOdyssey.exe+2A402DC - F3 41 0F59 FD         - mulss xmm7,xmm13
+ACOdyssey.exe+2A402E1 - F3 0F59 3D 3B776B02   - mulss xmm7,[ACOdyssey.exe+50F7A24] { [2.00] }
+ACOdyssey.exe+2A402E9 - F3 0F10 0D 2F776B02   - movss xmm1,[ACOdyssey.exe+50F7A20] { [1.50] }
+ACOdyssey.exe+2A402F1 - F3 0F59 F8            - mulss xmm7,xmm0
+ACOdyssey.exe+2A402F5 - F3 0F10 44 24 30      - movss xmm0,[rsp+30]
+ACOdyssey.exe+2A402FB - F3 0F58 C7            - addss xmm0,xmm7
+ACOdyssey.exe+2A402FF - F3 0F11 44 24 30      - movss [rsp+30],xmm0
+ACOdyssey.exe+2A40305 - F3 0F10 87 C0040000   - movss xmm0,[rdi+000004C0]							<< FOV write. 
+ACOdyssey.exe+2A4030D - E8 4E120C01           - call ACOdyssey.exe+3B01560
+ACOdyssey.exe+2A40312 - F3 0F59 76 04         - mulss xmm6,[rsi+04]
+ACOdyssey.exe+2A40317 - 48 8D 97 D0040000     - lea rdx,[rdi+000004D0]
+ACOdyssey.exe+2A4031E - 48 8D 4D 00           - lea rcx,[rbp+00]
+
+// Photomode address location intercept: 
+ACOdyssey.exe+2A2E6B0 - 48 89 5C 24 18        - mov [rsp+18],rbx
+ACOdyssey.exe+2A2E6B5 - 57                    - push rdi
+ACOdyssey.exe+2A2E6B6 - 48 83 EC 40           - sub rsp,40 { 64 }
+ACOdyssey.exe+2A2E6BA - 0F28 81 D0040000      - movaps xmm0,[rcx+000004D0]							<< PHOTOMODE Struct address intercept. 
+ACOdyssey.exe+2A2E6C1 - 49 8B F8              - mov rdi,r8
+ACOdyssey.exe+2A2E6C4 - 66 0F7F 02            - movdqa [rdx],xmm0
+ACOdyssey.exe+2A2E6C8 - 4C 8D 44 24 50        - lea r8,[rsp+50]
+ACOdyssey.exe+2A2E6CD - F3 0F10 81 F0040000   - movss xmm0,[rcx+000004F0]
+ACOdyssey.exe+2A2E6D5 - 48 8D 54 24 58        - lea rdx,[rsp+58]
+ACOdyssey.exe+2A2E6DA - F3 0F59 05 1AE93401   - mulss xmm0,[ACOdyssey.exe+3D7CFFC] { [0.50] }
+ACOdyssey.exe+2A2E6E2 - 48 8B D9              - mov rbx,rcx
+ACOdyssey.exe+2A2E6E5 - 0F29 74 24 30         - movaps [rsp+30],xmm6
+ACOdyssey.exe+2A2E6EA - 0F28 B1 70050000      - movaps xmm6,[rcx+00000570]
+ACOdyssey.exe+2A2E6F1 - 0F29 7C 24 20         - movaps [rsp+20],xmm7
+ACOdyssey.exe+2A2E6F6 - E8 D503D7FD           - call ACOdyssey.exe+79EAD0
+ACOdyssey.exe+2A2E6FB - F3 0F10 6C 24 58      - movss xmm5,[rsp+58]
+ACOdyssey.exe+2A2E701 - 0F28 C6               - movaps xmm0,xmm6
+ACOdyssey.exe+2A2E704 - F3 0F10 4C 24 50      - movss xmm1,[rsp+50]
 
 
-  
+
+
 Alternative Timestop: 
 set pWorld+1790h to 1, and perhaps pWorld+1868h to 1 (it's FF FF FF FF, so setting it to a non-negative number is enough), then
 set pWorld+1788h to 1 and things stop. Set pWorld+1788 to 0 starts things moving again,however pWorld+1868 should be reset as well. 
 Not reliable, most likely but it's a start. It's enough to pause the game by setting pWorld+1790 to 1 but it's most likely better to set things
 back as they were. Also use a timeout of at least 200ms between the two.
 
-// Obtain pWorld from this code, which is needed for passing to pause function
-ACOdyssey.exe+183DA50 - 48 8B 05 A152E203     - mov rax,[ACOdyssey.exe+5662CF8] { [08FACF80] }
-ACOdyssey.exe+183DA57 - 48 85 C0              - test rax,rax
-ACOdyssey.exe+183DA5A - 74 08                 - je ACOdyssey.exe+183DA64
-ACOdyssey.exe+183DA5C - 48 8B 80 D0000000     - mov rax,[rax+000000D0]				<<<< Reads pWorld pointer. 
-ACOdyssey.exe+183DA63 - C3                    - ret 
-ACOdyssey.exe+183DA64 - C3                    - ret 
-
-// Or from code:
+// pWorld from code:
 ACOdyssey.exe+106B4BBA - 48 89 54 24 28        - mov [rsp+28],rdx
 ACOdyssey.exe+106B4BBF - 48 8B 57 18           - mov rdx,[rdi+18]
 ACOdyssey.exe+106B4BC3 - 83 E1 10              - and ecx,10 { 16 }				>>> RDX contains pWorld, needed for pause.
@@ -92,41 +147,6 @@ ACOdyssey.exe+106B4BC9 - 41 0F29 7B A8         - movaps [r11-58],xmm7
 ACOdyssey.exe+106B4BCE - 45 0F29 4B 88         - movaps [r11-78],xmm9
 ACOdyssey.exe+106B4BD3 - 48 89 4F 78           - mov [rdi+78],rcx
 ACOdyssey.exe+106B4BD7 - 48 85 D2              - test rdx,rdx
-
-// Pause used for photomode: 
-ACOdyssey.exe+2A61980 - 48 89 5C 24 08        - mov [rsp+08],rbx
-ACOdyssey.exe+2A61985 - 57                    - push rdi
-ACOdyssey.exe+2A61986 - 48 83 EC 20           - sub rsp,20 { 32 }
-ACOdyssey.exe+2A6198A - 0FB6 FA               - movzx edi,dl
-ACOdyssey.exe+2A6198D - 48 8B D9              - mov rbx,rcx
-ACOdyssey.exe+2A61990 - 84 D2                 - test dl,dl
-ACOdyssey.exe+2A61992 - 74 18                 - je ACOdyssey.exe+2A619AC
-ACOdyssey.exe+2A61994 - 48 8B 0D 6D0FDB02     - mov rcx,[ACOdyssey.exe+5812908] { [18996AAB0] }
-ACOdyssey.exe+2A6199B - 48 83 C1 28           - add rcx,28 { 40 }
-ACOdyssey.exe+2A6199F - E8 3C1DD1FF           - call ACOdyssey.exe+27736E0
-ACOdyssey.exe+2A619A4 - 84 C0                 - test al,al
-ACOdyssey.exe+2A619A6 - 0F84 91000000         - je ACOdyssey.exe+2A61A3D
-ACOdyssey.exe+2A619AC - 40 88 3D 1DB4BF02     - mov [ACOdyssey.exe+565CDD0],dil { [00000000] }
-
-// Unpause used for photomode:
-ACOdyssey.exe+2A61A70 - 48 89 5C 24 18        - mov [rsp+18],rbx
-ACOdyssey.exe+2A61A75 - 55                    - push rbp
-ACOdyssey.exe+2A61A76 - 56                    - push rsi
-ACOdyssey.exe+2A61A77 - 57                    - push rdi
-ACOdyssey.exe+2A61A78 - 41 54                 - push r12
-ACOdyssey.exe+2A61A7A - 41 55                 - push r13
-ACOdyssey.exe+2A61A7C - 41 56                 - push r14
-ACOdyssey.exe+2A61A7E - 41 57                 - push r15
-ACOdyssey.exe+2A61A80 - 48 81 EC B0000000     - sub rsp,000000B0 { 176 }
-ACOdyssey.exe+2A61A87 - 0F29 BC 24 90000000   - movaps [rsp+00000090],xmm7
-ACOdyssey.exe+2A61A8F - 48 8B 05 8A1C8702     - mov rax,[ACOdyssey.exe+52D3720] { [8C408826] }
-ACOdyssey.exe+2A61A96 - 48 33 C4              - xor rax,rsp
-ACOdyssey.exe+2A61A99 - 48 89 84 24 80000000  - mov [rsp+00000080],rax
-ACOdyssey.exe+2A61AA1 - 4C 8D B9 CC050000     - lea r15,[rcx+000005CC]
-ACOdyssey.exe+2A61AA8 - 88 91 04030000        - mov [rcx+00000304],dl
-ACOdyssey.exe+2A61AAE - 41 C6 07 00           - mov byte ptr [r15],00 { 0 }
-
-
 
 // PAUSE GAME Function.
 - RAX: 1 (not relevant)
@@ -188,7 +208,6 @@ ACOdyssey.exe+106A6EA8 - 48 83 C4 20           - add rsp,20 { 32 }
 ACOdyssey.exe+106A6EAC - 5B                    - pop rbx
 ACOdyssey.exe+106A6EAD - E9 8E4944F3           - jmp ACOdyssey.exe+3AEB840
 ACOdyssey.exe+106A6EB2 - CC                    - int 3 
-
 
 // Camera matrix write (copy from stack). Not ideal... 
 ACOdyssey.exe+BF279EE - 8D 90 0F28010F        - lea edx,[rax+0F01280F]
@@ -302,7 +321,7 @@ ACOdyssey.exe+B2079A5 - 4C 23 30              - and r14,[rax]
 
 //////// HUD Renderer. Put a RET at the start to toggle hud OFF
 // Easy to find as there's a 'not rax' statement, which is rare. 
-ACOdyssey.exe+C0DFCC0 - 48 8B C4              - mov rax,rsp
+ACOdyssey.exe+C0DFCC0 - 48 89 E0              - mov rax,rsp
 ACOdyssey.exe+C0DFCC3 - 48 89 58 08           - mov [rax+08],rbx
 ACOdyssey.exe+C0DFCC7 - 55                    - push rbp
 ACOdyssey.exe+C0DFCC8 - 56                    - push rsi

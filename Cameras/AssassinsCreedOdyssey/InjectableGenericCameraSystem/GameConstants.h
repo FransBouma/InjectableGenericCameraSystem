@@ -75,4 +75,7 @@ namespace IGCS::GameSpecific
 	#define TIMESTOP_BYTE_ONE_OFFSET					0x1790		// set byte one to 1, then byte two to 1 => stop. Set byte three to 0 and byte two to FF and things proceed again.
 	#define TIMESTOP_BYTE_TWO_OFFSET					0x1868
 	#define TIMESTOP_BYTE_THREE_OFFSET					0x1788
+	#define PM_COORDS_IN_STRUCT_OFFSET					0x4D0		// Writes are not blocked.
+	#define PM_QUATERNION_IN_STRUCT_OFFSET				0x4E0		// Writes are not blocked.
+	#define PM_FOV_IN_STRUCT_OFFSET						0x4C0		// Writes are not blocked.
 }
