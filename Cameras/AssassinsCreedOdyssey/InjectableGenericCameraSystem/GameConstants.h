@@ -60,6 +60,7 @@ namespace IGCS::GameSpecific
 	#define HUD_RENDER_INTERCEPT_KEY					"AOB_HUD_RENDER_INTERCEPT"
 	#define PAUSE_FUNCTION_LOCATION_KEY					"AOB_PAUSE_FUNCTION"
 	#define UNPAUSE_FUNCTION_LOCATION_KEY				"AOB_UNPAUSE_FUNCTION"
+	#define DOF_ENABLE_WRITE_LOCATION_KEY				"AOB_DOF_WRITE_LOCATION"
 
 	// Indices in the structures read by interceptors 
 	#define COORDS_IN_STRUCT_OFFSET						0x90
@@ -69,7 +70,6 @@ namespace IGCS::GameSpecific
 	#define TIMESTOP_BYTE_ONE_OFFSET					0x1790		// set byte one to 1, then byte two to 1 => stop. Set byte three to 0 and byte two to FF and things proceed again.
 	#define TIMESTOP_BYTE_TWO_OFFSET					0x1868
 	#define TIMESTOP_BYTE_THREE_OFFSET					0x1788
-	#define PM_COORDS_IN_STRUCT_OFFSET					0x4D0		// Writes are not blocked.
-	#define PM_QUATERNION_IN_STRUCT_OFFSET				0x4E0		// Writes are not blocked.
-	#define PM_FOV_IN_STRUCT_OFFSET						0x4C0		// Writes are not blocked.
+	#define DOF_ENABLE1_IN_STRUCT_OFFSET				0x111		// in camera struct. 1 is enable dof, 0 is disable dof. Writes have to be disabled first. See notes for dof parameters (pretty low-quality, not added to menu).
+	#define DOF_ENABLE2_IN_STRUCT_OFFSET				0x111		// in camera struct. 1 is enable dof, 0 is disable dof. Writes have to be disabled first. See notes for dof parameters (pretty low-quality, not added to menu).
 }

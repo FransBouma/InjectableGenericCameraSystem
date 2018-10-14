@@ -51,6 +51,7 @@ namespace IGCS
 		float fovChangeSpeed;
 		int cameraControlDevice;		// 0==keyboard/mouse, 1 == gamepad, 2 == both, see Defaults.h
 		bool allowCameraMovementWhenMenuIsUp;
+		bool disableInGameDofWhenCameraIsEnabled;
 
 		// settings not persisted to config file.
 		// add settings to edit here.
@@ -68,6 +69,7 @@ namespace IGCS
 			}
 			invertY = iniFile.GetBool("invertY", "CameraSettings");
 			allowCameraMovementWhenMenuIsUp = iniFile.GetBool("allowCameraMovementWhenMenuIsUp", "CameraSettings");
+			disableInGameDofWhenCameraIsEnabled = iniFile.GetBool("disableInGameDofWhenCameraIsEnabled", "CameraSettings");
 			fastMovementMultiplier = Utils::clamp(iniFile.GetFloat("fastMovementMultiplier", "CameraSettings"), 0.0f, FASTER_MULTIPLIER);
 			slowMovementMultiplier = Utils::clamp(iniFile.GetFloat("slowMovementMultiplier", "CameraSettings"), 0.0f, SLOWER_MULTIPLIER);
 			movementUpMultiplier = Utils::clamp(iniFile.GetFloat("movementUpMultiplier", "CameraSettings"), 0.0f, DEFAULT_UP_MOVEMENT_MULTIPLIER);
@@ -83,6 +85,7 @@ namespace IGCS
 			CDataFile iniFile;
 			iniFile.SetBool("invertY", invertY, "", "CameraSettings");
 			iniFile.SetBool("allowCameraMovementWhenMenuIsUp", allowCameraMovementWhenMenuIsUp, "", "CameraSettings");
+			iniFile.SetBool("disableInGameDofWhenCameraIsEnabled", disableInGameDofWhenCameraIsEnabled, "", "CameraSettings");
 			iniFile.SetFloat("fastMovementMultiplier", fastMovementMultiplier, "", "CameraSettings");
 			iniFile.SetFloat("slowMovementMultiplier", slowMovementMultiplier, "", "CameraSettings");
 			iniFile.SetFloat("movementUpMultiplier", movementUpMultiplier, "", "CameraSettings");
@@ -106,6 +109,7 @@ namespace IGCS
 			fovChangeSpeed = DEFAULT_FOV_SPEED;
 			cameraControlDevice = DEVICE_ID_ALL;
 			allowCameraMovementWhenMenuIsUp = false;
+			disableInGameDofWhenCameraIsEnabled = false;
 
 			if (!persistedOnly)
 			{

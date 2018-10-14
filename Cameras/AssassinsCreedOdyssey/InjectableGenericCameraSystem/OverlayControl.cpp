@@ -280,6 +280,10 @@ Special thanks to:
 			// Time of Day
 			ImGui::SliderInt("Time of Day (Hour)", &currentSettings.todHour, 0, 23);
 			ImGui::SliderInt("Time of Day (Minute)", &currentSettings.todMinute, 0, 59);
+
+			// DOF enable / disable during camera
+			ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.3f) - 11.0f);
+			settingsChanged |= ImGui::Checkbox("Disable in-game DoF when camera is enabled", &currentSettings.disableInGameDofWhenCameraIsEnabled);
 		}
 		ImGui::PopItemWidth();
 		if (settingsChanged)

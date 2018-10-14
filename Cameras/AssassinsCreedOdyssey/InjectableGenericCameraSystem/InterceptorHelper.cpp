@@ -73,6 +73,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[UNPAUSE_FUNCTION_LOCATION_KEY] = new AOBBlock(UNPAUSE_FUNCTION_LOCATION_KEY, "53 48 83 EC 20 48 89 CB 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? 85 C0", 1);
 		aobBlocks[HUD_RENDER_INTERCEPT_KEY] = new AOBBlock(HUD_RENDER_INTERCEPT_KEY, "48 89 E0 48 89 58 08 55 56 57 41 54 41 55 41 56 41 57 48 8D 6C 24 B0 48 81 EC ?? ?? ?? ?? 0F 29 70 B8 0F 29 78 A8", 1);
 		aobBlocks[PHOTOMODE_RANGE_DISABLE_KEY] = new AOBBlock(PHOTOMODE_RANGE_DISABLE_KEY, "F3 0F 5D F1 F3 41 0F 5F CA 0F 28 D6 0F C6 D2 00 0F 28 C1 41 0F 59 D3 0F C6 C0 00", 1);
+		aobBlocks[DOF_ENABLE_WRITE_LOCATION_KEY] = new AOBBlock(DOF_ENABLE_WRITE_LOCATION_KEY, "88 83 11 01 00 00 E8 ?? ?? ?? ?? 88 83 13 01 00 00 84 C0", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -168,5 +169,49 @@ namespace IGCS::GameSpecific::InterceptorHelper
 			BYTE statementBytes[3] = { 0x48, 0x8B, 0xC4 };			// ACOdyssey.exe+C0DFCC0 - 48 8B C4              - mov rax,rsp
 			GameImageHooker::writeRange(aobBlocks[HUD_RENDER_INTERCEPT_KEY], statementBytes, 3);
 		}
+	}
+
+
+	// Toggles the dof write. Enabled means the write is enabled (so the default game code is restored). Disabled means the 
+	// writes are disabled and we can write what we want there. 
+	void toggleDofEnableWrite(map<string, AOBBlock*> &aobBlocks, bool enabled)
+	{
+		// DOF (In camera struct).
+		// We have to NOP both writes (see below).
+		//ACOdyssey.exe+E7FE935 - 57                    - push rdi
+		//ACOdyssey.exe+E7FE936 - 48 83 EC 30           - sub rsp,30 { 48 }
+		//ACOdyssey.exe+E7FE93A - 48 8B B9 30050000     - mov rdi,[rcx+00000530]
+		//ACOdyssey.exe+E7FE941 - 48 89 CB              - mov rbx,rcx
+		//ACOdyssey.exe+E7FE944 - 48 89 F9              - mov rcx,rdi
+		//ACOdyssey.exe+E7FE947 - E8 C4F2B0F2           - call ACOdyssey.exe+130DC10
+		//ACOdyssey.exe+E7FE94C - 48 89 F9              - mov rcx,rdi
+		//ACOdyssey.exe+E7FE94F - 88 83 11010000        - mov [rbx+00000111],al					>> Enable (1) or disable (0) DOF. 
+		//ACOdyssey.exe+E7FE955 - E8 86C7B1F2           - call ACOdyssey.exe+131B0E0
+		//ACOdyssey.exe+E7FE95A - 88 83 13010000        - mov [rbx+00000113],al					>> Enable (1) or disable (0) DOF. 
+		//ACOdyssey.exe+E7FE960 - 84 C0                 - test al,al
+		//ACOdyssey.exe+E7FE962 - 0F84 97000000         - je ACOdyssey.exe+E7FE9FF
+		//ACOdyssey.exe+E7FE968 - 0F29 74 24 20         - movaps [rsp+20],xmm6
+		//ACOdyssey.exe+E7FE96D - 48 89 F9              - mov rcx,rdi
+		if (enabled)
+		{
+			// write original code
+			//ACOdyssey.exe+E7FE94F - 88 83 11010000        - mov [rbx+00000111],al					>> Enable (1) or disable (0) DOF. 
+			BYTE statementBytes1[6] = { 0x88, 0x83, 0x11, 0x01, 0x00, 0x00 };
+			GameImageHooker::writeRange(aobBlocks[DOF_ENABLE_WRITE_LOCATION_KEY], statementBytes1, 6);
+			//ACOdyssey.exe+E7FE95A - 88 83 13010000        - mov [rbx+00000113],al					>> Enable (1) or disable (0) DOF. 
+			BYTE statementBytes2[6] = { 0x88, 0x83, 0x13, 0x01, 0x00, 0x00 };
+			// skip first statement plus the call after it.
+			GameImageHooker::writeRange(aobBlocks[DOF_ENABLE_WRITE_LOCATION_KEY]->absoluteAddress()+6+5, statementBytes2, 6);
+		}
+		else
+		{
+			// nop two ranges
+			//ACOdyssey.exe+E7FE94F - 88 83 11010000        - mov [rbx+00000111],al					>> Enable (1) or disable (0) DOF. 
+			GameImageHooker::nopRange(aobBlocks[DOF_ENABLE_WRITE_LOCATION_KEY], 6);
+			//ACOdyssey.exe+E7FE95A - 88 83 13010000        - mov [rbx+00000113],al					>> Enable (1) or disable (0) DOF. 
+			// skip first statement plus the call after it.
+			GameImageHooker::nopRange(aobBlocks[DOF_ENABLE_WRITE_LOCATION_KEY]->absoluteAddress() + 6 + 5, 6);
+		}
+
 	}
 }

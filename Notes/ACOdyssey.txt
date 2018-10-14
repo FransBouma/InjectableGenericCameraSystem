@@ -620,254 +620,58 @@ ACOdyssey.exe+C0E024D - 48 F7 D0              - not rax
 ACOdyssey.exe+C0E0250 - 48 21 84 CA D0210000  - and [rdx+rcx*8+000021D0],rax
 // etc... 
 
-//////// Origins HUD renderer:
-ACOrigins.exe+ACC270 - 48 8B C4              - mov rax,rsp
-ACOrigins.exe+ACC273 - 48 89 58 18           - mov [rax+18],rbx
-ACOrigins.exe+ACC277 - 48 89 48 08           - mov [rax+08],rcx
-ACOrigins.exe+ACC27B - 55                    - push rbp
-ACOrigins.exe+ACC27C - 56                    - push rsi
-ACOrigins.exe+ACC27D - 57                    - push rdi
-ACOrigins.exe+ACC27E - 41 54                 - push r12
-ACOrigins.exe+ACC280 - 41 55                 - push r13
-ACOrigins.exe+ACC282 - 41 56                 - push r14
-ACOrigins.exe+ACC284 - 41 57                 - push r15
-ACOrigins.exe+ACC286 - 48 8D 68 98           - lea rbp,[rax-68]
-ACOrigins.exe+ACC28A - 48 81 EC 30010000     - sub rsp,00000130 { 304 }
-ACOrigins.exe+ACC291 - 48 8B 5A 18           - mov rbx,[rdx+18]
-ACOrigins.exe+ACC295 - 45 8B F0              - mov r14d,r8d
-ACOrigins.exe+ACC298 - 4C 8B 22              - mov r12,[rdx]
-ACOrigins.exe+ACC29B - 48 8B FA              - mov rdi,rdx
-ACOrigins.exe+ACC29E - 0F29 70 B8            - movaps [rax-48],xmm6
-ACOrigins.exe+ACC2A2 - 4C 8B E9              - mov r13,rcx
-ACOrigins.exe+ACC2A5 - 48 89 5D 78           - mov [rbp+78],rbx
-ACOrigins.exe+ACC2A9 - 48 8B 83 98010000     - mov rax,[rbx+00000198]
-ACOrigins.exe+ACC2B0 - 4C 8B B8 B0530000     - mov r15,[rax+000053B0]
-ACOrigins.exe+ACC2B7 - 48 8B 05 BA060E04     - mov rax,[ACOrigins.exe+4BAC978] { [030A8880] }
-ACOrigins.exe+ACC2BE - 8B B0 90000000        - mov esi,[rax+00000090]
-ACOrigins.exe+ACC2C4 - C1 EE 02              - shr esi,02 { 2 }
-ACOrigins.exe+ACC2C7 - 40 F6 D6              - not sil
-ACOrigins.exe+ACC2CA - 40 80 E6 01           - and sil,01 { 1 }
-ACOrigins.exe+ACC2CE - 80 BA E8090000 00     - cmp byte ptr [rdx+000009E8],00 { 0 }
-ACOrigins.exe+ACC2D5 - 75 0E                 - jne ACOrigins.exe+ACC2E5
-ACOrigins.exe+ACC2D7 - 48 8B 05 1A8CEA03     - mov rax,[ACOrigins.exe+4974EF8] { [1449AFCF8] }
-ACOrigins.exe+ACC2DE - 48 89 82 E0090000     - mov [rdx+000009E0],rax
-ACOrigins.exe+ACC2E5 - 48 8B 42 28           - mov rax,[rdx+28]
-ACOrigins.exe+ACC2E9 - 33 C9                 - xor ecx,ecx
-ACOrigins.exe+ACC2EB - 38 48 12              - cmp [rax+12],cl
-ACOrigins.exe+ACC2EE - 74 45                 - je ACOrigins.exe+ACC335
-ACOrigins.exe+ACC2F0 - C7 44 24 60 10000000  - mov [rsp+60],00000010 { 16 }
-ACOrigins.exe+ACC2F8 - 4D 8D 8F 48630000     - lea r9,[r15+00006348]
-ACOrigins.exe+ACC2FF - 89 4C 24 58           - mov [rsp+58],ecx
-ACOrigins.exe+ACC303 - 88 4C 24 50           - mov [rsp+50],cl
-ACOrigins.exe+ACC307 - 88 4C 24 48           - mov [rsp+48],cl
-ACOrigins.exe+ACC30B - 40 88 74 24 40        - mov [rsp+40],sil
-ACOrigins.exe+ACC310 - 88 4C 24 38           - mov [rsp+38],cl
-ACOrigins.exe+ACC314 - 48 89 4C 24 30        - mov [rsp+30],rcx
-ACOrigins.exe+ACC319 - 89 4C 24 28           - mov [rsp+28],ecx
-ACOrigins.exe+ACC31D - 89 4C 24 20           - mov [rsp+20],ecx
-ACOrigins.exe+ACC321 - 48 8B CB              - mov rcx,rbx
-ACOrigins.exe+ACC324 - E8 A7AF0700           - call ACOrigins.exe+B472D0
-ACOrigins.exe+ACC329 - 33 C9                 - xor ecx,ecx
-ACOrigins.exe+ACC32B - C7 87 70060000 FFFFFFFF - mov [rdi+00000670],FFFFFFFF { [0] }
-ACOrigins.exe+ACC335 - 40 88 74 24 30        - mov [rsp+30],sil
-ACOrigins.exe+ACC33A - 4D 8D 8F A8640000     - lea r9,[r15+000064A8]
-ACOrigins.exe+ACC341 - 48 89 4C 24 28        - mov [rsp+28],rcx
-ACOrigins.exe+ACC346 - 45 8B C6              - mov r8d,r14d
-ACOrigins.exe+ACC349 - 49 8B CD              - mov rcx,r13
-ACOrigins.exe+ACC34C - C7 44 24 20 04000000  - mov [rsp+20],00000004 { 4 }
-ACOrigins.exe+ACC354 - 48 8B D7              - mov rdx,rdi
-ACOrigins.exe+ACC357 - E8 64070000           - call ACOrigins.exe+ACCAC0
-ACOrigins.exe+ACC35C - 80 BF E8090000 00     - cmp byte ptr [rdi+000009E8],00 { 0 }
-ACOrigins.exe+ACC363 - 75 0B                 - jne ACOrigins.exe+ACC370
-ACOrigins.exe+ACC365 - 48 C7 87 E0090000 00000000 - mov qword ptr [rdi+000009E0],00000000 { 0 }
-ACOrigins.exe+ACC370 - 48 8D 4D 90           - lea rcx,[rbp-70]
-ACOrigins.exe+ACC374 - E8 C748F5FF           - call ACOrigins.exe+A20C40
-ACOrigins.exe+ACC379 - F3 48 0F2C 4D 90      - cvttss2si rcx,[rbp-70]
-ACOrigins.exe+ACC37F - C7 45 80 00000000     - mov [rbp-80],00000000 { 0 }
-ACOrigins.exe+ACC386 - 4C 8D 44 24 70        - lea r8,[rsp+70]
-ACOrigins.exe+ACC38B - BA 01000000           - mov edx,00000001 { 1 }
-ACOrigins.exe+ACC390 - 0F57 C0               - xorps xmm0,xmm0
-ACOrigins.exe+ACC393 - 8B C9                 - mov ecx,ecx
-ACOrigins.exe+ACC395 - F3 48 0F2A C1         - cvtsi2ss xmm0,rcx
-ACOrigins.exe+ACC39A - F3 48 0F2C 4D 94      - cvttss2si rcx,[rbp-6C]
-ACOrigins.exe+ACC3A0 - F3 0F11 44 24 70      - movss [rsp+70],xmm0
-ACOrigins.exe+ACC3A6 - 0F57 C0               - xorps xmm0,xmm0
-ACOrigins.exe+ACC3A9 - 8B C9                 - mov ecx,ecx
-ACOrigins.exe+ACC3AB - F3 48 0F2A C1         - cvtsi2ss xmm0,rcx
-ACOrigins.exe+ACC3B0 - F3 48 0F2C 4D 98      - cvttss2si rcx,[rbp-68]
-ACOrigins.exe+ACC3B6 - F3 0F11 44 24 74      - movss [rsp+74],xmm0
-ACOrigins.exe+ACC3BC - 0F57 C0               - xorps xmm0,xmm0
-ACOrigins.exe+ACC3BF - 8B C9                 - mov ecx,ecx
-ACOrigins.exe+ACC3C1 - F3 48 0F2A C1         - cvtsi2ss xmm0,rcx
-ACOrigins.exe+ACC3C6 - F3 48 0F2C 4D 9C      - cvttss2si rcx,[rbp-64]
-ACOrigins.exe+ACC3CC - F3 0F11 44 24 78      - movss [rsp+78],xmm0
-ACOrigins.exe+ACC3D2 - 0F57 C0               - xorps xmm0,xmm0
-ACOrigins.exe+ACC3D5 - 8B C9                 - mov ecx,ecx
-ACOrigins.exe+ACC3D7 - F3 48 0F2A C1         - cvtsi2ss xmm0,rcx
-ACOrigins.exe+ACC3DC - 49 8B 8C 24 70040000  - mov rcx,[r12+00000470]
-ACOrigins.exe+ACC3E4 - F3 0F11 44 24 7C      - movss [rsp+7C],xmm0
-ACOrigins.exe+ACC3EA - F3 0F10 05 AADF9F02   - movss xmm0,[ACOrigins.exe+34CA39C] { [1.00] }
-ACOrigins.exe+ACC3F2 - F3 0F11 45 84         - movss [rbp-7C],xmm0
-ACOrigins.exe+ACC3F7 - E8 8433FCFF           - call ACOrigins.exe+A8F780
-ACOrigins.exe+ACC3FC - 48 8D 93 E0000000     - lea rdx,[rbx+000000E0]
-ACOrigins.exe+ACC403 - 45 33 C0              - xor r8d,r8d
-ACOrigins.exe+ACC406 - 48 8B CF              - mov rcx,rdi
-ACOrigins.exe+ACC409 - E8 02FA0100           - call ACOrigins.exe+AEBE10
-ACOrigins.exe+ACC40E - 48 8D 15 BBFBCC03     - lea rdx,[ACOrigins.exe+479BFD0] { [1.00] }
-ACOrigins.exe+ACC415 - 48 8D 4D A0           - lea rcx,[rbp-60]
-ACOrigins.exe+ACC419 - E8 1228F1FF           - call ACOrigins.exe+9DEC30
-ACOrigins.exe+ACC41E - 0F57 F6               - xorps xmm6,xmm6
-ACOrigins.exe+ACC421 - 4C 8D 4C 24 70        - lea r9,[rsp+70]
-ACOrigins.exe+ACC426 - 4C 8D 45 A0           - lea r8,[rbp-60]
-ACOrigins.exe+ACC42A - 0F29 74 24 70         - movaps [rsp+70],xmm6
-ACOrigins.exe+ACC42F - 48 8D 55 A0           - lea rdx,[rbp-60]
-ACOrigins.exe+ACC433 - 48 8B CF              - mov rcx,rdi
-ACOrigins.exe+ACC436 - E8 05F50100           - call ACOrigins.exe+AEB940
-ACOrigins.exe+ACC43B - 49 8B 8C 24 70040000  - mov rcx,[r12+00000470]
-ACOrigins.exe+ACC443 - 41 B1 01              - mov r9l,01 { 1 }
-ACOrigins.exe+ACC446 - 0F57 D2               - xorps xmm2,xmm2
-ACOrigins.exe+ACC449 - C6 44 24 20 00        - mov byte ptr [rsp+20],00 { 0 }
-ACOrigins.exe+ACC44E - 33 D2                 - xor edx,edx
-ACOrigins.exe+ACC450 - E8 1B6FFAFF           - call ACOrigins.exe+A73370
-ACOrigins.exe+ACC455 - 4D 8D AC 24 60040000  - lea r13,[r12+00000460]
-ACOrigins.exe+ACC45D - B8 00000000           - mov eax,00000000 { 0 }
-ACOrigins.exe+ACC462 - 4D 85 ED              - test r13,r13
-ACOrigins.exe+ACC465 - 49 8B DC              - mov rbx,r12
-ACOrigins.exe+ACC468 - 48 0F44 D8            - cmove rbx,rax
-ACOrigins.exe+ACC46C - 4C 8B 8B 70040000     - mov r9,[rbx+00000470]
-ACOrigins.exe+ACC473 - 4D 8B 81 C8210000     - mov r8,[r9+000021C8]
-ACOrigins.exe+ACC47A - 41 8B 90 C8020000     - mov edx,[r8+000002C8]
-ACOrigins.exe+ACC481 - 49 8B 80 C0020000     - mov rax,[r8+000002C0]
-ACOrigins.exe+ACC488 - 48 F7 D0              - not rax
-ACOrigins.exe+ACC48B - 49 21 84 D1 D8210000  - and [r9+rdx*8+000021D8],rax
-ACOrigins.exe+ACC493 - B8 01000000           - mov eax,00000001 { 1 }
-ACOrigins.exe+ACC498 - 41 8B 88 CC020000     - mov ecx,[r8+000002CC]
-ACOrigins.exe+ACC49F - 48 D3 E0              - shl rax,cl
-ACOrigins.exe+ACC4A2 - 49 23 80 C0020000     - and rax,[r8+000002C0]
-ACOrigins.exe+ACC4A9 - 49 09 84 D1 D8210000  - or [r9+rdx*8+000021D8],rax
-ACOrigins.exe+ACC4B1 - 4C 8B 8B 70040000     - mov r9,[rbx+00000470]
-ACOrigins.exe+ACC4B8 - 49 8B 91 C8210000     - mov rdx,[r9+000021C8]
-ACOrigins.exe+ACC4BF - 44 8B 82 D8020000     - mov r8d,[rdx+000002D8]
-ACOrigins.exe+ACC4C6 - 48 8B 82 D0020000     - mov rax,[rdx+000002D0]
-ACOrigins.exe+ACC4CD - 48 F7 D0              - not rax
-ACOrigins.exe+ACC4D0 - 4B 21 84 C1 D8210000  - and [r9+r8*8+000021D8],rax
-ACOrigins.exe+ACC4D8 - B8 FF000000           - mov eax,000000FF { 255 }
-ACOrigins.exe+ACC4DD - 8B 8A DC020000        - mov ecx,[rdx+000002DC]
-ACOrigins.exe+ACC4E3 - 48 D3 E0              - shl rax,cl
-ACOrigins.exe+ACC4E6 - 49 8B CD              - mov rcx,r13
-ACOrigins.exe+ACC4E9 - 48 23 82 D0020000     - and rax,[rdx+000002D0]
-ACOrigins.exe+ACC4F0 - 4B 09 84 C1 D8210000  - or [r9+r8*8+000021D8],rax
-ACOrigins.exe+ACC4F8 - 45 33 C0              - xor r8d,r8d
-ACOrigins.exe+ACC4FB - 41 B1 FF              - mov r9l,-01 { 255 }
-ACOrigins.exe+ACC4FE - 41 8D 50 05           - lea edx,[r8+05]
-ACOrigins.exe+ACC502 - E8 196FE3FF           - call ACOrigins.exe+903420
-ACOrigins.exe+ACC507 - 41 B9 02000000        - mov r9d,00000002 { 2 }
-ACOrigins.exe+ACC50D - 45 33 C0              - xor r8d,r8d
-ACOrigins.exe+ACC510 - 33 D2                 - xor edx,edx
-ACOrigins.exe+ACC512 - 49 8B CD              - mov rcx,r13
-ACOrigins.exe+ACC515 - E8 2670E3FF           - call ACOrigins.exe+903540
-ACOrigins.exe+ACC51A - 41 B8 70040000        - mov r8d,00000470 { 1136 }
-ACOrigins.exe+ACC520 - 49 8D 45 10           - lea rax,[r13+10]
-ACOrigins.exe+ACC524 - 4D 85 ED              - test r13,r13
-ACOrigins.exe+ACC527 - 49 0F44 C0            - cmove rax,r8
-ACOrigins.exe+ACC52B - 48 8B 10              - mov rdx,[rax]
-ACOrigins.exe+ACC52E - 48 8B 82 C8210000     - mov rax,[rdx+000021C8]
-ACOrigins.exe+ACC535 - 8B 88 08020000        - mov ecx,[rax+00000208]
-ACOrigins.exe+ACC53B - 48 8B 80 00020000     - mov rax,[rax+00000200]
-ACOrigins.exe+ACC542 - 48 F7 D0              - not rax
-ACOrigins.exe+ACC545 - 48 21 84 CA D8210000  - and [rdx+rcx*8+000021D8],rax
-ACOrigins.exe+ACC54D - 49 8D 45 10           - lea rax,[r13+10]
-ACOrigins.exe+ACC551 - 4D 85 ED              - test r13,r13
-ACOrigins.exe+ACC554 - 49 0F44 C0            - cmove rax,r8
-ACOrigins.exe+ACC558 - 4C 8B 08              - mov r9,[rax]
-ACOrigins.exe+ACC55B - 4D 8B 81 C8210000     - mov r8,[r9+000021C8]
-ACOrigins.exe+ACC562 - 41 8B 90 88020000     - mov edx,[r8+00000288]
-ACOrigins.exe+ACC569 - 49 8B 80 80020000     - mov rax,[r8+00000280]
-ACOrigins.exe+ACC570 - 48 F7 D0              - not rax
-ACOrigins.exe+ACC573 - 49 21 84 D1 D8210000  - and [r9+rdx*8+000021D8],rax
-ACOrigins.exe+ACC57B - B8 01000000           - mov eax,00000001 { 1 }
-ACOrigins.exe+ACC580 - 41 8B 88 8C020000     - mov ecx,[r8+0000028C]
-ACOrigins.exe+ACC587 - 48 D3 E0              - shl rax,cl
-ACOrigins.exe+ACC58A - 49 23 80 80020000     - and rax,[r8+00000280]
-ACOrigins.exe+ACC591 - 49 09 84 D1 D8210000  - or [r9+rdx*8+000021D8],rax
-ACOrigins.exe+ACC599 - 48 8B 93 70040000     - mov rdx,[rbx+00000470]
-ACOrigins.exe+ACC5A0 - 48 8B 82 C8210000     - mov rax,[rdx+000021C8]
-ACOrigins.exe+ACC5A7 - 8B 88 A8020000        - mov ecx,[rax+000002A8]
-ACOrigins.exe+ACC5AD - 48 8B 80 A0020000     - mov rax,[rax+000002A0]
-ACOrigins.exe+ACC5B4 - 48 F7 D0              - not rax
-ACOrigins.exe+ACC5B7 - 48 21 84 CA D8210000  - and [rdx+rcx*8+000021D8],rax
-ACOrigins.exe+ACC5BF - 4C 8B 8B 70040000     - mov r9,[rbx+00000470]
-ACOrigins.exe+ACC5C6 - 4D 8B 81 C8210000     - mov r8,[r9+000021C8]
-ACOrigins.exe+ACC5CD - 41 8B 90 48030000     - mov edx,[r8+00000348]
-ACOrigins.exe+ACC5D4 - 49 8B 80 40030000     - mov rax,[r8+00000340]
-ACOrigins.exe+ACC5DB - 48 F7 D0              - not rax
-ACOrigins.exe+ACC5DE - 49 21 84 D1 D8210000  - and [r9+rdx*8+000021D8],rax
-ACOrigins.exe+ACC5E6 - B8 03000000           - mov eax,00000003 { 3 }
-ACOrigins.exe+ACC5EB - 41 8B 88 4C030000     - mov ecx,[r8+0000034C]
-ACOrigins.exe+ACC5F2 - 48 D3 E0              - shl rax,cl
-ACOrigins.exe+ACC5F5 - 49 8B CD              - mov rcx,r13
-ACOrigins.exe+ACC5F8 - 49 23 80 40030000     - and rax,[r8+00000340]
-ACOrigins.exe+ACC5FF - 49 09 84 D1 D8210000  - or [r9+rdx*8+000021D8],rax
-ACOrigins.exe+ACC607 - 33 D2                 - xor edx,edx
-ACOrigins.exe+ACC609 - E8 0256E3FF           - call ACOrigins.exe+901C10
-ACOrigins.exe+ACC60E - 33 D2                 - xor edx,edx
-ACOrigins.exe+ACC610 - 49 8B CD              - mov rcx,r13
-ACOrigins.exe+ACC613 - E8 F855E3FF           - call ACOrigins.exe+901C10
-ACOrigins.exe+ACC618 - 4D 85 ED              - test r13,r13
-ACOrigins.exe+ACC61B - 49 8D 45 10           - lea rax,[r13+10]
-ACOrigins.exe+ACC61F - B9 70040000           - mov ecx,00000470 { 1136 }
-ACOrigins.exe+ACC624 - 48 0F44 C1            - cmove rax,rcx
-ACOrigins.exe+ACC628 - 4C 8B 08              - mov r9,[rax]
-ACOrigins.exe+ACC62B - 4D 8B 81 C8210000     - mov r8,[r9+000021C8]
-ACOrigins.exe+ACC632 - 49 8B 80 30030000     - mov rax,[r8+00000330]
-ACOrigins.exe+ACC639 - 41 8B 90 38030000     - mov edx,[r8+00000338]
-ACOrigins.exe+ACC640 - 48 F7 D0              - not rax
-ACOrigins.exe+ACC643 - 49 21 84 D1 D8210000  - and [r9+rdx*8+000021D8],rax
-ACOrigins.exe+ACC64B - B8 03000000           - mov eax,00000003 { 3 }
-ACOrigins.exe+ACC650 - 41 8B 88 3C030000     - mov ecx,[r8+0000033C]
-ACOrigins.exe+ACC657 - 48 D3 E0              - shl rax,cl
-ACOrigins.exe+ACC65A - 49 23 80 30030000     - and rax,[r8+00000330]
-ACOrigins.exe+ACC661 - 49 09 84 D1 D8210000  - or [r9+rdx*8+000021D8],rax
-ACOrigins.exe+ACC669 - 80 BF E8090000 00     - cmp byte ptr [rdi+000009E8],00 { 0 }
-ACOrigins.exe+ACC670 - C6 87 C8050000 01     - mov byte ptr [rdi+000005C8],01 { 1 }
-ACOrigins.exe+ACC677 - 75 0E                 - jne ACOrigins.exe+ACC687
-ACOrigins.exe+ACC679 - 48 8B 05 D87DEA03     - mov rax,[ACOrigins.exe+4974458] { [1449AFDD0] }
-ACOrigins.exe+ACC680 - 48 89 87 E0090000     - mov [rdi+000009E0],rax
-ACOrigins.exe+ACC687 - 48 8B 47 28           - mov rax,[rdi+28]
-ACOrigins.exe+ACC68B - 33 DB                 - xor ebx,ebx
-ACOrigins.exe+ACC68D - 38 58 12              - cmp [rax+12],bl
-ACOrigins.exe+ACC690 - 74 4A                 - je ACOrigins.exe+ACC6DC
-ACOrigins.exe+ACC692 - 48 8B 4F 18           - mov rcx,[rdi+18]
+// DOF (In camera struct).
+// both writes have to be nopped to be able to enable/disable dof.
+ACOdyssey.exe+E7FE935 - 57                    - push rdi
+ACOdyssey.exe+E7FE936 - 48 83 EC 30           - sub rsp,30 { 48 }
+ACOdyssey.exe+E7FE93A - 48 8B B9 30050000     - mov rdi,[rcx+00000530]
+ACOdyssey.exe+E7FE941 - 48 89 CB              - mov rbx,rcx
+ACOdyssey.exe+E7FE944 - 48 89 F9              - mov rcx,rdi
+ACOdyssey.exe+E7FE947 - E8 C4F2B0F2           - call ACOdyssey.exe+130DC10
+ACOdyssey.exe+E7FE94C - 48 89 F9              - mov rcx,rdi
+ACOdyssey.exe+E7FE94F - 88 83 11010000        - mov [rbx+00000111],al					>> Enable (1) or disable (0) DOF. 
+ACOdyssey.exe+E7FE955 - E8 86C7B1F2           - call ACOdyssey.exe+131B0E0
+ACOdyssey.exe+E7FE95A - 88 83 13010000        - mov [rbx+00000113],al					>> Enable (1) or disable (0) DOF. 
+ACOdyssey.exe+E7FE960 - 84 C0                 - test al,al
+ACOdyssey.exe+E7FE962 - 0F84 97000000         - je ACOdyssey.exe+E7FE9FF
+ACOdyssey.exe+E7FE968 - 0F29 74 24 20         - movaps [rsp+20],xmm6
+ACOdyssey.exe+E7FE96D - 48 89 F9              - mov rcx,rdi
 
-Called from: 
-ACOrigins.exe+AF4467 - 41 B1 01              - mov r9l,01 { 1 }
-ACOrigins.exe+AF446A - 48 8B 8D 70040000     - mov rcx,[rbp+00000470]
-ACOrigins.exe+AF4471 - 41 0FB6 D1            - movzx edx,r9l
-ACOrigins.exe+AF4475 - C6 44 24 20 00        - mov byte ptr [rsp+20],00 { 0 }
-ACOrigins.exe+AF447A - E8 F1EEF7FF           - call ACOrigins.exe+A73370
-ACOrigins.exe+AF447F - 41 B8 05000000        - mov r8d,00000005 { 5 }
-ACOrigins.exe+AF4485 - C6 86 65090000 01     - mov byte ptr [rsi+00000965],01 { 1 }
-ACOrigins.exe+AF448C - 48 8B D6              - mov rdx,rsi
-ACOrigins.exe+AF448F - 49 8B CE              - mov rcx,r14
-ACOrigins.exe+AF4492 - E8 D97DFDFF           - call ACOrigins.exe+ACC270				>> CALLS Hud Renderer.
-ACOrigins.exe+AF4497 - 48 8B 8D 70040000     - mov rcx,[rbp+00000470]
-ACOrigins.exe+AF449E - 33 D2                 - xor edx,edx
-ACOrigins.exe+AF44A0 - E8 EBADF9FF           - call ACOrigins.exe+A8F290
-ACOrigins.exe+AF44A5 - 48 8B D6              - mov rdx,rsi
-ACOrigins.exe+AF44A8 - 49 8B CE              - mov rcx,r14
-ACOrigins.exe+AF44AB - E8 20E2FCFF           - call ACOrigins.exe+AC26D0
-ACOrigins.exe+AF44B0 - 48 8D 4C 24 60        - lea rcx,[rsp+60]
-ACOrigins.exe+AF44B5 - C6 86 65090000 00     - mov byte ptr [rsi+00000965],00 { 0 }
-ACOrigins.exe+AF44BC - E8 EF492D01           - call ACOrigins.exe+1DC8EB0
-ACOrigins.exe+AF44C1 - 48 8B 9C 24 C0000000  - mov rbx,[rsp+000000C0]
-ACOrigins.exe+AF44C9 - 48 81 C4 80000000     - add rsp,00000080 { 128 }
-ACOrigins.exe+AF44D0 - 41 5F                 - pop r15
-ACOrigins.exe+AF44D2 - 41 5E                 - pop r14
-ACOrigins.exe+AF44D4 - 41 5D                 - pop r13
-ACOrigins.exe+AF44D6 - 41 5C                 - pop r12
-ACOrigins.exe+AF44D8 - 5F                    - pop rdi
-ACOrigins.exe+AF44D9 - 5E                    - pop rsi
-ACOrigins.exe+AF44DA - 5D                    - pop rbp
-ACOrigins.exe+AF44DB - C3                    - ret 
+// DOF Parameters: Descriptions are likely wrong. They likely use a near plane start/stop and an far plane start/stop
+// The dof is very basic, hexacon (ala Soussa in CryEngine) bokeh but no way to increase bokeh highlight strength.
+// No near plane bleed. Best to only add disable for cutscene dof kill. It's too basic to use for shots. 
+ACOdyssey.exe+E7FE970 - F3 0F10 35 ACE657F5   - movss xmm6,[ACOdyssey.exe+3D7D024] { [1.00] }
+ACOdyssey.exe+E7FE978 - 0F28 CE               - movaps xmm1,xmm6
+ACOdyssey.exe+E7FE97B - E8 00B071F3           - call ACOdyssey.exe+1F19980
+ACOdyssey.exe+E7FE980 - 0F28 CE               - movaps xmm1,xmm6
+ACOdyssey.exe+E7FE983 - F3 0F11 83 18010000   - movss [rbx+00000118],xmm0				>> Focus depth	(in meters, float)
+ACOdyssey.exe+E7FE98B - 48 89 F9              - mov rcx,rdi
+ACOdyssey.exe+E7FE98E - E8 1DE9B1F2           - call ACOdyssey.exe+131D2B0
+ACOdyssey.exe+E7FE993 - 0F28 CE               - movaps xmm1,xmm6
+ACOdyssey.exe+E7FE996 - F3 0F11 83 14010000   - movss [rbx+00000114],xmm0				>> Far blur related, likely near start. .
+ACOdyssey.exe+E7FE99E - 48 89 F9              - mov rcx,rdi
+ACOdyssey.exe+E7FE9A1 - E8 5A57B1F2           - call ACOdyssey.exe+1314100
+ACOdyssey.exe+E7FE9A6 - 0F28 CE               - movaps xmm1,xmm6
+ACOdyssey.exe+E7FE9A9 - F3 0F11 83 1C010000   - movss [rbx+0000011C],xmm0				>> Near plane related, likely near start
+ACOdyssey.exe+E7FE9B1 - 48 89 F9              - mov rcx,rdi
+ACOdyssey.exe+E7FE9B4 - E8 279D6CF3           - call ACOdyssey.exe+1EC86E0
+ACOdyssey.exe+E7FE9B9 - 0F28 CE               - movaps xmm1,xmm6
+ACOdyssey.exe+E7FE9BC - F3 0F11 83 20010000   - movss [rbx+00000120],xmm0				>> Dof Blur strength 
+ACOdyssey.exe+E7FE9C4 - 48 89 F9              - mov rcx,rdi
+ACOdyssey.exe+E7FE9C7 - E8 54F2B0F2           - call ACOdyssey.exe+130DC20
+ACOdyssey.exe+E7FE9CC - 0F28 CE               - movaps xmm1,xmm6
+ACOdyssey.exe+E7FE9CF - F3 0F11 83 24010000   - movss [rbx+00000124],xmm0				>> far plane related, likely far end
+ACOdyssey.exe+E7FE9D7 - 48 89 F9              - mov rcx,rdi
+ACOdyssey.exe+E7FE9DA - E8 C1E8B1F2           - call ACOdyssey.exe+131D2A0
+ACOdyssey.exe+E7FE9DF - 0F28 CE               - movaps xmm1,xmm6
+ACOdyssey.exe+E7FE9E2 - F3 0F11 83 28010000   - movss [rbx+00000128],xmm0				>> Near plane related, likely near end
+ACOdyssey.exe+E7FE9EA - 48 89 F9              - mov rcx,rdi
+ACOdyssey.exe+E7FE9ED - E8 4E41B1F2           - call ACOdyssey.exe+1312B40
+ACOdyssey.exe+E7FE9F2 - 0F28 74 24 20         - movaps xmm6,[rsp+20]
+ACOdyssey.exe+E7FE9F7 - F3 0F11 83 2C010000   - movss [rbx+0000012C],xmm0				>> Focus area depth. 
+ACOdyssey.exe+E7FE9FF - 48 8B 5C 24 40        - mov rbx,[rsp+40]
+ACOdyssey.exe+E7FEA04 - 48 83 C4 30           - add rsp,30 { 48 }
+ACOdyssey.exe+E7FEA08 - 5F                    - pop rdi
+ACOdyssey.exe+E7FEA09 - C3                    - ret 
 
 

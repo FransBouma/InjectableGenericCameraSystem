@@ -16,15 +16,13 @@ Credits: Otis_Inf.
 - Resolution scaling
 - Photomode range limiter removal
 - HUD toggle
+- Disable in-game DoF when camera is enabled. (will re-enable when you disable camera).
 
 
 ### How to use
 Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.
 
 ### Important
-* The timestop / game pause can be a little buggy. This effectively means, it might be the game crashes soon after you've paused
-the game. This has been a given with every AC game and I can't fix that.
-
 * Be careful with the resolution scaling factor in the camera tools settings. Using a value of 2 or higher with a very 
 high resolution will likely make the game become unresponsive and crash if you don't have the latest greatest videocard.
 Resolution scaling already creates a high-res framebuffer, so e.g. using a factor of 2.0 on a 5K resolution effectively

@@ -204,6 +204,12 @@ namespace IGCS::GameSpecific::CameraManipulator
 			valueToStore = Utils::clamp(valueToStore, 0.0f, 24.0f, 0.0f);
 			*todInMemory = valueToStore;
 		}
+		if (isCameraFound && g_cameraEnabled && currentSettings.disableInGameDofWhenCameraIsEnabled)
+		{
+			BYTE* cameraStruct = (BYTE*)g_cameraStructAddress;
+			*(cameraStruct + DOF_ENABLE1_IN_STRUCT_OFFSET) = (BYTE)0;
+			*(cameraStruct + DOF_ENABLE1_IN_STRUCT_OFFSET) = (BYTE)0;
+		}
 	}
 
 
