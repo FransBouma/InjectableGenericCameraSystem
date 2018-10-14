@@ -55,9 +55,6 @@ EXTERN g_timestopStructAddress: qword
 EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _cameraWrite1InterceptionContinue: qword
 EXTERN _cameraWrite2InterceptionContinue: qword
-EXTERN _cameraWrite3InterceptionContinue: qword
-EXTERN _cameraWrite4InterceptionContinue: qword
-EXTERN _cameraWrite5InterceptionContinue: qword
 EXTERN _fovReadInterceptionContinue: qword
 EXTERN _resolutionScaleReadInterceptionContinue: qword
 EXTERN _todWriteInterceptionContinue: qword

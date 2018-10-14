@@ -6,6 +6,18 @@ Camera version: 1.0.0
 Camera release binaries: soon...  
 Credits: Otis_Inf. 
 
+### Features
+
+- Camera control: (Also in cut scenes and during a paused game)
+	- FoV control
+	- Free unlimited camera movement and rotation 
+- Game pause / unpause, also in cut scenes. 
+- Time of Day control
+- Resolution scaling
+- Photomode range limiter removal
+- HUD toggle
+
+
 ### How to use
 Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.
 

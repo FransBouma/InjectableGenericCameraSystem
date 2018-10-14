@@ -41,9 +41,6 @@ extern "C" {
 	void cameraStructInterceptor();
 	void cameraWrite1Interceptor();
 	void cameraWrite2Interceptor();
-	void cameraWrite3Interceptor();
-	void cameraWrite4Interceptor();
-	void cameraWrite5Interceptor();
 	void fovReadInterceptor();
 	void resolutionScaleReadInterceptor();
 	void todWriteInterceptor();
@@ -55,9 +52,6 @@ extern "C" {
 	LPBYTE _cameraStructInterceptionContinue = nullptr;
 	LPBYTE _cameraWrite1InterceptionContinue = nullptr;
 	LPBYTE _cameraWrite2InterceptionContinue = nullptr;
-	LPBYTE _cameraWrite3InterceptionContinue = nullptr;
-	LPBYTE _cameraWrite4InterceptionContinue = nullptr;
-	LPBYTE _cameraWrite5InterceptionContinue = nullptr;
 	LPBYTE _fovReadInterceptionContinue = nullptr;
 	LPBYTE _resolutionScaleReadInterceptionContinue = nullptr;
 	LPBYTE _todWriteInterceptionContinue = nullptr;
@@ -78,14 +72,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[PAUSE_FUNCTION_LOCATION_KEY] = new AOBBlock(PAUSE_FUNCTION_LOCATION_KEY, "53 48 83 EC 20 48 89 CB 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? FF 83 6C 18 00 00 83 BB 6C 18 00 00 01", 1);
 		aobBlocks[UNPAUSE_FUNCTION_LOCATION_KEY] = new AOBBlock(UNPAUSE_FUNCTION_LOCATION_KEY, "53 48 83 EC 20 48 89 CB 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? 85 C0", 1);
 		aobBlocks[HUD_RENDER_INTERCEPT_KEY] = new AOBBlock(HUD_RENDER_INTERCEPT_KEY, "48 89 E0 48 89 58 08 55 56 57 41 54 41 55 41 56 41 57 48 8D 6C 24 B0 48 81 EC ?? ?? ?? ?? 0F 29 70 B8 0F 29 78 A8", 1);
-
-		//aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE3_INTERCEPT_KEY, "44 0F 29 A7 70 04 00 00 45 0F 28 63 90 49 8B E3", 1);
-		//aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE4_INTERCEPT_KEY, "0F 28 DC 0F 29 A7 80 04 00 00 0F 59 DD 0F 28 CB 0F 28 C3 0F C6 CB AA 0F C6 C3 55 F3 0F 58 C1", 1);
-		//aobBlocks[CAMERA_WRITE5_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE5_INTERCEPT_KEY, "0F 29 1F 48 8B 43 38 0F 28 80 A0 0B 00 00 0F 29 45 00 48 8B 43 38", 1);
-		//aobBlocks[FOV_WRITE1_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE1_INTERCEPT_KEY, "F3 0F 11 B7 64 02 00 00 48 8B CF 89 87 ?? 07 00 00 E8", 1);
-		//aobBlocks[FOV_WRITE2_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE2_INTERCEPT_KEY, "F3 44 0F 11 93 64 02 00 00 49 8B D5 89 83 ?? 07 00 00 48 8B CB E8", 1);
-		//aobBlocks[FOV_READ_INTERCEPT_KEY] = new AOBBlock(FOV_READ_INTERCEPT_KEY, "F3 0F 10 97 24 01 00 00 0F 57 C0 0F 2F D0 F3 41 0F 10 8E 64 02 00 00", 1);
-		//aobBlocks[PHOTOMODE_ENABLE_ALWAYS_KEY] = new AOBBlock(PHOTOMODE_ENABLE_ALWAYS_KEY, "74 ?? E8 ?? ?? ?? ?? 80 B8 A9 02 00 00 00 74 ?? B8 01 00 00 00 48 81 C4", 1);
+		aobBlocks[PHOTOMODE_RANGE_DISABLE_KEY] = new AOBBlock(PHOTOMODE_RANGE_DISABLE_KEY, "F3 0F 5D F1 F3 41 0F 5F CA 0F 28 D6 0F C6 D2 00 0F 28 C1 41 0F 59 D3 0F C6 C0 00", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -118,30 +105,28 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[TIMESTOP_READ_INTERCEPT_KEY], 0x14, &_timestopReadInterceptionContinue, &timestopReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY], 0x17, &_resolutionScaleReadInterceptionContinue, &resolutionScaleReadInterceptor);
 		CameraManipulator::setPauseUnpauseGameFunctionPointers(aobBlocks[PAUSE_FUNCTION_LOCATION_KEY]->absoluteAddress(), aobBlocks[UNPAUSE_FUNCTION_LOCATION_KEY]->absoluteAddress());
-		//		enablePhotomodeEverywhere(aobBlocks);
-		
+		disablePhotomodeRangeLimit(aobBlocks);
 	}
 
 
-	void enablePhotomodeEverywhere(map<string, AOBBlock*> &aobBlocks)
+	void disablePhotomodeRangeLimit(map<string, AOBBlock*> &aobBlocks)
 	{
-		//ACOrigins.exe+28F568B - E8 F0BBC5FE           - call ACOrigins.exe+1551280
-		//ACOrigins.exe+28F5690 - 48 05 68030000        - add rax,00000368 { 872 }
-		//ACOrigins.exe+28F5696 - 74 13                 - je ACOrigins.exe+28F56AB
-		//ACOrigins.exe+28F5698 - 48 8D 15 91C5C7FE     - lea rdx,[ACOrigins.exe+1571C30] { [-9.52] }
-		//ACOrigins.exe+28F569F - 48 8B C8              - mov rcx,rax
-		//ACOrigins.exe+28F56A2 - E8 59C0C7FE           - call ACOrigins.exe+1571700
-		//ACOrigins.exe+28F56A7 - 84 C0                 - test al,al
-		//ACOrigins.exe+28F56A9 - 74 D5                 - je ACOrigins.exe+28F5680						<< NOP and photomode is usable in cutscenes. 
-		//ACOrigins.exe+28F56AB - E8 30E34AFF           - call ACOrigins.exe+1DA39E0
-		//ACOrigins.exe+28F56B0 - 80 B8 A9020000 00     - cmp byte ptr [rax+000002A9],00 { 0 }			<< is 1 if photomode is enabled.
-		//ACOrigins.exe+28F56B7 - 74 0E                 - je ACOrigins.exe+28F56C7
-		//ACOrigins.exe+28F56B9 - B8 01000000           - mov eax,00000001 { 1 }
-		//ACOrigins.exe+28F56BE - 48 81 C4 20010000     - add rsp,00000120 { 288 }
-		//ACOrigins.exe+28F56C5 - 5B                    - pop rbx
-		//ACOrigins.exe+28F56C6 - C3                    - ret 
-
-		GameImageHooker::nopRange(aobBlocks[PHOTOMODE_ENABLE_ALWAYS_KEY], 2);			// ACOrigins.exe+28F56A9 - 74 D5                 - je ACOrigins.exe+28F5680
+		//ACOdyssey.exe+2A406B5 - 66 0F3814 D9          - blendvps xmm3,xmm1,xmm0
+		//ACOdyssey.exe+2A406BA - 44 0F5C DB            - subps xmm11,xmm3
+		//ACOdyssey.exe+2A406BE - 48 8B D6              - mov rdx,rsi
+		//ACOdyssey.exe+2A406C1 - 41 0F28 C3            - movaps xmm0,xmm11
+		//ACOdyssey.exe+2A406C5 - 66 41 0F3A40 C3 7F    - dpps xmm0,xmm11,7F
+		//ACOdyssey.exe+2A406CC - 0F51 C8               - sqrtps xmm1,xmm0
+		//ACOdyssey.exe+2A406CF - F3 0F5D F1            - minss xmm6,xmm1					<< Change into movss xmm6, xmm1 to remove the limit: F3 0F10 F1 - movss xmm6,xmm1
+		//ACOdyssey.exe+2A406D3 - F3 41 0F5F CA         - maxss xmm1,xmm10
+		//ACOdyssey.exe+2A406D8 - 0F28 D6               - movaps xmm2,xmm6
+		//ACOdyssey.exe+2A406DB - 0FC6 D2 00            - shufps xmm2,xmm200
+		//ACOdyssey.exe+2A406DF - 0F28 C1               - movaps xmm0,xmm1
+		//ACOdyssey.exe+2A406E2 - 41 0F59 D3            - mulps xmm2,xmm11
+		//ACOdyssey.exe+2A406E6 - 0FC6 C0 00            - shufps xmm0,xmm000
+		//ACOdyssey.exe+2A406EA - 0F5E D0               - divps xmm2,xmm0
+		BYTE statementBytes[4] = { 0xF3, 0x0F, 0x10, 0xF1 };				//ACOdyssey.exe+2A406CF - F3 0F5D F1 - minss xmm6,xmm1	--> F3 0F10 F1 - movss xmm6,xmm1
+		GameImageHooker::writeRange(aobBlocks[PHOTOMODE_RANGE_DISABLE_KEY], statementBytes, 4);
 	}
 
 

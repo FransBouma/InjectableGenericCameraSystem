@@ -35,6 +35,6 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, std::map<std::string, AOBBlock*> &aobBlocks);
 	void setCameraStructInterceptorHook(std::map<std::string, AOBBlock*> &aobBlocks);
 	void setPostCameraStructHooks(std::map<std::string, AOBBlock*> &aobBlocks);
-	void enablePhotomodeEverywhere(std::map<std::string, AOBBlock*> &aobBlocks);
+	void disablePhotomodeRangeLimit(std::map<std::string, AOBBlock*> &aobBlocks);
 	void toggleHudRenderState(std::map<std::string, AOBBlock*> &aobBlocks, bool enabled);
 }
