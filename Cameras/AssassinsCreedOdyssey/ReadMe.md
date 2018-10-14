@@ -3,7 +3,7 @@ Injectable camera for Assassin's Creed Odyssey
 
 Current supported game version: v1.0.3+ (UPlay version)  
 Camera version: 1.0.0  
-Camera release binaries: soon...  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/ACOD_100  
 Credits: Otis_Inf. 
 
 ### Features
