@@ -87,12 +87,12 @@ namespace IGCS
 		_filter.Draw("Filter", -100.0f);
 		ImGui::Separator();
 		ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-		if (copy)
-		{
-			ImGui::LogToClipboard();
-		}
 
 		EnterCriticalSection(&_contentCriticalSection);
+			if (copy)
+			{
+				ImGui::LogToClipboard();
+			}
 			const char* buf_begin = _buf.begin();
 			const char* line = buf_begin;
 			for (int line_no = 0; line != NULL; line_no++)
@@ -114,6 +114,10 @@ namespace IGCS
 					ImGui::PopStyleColor();
 				}
 				line = line_end && line_end[1] ? line_end + 1 : NULL;
+			}
+			if (copy)
+			{
+				ImGui::LogFinish();
 			}
 		LeaveCriticalSection(&_contentCriticalSection);
 		if (_scrollToBottom)

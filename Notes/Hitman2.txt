@@ -1,0 +1,77 @@
+HITMAN 2
+===================
+
+Camera coords write:
+hitman2.exe+E3ADC9 - 0F28 48 30            - movaps xmm1,[rax+30]
+hitman2.exe+E3ADCD - 0F29 4C 24 50         - movaps [rsp+50],xmm1
+hitman2.exe+E3ADD2 - E8 099E2BFF           - call hitman2.exe+F4BE0
+hitman2.exe+E3ADD7 - F3 0F10 4C 24 54      - movss xmm1,[rsp+54]
+hitman2.exe+E3ADDD - 0F28 00               - movaps xmm0,[rax]
+hitman2.exe+E3ADE0 - 0F11 43 50            - movups [rbx+50],xmm0						// Write Quaternion
+hitman2.exe+E3ADE4 - F3 0F10 44 24 50      - movss xmm0,[rsp+50]
+hitman2.exe+E3ADEA - F3 0F11 43 60         - movss [rbx+60],xmm0						// Write X
+hitman2.exe+E3ADEF - F3 0F10 44 24 58      - movss xmm0,[rsp+58]
+hitman2.exe+E3ADF5 - F3 0F11 43 68         - movss [rbx+68],xmm0						// Write Z
+hitman2.exe+E3ADFA - F3 0F11 4B 64         - movss [rbx+64],xmm1						// Write Y
+hitman2.exe+E3ADFF - EB 2F                 - jmp hitman2.exe+E3AE30
+hitman2.exe+E3AE01 - 48 8D 4C 24 60        - lea rcx,[rsp+60]
+hitman2.exe+E3AE06 - E8 D59D2BFF           - call hitman2.exe+F4BE0
+hitman2.exe+E3AE0B - 0F28 00               - movaps xmm0,[rax]
+hitman2.exe+E3AE0E - 0F11 43 50            - movups [rbx+50],xmm0
+hitman2.exe+E3AE12 - 0F28 4F 30            - movaps xmm1,[rdi+30]
+
+// FoV is at Camera Struct + DC: FOV isn't written all the time, so we can just write the fov, no interception needed.
+hitman2.exe+10457A44 - 66 66 66 2E 0F1F 84 00 00000000  - nop cs:[rax+rax+00000000]
+hitman2.exe+10457A50 - 0F2E 89 DC000000      - ucomiss xmm1,[rcx+000000DC]
+hitman2.exe+10457A57 - 74 25                 - je hitman2.exe+10457A7E
+hitman2.exe+10457A59 - F3 0F11 89 DC000000   - movss [rcx+000000DC],xmm1				// Write FOV
+hitman2.exe+10457A61 - F3 0F59 0D 83061EF1   - mulss xmm1,[hitman2.exe+16380EC] { [0.02] }
+hitman2.exe+10457A69 - F3 0F5F 0D 77061EF1   - maxss xmm1,[hitman2.exe+16380E8] { [0.01] }
+hitman2.exe+10457A71 - F3 0F11 89 5C010000   - movss [rcx+0000015C],xmm1
+hitman2.exe+10457A79 - E9 52ACD4F0           - jmp hitman2.exe+11A26D0
+hitman2.exe+10457A7E - C3                    - ret 
+hitman2.exe+10457A7F - 4C 8B 24 24           - mov r12,[rsp]
+
+///////// ANSEL
+// Start session callback: 1403E0750
+hitman2.exe+6134570 - 48 83 EC 28           - sub rsp,28 { 40 }
+hitman2.exe+6134574 - 80 3D AF0826FC 00     - cmp byte ptr [hitman2.exe+2394E2A],00 { 0 }
+hitman2.exe+613457B - 74 39                 - je hitman2.exe+61345B6
+hitman2.exe+613457D - 80 3D AA0826FC 00     - cmp byte ptr [hitman2.exe+2394E2E],00 { 0 }
+hitman2.exe+6134584 - 74 30                 - je hitman2.exe+61345B6
+hitman2.exe+6134586 - C6 05 9B0826FC 01     - mov byte ptr [hitman2.exe+2394E28],01 { 1 }
+hitman2.exe+613458D - 0F1F 00               - nop [rax]
+hitman2.exe+6134590 - B9 01000000           - mov ecx,00000001 { 1 }
+hitman2.exe+6134595 - E8 E6E9F9F9           - call hitman2.exe+D2F80
+hitman2.exe+613459A - 80 3D 870826FC 00     - cmp byte ptr [hitman2.exe+2394E28],00 { 0 }
+hitman2.exe+61345A1 - 75 ED                 - jne hitman2.exe+6134590
+hitman2.exe+61345A3 - 0FB6 0D 810826FC      - movzx ecx,byte ptr [hitman2.exe+2394E2B] { [0] }
+hitman2.exe+61345AA - 31 C0                 - xor eax,eax
+hitman2.exe+61345AC - 84 C9                 - test cl,cl
+hitman2.exe+61345AE - 0F95 D0               - setne al
+hitman2.exe+61345B1 - 48 83 C4 28           - add rsp,28 { 40 }
+hitman2.exe+61345B5 - C3                    - ret 
+hitman2.exe+61345B6 - 31 C0                 - xor eax,eax
+hitman2.exe+61345B8 - 30 C9                 - xor cl,cl
+hitman2.exe+61345BA - 84 C9                 - test cl,cl
+hitman2.exe+61345BC - 0F95 D0               - setne al
+hitman2.exe+61345BF - 48 83 C4 28           - add rsp,28 { 40 }
+hitman2.exe+61345C3 - C3                    - ret 
+
+Setting a 1 at: 142394E2B will cause flickering but also hud disable. Ansel sets this byte to 1.
+.. which ends up here:
+hitman2.exe+62EF6E5 - FF 15 CDE9550C        - call qword ptr [hitman2.exe+1284E0B8] { ->anselsdk64.dll+19D0 }
+hitman2.exe+62EF6EB - 0F10 4C 24 3C         - movups xmm1,[rsp+3C]
+hitman2.exe+62EF6F0 - F3 0F10 44 24 4C      - movss xmm0,[rsp+4C]
+hitman2.exe+62EF6F6 - 0F28 AF A0000000      - movaps xmm5,[rdi+000000A0]
+hitman2.exe+62EF6FD - 0F28 35 DCEA39FB      - movaps xmm6,[hitman2.exe+168E1E0] { [FFFFFFFF] }
+hitman2.exe+62EF704 - F3 0F11 87 DC000000   - movss [rdi+000000DC],xmm0
+.... which somewhere stops the game and disables the hud. We now have to find out which call does that. 
+
+And in the end:
+hitman2.exe+62EF980 - 66 C7 46 5B 0101      - mov word ptr [rsi+5B],0101
+
+is done, where the LSB makes sure the hud is toggled. So 0100 doesn't toggle the hud, 0001 does. 
+
+
+

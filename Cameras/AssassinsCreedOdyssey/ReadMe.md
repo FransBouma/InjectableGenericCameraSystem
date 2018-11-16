@@ -1,9 +1,9 @@
 Injectable camera for Assassin's Creed Odyssey
 ============================
 
-Current supported game version: v1.0.3+ (UPlay version)  
-Camera version: 1.0.0  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/ACOD_100  
+Current supported game version: v1.0.7+ (UPlay version)  
+Camera version: 1.0.1  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/ACOD_101  
 Credits: Otis_Inf. 
 
 ### Features
@@ -17,6 +17,10 @@ Credits: Otis_Inf.
 - Photomode range limiter removal
 - HUD toggle
 - Disable in-game DoF when camera is enabled. (will re-enable when you disable camera).
+- Aspect Ratio limitations have been removed.
+
+### Change log:
+v1.0.1: Fix for 1.0.7 of the game: photomode range limit was broken. Added: AR limits removed 
 
 
 ### How to use

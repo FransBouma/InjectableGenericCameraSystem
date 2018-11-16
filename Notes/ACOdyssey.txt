@@ -674,4 +674,35 @@ ACOdyssey.exe+E7FEA04 - 48 83 C4 30           - add rsp,30 { 48 }
 ACOdyssey.exe+E7FEA08 - 5F                    - pop rdi
 ACOdyssey.exe+E7FEA09 - C3                    - ret 
 
+// (v1.0.7)
+ACOdyssey.exe+B053CFD - F3 44 0F10 9F 30070000  - movss xmm11,[rdi+00000730]
+ACOdyssey.exe+B053D06 - F3 0F10 35 66A1D9F8   - movss xmm6,[ACOdyssey.exe+3DEDE74] { [1.00] }
+ACOdyssey.exe+B053D0E - F3 44 0F5F 1D 6DB7D9F8  - maxss xmm11,[ACOdyssey.exe+3DEF484] { [0.10] }
+ACOdyssey.exe+B053D17 - 0F28 FE               - movaps xmm7,xmm6
+ACOdyssey.exe+B053D1A - E8 8142B4F5           - call ACOdyssey.exe+B97FA0
+ACOdyssey.exe+B053D1F - 84 C0                 - test al,al
+ACOdyssey.exe+B053D21 - 74 0B                 - je ACOdyssey.exe+B053D2E								>> Change to JMP to fix wide screen AR larger than monitor.
+ACOdyssey.exe+B053D23 - F3 44 0F10 05 9C4CDEF8  - movss xmm8,[ACOdyssey.exe+3E389C8] { [1.78] }
+ACOdyssey.exe+B053D2C - EB 09                 - jmp ACOdyssey.exe+B053D37
+ACOdyssey.exe+B053D2E - F3 44 0F10 05 B54CDEF8  - movss xmm8,[ACOdyssey.exe+3E389EC] { [5.33] }
+ACOdyssey.exe+B053D37 - 48 8D 0D 62B43AFA     - lea rcx,[ACOdyssey.exe+53FF1A0] { [00000000] }
+ACOdyssey.exe+B053D3E - E8 3D30B2F5           - call ACOdyssey.exe+B76D80
+ACOdyssey.exe+B053D43 - 0F2F 05 5AB9D9F8      - comiss xmm0,[ACOdyssey.exe+3DEF6A4] { [1.60] }
+ACOdyssey.exe+B053D4A - 73 0D                 - jae ACOdyssey.exe+B053D59
+ACOdyssey.exe+B053D4C - 0F28 F8               - movaps xmm7,xmm0
+ACOdyssey.exe+B053D4F - F3 0F59 3D 594CDEF8   - mulss xmm7,[ACOdyssey.exe+3E389B0] { [0.63] }
+ACOdyssey.exe+B053D57 - EB 0E                 - jmp ACOdyssey.exe+B053D67
 
+ACOdyssey.exe+B053D79 - 8B 43 08              - mov eax,[rbx+08]
+ACOdyssey.exe+B053D7C - 0F28 C5               - movaps xmm0,xmm5
+ACOdyssey.exe+B053D7F - F3 44 0F59 C6         - mulss xmm8,xmm6
+ACOdyssey.exe+B053D84 - F3 0F10 74 24 5C      - movss xmm6,[rsp+5C]
+ACOdyssey.exe+B053D8A - 44 0F28 CE            - movaps xmm9,xmm6
+ACOdyssey.exe+B053D8E - 0F28 CE               - movaps xmm1,xmm6
+ACOdyssey.exe+B053D91 - F3 44 0F59 CF         - mulss xmm9,xmm7											>> NOP to have custom AR 
+ACOdyssey.exe+B053D96 - 41 0F28 D0            - movaps xmm2,xmm8
+ACOdyssey.exe+B053D9A - F3 0F5C C2            - subss xmm0,xmm2
+ACOdyssey.exe+B053D9E - 0F28 FA               - movaps xmm7,xmm2
+ACOdyssey.exe+B053DA1 - 44 0F28 F2            - movaps xmm14,xmm2
+ACOdyssey.exe+B053DA5 - 41 0F28 D9            - movaps xmm3,xmm9
+ACOdyssey.exe+B053DA9 - F3 0F5C CB            - subss xmm1,xmm3
