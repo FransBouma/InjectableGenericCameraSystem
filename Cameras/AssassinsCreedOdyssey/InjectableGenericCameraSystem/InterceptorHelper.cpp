@@ -45,6 +45,7 @@ extern "C" {
 	void resolutionScaleReadInterceptor();
 	void todWriteInterceptor();
 	void timestopReadInterceptor();
+	void fogReadInterceptor();
 }
 
 // external addresses used in asm.
@@ -56,6 +57,7 @@ extern "C" {
 	LPBYTE _resolutionScaleReadInterceptionContinue = nullptr;
 	LPBYTE _todWriteInterceptionContinue = nullptr;
 	LPBYTE _timestopReadInterceptionContinue = nullptr;
+	LPBYTE _fogReadInterceptionContinue = nullptr;
 }
 
 
@@ -76,6 +78,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[DOF_ENABLE_WRITE_LOCATION_KEY] = new AOBBlock(DOF_ENABLE_WRITE_LOCATION_KEY, "88 83 11 01 00 00 E8 ?? ?? ?? ?? 88 83 13 01 00 00 84 C0", 1);
 		aobBlocks[AR_LIMIT1_LOCATION_KEY] = new AOBBlock(AR_LIMIT1_LOCATION_KEY, "74 ?? F3 44 0F 10 05 ?? ?? ?? ?? EB ?? F3 44 0F 10 05 ?? ?? ?? ?? 48 8D 0D", 1);
 		aobBlocks[AR_LIMIT2_LOCATION_KEY] = new AOBBlock(AR_LIMIT2_LOCATION_KEY, "F3 44 0F 59 CF 41 0F 28 D0 F3 0F 5C C2 0F 28 FA 44 0F 28 F2", 1);
+		aobBlocks[FOG_READ_INTERCEPT_KEY] = new AOBBlock(FOG_READ_INTERCEPT_KEY, "F3 41 0F 10 7E 58 F3 44 0F 59 51 20 F3 45 0F 10 46 50 0F 29 44 24 70", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -107,6 +110,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[TOD_WRITE_INTERCEPT_KEY], 0x0F, &_todWriteInterceptionContinue, &todWriteInterceptor);
 		GameImageHooker::setHook(aobBlocks[TIMESTOP_READ_INTERCEPT_KEY], 0x14, &_timestopReadInterceptionContinue, &timestopReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY], 0x17, &_resolutionScaleReadInterceptionContinue, &resolutionScaleReadInterceptor);
+		GameImageHooker::setHook(aobBlocks[FOG_READ_INTERCEPT_KEY], 0x12, &_fogReadInterceptionContinue, &fogReadInterceptor);
+
 		CameraManipulator::setPauseUnpauseGameFunctionPointers(aobBlocks[PAUSE_FUNCTION_LOCATION_KEY]->absoluteAddress(), aobBlocks[UNPAUSE_FUNCTION_LOCATION_KEY]->absoluteAddress());
 		disablePhotomodeRangeLimit(aobBlocks);
 		disableARLimits(aobBlocks);

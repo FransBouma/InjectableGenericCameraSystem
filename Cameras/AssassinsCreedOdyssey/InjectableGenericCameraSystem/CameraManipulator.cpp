@@ -40,6 +40,7 @@ extern "C" {
 	LPBYTE g_resolutionScaleAddress = nullptr;
 	LPBYTE g_todStructAddress = nullptr;
 	LPBYTE g_timestopStructAddress = nullptr;
+	LPBYTE g_fogStructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
@@ -186,6 +187,13 @@ namespace IGCS::GameSpecific::CameraManipulator
 			float valueWithoutMinuteFraction = valueInMemory - floor(valueInMemory);
 			currentSettings.todMinute = (int)(valueWithoutMinuteFraction * 60.0f);
 		}
+		if (nullptr != g_fogStructAddress)
+		{
+			float* fogStrengthInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG_STRENGTH_IN_STRUCT_OFFSET);
+			currentSettings.fogStrength = *fogStrengthInMemory;
+			float* fogStartCurveInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG_START_CURVE_IN_STRUCT_OFFSET);
+			currentSettings.fogStartCurve = *fogStartCurveInMemory;
+		}
 	}
 
 
@@ -209,6 +217,13 @@ namespace IGCS::GameSpecific::CameraManipulator
 			BYTE* cameraStruct = (BYTE*)g_cameraStructAddress;
 			*(cameraStruct + DOF_ENABLE1_IN_STRUCT_OFFSET) = (BYTE)0;
 			*(cameraStruct + DOF_ENABLE1_IN_STRUCT_OFFSET) = (BYTE)0;
+		}
+		if (nullptr != g_fogStructAddress)
+		{
+			float* fogStrengthInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG_STRENGTH_IN_STRUCT_OFFSET);
+			*fogStrengthInMemory = currentSettings.fogStrength;
+			float* fogStartCurveInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG_START_CURVE_IN_STRUCT_OFFSET);
+			*fogStartCurveInMemory = currentSettings.fogStartCurve;
 		}
 	}
 

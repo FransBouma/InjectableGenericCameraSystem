@@ -706,3 +706,22 @@ ACOdyssey.exe+B053D9E - 0F28 FA               - movaps xmm7,xmm2
 ACOdyssey.exe+B053DA1 - 44 0F28 F2            - movaps xmm14,xmm2
 ACOdyssey.exe+B053DA5 - 41 0F28 D9            - movaps xmm3,xmm9
 ACOdyssey.exe+B053DA9 - F3 0F5C CB            - subss xmm1,xmm3
+
+// v1.0.7:
+// FOG strength:
+// Fog range: 0-1000. 0-10 is usually the game fog range. Cranking it up to 1000 gives fog all around the player. 
+ACOdyssey.exe+B69961C - 48 8B 8E 18010000     - mov rcx,[rsi+00000118]
+ACOdyssey.exe+B699623 - F3 45 0F10 56 54      - movss xmm10,[r14+54]
+ACOdyssey.exe+B699629 - F3 45 0F5F 56 48      - maxss xmm10,[r14+48]
+ACOdyssey.exe+B69962F - 41 0F28 46 30         - movaps xmm0,[r14+30]
+ACOdyssey.exe+B699634 - F3 41 0F10 4E 4C      - movss xmm1,[r14+4C]								<< Haze strength (0.01 is white, 0.99 is darker). r14, not rcx!
+ACOdyssey.exe+B69963A - F3 45 0F10 4E 5C      - movss xmm9,[r14+5C]
+ACOdyssey.exe+B699640 - F3 41 0F10 7E 58      - movss xmm7,[r14+58]
+ACOdyssey.exe+B699646 - F3 44 0F59 51 20      - mulss xmm10,[rcx+20]							<< Read FOG value. Game doesn't write the value. 
+ACOdyssey.exe+B69964C - F3 45 0F10 46 50      - movss xmm8,[r14+50]
+ACOdyssey.exe+B699652 - 0F29 44 24 70         - movaps [rsp+70],xmm0
+ACOdyssey.exe+B699657 - F3 44 0F59 15 005F75F8  - mulss xmm10,[ACOdyssey.exe+3DEF560] { [0.00] }
+ACOdyssey.exe+B699660 - F3 0F11 4C 24 7C      - movss [rsp+7C],xmm1
+ACOdyssey.exe+B699666 - E8 15F240F5           - call ACOdyssey.exe+AA8880
+ACOdyssey.exe+B69966B - 48 8B 8E 18010000     - mov rcx,[rsi+00000118]
+ACOdyssey.exe+B699672 - 0F28 F0               - movaps xmm6,xmm0

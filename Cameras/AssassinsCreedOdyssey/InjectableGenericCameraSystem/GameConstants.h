@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Assassin's Creed Odyssey v1.07+"
-	#define CAMERA_VERSION								"1.0.1"
+	#define CAMERA_VERSION								"1.0.2"
 	#define CAMERA_CREDITS								"Otis_Inf."
 	#define GAME_WINDOW_TITLE							"Assassin’s Creed® Odyssey"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
@@ -63,6 +63,7 @@ namespace IGCS::GameSpecific
 	#define DOF_ENABLE_WRITE_LOCATION_KEY				"AOB_DOF_WRITE_LOCATION"
 	#define AR_LIMIT1_LOCATION_KEY						"AOB_AR_LIMIT1_LOCATION"
 	#define AR_LIMIT2_LOCATION_KEY						"AOB_AR_LIMIT2_LOCATION"
+	#define FOG_READ_INTERCEPT_KEY						"AOB_FOG_READ_INTERCEPT"
 	
 
 	// Indices in the structures read by interceptors 
@@ -75,4 +76,6 @@ namespace IGCS::GameSpecific
 	#define TIMESTOP_BYTE_THREE_OFFSET					0x1788
 	#define DOF_ENABLE1_IN_STRUCT_OFFSET				0x111		// in camera struct. 1 is enable dof, 0 is disable dof. Writes have to be disabled first. See notes for dof parameters (pretty low-quality, not added to menu).
 	#define DOF_ENABLE2_IN_STRUCT_OFFSET				0x111		// in camera struct. 1 is enable dof, 0 is disable dof. Writes have to be disabled first. See notes for dof parameters (pretty low-quality, not added to menu).
+	#define FOG_STRENGTH_IN_STRUCT_OFFSET				0x20
+	#define FOG_START_CURVE_IN_STRUCT_OFFSET			0x60
 }

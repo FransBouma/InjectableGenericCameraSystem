@@ -37,6 +37,7 @@ PUBLIC cameraWrite2Interceptor
 PUBLIC resolutionScaleReadInterceptor
 PUBLIC todWriteInterceptor
 PUBLIC timestopReadInterceptor
+PUBLIC fogReadInterceptor
 
 ;---------------------------------------------------------------
 
@@ -48,6 +49,8 @@ EXTERN g_cameraStructAddress: qword
 EXTERN g_resolutionScaleAddress: qword
 EXTERN g_todStructAddress: qword
 EXTERN g_timestopStructAddress: qword
+EXTERN g_fogStructAddress: qword
+
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -59,6 +62,7 @@ EXTERN _fovReadInterceptionContinue: qword
 EXTERN _resolutionScaleReadInterceptionContinue: qword
 EXTERN _todWriteInterceptionContinue: qword
 EXTERN _timestopReadInterceptionContinue: qword
+EXTERN _fogReadInterceptionContinue: qword
 
 .data
 
@@ -240,6 +244,33 @@ exit:
 	jmp qword ptr [_timestopReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 timestopReadInterceptor ENDP
 
+
+fogReadInterceptor PROC
+;v1.0.7
+;ACOdyssey.exe+B69961C - 48 8B 8E 18010000     - mov rcx,[rsi+00000118]
+;ACOdyssey.exe+B699623 - F3 45 0F10 56 54      - movss xmm10,[r14+54]
+;ACOdyssey.exe+B699629 - F3 45 0F5F 56 48      - maxss xmm10,[r14+48]
+;ACOdyssey.exe+B69962F - 41 0F28 46 30         - movaps xmm0,[r14+30]
+;ACOdyssey.exe+B699634 - F3 41 0F10 4E 4C      - movss xmm1,[r14+4C]			<< Haze strength (0.01 is white, 0.99 is darker). r14, not rcx!
+;ACOdyssey.exe+B69963A - F3 45 0F10 4E 5C      - movss xmm9,[r14+5C]
+;ACOdyssey.exe+B699640 - F3 41 0F10 7E 58      - movss xmm7,[r14+58]			<< INTERCEPT HERE
+;ACOdyssey.exe+B699646 - F3 44 0F59 51 20      - mulss xmm10,[rcx+20]			<< Read FOG value. Game doesn't write the value. 
+;ACOdyssey.exe+B69964C - F3 45 0F10 46 50      - movss xmm8,[r14+50]
+;ACOdyssey.exe+B699652 - 0F29 44 24 70         - movaps [rsp+70],xmm0			<< CONTINUE HERE
+;ACOdyssey.exe+B699657 - F3 44 0F59 15 005F75F8  - mulss xmm10,[ACOdyssey.exe+3DEF560] { [0.00] }
+;ACOdyssey.exe+B699660 - F3 0F11 4C 24 7C      - movss [rsp+7C],xmm1
+;ACOdyssey.exe+B699666 - E8 15F240F5           - call ACOdyssey.exe+AA8880
+;ACOdyssey.exe+B69966B - 48 8B 8E 18010000     - mov rcx,[rsi+00000118]
+;ACOdyssey.exe+B699672 - 0F28 F0               - movaps xmm6,xmm0
+
+	mov [g_fogStructAddress], rcx
+originalCode:
+	movss xmm7, dword ptr [r14+58h]
+	mulss xmm10, dword ptr [rcx+20h]
+	movss xmm8, dword ptr [r14+50h]
+exit:
+	jmp qword ptr [_fogReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+fogReadInterceptor ENDP
 
 
 END

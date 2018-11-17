@@ -58,6 +58,8 @@ namespace IGCS
 		float resolutionScale;			// 0.5-4.0
 		int todHour;					// 0-23
 		int todMinute;					// 0-59
+		float fogStrength;				// 0-200. 0 is no fog (ugly), 200 is thick fog all around you. Can go higher if one wants.
+		float fogStartCurve;			// 0-1. 1 is default. 
 
 		void loadFromFile()
 		{
@@ -116,6 +118,8 @@ namespace IGCS
 				resolutionScale = 1.0f;
 				todHour = 12;
 				todMinute = 0;
+				fogStrength = 1.0f;
+				fogStartCurve = 1.0f;
 			}
 		}
 	};
