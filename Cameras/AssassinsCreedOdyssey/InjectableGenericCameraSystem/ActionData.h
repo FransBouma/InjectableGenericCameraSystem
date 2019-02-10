@@ -28,12 +28,62 @@
 #pragma once
 #include "stdafx.h"
 
-namespace IGCS::Console
+namespace IGCS
 {
-	void Release();
-	void WriteLine(const std::string& toWrite);
-	void WriteLine(const std::string& toWrite, int color);
-	void WriteError(const std::string& error);
-	void SetColor(int color);
-}
+	enum class ActionType : short
+	{
+		BlockInput,
+		CameraEnable,
+		CameraLock,
+		FovDecrease,
+		FovIncrease,
+		FovReset,
+		HudToggle,
+		MoveBackward,
+		MoveDown,
+		MoveForward,
+		MoveLeft,
+		MoveRight,
+		MoveUp,
+		RotateDown,
+		RotateLeft,
+		RotateRight,
+		RotateUp,
+		TiltLeft,
+		TiltRight,
+		Timestop,
+		ToggleOverlay,
 
+		Amount,
+	};
+
+
+	class ActionData
+	{
+	public:
+		ActionData(std::string name, std::string description, int keyCode, bool altRequired, bool ctrlRequired, bool shiftRequired)
+			: ActionData(name, description, keyCode, altRequired, ctrlRequired, shiftRequired, true) { };
+		ActionData(std::string name, std::string description, int keyCode, bool altRequired, bool ctrlRequired, bool shiftRequired, bool available);
+		~ActionData();
+
+		std::string getName() { return _name; }
+		// If false, the action is ignored to be edited / in help. Code isn't anticipating on it either, as it's not supported in this particular camera. 
+		bool getAvailable() { return _available; }
+		bool isActive();
+		bool isActive(bool ignoreAltCtrlShift);
+		int getIniFileValue();
+		void setValuesFromIniFileValue(int iniFileValue);
+
+	private:
+		bool ctrlPressed();
+		bool shiftPressed();
+
+		std::string _name;
+		std::string _description;
+		int _keyCode;
+		bool _altRequired;
+		bool _ctrlRequired;
+		bool _shiftRequired;
+		bool _available;
+	};
+}

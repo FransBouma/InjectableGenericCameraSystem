@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2019, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -69,6 +69,25 @@ namespace IGCS::Input
 	}
 
 
+	bool isActionActivated(ActionType type)
+	{
+		return isActionActivated(type, false);
+	}
+
+
+	// altCtrlShiftOptional is only effective for actions which don't have alt/ctrl/shift as a required key. Actions which do have one or more of these
+	// keys as required, will ignore altCtrlShiftOptional and always test for these keys. 
+	bool isActionActivated(ActionType type, bool altCtrlShiftOptional)
+	{
+		ActionData* data = Globals::instance().getActionData(type);
+		if (nullptr == data)
+		{
+			return false;
+		}
+		return data->isActive(altCtrlShiftOptional);
+	}
+
+
 	// Resets the states in the keystates buffer by resetting their lower 4 bits. This will make sure the keystate interpretation code in NewFrame will
 	// only pick up the key when its Keydown message was received the first time. 0x88/0x08 is used as this is the way GetKeyState() is reporting states too.
 	void resetKeyStates()
@@ -99,12 +118,6 @@ namespace IGCS::Input
 			return;
 		}
 		g_mouseButtonStates[button] = down ? 0x88 : 0x08;
-	}
-
-
-	bool keyDown(int virtualKeyCode)
-	{
-		return (GetKeyState(virtualKeyCode) & 0x8000);
 	}
 
 

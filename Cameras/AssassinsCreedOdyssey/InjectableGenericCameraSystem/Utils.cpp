@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2019, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -241,4 +241,15 @@ namespace IGCS::Utils
 	{
 		return strncmp(a, b, strlen(b)) == 0 ? 1 : 0;
 	}
+	
+	bool keyDown(int virtualKeyCode)
+	{
+		return (GetKeyState(virtualKeyCode) & 0x8000);
+	}
+
+	bool altPressed()
+	{
+		return keyDown(VK_LMENU) || keyDown(VK_RMENU);
+	}
+
 }

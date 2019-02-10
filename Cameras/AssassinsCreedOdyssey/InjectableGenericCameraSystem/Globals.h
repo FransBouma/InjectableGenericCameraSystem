@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2019, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -33,98 +33,15 @@
 #include "CDataFile.h"
 #include "Utils.h"
 #include <atomic>
+#include "Settings.h"
+#include "ActionData.h"
+#include <map>
 
 extern "C" BYTE g_cameraEnabled;
 extern "C" BYTE g_gamePaused;
 
 namespace IGCS
 {
-	struct Settings
-	{
-		// settings written to config file
-		bool invertY;
-		float fastMovementMultiplier;
-		float slowMovementMultiplier;
-		float movementUpMultiplier;
-		float movementSpeed;
-		float rotationSpeed;
-		float fovChangeSpeed;
-		int cameraControlDevice;		// 0==keyboard/mouse, 1 == gamepad, 2 == both, see Defaults.h
-		bool allowCameraMovementWhenMenuIsUp;
-		bool disableInGameDofWhenCameraIsEnabled;
-
-		// settings not persisted to config file.
-		// add settings to edit here.
-		float resolutionScale;			// 0.5-4.0
-		int todHour;					// 0-23
-		int todMinute;					// 0-59
-		float fogStrength;				// 0-200. 0 is no fog (ugly), 200 is thick fog all around you. Can go higher if one wants.
-		float fogStartCurve;			// 0-1. 1 is default. 
-
-		void loadFromFile()
-		{
-			CDataFile iniFile;
-			if (!iniFile.Load(IGCS_SETTINGS_INI_FILENAME))
-			{
-				// doesn't exist
-				return;
-			}
-			invertY = iniFile.GetBool("invertY", "CameraSettings");
-			allowCameraMovementWhenMenuIsUp = iniFile.GetBool("allowCameraMovementWhenMenuIsUp", "CameraSettings");
-			disableInGameDofWhenCameraIsEnabled = iniFile.GetBool("disableInGameDofWhenCameraIsEnabled", "CameraSettings");
-			fastMovementMultiplier = Utils::clamp(iniFile.GetFloat("fastMovementMultiplier", "CameraSettings"), 0.0f, FASTER_MULTIPLIER);
-			slowMovementMultiplier = Utils::clamp(iniFile.GetFloat("slowMovementMultiplier", "CameraSettings"), 0.0f, SLOWER_MULTIPLIER);
-			movementUpMultiplier = Utils::clamp(iniFile.GetFloat("movementUpMultiplier", "CameraSettings"), 0.0f, DEFAULT_UP_MOVEMENT_MULTIPLIER);
-			movementSpeed = Utils::clamp(iniFile.GetFloat("movementSpeed", "CameraSettings"), 0.0f, DEFAULT_MOVEMENT_SPEED);
-			rotationSpeed = Utils::clamp(iniFile.GetFloat("rotationSpeed", "CameraSettings"), 0.0f, DEFAULT_ROTATION_SPEED);
-			fovChangeSpeed = Utils::clamp(iniFile.GetFloat("fovChangeSpeed", "CameraSettings"), 0.0f, DEFAULT_FOV_SPEED);
-			cameraControlDevice = Utils::clamp(iniFile.GetInt("cameraControlDevice", "CameraSettings"), 0, DEVICE_ID_ALL, DEVICE_ID_ALL);
-		}
-
-
-		void saveToFile()
-		{
-			CDataFile iniFile;
-			iniFile.SetBool("invertY", invertY, "", "CameraSettings");
-			iniFile.SetBool("allowCameraMovementWhenMenuIsUp", allowCameraMovementWhenMenuIsUp, "", "CameraSettings");
-			iniFile.SetBool("disableInGameDofWhenCameraIsEnabled", disableInGameDofWhenCameraIsEnabled, "", "CameraSettings");
-			iniFile.SetFloat("fastMovementMultiplier", fastMovementMultiplier, "", "CameraSettings");
-			iniFile.SetFloat("slowMovementMultiplier", slowMovementMultiplier, "", "CameraSettings");
-			iniFile.SetFloat("movementUpMultiplier", movementUpMultiplier, "", "CameraSettings");
-			iniFile.SetFloat("movementSpeed", movementSpeed, "", "CameraSettings");
-			iniFile.SetFloat("rotationSpeed", rotationSpeed, "", "CameraSettings");
-			iniFile.SetFloat("fovChangeSpeed", fovChangeSpeed, "", "CameraSettings");
-			iniFile.SetInt("cameraControlDevice", cameraControlDevice, "", "CameraSettings");
-			iniFile.SetFileName(IGCS_SETTINGS_INI_FILENAME);
-			iniFile.Save();
-		}
-
-
-		void init(bool persistedOnly)
-		{
-			invertY = CONTROLLER_Y_INVERT;
-			fastMovementMultiplier = FASTER_MULTIPLIER;
-			slowMovementMultiplier = SLOWER_MULTIPLIER;
-			movementUpMultiplier = DEFAULT_UP_MOVEMENT_MULTIPLIER;
-			movementSpeed = DEFAULT_MOVEMENT_SPEED;
-			rotationSpeed = DEFAULT_ROTATION_SPEED;
-			fovChangeSpeed = DEFAULT_FOV_SPEED;
-			cameraControlDevice = DEVICE_ID_ALL;
-			allowCameraMovementWhenMenuIsUp = false;
-			disableInGameDofWhenCameraIsEnabled = false;
-
-			if (!persistedOnly)
-			{
-				resolutionScale = 1.0f;
-				todHour = 12;
-				todMinute = 0;
-				fogStrength = 1.0f;
-				fogStartCurve = 1.0f;
-			}
-		}
-	};
-
-
 	class Globals
 	{
 	public:
@@ -146,13 +63,17 @@ namespace IGCS
 		Settings& settings() { return _settings; }
 		bool keyboardMouseControlCamera() const { return _settings.cameraControlDevice == DEVICE_ID_KEYBOARD_MOUSE || _settings.cameraControlDevice == DEVICE_ID_ALL; }
 		bool controllerControlsCamera() const { return _settings.cameraControlDevice == DEVICE_ID_GAMEPAD || _settings.cameraControlDevice == DEVICE_ID_ALL; }
+		ActionData* getActionData(ActionType type);
 
 	private:
+		void initializeKeyBindings();
+
 		bool _inputBlocked = false;
 		atomic_bool _systemActive = false;
 		Gamepad _gamePad;
 		HWND _mainWindowHandle;
 		Settings _settings;
 		float _settingsDirtyTimer=0.0f;			// when settings are marked dirty, this is set with a value > 0 and decremented each frame. If 0, settings are saved. In seconds.
+		map<ActionType, ActionData*> _keyBindingPerActionType;
 	};
 }

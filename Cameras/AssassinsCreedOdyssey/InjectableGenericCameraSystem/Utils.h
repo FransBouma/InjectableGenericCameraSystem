@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2019, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -64,4 +64,6 @@ namespace IGCS::Utils
 	LPBYTE calculateAbsoluteAddress(AOBBlock* locationData, int nextOpCodeOffset);
 	std::string formatString(const char *fmt, va_list args);
 	bool stringStartsWith(const char *a, const char *b);
+	bool keyDown(int virtualKeyCode);
+	bool altPressed();
 }

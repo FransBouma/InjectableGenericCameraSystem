@@ -22,7 +22,7 @@
     <ProjectGuid>{A27B0E55-A5C9-4DCD-9C74-2C8074757FBE}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>TestInjectDll</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
     <ProjectName>ACOdysseyCameraTools</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -154,6 +154,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ActionData.h" />
     <ClInclude Include="AOBBlock.h" />
     <ClInclude Include="CameraManipulator.h" />
     <ClInclude Include="CDataFile.h" />
@@ -176,6 +177,7 @@
     <ClInclude Include="Overlay\stb_rect_pack.h" />
     <ClInclude Include="Overlay\stb_textedit.h" />
     <ClInclude Include="Overlay\stb_truetype.h" />
+    <ClInclude Include="Settings.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="targetver.h" />
@@ -183,6 +185,7 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActionData.cpp" />
     <ClCompile Include="AOBBlock.cpp" />
     <ClCompile Include="CameraManipulator.cpp" />
     <ClCompile Include="CDataFile.cpp" />

@@ -138,7 +138,7 @@ namespace IGCS::OverlayControl
 		ImGui::Text("Camera credits: %s", CAMERA_CREDITS);
 		ImGui::Spacing();
 		ImGui::Text(R"(Powered by Injectable Generic Camera System (IGCS). 
-Copyright (c) 2017 Otis_Inf (Frans Bouma). All rights reserved.
+Copyright (c) 2019 Otis_Inf (Frans Bouma). All rights reserved.
 https://github.com/FransBouma/InjectableGenericCameraSystem
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
