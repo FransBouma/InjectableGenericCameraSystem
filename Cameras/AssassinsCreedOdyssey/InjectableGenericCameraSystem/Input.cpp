@@ -106,16 +106,16 @@ namespace IGCS::Input
 	}
 
 
-	// altCtrlShiftOptional is only effective for actions which don't have alt/ctrl/shift as a required key. Actions which do have one or more of these
+	// altCtrlOptional is only effective for actions which don't have alt/ctrl/shift as a required key. Actions which do have one or more of these
 	// keys as required, will ignore altCtrlShiftOptional and always test for these keys. 
-	bool isActionActivated(ActionType type, bool altCtrlShiftOptional)
+	bool isActionActivated(ActionType type, bool altCtrlOptional)
 	{
 		ActionData* data = Globals::instance().getActionData(type);
 		if (nullptr == data)
 		{
 			return false;
 		}
-		return data->isActive(altCtrlShiftOptional);
+		return data->isActive(altCtrlOptional);
 	}
 
 

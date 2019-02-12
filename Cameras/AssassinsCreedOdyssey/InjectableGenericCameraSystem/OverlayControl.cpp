@@ -205,25 +205,32 @@ Special thanks to:
 
 		if (ImGui::CollapsingHeader("Camera tools controls"))
 		{
-			ImGui::TextUnformatted("Ctrl-Ins                              : Show / Hide Camera tools main window");
-			ImGui::TextUnformatted("Ctrl + Mouse wheel                    : Resize font");
-			ImGui::TextUnformatted("Ins                                   : Enable/Disable camera");
-			ImGui::TextUnformatted("Home                                  : Lock/unlock camera movement");
-			ImGui::TextUnformatted("Del                                   : Toggle HUD");
-			ImGui::TextUnformatted("ALT + rotate/move                     : Faster rotate / move");
-			ImGui::TextUnformatted("Right-CTRL + rotate/move              : Slower rotate / move");
-			ImGui::TextUnformatted("Controller Y-button + l/r-stick       : Faster rotate / move");
-			ImGui::TextUnformatted("Controller X-button + l/r-stick       : Slower rotate / move");
-			ImGui::TextUnformatted("Arrow up/down or mouse or r-stick     : Rotate camera up/down");
-			ImGui::TextUnformatted("Arrow left/right or mouse or r-stick  : Rotate camera left/right");
-			ImGui::TextUnformatted("Numpad 8/Numpad 5 or l-stick          : Move camera forward/backward");
-			ImGui::TextUnformatted("Numpad 4/Numpad 6 or l-stick          : Move camera left / right");
-			ImGui::TextUnformatted("Numpad 7/Numpad 9 or l/r-trigger      : Move camera up / down");
-			ImGui::TextUnformatted("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
-			ImGui::TextUnformatted("Numpad +/- or d-pad up/down           : Increase / decrease FoV");
-			ImGui::TextUnformatted("Numpad * or controller B-button       : Reset FoV");
-			ImGui::TextUnformatted("Numpad .                              : Block input to game for camera control device.");
-			ImGui::TextUnformatted("Numpad 0                              : Toggle game pause");
+			ImGui::Text("Show / Hide Camera tools main window : %s", Globals::instance().getActionData(ActionType::ToggleOverlay)->toString().c_str());
+			ImGui::Text("Resize font                          : Ctrl + Mouse wheel");
+			ImGui::Text("Enable/Disable camera                : %s", Globals::instance().getActionData(ActionType::CameraEnable)->toString().c_str());
+			ImGui::Text("Lock / unlock camera movement        : %s", Globals::instance().getActionData(ActionType::CameraLock)->toString().c_str());
+			ImGui::Text("Toggle HUD                           : %s", Globals::instance().getActionData(ActionType::HudToggle)->toString().c_str());
+			ImGui::Text("Faster rotate / move                 : Alt + rotate / move");
+			ImGui::Text("Slower rotate / move                 : Ctrl + rotate / move");
+			ImGui::Text("Faster rotate / move                 : Controller Y-button + l/r-stick");
+			ImGui::Text("Slower rotate / move                 : Controller X-button + l/r-stick");
+			ImGui::Text("Rotate camera up/down                : %s/%s or mouse or r-stick", Globals::instance().getActionData(ActionType::RotateUp)->toString().c_str(), 
+																							Globals::instance().getActionData(ActionType::RotateDown)->toString().c_str());
+			ImGui::Text("Rotate camera left/right             : %s/%s or mouse or r-stick", Globals::instance().getActionData(ActionType::RotateLeft)->toString().c_str(), 
+																							Globals::instance().getActionData(ActionType::RotateRight)->toString().c_str());
+			ImGui::Text("Move camera forward/backward         : %s/%s or l-stick", Globals::instance().getActionData(ActionType::MoveForward)->toString().c_str(), 
+																				   Globals::instance().getActionData(ActionType::MoveBackward)->toString().c_str());
+			ImGui::Text("Move camera left / right             : %s/%s or l-stick", Globals::instance().getActionData(ActionType::MoveLeft)->toString().c_str(),
+																				   Globals::instance().getActionData(ActionType::MoveRight)->toString().c_str());
+			ImGui::Text("Move camera up / down                : %s/%s or l/r-trigger", Globals::instance().getActionData(ActionType::MoveUp)->toString().c_str(),
+																					   Globals::instance().getActionData(ActionType::MoveDown)->toString().c_str());
+			ImGui::Text("Tilt camera left / right             : %s/%s or d-pad left/right", Globals::instance().getActionData(ActionType::TiltLeft)->toString().c_str(),
+																							Globals::instance().getActionData(ActionType::TiltRight)->toString().c_str());
+			ImGui::Text("Increase / decrease FoV              : %s/%s or d-pad up/down", Globals::instance().getActionData(ActionType::FovIncrease)->toString().c_str(),
+																						 Globals::instance().getActionData(ActionType::FovDecrease)->toString().c_str());
+			ImGui::Text("Reset FoV                            : %s or controller B-button", Globals::instance().getActionData(ActionType::FovReset)->toString().c_str());
+			ImGui::Text("Block input to game                  : %s", Globals::instance().getActionData(ActionType::BlockInput)->toString().c_str());
+			ImGui::Text("Toggle game pause                    : %s", Globals::instance().getActionData(ActionType::Timestop)->toString().c_str());
 		}
 
 		if (ImGui::CollapsingHeader("Settings editor help"))

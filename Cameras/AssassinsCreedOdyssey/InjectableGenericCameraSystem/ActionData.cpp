@@ -41,14 +41,14 @@ namespace IGCS
 	}
 	ActionData::~ActionData() {}
 
-	// altCtrlShiftOptional is only effective for actions which don't have alt/ctrl/shift as a required key. Actions which do have one or more of these
-	// keys as required, will ignore altCtrlShiftOptional and always test for these keys. 
-	bool ActionData::isActive(bool altCtrlShiftOptional)
+	// altCtrlOptional is only effective for actions which don't have alt/ctrl as a required key. Actions which do have one or more of these
+	// keys as required, will ignore altCtrlOptional and always test for these keys. 
+	bool ActionData::isActive(bool altCtrlOptional)
 	{
-		bool toReturn = (_available && Utils::keyDown(_keyCode));
-		if((_altRequired || _ctrlRequired || _shiftRequired) || !altCtrlShiftOptional)
+		bool toReturn = (_available && Utils::keyDown(_keyCode)) && (_shiftRequired==shiftPressed());
+		if((_altRequired || _ctrlRequired) || !altCtrlOptional)
 		{
-			toReturn = toReturn && Utils::altPressed() == _altRequired && ctrlPressed() == _ctrlRequired && shiftPressed() == _shiftRequired;
+			toReturn = toReturn && (Utils::altPressed() == _altRequired) && (ctrlPressed() == _ctrlRequired);
 		}
 		return toReturn;
 	}
@@ -85,7 +85,7 @@ namespace IGCS
 		_keyCode = source._keyCode;
 		fillStringVariant();
 	}
-	
+
 	bool ActionData::ctrlPressed()
 	{
 		return Utils::keyDown(VK_RCONTROL) || Utils::keyDown(VK_LCONTROL);
@@ -123,15 +123,15 @@ namespace IGCS
 		_stringVariant.clear();
 		if (_altRequired)
 		{
-			_stringVariant.append("Alt+");
+			_stringVariant.append("Alt + ");
 		}
 		if (_ctrlRequired)
 		{
-			_stringVariant.append("Ctrl+");
+			_stringVariant.append("Ctrl + ");
 		}
 		if (_shiftRequired)
 		{
-			_stringVariant.append("Shift+");
+			_stringVariant.append("Shift + ");
 		}
 		if (_keyCode > 0)
 		{

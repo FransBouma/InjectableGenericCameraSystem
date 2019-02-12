@@ -66,13 +66,11 @@ namespace IGCS
 		ActionData(std::string name, std::string description, int keyCode, bool altRequired, bool ctrlRequired, bool shiftRequired, bool available);
 		~ActionData();
 
-		bool isActive();
-		bool isActive(bool ignoreAltCtrlShift);
+		bool isActive(bool ignoreAltCtrl);
 		int getIniFileValue();
 		void setValuesFromIniFileValue(int iniFileValue);
 		void clear();
 		void update(ActionData& source);
-		void collectPressedKeysCumulatively();
 		void setKeyCode(int newKeyCode);
 
 		std::string getName() { return _name; }

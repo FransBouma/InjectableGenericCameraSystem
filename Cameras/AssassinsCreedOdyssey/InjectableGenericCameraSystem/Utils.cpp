@@ -251,8 +251,6 @@ namespace IGCS::Utils
 	{
 		return keyDown(VK_LMENU) || keyDown(VK_RMENU);
 	}
-	
-
 
 	// Thanks Hatti :)
 	std::string vkCodeToString(int vkCode)
