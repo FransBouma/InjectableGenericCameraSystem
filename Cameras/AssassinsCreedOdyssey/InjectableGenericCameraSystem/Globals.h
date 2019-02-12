@@ -64,6 +64,8 @@ namespace IGCS
 		bool keyboardMouseControlCamera() const { return _settings.cameraControlDevice == DEVICE_ID_KEYBOARD_MOUSE || _settings.cameraControlDevice == DEVICE_ID_ALL; }
 		bool controllerControlsCamera() const { return _settings.cameraControlDevice == DEVICE_ID_GAMEPAD || _settings.cameraControlDevice == DEVICE_ID_ALL; }
 		ActionData* getActionData(ActionType type);
+		void updateActionDataForAction(ActionType type);
+		ActionData& getKeyCollector() { return _keyCollectorData; }
 
 	private:
 		void initializeKeyBindings();
@@ -75,5 +77,6 @@ namespace IGCS
 		Settings _settings;
 		float _settingsDirtyTimer=0.0f;			// when settings are marked dirty, this is set with a value > 0 and decremented each frame. If 0, settings are saved. In seconds.
 		map<ActionType, ActionData*> _keyBindingPerActionType;
+		ActionData _keyCollectorData = ActionData("KeyCollector", "", 0, false, false, false);
 	};
 }

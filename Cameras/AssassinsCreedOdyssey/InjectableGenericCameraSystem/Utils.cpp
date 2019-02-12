@@ -31,6 +31,7 @@
 #include "AOBBlock.h"
 #include "OverlayConsole.h"
 #include <comdef.h>
+#include <codecvt>
 
 using namespace std;
 
@@ -236,7 +237,6 @@ namespace IGCS::Utils
 		return toReturn;
 	}
 
-
 	bool stringStartsWith(const char *a, const char *b)
 	{
 		return strncmp(a, b, strlen(b)) == 0 ? 1 : 0;
@@ -251,5 +251,35 @@ namespace IGCS::Utils
 	{
 		return keyDown(VK_LMENU) || keyDown(VK_RMENU);
 	}
+	
 
+
+	// Thanks Hatti :)
+	std::string vkCodeToString(int vkCode)
+	{
+		unsigned int scanCode = MapVirtualKey(vkCode, MAPVK_VK_TO_VSC);
+
+		switch (vkCode)
+		{
+			case VK_LEFT: case VK_UP: case VK_RIGHT: case VK_DOWN: // arrow keys
+			case VK_PRIOR: case VK_NEXT: // page up and page down
+			case VK_END: case VK_HOME:
+			case VK_INSERT: case VK_DELETE:
+			case VK_DIVIDE: // numpad slash
+			case VK_NUMLOCK:
+			{
+				scanCode |= 0x100; // set extended bit
+				break;
+			}
+		}
+
+		wchar_t wKeyName[50];
+		memset(wKeyName, 0, 100);
+
+		int length = GetKeyNameTextW(scanCode << 16, (LPWSTR)&wKeyName, 50);
+		wKeyName[length] = L'\0';
+
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> utf8_conv;
+		return utf8_conv.to_bytes(wKeyName);
+	}
 }

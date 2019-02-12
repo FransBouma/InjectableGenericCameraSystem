@@ -75,6 +75,24 @@ namespace IGCS
 	}
 
 
+	void Globals::updateActionDataForAction(ActionType type)
+	{
+		if (!_keyCollectorData.isValid())
+		{
+			// not valid, no need to set it.
+			return;
+		}
+		ActionData* toUpdate = getActionData(type);
+		if (nullptr == toUpdate)
+		{
+			return;
+		}
+		toUpdate->update(_keyCollectorData);
+		// mark settings as dirty, so it's persisted, as we potentially set a new keybinding.
+		markSettingsDirty();
+	}
+
+
 	void Globals::markSettingsDirty()
 	{
 		if (_settingsDirtyTimer <= 0)
@@ -97,7 +115,7 @@ namespace IGCS
 	void Globals::initializeKeyBindings()
 	{
 		// initialize the bindings with defaults. First the features which are always supported.
-		_keyBindingPerActionType[ActionType::BlockInput] = new ActionData("BlockInput", "Block input to game for camera control device", IGCS_KEY_BLOCK_INPUT, false, false, false);
+		_keyBindingPerActionType[ActionType::BlockInput] = new ActionData("BlockInput", "Block input to game", IGCS_KEY_BLOCK_INPUT, false, false, false);
 		_keyBindingPerActionType[ActionType::CameraEnable] = new ActionData("CameraEnable", "Enable / Disable camera", IGCS_KEY_CAMERA_ENABLE, false, false, false);
 		_keyBindingPerActionType[ActionType::CameraLock] = new ActionData("CameraLock", "Lock / unlock camera movement", IGCS_KEY_CAMERA_LOCK, false, false, false);
 		_keyBindingPerActionType[ActionType::FovDecrease] = new ActionData("FovDecrease", "Decrease FoV", IGCS_KEY_FOV_DECREASE, false, false, false);

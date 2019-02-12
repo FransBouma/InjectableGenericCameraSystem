@@ -37,6 +37,7 @@ namespace IGCS
 		: _name{ name }, _description{ description }, _keyCode{ keyCode }, _altRequired{ altRequired }, _ctrlRequired{ ctrlRequired }, _shiftRequired{ shiftRequired },
 		  _available {available}
 	{
+		fillStringVariant();
 	}
 	ActionData::~ActionData() {}
 
@@ -52,6 +53,39 @@ namespace IGCS
 		return toReturn;
 	}
 
+	void ActionData::setKeyCode(int newKeyCode)
+	{
+		// if we have a keycode set and this is a different one, we will reset alt/ctrl/shift key requirements as it's a different key altogether.
+		if (_keyCode > 0 && newKeyCode > 0 && newKeyCode != _keyCode)
+		{
+			clear();
+		}
+		_keyCode = newKeyCode;
+		fillStringVariant();
+	}
+
+	void ActionData::clear()
+	{
+		_altRequired = false;
+		_ctrlRequired = false;
+		_shiftRequired = false;
+		_keyCode = 0;
+		fillStringVariant();
+	}
+
+	void ActionData::update(ActionData& source)
+	{
+		if (!source.isValid())
+		{
+			return;
+		}
+		_altRequired = source._altRequired;
+		_ctrlRequired = source._ctrlRequired;
+		_shiftRequired = source._shiftRequired;
+		_keyCode = source._keyCode;
+		fillStringVariant();
+	}
+	
 	bool ActionData::ctrlPressed()
 	{
 		return Utils::keyDown(VK_RCONTROL) || Utils::keyDown(VK_LCONTROL);
@@ -75,5 +109,33 @@ namespace IGCS
 		_altRequired = ((iniFileValue >> 16) & 0xFF) == 0x01;
 		_ctrlRequired = ((iniFileValue >> 8) & 0xFF) == 0x01;
 		_shiftRequired = (iniFileValue & 0xFF) == 0x01;
+		fillStringVariant();
+	}
+	
+	void ActionData::fillStringVariant()
+	{
+		if (!_altRequired && !_ctrlRequired && !_shiftRequired && (_keyCode <= 0))
+		{
+			// empty
+			_stringVariant = "Press a key";
+			return;
+		}
+		_stringVariant.clear();
+		if (_altRequired)
+		{
+			_stringVariant.append("Alt+");
+		}
+		if (_ctrlRequired)
+		{
+			_stringVariant.append("Ctrl+");
+		}
+		if (_shiftRequired)
+		{
+			_stringVariant.append("Shift+");
+		}
+		if (_keyCode > 0)
+		{
+			_stringVariant.append(Utils::vkCodeToString(_keyCode));
+		}
 	}
 }

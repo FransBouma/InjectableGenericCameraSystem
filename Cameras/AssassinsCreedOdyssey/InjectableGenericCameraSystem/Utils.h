@@ -36,7 +36,6 @@ namespace IGCS
 
 namespace IGCS::Utils
 {
-
 	struct handle_data {
 		unsigned long process_id;
 		HWND best_handle;
@@ -66,4 +65,5 @@ namespace IGCS::Utils
 	bool stringStartsWith(const char *a, const char *b);
 	bool keyDown(int virtualKeyCode);
 	bool altPressed();
+	std::string vkCodeToString(int vkCode);
 }

@@ -1,10 +1,10 @@
 #pragma once
 #include "stdafx.h"
 #include "Gamepad.h"
+#include "Utils.h"
 #include "GameConstants.h"
-#include "Utils.h";
-#include "CDataFile.h";
-#include "Defaults.h";
+#include "CDataFile.h"
+#include "Defaults.h"
 #include <map>
 #include "ActionData.h"
 

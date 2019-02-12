@@ -66,20 +66,33 @@ namespace IGCS
 		ActionData(std::string name, std::string description, int keyCode, bool altRequired, bool ctrlRequired, bool shiftRequired, bool available);
 		~ActionData();
 
-		std::string getName() { return _name; }
-		// If false, the action is ignored to be edited / in help. Code isn't anticipating on it either, as it's not supported in this particular camera. 
-		bool getAvailable() { return _available; }
 		bool isActive();
 		bool isActive(bool ignoreAltCtrlShift);
 		int getIniFileValue();
 		void setValuesFromIniFileValue(int iniFileValue);
+		void clear();
+		void update(ActionData& source);
+		void collectPressedKeysCumulatively();
+		void setKeyCode(int newKeyCode);
+
+		std::string getName() { return _name; }
+		std::string getDescription() { return _description; }
+		std::string toString() { return _stringVariant; }
+		// If false, the action is ignored to be edited / in help. Code isn't anticipating on it either, as it's not supported in this particular camera. 
+		bool getAvailable() { return _available; }
+		bool isValid() { return _keyCode > 0; }
+		void setAltRequired() { _altRequired = true; fillStringVariant(); }
+		void setCtrlRequired() { _ctrlRequired = true; fillStringVariant(); }
+		void setShiftRequired() { _shiftRequired = true; fillStringVariant(); }
 
 	private:
 		bool ctrlPressed();
 		bool shiftPressed();
+		void fillStringVariant();
 
 		std::string _name;
 		std::string _description;
+		std::string _stringVariant;
 		int _keyCode;
 		bool _altRequired;
 		bool _ctrlRequired;
