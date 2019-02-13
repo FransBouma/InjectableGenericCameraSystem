@@ -37,6 +37,23 @@ using namespace std;
 
 namespace IGCS::Utils
 {
+	// This table is from Reshade.
+	static const char vkCodeToStringLookup[256][16] = 
+	{
+		"", "", "", "Cancel", "", "", "", "", "Backspace", "Tab", "", "", "Clear", "Enter", "", "",
+		"Shift", "Control", "Alt", "Pause", "Caps Lock", "", "", "", "", "", "", "Escape", "", "", "", "",
+		"Space", "Page Up", "Page Down", "End", "Home", "Left Arrow", "Up Arrow", "Right Arrow", "Down Arrow", 
+		"Select", "", "", "Print Screen", "Insert", "Delete", "Help",
+		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "", "", "", "", "", "",
+		"", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
+		"P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Left Windows", "Right Windows", "", "", "Sleep",
+		"Numpad 0", "Numpad 1", "Numpad 2", "Numpad 3", "Numpad 4", "Numpad 5", "Numpad 6", "Numpad 7", "Numpad 8", "Numpad 9", 
+		"Numpad *", "Numpad +", "", "Numpad -", "Numpad Decimal", "Numpad /",
+		"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "F16",
+		"F17", "F18", "F19", "F20", "F21", "F22", "F23", "F24", "", "", "", "", "", "", "", "",
+		"Num Lock", "Scroll Lock",
+	};
+
 
 	BOOL isMainWindow(HWND handle)
 	{
@@ -252,32 +269,13 @@ namespace IGCS::Utils
 		return keyDown(VK_LMENU) || keyDown(VK_RMENU);
 	}
 
-	// Thanks Hatti :)
 	std::string vkCodeToString(int vkCode)
 	{
-		unsigned int scanCode = MapVirtualKey(vkCode, MAPVK_VK_TO_VSC);
-
-		switch (vkCode)
+		if (vkCode > 255 || vkCode < 0)
 		{
-			case VK_LEFT: case VK_UP: case VK_RIGHT: case VK_DOWN: // arrow keys
-			case VK_PRIOR: case VK_NEXT: // page up and page down
-			case VK_END: case VK_HOME:
-			case VK_INSERT: case VK_DELETE:
-			case VK_DIVIDE: // numpad slash
-			case VK_NUMLOCK:
-			{
-				scanCode |= 0x100; // set extended bit
-				break;
-			}
+			return "";
 		}
-
-		wchar_t wKeyName[50];
-		memset(wKeyName, 0, 100);
-
-		int length = GetKeyNameTextW(scanCode << 16, (LPWSTR)&wKeyName, 50);
-		wKeyName[length] = L'\0';
-
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> utf8_conv;
-		return utf8_conv.to_bytes(wKeyName);
+		string toReturn = vkCodeToStringLookup[vkCode];
+		return toReturn;
 	}
 }
