@@ -1,0 +1,94 @@
+Metro Exodus Photomode
+================================
+
+FoV: (Also game fov)
+MetroExodus.exe+FE001B4 - F3 0F11 9D 10020000   - movss [rbp+00000210],xmm3
+MetroExodus.exe+FE001BC - F3 0F5D D0            - minss xmm2,xmm0
+MetroExodus.exe+FE001C0 - F3 0F10 45 54         - movss xmm0,[rbp+54]
+MetroExodus.exe+FE001C5 - F3 0F5F D3            - maxss xmm2,xmm3
+MetroExodus.exe+FE001C9 - F3 0F11 15 43FB7AF1   - movss [MetroExodus.exe+15AFD14],xmm2
+MetroExodus.exe+FE001D1 - F3 41 0F11 65 48      - movss [r13+48],xmm4												<<< FOV WRITE
+MetroExodus.exe+FE001D7 - F3 0F11 05 415E8BF1   - movss [MetroExodus.exe+16B6020],xmm0
+MetroExodus.exe+FE001DF - 85 C0                 - test eax,eax
+MetroExodus.exe+FE001E1 - 74 13                 - je MetroExodus.exe+FE001F6
+MetroExodus.exe+FE001E3 - F3 0F10 4C 24 54      - movss xmm1,[rsp+54]
+MetroExodus.exe+FE001E9 - 66 0F6E C0            - movd xmm0,eax
+
+
+// Game camera: 
+MetroExodus.exe+FDFBF58 - 66 45 0F5A E4         - cvtpd2ps xmm12,xmm12
+MetroExodus.exe+FDFBF5D - 66 45 0F5A D2         - cvtpd2ps xmm10,xmm10
+MetroExodus.exe+FDFBF62 - F3 44 0F11 63 18      - movss [rbx+18],xmm12						<<< WRITE X
+MetroExodus.exe+FDFBF68 - F3 44 0F11 53 1C      - movss [rbx+1C],xmm10						<<< WRITE Y  (Up)
+MetroExodus.exe+FDFBF6E - 45 0FC6 E4 E1         - shufps xmm12,xmm12,-1F { 225 }
+MetroExodus.exe+FDFBF73 - 66 45 0F5A DB         - cvtpd2ps xmm11,xmm11
+MetroExodus.exe+FDFBF78 - 66 0F5A FF            - cvtpd2ps xmm7,xmm7
+MetroExodus.exe+FDFBF7C - F3 44 0F11 5B 20      - movss [rbx+20],xmm11						<<< WRITE Z
+MetroExodus.exe+FDFBF82 - F3 45 0F10 E2         - movss xmm12,xmm10
+MetroExodus.exe+FDFBF87 - F3 44 0F11 4B 24      - movss [rbx+24],xmm9
+// rotation matrix is right behind the coords. 
+
+Ansel callbacks:
+00000001401AAC00 (start session)?
+00000001401AB020 (End session)?
+
+// Start of camera struct handling code for the camera struct filled with either photomode or ansel. 
+MetroExodus.exe+9A64447 - 55                    - push rbp
+MetroExodus.exe+9A64448 - 57                    - push rdi
+MetroExodus.exe+9A64449 - 41 56                 - push r14
+MetroExodus.exe+9A6444B - 49 8D 6B A1           - lea rbp,[r11-5F]
+MetroExodus.exe+9A6444F - 48 81 EC B0000000     - sub rsp,000000B0 { 176 }
+MetroExodus.exe+9A64456 - 45 0F29 43 B8         - movaps [r11-48],xmm8
+MetroExodus.exe+9A6445B - 4D 89 C6              - mov r14,r8
+MetroExodus.exe+9A6445E - 44 0F10 41 30         - movups xmm8,[rcx+30]
+MetroExodus.exe+9A64463 - 48 89 D7              - mov rdi,rdx
+MetroExodus.exe+9A64466 - 44 0F5C 42 30         - subps xmm8,[rdx+30]
+MetroExodus.exe+9A6446B - 48 89 CB              - mov rbx,rcx
+MetroExodus.exe+9A6446E - 41 0F28 C0            - movaps xmm0,xmm8
+MetroExodus.exe+9A64472 - 0F5C 05 B768B4F7      - subps xmm0,[MetroExodus.exe+15AAD30] { (0,00) }
+MetroExodus.exe+9A64479 - 0F54 05 E00F6EF7      - andps xmm0,[MetroExodus.exe+1145460] { (2147483647) }
+MetroExodus.exe+9A64480 - 0F5C 05 39B092F7      - subps xmm0,[MetroExodus.exe+138F4C0] { (0,00) }
+MetroExodus.exe+9A64487 - 0F50 C0               - movmskps eax,xmm0
+MetroExodus.exe+9A6448A - 83 E0 07              - and eax,07 { 7 }
+MetroExodus.exe+9A6448D - 3C 07                 - cmp al,07 { 7 }
+MetroExodus.exe+9A6448F - 0F84 D9030000         - je MetroExodus.exe+9A6486E
+MetroExodus.exe+9A64495 - 48 8B 05 C410B4F7     - mov rax,[MetroExodus.exe+15A5560] { (8E258130) }
+MetroExodus.exe+9A6449C - 41 0F28 E0            - movaps xmm4,xmm8
+MetroExodus.exe+9A644A0 - 41 0F59 E0            - mulps xmm4,xmm8
+
+...
+
+// Write Z of photomode coords: Memory is re-allocated every time the pm is enabled, so 
+// the coords are always at another location after the PM has been enabled.
+MetroExodus.exe+1075AA16 - F3 0F58 47 54         - addss xmm0,dword ptr [rdi+54]
+MetroExodus.exe+1075AA1B - F3 0F11 47 44         - movss [rdi+44],xmm0
+MetroExodus.exe+1075AA20 - F3 0F10 44 24 28      - movss xmm0,[rsp+28]
+MetroExodus.exe+1075AA26 - F3 0F58 47 58         - addss xmm0,dword ptr [rdi+58]
+MetroExodus.exe+1075AA2B - F3 0F11 47 48         - movss [rdi+48],xmm0							<<< WRITE PM Z
+MetroExodus.exe+1075AA30 - 0F10 47 30            - movups xmm0,[rdi+30]
+MetroExodus.exe+1075AA34 - 0F29 44 24 20         - movaps [rsp+20],xmm0
+MetroExodus.exe+1075AA39 - C7 44 24 24 00000000  - mov [rsp+24],00000000 { 0 }
+
+// Photomode / ansel range check:
+MetroExodus.exe+9A64516 - 0F28 C2               - movaps xmm0,xmm2
+MetroExodus.exe+9A64519 - F3 0F59 C3            - mulss xmm0,xmm3
+MetroExodus.exe+9A6451D - 0F57 DB               - xorps xmm3,xmm3
+MetroExodus.exe+9A64520 - F3 0F10 DC            - movss xmm3,xmm4
+MetroExodus.exe+9A64524 - F3 0F5D 1D 6C6AA3F7   - minss xmm3,[MetroExodus.exe+149AF98] 		<<< NOP for infinite range.
+MetroExodus.exe+9A6452C - F3 0F5C C8            - subss xmm1,xmm0
+MetroExodus.exe+9A64530 - F3 0F5F 5D 6F         - maxss xmm3,[rbp+6F]
+MetroExodus.exe+9A64535 - F3 0F59 CA            - mulss xmm1,xmm2
+MetroExodus.exe+9A64539 - F3 41 0F59 CA         - mulss xmm1,xmm10
+MetroExodus.exe+9A6453E - F3 0F11 5D 67         - movss [rbp+67],xmm3
+
+// Check if ansel can be enabled: 
+MetroExodus.exe+A559253 - E8 68464FF6           - call MetroExodus.exe+A4D8C0
+MetroExodus.exe+A559258 - 85 DB                 - test ebx,ebx
+MetroExodus.exe+A55925A - 74 14                 - je MetroExodus.exe+A559270			<<< NOP
+MetroExodus.exe+A55925C - 85 C0                 - test eax,eax
+MetroExodus.exe+A55925E - 74 10                 - je MetroExodus.exe+A559270			<<< NOP
+MetroExodus.exe+A559260 - B8 01000000           - mov eax,00000001 { 1 }
+MetroExodus.exe+A559265 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
+MetroExodus.exe+A55926A - 48 83 C4 20           - add rsp,20 { 32 }
+MetroExodus.exe+A55926E - 5F                    - pop rdi
+MetroExodus.exe+A55926F - C3                    - ret 
