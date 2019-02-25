@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Assassin's Creed Odyssey v1.07+"
-	#define CAMERA_VERSION								"1.0.3"
+	#define CAMERA_VERSION								"1.0.4"
 	#define CAMERA_CREDITS								"Otis_Inf."
 	#define GAME_WINDOW_TITLE							"Assassin’s Creed® Odyssey"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)

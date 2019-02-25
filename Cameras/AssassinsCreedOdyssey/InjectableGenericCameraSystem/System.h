@@ -65,6 +65,7 @@ namespace IGCS
 		bool _cameraStructFound = false;
 		bool _hudToggled = false;
 		map<string, AOBBlock*> _aobBlocks;
+		bool _applyHammerPrevention = false;	// set to true by a keyboard action and which triggers a sleep before keyboard handling is performed.
 	};
 }
 
