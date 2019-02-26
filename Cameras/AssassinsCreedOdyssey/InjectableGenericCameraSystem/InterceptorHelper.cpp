@@ -69,15 +69,14 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE1_INTERCEPT_KEY, "0F 29 02 0F 28 71 20 41 0F 28 10 41 0F 28 38 0F 28 E2", 1);
 		aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE2_INTERCEPT_KEY, "41 0F 29 38 F3 0F 10 41 30 F3 41 0F 58 01 0F 28 3C 24 F3 41 0F 11 01", 1);
 		aobBlocks[TIMESTOP_READ_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_READ_INTERCEPT_KEY, "48 89 54 24 28 48 8B 57 18 83 E1 10 4C 31 C1 41 0F 29 7B A8", 1);
-		aobBlocks[TOD_WRITE_INTERCEPT_KEY] = new AOBBlock(TOD_WRITE_INTERCEPT_KEY, "F3 0F 58 00 F3 0F 11 00 48 8B 81 60 02 00 00 F3 0F 10 08", 1);
+		aobBlocks[TOD_WRITE_INTERCEPT_KEY] = new AOBBlock(TOD_WRITE_INTERCEPT_KEY, "0F 2F D1 F3 0F 11 12 72 ?? F3 0F 5C D1", 1);
 		aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY] = new AOBBlock(RESOLUTION_SCALE_INTERCEPT_KEY, "48 8B 70 60 48 8B 82 48 02 00 00 48 89 B4 24 B8 00 00 00", 1);
 		aobBlocks[PAUSE_FUNCTION_LOCATION_KEY] = new AOBBlock(PAUSE_FUNCTION_LOCATION_KEY, "53 48 83 EC 20 48 89 CB 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? FF 83 6C 18 00 00 83 BB 6C 18 00 00 01", 1);
 		aobBlocks[UNPAUSE_FUNCTION_LOCATION_KEY] = new AOBBlock(UNPAUSE_FUNCTION_LOCATION_KEY, "53 48 83 EC 20 48 89 CB 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 8B 83 ?? ?? ?? ?? 85 C0", 1);
 		aobBlocks[HUD_RENDER_INTERCEPT_KEY] = new AOBBlock(HUD_RENDER_INTERCEPT_KEY, "48 89 E0 48 89 58 08 55 56 57 41 54 41 55 41 56 41 57 48 8D 6C 24 B0 48 81 EC ?? ?? ?? ?? 0F 29 70 B8 0F 29 78 A8", 1);
 		aobBlocks[PHOTOMODE_RANGE_DISABLE_KEY] = new AOBBlock(PHOTOMODE_RANGE_DISABLE_KEY, "F3 41 0F 5D D0 0F 28 C1 0F C6 D2 00 41 0F 59 D2", 1);
 		aobBlocks[DOF_ENABLE_WRITE_LOCATION_KEY] = new AOBBlock(DOF_ENABLE_WRITE_LOCATION_KEY, "88 83 11 01 00 00 E8 ?? ?? ?? ?? 88 83 13 01 00 00 84 C0", 1);
-		aobBlocks[AR_LIMIT1_LOCATION_KEY] = new AOBBlock(AR_LIMIT1_LOCATION_KEY, "74 ?? F3 44 0F 10 05 ?? ?? ?? ?? EB ?? F3 44 0F 10 05 ?? ?? ?? ?? 48 8D 0D", 1);
-		aobBlocks[AR_LIMIT2_LOCATION_KEY] = new AOBBlock(AR_LIMIT2_LOCATION_KEY, "F3 44 0F 59 CF 41 0F 28 D0 F3 0F 5C C2 0F 28 FA 44 0F 28 F2", 1);
+		aobBlocks[AR_LIMIT_LOCATION_KEY] = new AOBBlock(AR_LIMIT_LOCATION_KEY, "F3 44 0F 59 CF 41 0F 28 D0 F3 0F 5C C2 0F 28 FA 44 0F 28 F2", 1);
 		aobBlocks[FOG_READ_INTERCEPT_KEY] = new AOBBlock(FOG_READ_INTERCEPT_KEY, "F3 41 0F 10 7E 58 F3 44 0F 59 51 20 F3 45 0F 10 46 50 0F 29 44 24 70", 1);
 
 		map<string, AOBBlock*>::iterator it;
@@ -107,7 +106,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	{
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY], 0x0F, &_cameraWrite1InterceptionContinue, &cameraWrite1Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY], 0x17, &_cameraWrite2InterceptionContinue, &cameraWrite2Interceptor);
-		GameImageHooker::setHook(aobBlocks[TOD_WRITE_INTERCEPT_KEY], 0x0F, &_todWriteInterceptionContinue, &todWriteInterceptor);
+		GameImageHooker::setHook(aobBlocks[TOD_WRITE_INTERCEPT_KEY], 0x1C, &_todWriteInterceptionContinue, &todWriteInterceptor);
 		GameImageHooker::setHook(aobBlocks[TIMESTOP_READ_INTERCEPT_KEY], 0x14, &_timestopReadInterceptionContinue, &timestopReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY], 0x17, &_resolutionScaleReadInterceptionContinue, &resolutionScaleReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[FOG_READ_INTERCEPT_KEY], 0x12, &_fogReadInterceptionContinue, &fogReadInterceptor);
@@ -120,6 +119,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 
 	void disableARLimits(map<string, AOBBlock*> &aobBlocks)
 	{
+		// Since 1.1.4 the first AR removal was broken, but it isn't needed anymore anyway, the game properly resizes wide screens larger than the monitor now.
+		// Code below left for reference. 
 		// (v1.0.7)
 		//ACOdyssey.exe+B053CFD - F3 44 0F10 9F 30070000  - movss xmm11,[rdi+00000730]
 		//ACOdyssey.exe+B053D06 - F3 0F10 35 66A1D9F8   - movss xmm6,[ACOdyssey.exe+3DEDE74] { [1.00] }
@@ -138,8 +139,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		//ACOdyssey.exe+B053D4C - 0F28 F8               - movaps xmm7,xmm0
 		//ACOdyssey.exe+B053D4F - F3 0F59 3D 594CDEF8   - mulss xmm7,[ACOdyssey.exe+3E389B0] { [0.63] }
 		//ACOdyssey.exe+B053D57 - EB 0E                 - jmp ACOdyssey.exe+B053D67
-		BYTE statementBytes[1] = { 0xEB };						// ACOdyssey.exe+B053D21 - 74 0B              - je ACOdyssey.exe+B053D2E
-		GameImageHooker::writeRange(aobBlocks[AR_LIMIT1_LOCATION_KEY], statementBytes, 1);
+		//BYTE statementBytes[1] = { 0xEB };						// ACOdyssey.exe+B053D21 - 74 0B              - je ACOdyssey.exe+B053D2E
+		//GameImageHooker::writeRange(aobBlocks[AR_LIMIT1_LOCATION_KEY], statementBytes, 1);
 
 		// v1.0.7
 		//ACOdyssey.exe+B053D79 - 8B 43 08              - mov eax,[rbx+08]
@@ -156,7 +157,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		//ACOdyssey.exe+B053DA5 - 41 0F28 D9            - movaps xmm3,xmm9
 		//ACOdyssey.exe+B053DA9 - F3 0F5C CB            - subss xmm1,xmm3
 
-		GameImageHooker::nopRange(aobBlocks[AR_LIMIT2_LOCATION_KEY], 5);		//ACOdyssey.exe+B053D91 - F3 44 0F59 CF         - mulss xmm9,xmm7		>> NOP to have custom AR 
+		GameImageHooker::nopRange(aobBlocks[AR_LIMIT_LOCATION_KEY], 5);		//ACOdyssey.exe+B053D91 - F3 44 0F59 CF         - mulss xmm9,xmm7		>> NOP to have custom AR 
 	}
 
 

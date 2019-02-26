@@ -201,26 +201,37 @@ resolutionScaleReadInterceptor ENDP
 
 
 todWriteInterceptor PROC
-;ACOdyssey.exe+10434F34 - F3 0F59 C1            - mulss xmm0,xmm1
-;ACOdyssey.exe+10434F38 - F3 0F58 00            - addss xmm0,dword ptr [rax]			<< INTERCEPT HERE
-;ACOdyssey.exe+10434F3C - F3 0F11 00            - movss [rax],xmm0						<< WRITE Of ToD.
-;ACOdyssey.exe+10434F40 - 48 8B 81 60020000     - mov rax,[rcx+00000260]
-;ACOdyssey.exe+10434F47 - F3 0F10 08            - movss xmm1,[rax]						<< CONTINUE HERE
-;ACOdyssey.exe+10434F4B - 0F2F CA               - comiss xmm1,xmm2
-;ACOdyssey.exe+10434F4E - 72 13                 - jb ACOdyssey.exe+10434F63
-;ACOdyssey.exe+10434F50 - F3 0F5C CA            - subss xmm1,xmm2
-;ACOdyssey.exe+10434F54 - 0F57 C0               - xorps xmm0,xmm0
-;ACOdyssey.exe+10434F57 - F3 0F5F C8            - maxss xmm1,xmm0
-;ACOdyssey.exe+10434F5B - F3 0F5D CA            - minss xmm1,xmm2
-;ACOdyssey.exe+10434F5F - F3 0F11 08            - movss [rax],xmm1
-	addss xmm0, dword ptr [rax]	
-	mov [g_todStructAddress], rax
+; v1.1.4:
+;ACOdyssey.exe+10155DCC - F3 0F58 12            - addss xmm2,dword ptr [rdx]
+;ACOdyssey.exe+10155DD0 - 0F2F D1               - comiss xmm2,xmm1						<< INTERCEPT HERE
+;ACOdyssey.exe+10155DD3 - F3 0F11 12            - movss [rdx],xmm2						<< WRITE TOD
+;ACOdyssey.exe+10155DD7 - 72 13                 - jb ACOdyssey.exe+10155DEC
+;ACOdyssey.exe+10155DD9 - F3 0F5C D1            - subss xmm2,xmm1
+;ACOdyssey.exe+10155DDD - 0F57 C0               - xorps xmm0,xmm0
+;ACOdyssey.exe+10155DE0 - F3 0F5F D0            - maxss xmm2,xmm0
+;ACOdyssey.exe+10155DE4 - F3 0F5D D1            - minss xmm2,xmm1
+;ACOdyssey.exe+10155DE8 - F3 0F11 12            - movss [rdx],xmm2
+;ACOdyssey.exe+10155DEC - 8B 42 04              - mov eax,[rdx+04]						<< CONTINUE HERE
+;ACOdyssey.exe+10155DEF - 85 C0                 - test eax,eax
+;ACOdyssey.exe+10155DF1 - 7F 1F                 - jg ACOdyssey.exe+10155E12
+	mov [g_todStructAddress], rdx
 	cmp byte ptr [g_cameraEnabled], 1
-	je exit
+	je originalCode
+nowrites:
+	comiss xmm2,xmm1	
+	jb exit
+	jmp originalCode
+writes:
+	comiss xmm2,xmm1	
+	movss dword ptr [rdx],xmm2	
+	jb exit
 originalCode:
-	movss dword ptr [rax],xmm0				
+	subss xmm2,xmm1
+	xorps xmm0,xmm0
+	maxss xmm2,xmm0
+	minss xmm2,xmm1
+	movss dword ptr [rdx],xmm2
 exit:
-	mov rax,[rcx+00000260h]
 	jmp qword ptr [_todWriteInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 todWriteInterceptor ENDP
 

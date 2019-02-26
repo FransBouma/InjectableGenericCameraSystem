@@ -30,8 +30,8 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Assassin's Creed Odyssey v1.07+"
-	#define CAMERA_VERSION								"1.0.4"
+	#define GAME_NAME									"Assassin's Creed Odyssey v1.1.4+"
+	#define CAMERA_VERSION								"1.0.5"
 	#define CAMERA_CREDITS								"Otis_Inf."
 	#define GAME_WINDOW_TITLE							"Assassin’s Creed® Odyssey"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
@@ -61,8 +61,7 @@ namespace IGCS::GameSpecific
 	#define PAUSE_FUNCTION_LOCATION_KEY					"AOB_PAUSE_FUNCTION"
 	#define UNPAUSE_FUNCTION_LOCATION_KEY				"AOB_UNPAUSE_FUNCTION"
 	#define DOF_ENABLE_WRITE_LOCATION_KEY				"AOB_DOF_WRITE_LOCATION"
-	#define AR_LIMIT1_LOCATION_KEY						"AOB_AR_LIMIT1_LOCATION"
-	#define AR_LIMIT2_LOCATION_KEY						"AOB_AR_LIMIT2_LOCATION"
+	#define AR_LIMIT_LOCATION_KEY						"AOB_AR_LIMIT_LOCATION"
 	#define FOG_READ_INTERCEPT_KEY						"AOB_FOG_READ_INTERCEPT"
 	
 
