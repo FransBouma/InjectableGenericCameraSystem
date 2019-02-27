@@ -216,7 +216,7 @@ todWriteInterceptor PROC
 ;ACOdyssey.exe+10155DF1 - 7F 1F                 - jg ACOdyssey.exe+10155E12
 	mov [g_todStructAddress], rdx
 	cmp byte ptr [g_cameraEnabled], 1
-	je originalCode
+	jne writes
 nowrites:
 	comiss xmm2,xmm1	
 	jb exit
