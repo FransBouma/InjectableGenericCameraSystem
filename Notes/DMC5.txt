@@ -1,0 +1,155 @@
+DMC5
+================
+
+Photomode coords write:
+DevilMayCry5.exe+ED7D342 - F3 41 0F11 57 08      - movss [r15+08],xmm2
+DevilMayCry5.exe+ED7D348 - F3 0F10 0E            - movss xmm1,[rsi]				<< WRITE X
+DevilMayCry5.exe+ED7D34C - F3 41 0F10 07         - movss xmm0,[r15]
+fmCameraAOB              - F3 0F10 56 04         - movss xmm2,[rsi+04]			<< WRITE Y
+DevilMayCry5.exe+ED7D356 - 0F5A C9               - vcvtps2pd xmm1,xmm1
+DevilMayCry5.exe+ED7D359 - 0F5A C0               - vcvtps2pd xmm0,xmm0
+DevilMayCry5.exe+ED7D35C - 0F5A D2               - vcvtps2pd xmm2,xmm2
+DevilMayCry5.exe+ED7D35F - F2 0F58 C8            - addsd xmm1,xmm0
+DevilMayCry5.exe+ED7D363 - F3 41 0F10 47 04      - movss xmm0,[r15+04]
+
+DevilMayCry5.exe+ED7D369 - 0F5A C0               - vcvtps2pd xmm0,xmm0
+DevilMayCry5.exe+ED7D36C - 66 0F5A E1            - cvtpd2ps xmm4,xmm1
+DevilMayCry5.exe+ED7D370 - F2 0F58 D0            - addsd xmm2,xmm0
+DevilMayCry5.exe+ED7D374 - F3 41 0F10 47 08      - movss xmm0,[r15+08]
+DevilMayCry5.exe+ED7D37A - F3 0F10 4E 08         - movss xmm1,[rsi+08]			<< WRITE Z
+DevilMayCry5.exe+ED7D37F - 0F5A C9               - vcvtps2pd xmm1,xmm1
+DevilMayCry5.exe+ED7D382 - 66 0F5A DA            - cvtpd2ps xmm3,xmm2
+DevilMayCry5.exe+ED7D386 - 0F5A C0               - vcvtps2pd xmm0,xmm0
+DevilMayCry5.exe+ED7D389 - F3 0F11 64 24 70      - movss [rsp+70],xmm4
+
+
+//Photomode location write; second time statement is called (first time is when ESC is pressed)
+//rdi contains pointer address.
+DevilMayCry5.exe+107ACCAB - F0 48 0FB1 7B 20      - lock cmpxchg [rbx+20],rdi
+
+/////////////////////////
+// These writes are used by multiple buffers. 
+////////////////////////
+
+Quaternion write1: 
+DevilMayCry5.exe+179E554B - F3 0F11 77 4C         - movss [rdi+4C],xmm6
+DevilMayCry5.exe+179E5550 - 0F28 B4 24 80000000   - movaps xmm6,[rsp+00000080]
+DevilMayCry5.exe+179E5558 - EB 1B                 - jmp DevilMayCry5.exe+179E5575
+DevilMayCry5.exe+179E555A - 41 8B 06              - mov eax,[r14]					
+DevilMayCry5.exe+179E555D - 89 47 40              - mov [rdi+40],eax					<< qX
+DevilMayCry5.exe+179E5560 - 41 8B 46 04           - mov eax,[r14+04]
+DevilMayCry5.exe+179E5564 - 89 47 44              - mov [rdi+44],eax					<< qY
+DevilMayCry5.exe+179E5567 - 41 8B 46 08           - mov eax,[r14+08]
+DevilMayCry5.exe+179E556B - 89 47 48              - mov [rdi+48],eax					<< qZ
+DevilMayCry5.exe+179E556E - 41 8B 46 0C           - mov eax,[r14+0C]
+DevilMayCry5.exe+179E5572 - 89 47 4C              - mov [rdi+4C],eax					<< qW
+DevilMayCry5.exe+179E5575 - 80 BF D2000000 00     - cmp byte ptr [rdi+000000D2],00 { 0 }			>> IMPORTANT for matrix reconstruction!
+DevilMayCry5.exe+179E557C - C6 87 D1000000 01     - mov byte ptr [rdi+000000D1],01 { 1 }
+DevilMayCry5.exe+179E5583 - 75 08                 - jne DevilMayCry5.exe+179E558D
+
+Quaternion write2: 
+DevilMayCry5.exe+179E3A21 - 48 8D 57 40           - lea rdx,[rdi+40]
+DevilMayCry5.exe+179E3A25 - 48 8D 4C 24 30        - lea rcx,[rsp+30]
+DevilMayCry5.exe+179E3A2A - E8 61A6A6EA           - call DevilMayCry5.exe+244E090
+DevilMayCry5.exe+179E3A2F - 8B 08                 - mov ecx,[rax]
+DevilMayCry5.exe+179E3A31 - 89 4F 40              - mov [rdi+40],ecx					<< qX
+DevilMayCry5.exe+179E3A34 - 8B 48 04              - mov ecx,[rax+04]
+DevilMayCry5.exe+179E3A37 - 89 4F 44              - mov [rdi+44],ecx					<< qY
+DevilMayCry5.exe+179E3A3A - 8B 48 08              - mov ecx,[rax+08]
+DevilMayCry5.exe+179E3A3D - 89 4F 48              - mov [rdi+48],ecx					<< qZ
+DevilMayCry5.exe+179E3A40 - 8B 40 0C              - mov eax,[rax+0C]
+DevilMayCry5.exe+179E3A43 - 89 47 4C              - mov [rdi+4C],eax					<< qW
+DevilMayCry5.exe+179E3A46 - 80 BF D2000000 00     - cmp byte ptr [rdi+000000D2],00 { 0 }			>> IMPORTANT for matrix reconstruction!
+DevilMayCry5.exe+179E3A4D - C6 87 D1000000 01     - mov byte ptr [rdi+000000D1],01 { 1 }
+DevilMayCry5.exe+179E3A54 - 75 08                 - jne DevilMayCry5.exe+179E3A5E
+DevilMayCry5.exe+179E3A56 - 48 89 F9              - mov rcx,rdi
+
+Camera coords write: 
+DevilMayCry5.exe+179E5233 - F3 0F11 57 38         - movss [rdi+38],xmm2
+DevilMayCry5.exe+179E5238 - F3 0F11 47 34         - movss [rdi+34],xmm0
+DevilMayCry5.exe+179E523D - EB 14                 - jmp DevilMayCry5.exe+179E5253
+DevilMayCry5.exe+179E523F - 41 8B 06              - mov eax,[r14]
+DevilMayCry5.exe+179E5242 - 89 47 30              - mov [rdi+30],eax					<< X
+DevilMayCry5.exe+179E5245 - 41 8B 46 04           - mov eax,[r14+04]
+DevilMayCry5.exe+179E5249 - 89 47 34              - mov [rdi+34],eax					<< Y
+DevilMayCry5.exe+179E524C - 41 8B 46 08           - mov eax,[r14+08]
+DevilMayCry5.exe+179E5250 - 89 47 38              - mov [rdi+38],eax					<< Z
+DevilMayCry5.exe+179E5253 - 80 BF D2000000 00     - cmp byte ptr [rdi+000000D2],00 { 0 }			>> IMPORTANT for matrix reconstruction!
+DevilMayCry5.exe+179E525A - C6 87 D1000000 01     - mov byte ptr [rdi+000000D1],01 { 1 }
+DevilMayCry5.exe+179E5261 - 75 08                 - jne DevilMayCry5.exe+179E526B
+
+FOV write:
+DevilMayCry5.exe+14AEB6DA - F3 0F10 85 B8000000   - movss xmm0,[rbp+000000B8]
+DevilMayCry5.exe+14AEB6E2 - 0F2F F0               - comiss xmm6,xmm0
+DevilMayCry5.exe+14AEB6E5 - 73 19                 - jae DevilMayCry5.exe+14AEB700
+DevilMayCry5.exe+14AEB6E7 - 0F2F 05 52CC99EF      - comiss xmm0,[DevilMayCry5.exe+4488340] { (1.00) }
+DevilMayCry5.exe+14AEB6EE - 76 05                 - jna DevilMayCry5.exe+14AEB6F5
+DevilMayCry5.exe+14AEB6F0 - F3 0F11 46 38         - movss [rsi+38],xmm0					<<< WRITE FOV11
+DevilMayCry5.exe+14AEB6F5 - 48 8B 43 50           - mov rax,[rbx+50]
+DevilMayCry5.exe+14AEB6F9 - 48 83 78 18 00        - cmp qword ptr [rax+18],00 { 0 }
+DevilMayCry5.exe+14AEB6FE - 75 25                 - jne DevilMayCry5.exe+14AEB725
+DevilMayCry5.exe+14AEB700 - F3 0F10 85 C0000000   - movss xmm0,[rbp+000000C0]
+DevilMayCry5.exe+14AEB708 - F3 0F11 46 30         - movss [rsi+30],xmm0
+DevilMayCry5.exe+14AEB70D - 48 8B 43 50           - mov rax,[rbx+50]
+DevilMayCry5.exe+14AEB711 - 48 83 78 18 00        - cmp qword ptr [rax+18],00 { 0 }
+DevilMayCry5.exe+14AEB716 - 75 0D                 - jne DevilMayCry5.exe+14AEB725
+
+TIMESTOP:
+Pause:
+DevilMayCry5.exe+153AADA5 - 4D 85 C0              - test r8,r8
+DevilMayCry5.exe+153AADA8 - 74 07                 - je DevilMayCry5.exe+153AADB1
+DevilMayCry5.exe+153AADAA - 4C 39 C2              - cmp rdx,r8
+DevilMayCry5.exe+153AADAD - 0F94 C0               - sete al						<< REPLACE with mov al, 01 + nop -> pause. Replace with sete al -> resume
+DevilMayCry5.exe+153AADB0 - C3                    - ret 
+DevilMayCry5.exe+153AADB1 - 48 83 7A 10 00        - cmp qword ptr [rdx+10],00 { 0 }
+DevilMayCry5.exe+153AADB6 - EB 0D                 - jmp DevilMayCry5.exe+153AADC5
+DevilMayCry5.exe+153AADB8 - 4D 85 C0              - test r8,r8
+DevilMayCry5.exe+153AADBB - 75 03                 - jne DevilMayCry5.exe+153AADC0
+DevilMayCry5.exe+153AADBD - B0 01                 - mov al,01 { 1 }
+DevilMayCry5.exe+153AADBF - C3                    - ret 
+
+
+
+
+Other Potential candidates:
+DevilMayCry5.exe+14AAF769 - 0F84 2EFFFFFF         - je DevilMayCry5.exe+14AAF69D
+DevilMayCry5.exe+14AAF76F - 09 A8 EC000000        - or [rax+000000EC],ebp			<< WRITE
+DevilMayCry5.exe+14AAF775 - 48 8B 4F 50           - mov rcx,[rdi+50]
+DevilMayCry5.exe+14AAF779 - 48 8B 05 001FFBF2     - mov rax,[DevilMayCry5.exe+7A61680] { (13A23200) }
+DevilMayCry5.exe+14AAF780 - 48 8B 59 18           - mov rbx,[rcx+18]
+
+Leads to:
+DevilMayCry5.exe+14AAF610 - 40 55                 - push rbp
+DevilMayCry5.exe+14AAF612 - 56                    - push rsi
+DevilMayCry5.exe+14AAF613 - 57                    - push rdi
+DevilMayCry5.exe+14AAF614 - 48 83 EC 20           - sub rsp,20 { 32 }
+DevilMayCry5.exe+14AAF618 - 48 8B 41 50           - mov rax,[rcx+50]
+DevilMayCry5.exe+14AAF61C - 31 F6                 - xor esi,esi
+DevilMayCry5.exe+14AAF61E - 89 D5                 - mov ebp,edx
+DevilMayCry5.exe+14AAF620 - 48 89 CF              - mov rdi,rcx
+DevilMayCry5.exe+14AAF623 - 48 39 70 18           - cmp [rax+18],rsi
+DevilMayCry5.exe+14AAF627 - 0F85 B5010000         - jne DevilMayCry5.exe+14AAF7E2
+DevilMayCry5.exe+14AAF62D - 48 8B 15 4C20FBF2     - mov rdx,[DevilMayCry5.exe+7A61680] { (13A23200) }
+DevilMayCry5.exe+14AAF634 - 45 31 C0              - xor r8d,r8d
+DevilMayCry5.exe+14AAF637 - E8 D40AFFEC           - call DevilMayCry5.exe+1AA0110
+DevilMayCry5.exe+14AAF63C - 0FB6 C8               - movzx ecx,al
+DevilMayCry5.exe+14AAF63F - 48 8B 47 50           - mov rax,[rdi+50]
+
+Unpause:
+DevilMayCry5.exe+14AAF270 - 48 89 5C 24 10        - mov [rsp+10],rbx
+DevilMayCry5.exe+14AAF275 - 56                    - push rsi
+DevilMayCry5.exe+14AAF276 - 48 83 EC 20           - sub rsp,20 { 32 }
+DevilMayCry5.exe+14AAF27A - 48 8B 41 50           - mov rax,[rcx+50]
+DevilMayCry5.exe+14AAF27E - 0FB6 F2               - movzx esi,dl
+DevilMayCry5.exe+14AAF281 - 48 89 CB              - mov rbx,rcx
+DevilMayCry5.exe+14AAF284 - 48 83 78 18 00        - cmp qword ptr [rax+18],00 { 0 }
+DevilMayCry5.exe+14AAF289 - 0F85 77010000         - jne DevilMayCry5.exe+14AAF406
+DevilMayCry5.exe+14AAF28F - 48 8B 15 EA23FBF2     - mov rdx,[DevilMayCry5.exe+7A61680] { (13A23200) }
+DevilMayCry5.exe+14AAF296 - 45 31 C0              - xor r8d,r8d
+DevilMayCry5.exe+14AAF299 - E8 720EFFEC           - call DevilMayCry5.exe+1AA0110
+DevilMayCry5.exe+14AAF29E - 44 0FB6 C0            - movzx r8d,al
+DevilMayCry5.exe+14AAF2A2 - 48 8B 43 50           - mov rax,[rbx+50]
+DevilMayCry5.exe+14AAF2A6 - 48 8B 48 18           - mov rcx,[rax+18]
+DevilMayCry5.exe+14AAF2AA - 48 85 C9              - test rcx,rcx
+DevilMayCry5.exe+14AAF2AD - 0F85 53010000         - jne DevilMayCry5.exe+14AAF406
+
