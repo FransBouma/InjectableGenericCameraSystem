@@ -1,6 +1,10 @@
 DMC5
 ================
 
+GAME COORDS: FoV struct address -0xf0
+Quaternion:  FoV struct address -0xe0
+
+
 Photomode coords write:
 DevilMayCry5.exe+ED7D342 - F3 41 0F11 57 08      - movss [r15+08],xmm2
 DevilMayCry5.exe+ED7D348 - F3 0F10 0E            - movss xmm1,[rsi]				<< WRITE X
@@ -21,6 +25,39 @@ DevilMayCry5.exe+ED7D37F - 0F5A C9               - vcvtps2pd xmm1,xmm1
 DevilMayCry5.exe+ED7D382 - 66 0F5A DA            - cvtpd2ps xmm3,xmm2
 DevilMayCry5.exe+ED7D386 - 0F5A C0               - vcvtps2pd xmm0,xmm0
 DevilMayCry5.exe+ED7D389 - F3 0F11 64 24 70      - movss [rsp+70],xmm4
+
+// timestop:
+DevilMayCry5.exe+179CA16D - 89 C1                 - mov ecx,eax
+DevilMayCry5.exe+179CA16F - F3 48 0F2A C1         - cvtsi2ss xmm0,rcx
+DevilMayCry5.exe+179CA174 - F3 0F58 C1            - addss xmm0,xmm1
+DevilMayCry5.exe+179CA178 - F3 0F11 87 88030000   - movss [rdi+00000388],xmm0
+DevilMayCry5.exe+179CA180 - C7 87 84030000 0000803F - mov [rdi+00000384],3F800000 { (0) }
+DevilMayCry5.exe+179CA18A - F3 0F10 97 A0030000   - movss xmm2,[rdi+000003A0]
+DevilMayCry5.exe+179CA192 - F3 0F10 87 84030000   - movss xmm0,[rdi+00000384]
+DevilMayCry5.exe+179CA19A - 0F2F C2               - comiss xmm0,xmm2
+DevilMayCry5.exe+179CA19D - F3 0F10 9F 80030000   - movss xmm3,[rdi+00000380]				<< READ ADDRESS. SET TO 1.0 for normal procedure, 0.00001 otherwise.
+DevilMayCry5.exe+179CA1A5 - 76 03                 - jna DevilMayCry5.exe+179CA1AA
+DevilMayCry5.exe+179CA1A7 - 0F28 C2               - movaps xmm0,xmm2
+DevilMayCry5.exe+179CA1AA - F3 0F59 C3            - mulss xmm0,xmm3
+DevilMayCry5.exe+179CA1AE - 0F2F 87 A4030000      - comiss xmm0,[rdi+000003A4]
+DevilMayCry5.exe+179CA1B5 - F3 0F11 87 84030000   - movss [rdi+00000384],xmm0
+DevilMayCry5.exe+179CA1BD - 0F97 D0               - seta al
+DevilMayCry5.exe+179CA1C0 - 84 C0                 - test al,al
+
+// Resolution scaling
+DevilMayCry5.exe+1920B933 - 48 8D 4C 24 40        - lea rcx,[rsp+40]
+DevilMayCry5.exe+1920B938 - C7 44 24 40 CDCCCC3D  - mov [rsp+40],3DCCCCCD { (0) }
+DevilMayCry5.exe+1920B940 - F3 0F10 80 6C120000   - movss xmm0,[rax+0000126C]				<< READ Resolution scale. 
+DevilMayCry5.exe+1920B948 - 48 8D 44 24 3C        - lea rax,[rsp+3C]
+DevilMayCry5.exe+1920B94D - F3 41 0F59 46 40      - mulss xmm0,[r14+40]
+DevilMayCry5.exe+1920B953 - 0F2F C7               - comiss xmm0,xmm7
+DevilMayCry5.exe+1920B956 - F3 0F11 44 24 3C      - movss [rsp+3C],xmm0
+DevilMayCry5.exe+1920B95C - 48 0F46 C1            - cmovbe rax,rcx
+DevilMayCry5.exe+1920B960 - F3 0F10 08            - movss xmm1,[rax]
+DevilMayCry5.exe+1920B964 - 0F2F F1               - comiss xmm6,xmm1
+DevilMayCry5.exe+1920B967 - 77 03                 - ja DevilMayCry5.exe+1920B96C
+DevilMayCry5.exe+1920B969 - 0F28 CE               - movaps xmm1,xmm6
+
 
 
 //Photomode location write; second time statement is called (first time is when ESC is pressed)
