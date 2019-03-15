@@ -113,8 +113,8 @@ namespace IGCS
 		if (_applyHammerPrevention)
 		{
 			_applyHammerPrevention = false;
-			// sleep main thread for 200ms so key repeat delay is simulated. 
-			Sleep(200);
+			// sleep main thread for 300ms so key repeat delay is simulated. 
+			Sleep(300);
 		}
 
 		if (Input::isActionActivated(ActionType::ToggleOverlay))
@@ -139,14 +139,14 @@ namespace IGCS
 				// it's going to be disabled, make sure things are alright when we give it back to the host
 				CameraManipulator::restoreOriginalValuesAfterCameraDisable();
 				toggleCameraMovementLockState(false);
-				InterceptorHelper::toggleDofEnableWrite(_aobBlocks, true);
+				InterceptorHelper::toggleInGameDoFOff(_aobBlocks, false);		// switch dof back on
 			}
 			else
 			{
 				// it's going to be enabled, so cache the original values before we enable it so we can restore it afterwards
 				CameraManipulator::cacheOriginalValuesBeforeCameraEnable();
 				_camera.resetAngles();
-				InterceptorHelper::toggleDofEnableWrite(_aobBlocks, false);
+				InterceptorHelper::toggleInGameDoFOff(_aobBlocks, Globals::instance().settings().disableInGameDofWhenCameraIsEnabled);
 			}
 			g_cameraEnabled = g_cameraEnabled == 0 ? (BYTE)1 : (BYTE)0;
 			displayCameraState();

@@ -37,6 +37,8 @@ PUBLIC cameraWrite2Interceptor
 PUBLIC cameraWrite3Interceptor
 PUBLIC timestopReadInterceptor
 PUBLIC resolutionScaleReadInterceptor
+PUBLIC displayTypeInterceptor
+PUBLIC dofSelectorWriteInterceptor
 
 ;---------------------------------------------------------------
 
@@ -47,6 +49,8 @@ EXTERN g_cameraEnabled: byte
 EXTERN g_cameraStructAddress: qword
 EXTERN g_resolutionScaleAddress: qword
 EXTERN g_timestopStructAddress: qword
+EXTERN g_displayTypeStructAddress: qword
+EXTERN g_dofStructAddress: qword
 
 ;---------------------------------------------------------------
 
@@ -58,6 +62,8 @@ EXTERN _cameraWrite2InterceptionContinue: qword
 EXTERN _cameraWrite3InterceptionContinue: qword
 EXTERN _timestopReadInterceptionContinue: qword
 EXTERN _resolutionScaleReadInterceptionContinue: qword
+EXTERN _displayTypeInterceptionContinue: qword
+EXTERN _dofSelectorWriteInterceptionContinue: qword
 
 .data
 
@@ -228,5 +234,72 @@ timestopReadInterceptor PROC
 exit:
 	jmp qword ptr [_timestopReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 timestopReadInterceptor ENDP
+
+displayTypeInterceptor PROC
+;DevilMayCry5.exe+17A16D9B - 72 06                 - jb DevilMayCry5.exe+17A16DA3
+;DevilMayCry5.exe+17A16D9D - F3 44 0F11 43 48      - movss [rbx+48],xmm8
+;DevilMayCry5.exe+17A16DA3 - 0F2F 43 4C            - comiss xmm0,[rbx+4C]
+;DevilMayCry5.exe+17A16DA7 - 72 06                 - jb DevilMayCry5.exe+17A16DAF
+;DevilMayCry5.exe+17A16DA9 - F3 44 0F11 4B 4C      - movss [rbx+4C],xmm9
+;DevilMayCry5.exe+17A16DAF - F3 44 0F10 15 1053A7EC  - movss xmm10,[DevilMayCry5.exe+448C0C8]
+;DevilMayCry5.exe+17A16DB8 - 48 8D 45 10           - lea rax,[rbp+10]
+;DevilMayCry5.exe+17A16DBC - 48 89 45 18           - mov [rbp+18],rax
+;DevilMayCry5.exe+17A16DC0 - 48 8D 3D 39925EE8     - lea rdi,[DevilMayCry5.exe]
+;DevilMayCry5.exe+17A16DC7 - 8B 43 74              - mov eax,[rbx+74]							<< READ display type. Set to 0 for 'fit'. 
+;DevilMayCry5.exe+17A16DCA - FF C8                 - dec eax
+;DevilMayCry5.exe+17A16DCC - 83 F8 0F              - cmp eax,0F
+;DevilMayCry5.exe+17A16DCF - 0F87 3B010000         - ja DevilMayCry5.exe+17A16F10
+;DevilMayCry5.exe+17A16DD5 - 48 98                 - cdqe 
+;DevilMayCry5.exe+17A16DD7 - 8B 8C 87 54A33E02     - mov ecx,[rdi+rax*4+023EA354]
+;DevilMayCry5.exe+17A16DDE - 48 01 F9              - add rcx,rdi
+;DevilMayCry5.exe+17A16DE1 - FF E1                 - jmp rcx
+;
+; We'll intercept a bit higher in the function as a RIP value is in the way, the RBX register is the same value:
+;DevilMayCry5.exe+17A16D19 - 44 0F29 44 24 40      - movaps [rsp+40],xmm8						<< INTERCEPT HERE
+;DevilMayCry5.exe+17A16D1F - 44 0F29 4C 24 30      - movaps [rsp+30],xmm9
+;DevilMayCry5.exe+17A16D25 - F3 0F11 45 10         - movss [rbp+10],xmm0
+;DevilMayCry5.exe+17A16D2A - F3 0F11 4D 14         - movss [rbp+14],xmm1						<< CONTINUE HERE
+;DevilMayCry5.exe+17A16D2F - 44 0F29 54 24 20      - movaps [rsp+20],xmm10
+;DevilMayCry5.exe+17A16D35 - 48 85 C9              - test rcx,rcx
+	mov [g_displayTypeStructAddress], rbx
+	movaps xmmword ptr [rsp+40h],xmm8
+	movaps xmmword ptr [rsp+30h],xmm9
+	movss dword ptr [rbp+10h],xmm0
+exit:
+	jmp qword ptr [_displayTypeInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+displayTypeInterceptor ENDP
+
+
+dofSelectorWriteInterceptor PROC
+; use the whole block.
+;DevilMayCry5.exe+194C5B30 - 89 51 4C              - mov [rcx+4C],edx					<< INTERCEPT HERE << DOF type write.
+;DevilMayCry5.exe+194C5B33 - 85 D2                 - test edx,edx
+;DevilMayCry5.exe+194C5B35 - 74 0E                 - je DevilMayCry5.exe+194C5B45
+;DevilMayCry5.exe+194C5B37 - 83 EA 01              - sub edx,01
+;DevilMayCry5.exe+194C5B3A - 74 09                 - je DevilMayCry5.exe+194C5B45
+;DevilMayCry5.exe+194C5B3C - 83 FA 01              - cmp edx,01
+;DevilMayCry5.exe+194C5B3F - 75 08                 - jne DevilMayCry5.exe+194C5B49
+;DevilMayCry5.exe+194C5B41 - 88 51 50              - mov [rcx+50],dl
+;DevilMayCry5.exe+194C5B44 - C3                    - ret								
+;DevilMayCry5.exe+194C5B45 - C6 41 50 00           - mov byte ptr [rcx+50],00
+;DevilMayCry5.exe+194C5B49 - C3                    - ret								<< CONTINUE HERE
+	mov [g_dofStructAddress], rcx
+	cmp byte ptr [g_cameraEnabled], 1
+	je noWrite
+	mov [rcx+4Ch],edx				
+noWrite:
+	test edx,edx
+	je setToZero
+	sub edx,01h
+	je setToZero
+	cmp edx,01h
+	jne exit
+	mov [rcx+50h],dl
+	jmp exit
+setToZero:
+	mov byte ptr [rcx+50h],00
+exit:
+	jmp qword ptr [_dofSelectorWriteInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+dofSelectorWriteInterceptor ENDP
 
 END

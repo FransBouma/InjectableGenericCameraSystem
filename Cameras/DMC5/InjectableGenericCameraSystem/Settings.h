@@ -26,7 +26,18 @@ namespace IGCS
 
 		// settings not persisted to config file.
 		// add settings to edit here.
-		float resolutionScale;			// 0.5-4.0
+		float resolutionScale;			// 0.5-10.0
+		int displayType;				// 0 - 6
+		/* 
+		Interesting display types (enum, starts with 0)
+		0000000144555CB4:"Fit"	== 0
+		000000014455F9E8:"Uniform4x3"	== 1
+		000000014455F9F8:"Uniform16x9"
+		000000014455FA08:"Uniform16x10"
+		000000014455FA18:"Uniform21x9"
+		000000014455FA28:"Uniform32x9"
+		000000014455FA38:"Uniform48x9"
+		*/
 
 		void loadFromFile(map<ActionType, ActionData*> keyBindingPerActionType)
 		{
@@ -108,6 +119,7 @@ namespace IGCS
 			if (!persistedOnly)
 			{
 				resolutionScale = 1.0f;
+				displayType = 2;
 			}
 		}
 	};

@@ -39,16 +39,28 @@ extern "C" {
 	LPBYTE g_cameraStructAddress = nullptr;
 	LPBYTE g_resolutionScaleAddress = nullptr;
 	LPBYTE g_timestopStructAddress = nullptr;
+	LPBYTE g_displayTypeStructAddress = nullptr;
+	LPBYTE g_dofStructAddress = nullptr;
 }
 
 namespace IGCS::GameSpecific::CameraManipulator
 {
 	static float _originalCoords[3];
 	static float _originalQuaternion[4];
-	static float _originalFoV;
+	static float _originalFoV = DEFAULT_FOV;
 	static float _originalResolutionScale;
-	static LPBYTE g_resolutionScaleMenuValueAddress = nullptr;
 
+
+	void selectDoF(int dofToSelect)
+	{
+		if (nullptr != g_dofStructAddress)
+		{
+			int* dofSelectionInMemory = reinterpret_cast<int*>(g_dofStructAddress + DOF_SELECTOR_IN_STRUCT_OFFSET);
+			*dofSelectionInMemory = dofToSelect;
+		}
+	}
+
+	
 	// This timestop is based on game speed. So if the game has to be paused, we will write a 0.00001f. If the game has to be unpaused, we'll write a 1.0f.
 	void setTimeStopValue(bool pauseGame)
 	{
@@ -70,6 +82,11 @@ namespace IGCS::GameSpecific::CameraManipulator
 			float* resolutionScaleInMemory = reinterpret_cast<float*>(g_resolutionScaleAddress + RESOLUTION_SCALE_IN_STRUCT_OFFSET);
 			currentSettings.resolutionScale = *resolutionScaleInMemory;
 		}
+		if (nullptr != g_displayTypeStructAddress)
+		{
+			BYTE* displayTypeInMemory = reinterpret_cast<BYTE*>(g_displayTypeStructAddress + DISPLAYTYPE_IN_STRUCT_OFFSET);
+			currentSettings.displayType = (int)*displayTypeInMemory;
+		}
 	}
 
 
@@ -80,6 +97,11 @@ namespace IGCS::GameSpecific::CameraManipulator
 		{
 			float* resolutionScaleInMemory = reinterpret_cast<float*>(g_resolutionScaleAddress + RESOLUTION_SCALE_IN_STRUCT_OFFSET);
 			*resolutionScaleInMemory = Utils::clamp(currentSettings.resolutionScale, RESOLUTION_SCALE_MIN, RESOLUTION_SCALE_MAX, 1.0f);
+		}
+		if (nullptr != g_displayTypeStructAddress)
+		{
+			BYTE* displayTypeInMemory = reinterpret_cast<BYTE*>(g_displayTypeStructAddress + DISPLAYTYPE_IN_STRUCT_OFFSET);
+			*displayTypeInMemory = (BYTE)currentSettings.displayType;
 		}
 	}
 

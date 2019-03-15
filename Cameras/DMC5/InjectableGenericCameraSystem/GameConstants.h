@@ -1,4 +1,4 @@
-//////////////////////////	//////////////////////////////////////////////////////////////////////////////
+//////////////////////////	////////	//////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
 // Copyright(c) 2019, Frans Bouma
 // All rights reserved.
@@ -32,7 +32,7 @@ namespace IGCS::GameSpecific
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Devil May Cray 5 v1.0"
 	#define CAMERA_VERSION								"1.0.0"
-	#define CAMERA_CREDITS								"Otis_Inf, Jim2Point0 and K-putt"
+	#define CAMERA_CREDITS								"Otis_Inf, Jim2Point0, Hattiwatti and K-putt"
 	#define GAME_WINDOW_TITLE							"Devil May Cry 5"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
 	#define INITIAL_YAW_RADIANS							0.0f	// around Y axis	(up)
@@ -45,6 +45,7 @@ namespace IGCS::GameSpecific
 	#define DEFAULT_ROTATION_SPEED						0.01f
 	#define DEFAULT_FOV_SPEED							0.3f	// fov in degrees
 	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f
+	#define DEFAULT_FOV									64.0f	// fov in degrees
 	#define RESOLUTION_SCALE_MAX						10.0f
 	#define RESOLUTION_SCALE_MIN						0.5f
 	// End Mandatory constants
@@ -56,6 +57,9 @@ namespace IGCS::GameSpecific
 	#define CAMERA_WRITE3_INTERCEPT_KEY					"AOB_CAMERA_WRITE3_INTERCEPT"
 	#define RESOLUTION_SCALE_INTERCEPT_KEY				"AOB_RESOLUTION_SCALE_INTERCEPT"
 	#define TIMESTOP_READ_INTERCEPT_KEY					"AOB_TIMESTOP_READ_INTERCEPT"
+	#define DISPLAYTYPE_INTERCEPT_KEY					"AOB_DISPLAYTYPE_INTERCEPT"
+	#define DOF_SELECTOR_WRITE_INTERCEPT_KEY			"AOB_DOF_SELECTOR_WRITE_INTERCEPT"
+	#define DOF_FAR_BLUR_STRENGTH_WRITE_KEY				"AOB_DOF_FAR_BLUR_STRENGTH_WRITE"
 
 	// Indices in the structures read by interceptors 
 	#define COORDS_IN_STRUCT_OFFSET						-0xF0
@@ -63,4 +67,6 @@ namespace IGCS::GameSpecific
 	#define FOV_IN_STRUCT_OFFSET						0x38
 	#define RESOLUTION_SCALE_IN_STRUCT_OFFSET			0x126C
 	#define TIMESTOP_FLOAT_OFFSET						0x380		// set float to 1.0 to proceed normally, 0.000001 to pause
+	#define DISPLAYTYPE_IN_STRUCT_OFFSET				0x74
+	#define DOF_SELECTOR_IN_STRUCT_OFFSET				0x4C		// set to 1 for the dof we need.
 }

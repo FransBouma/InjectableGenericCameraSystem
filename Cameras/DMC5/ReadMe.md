@@ -4,7 +4,7 @@ Injectable camera for Devil May Cry 5
 Current supported game version: v1.0+
 Camera version: 1.0.0  
 Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/DMC5_100  
-Credits: Otis_Inf, Jim2Point0, K-putt. 
+Credits: Otis_Inf, Jim2Point0, Hattiwatti, K-putt. 
 
 Brought to you by [FRAMED. Screenshotting community](https://framedsc.github.io). 
 
