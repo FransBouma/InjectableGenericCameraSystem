@@ -22,6 +22,13 @@ DevilMayCry5.exe+17688C6E - C3                    - ret
 157681E46 - F7 47 58 00010000 - test [rdi+58],0100
 )
 
+DevilMayCry5.exe+185ADDE8 - 0F1F 84 00 00000000   - nop [rax+rax+00000000]
+DevilMayCry5.exe+185ADDF0 - 48 8B 05 91DE58EF     - mov rax,[DevilMayCry5.exe+7B3BC88] <<< READ address at this address, add 8. Write 0 to toggle hud OFF, 1 for normal operation.
+DevilMayCry5.exe+185ADDF7 - 0FB6 40 08            - movzx eax,byte ptr [rax+08]
+DevilMayCry5.exe+185ADDFB - C3                    - ret 
+DevilMayCry5.exe+185ADDFC - 00 00                 - add [rax],al
+
+
 
 DOF type read:
 DevilMayCry5.exe+194CBB55 - 74 77                 - je DevilMayCry5.exe+194CBBCE
