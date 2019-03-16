@@ -35,7 +35,6 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, std::map<std::string, AOBBlock*> &aobBlocks);
 	void setCameraStructInterceptorHook(std::map<std::string, AOBBlock*> &aobBlocks);
 	void setPostCameraStructHooks(std::map<std::string, AOBBlock*> &aobBlocks);
-	void disableARLimits(std::map<std::string, AOBBlock*> &aobBlocks);
-	void toggleHudRenderState(std::map<std::string, AOBBlock*> &aobBlocks, bool enabled);
+	void toggleHud(std::map<std::string, AOBBlock*> &aobBlocks, bool hideHud);
 	void toggleInGameDoFOff(std::map<std::string, AOBBlock*> &aobBlocks, bool switchOff);
 }

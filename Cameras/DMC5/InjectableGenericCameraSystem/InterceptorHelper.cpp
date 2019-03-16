@@ -74,6 +74,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[DISPLAYTYPE_INTERCEPT_KEY] = new AOBBlock(DISPLAYTYPE_INTERCEPT_KEY, "44 0F 29 44 24 40 44 0F 29 4C 24 30 F3 0F 11 45 10 F3 0F 11 4D 14", 1);
 		aobBlocks[DOF_SELECTOR_WRITE_INTERCEPT_KEY] = new AOBBlock(DOF_SELECTOR_WRITE_INTERCEPT_KEY, "89 51 4C 85 D2 74 0E 83 EA 01 74 09 83 FA 01 75 08 88 51 50 C3", 1);
 		aobBlocks[DOF_FAR_BLUR_STRENGTH_WRITE_KEY] = new AOBBlock(DOF_FAR_BLUR_STRENGTH_WRITE_KEY, "8B 00 89 41 74 48 8D 44 24 10 48 8D 4C 24 08 F3 0F 11 4C 24 10", 1);
+		aobBlocks[HUD_TOGGLE_ADDRESS_KEY] = new AOBBlock(HUD_TOGGLE_ADDRESS_KEY, "48 8B 3D | ?? ?? ?? ?? 80 7F 08 00 66 C7 47 0A 00 00", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -110,32 +111,30 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	}
 
 
-	// if enabled is true, we'll place a 'ret' at the start of the code block, making the game skip rendering any hud element. If false, we'll reset
-	// the original first statement so code will proceed as normal. 
-	void toggleHudRenderState(map<string, AOBBlock*> &aobBlocks, bool enabled)
+	// if hideHud is false, we'll place a 1 at the flag position which signals that the rendering of the hud was successful, which shows the hud.
+	// otherwise we'll place a 0 there which makes the hud disappear.
+	void toggleHud(map<string, AOBBlock*> &aobBlocks, bool hideHud)
 	{
-		//DevilMayCry5.exe+17688C49 - 48 8B 7C 24 30        - mov rdi,[rsp+30]
-		//DevilMayCry5.exe+17688C4E - 48 8B 46 50           - mov rax,[rsi+50]
-		//DevilMayCry5.exe+17688C52 - 48 83 78 18 00        - cmp qword ptr [rax+18],00 { 0 }
-		//DevilMayCry5.exe+17688C57 - 75 0B                 - jne DevilMayCry5.exe+17688C64
-		//DevilMayCry5.exe+17688C59 - 48 89 DA              - mov rdx,rbx
-		//DevilMayCry5.exe+17688C5C - 48 89 F1              - mov rcx,rsi
-		//DevilMayCry5.exe+17688C5F - E8 3CD6C8EA           - call DevilMayCry5.exe+23162A0		<< NOP this to hide hud/targeting rectangle
-		//DevilMayCry5.exe+17688C64 - 48 8B 5C 24 38        - mov rbx,[rsp+38]
-		//DevilMayCry5.exe+17688C69 - 48 83 C4 20           - add rsp,20 { 32 }
-		//DevilMayCry5.exe+17688C6D - 5E                    - pop rsi
-		//DevilMayCry5.exe+17688C6E - C3                    - ret 
-		//if (enabled)
-		//{
-		//	// nop the call
-		//	GameImageHooker::nopRange(aobBlocks[HUD_RENDER_LOCATION_KEY], 5);		// DevilMayCry5.exe+17688C5F - E8 3CD6C8EA           - call DevilMayCry5.exe+23162A0
-		//}
-		//else
-		//{
-		//	// set original statement
-		//	BYTE statementBytes[3] = { 0x48, 0x8B, 0xC4 };			// DevilMayCry5.exe+17688C5F - E8 3CD6C8EA           - call DevilMayCry5.exe+23162A0
-		//	GameImageHooker::writeRange(aobBlocks[HUD_RENDER_LOCATION_KEY], statementBytes, 3);
-		//}
+		//DevilMayCry5.exe+18679B15 - 80 78 08 00           - cmp byte ptr [rax+08],00 { 0 }
+		//DevilMayCry5.exe+18679B19 - 0F84 E3010000         - je DevilMayCry5.exe+18679D02
+		//DevilMayCry5.exe+18679B1F - 48 89 7C 24 30        - mov [rsp+30],rdi
+		//DevilMayCry5.exe+18679B24 - 48 8B 3D 5D214CEF     - mov rdi,[DevilMayCry5.exe+7B3BC88] <<< READ address at this address, add 8. Write 0 to toggle hud OFF, 1 for normal operation.
+		//DevilMayCry5.exe+18679B2B - 80 7F 08 00           - cmp byte ptr [rdi+08],00 { 0 }
+		//DevilMayCry5.exe+18679B2F - 66 C7 47 0A 0000      - mov word ptr [rdi+0A],0000 { 0 }
+		//DevilMayCry5.exe+18679B35 - 0F84 9E010000         - je DevilMayCry5.exe+18679CD9
+		//DevilMayCry5.exe+18679B3B - 48 8B 05 C6C93DEF     - mov rax,[DevilMayCry5.exe+7A56508] { (176) }
+		//DevilMayCry5.exe+18679B42 - 48 8B 48 48           - mov rcx,[rax+48]
+		//DevilMayCry5.exe+18679B46 - 48 85 C9              - test rcx,rcx
+		// Obtained through:
+		//DevilMayCry5.exe+185ADDE8 - 0F1F 84 00 00000000   - nop [rax+rax+00000000]
+		//DevilMayCry5.exe+185ADDF0 - 48 8B 05 91DE58EF     - mov rax,[DevilMayCry5.exe+7B3BC88] <<< READ address at this address, add 8. Write 0 to toggle hud OFF, 1 for normal operation.
+		//DevilMayCry5.exe+185ADDF7 - 0FB6 40 08            - movzx eax,byte ptr [rax+08]
+		//DevilMayCry5.exe+185ADDFB - C3                    - ret 
+		//DevilMayCry5.exe+185ADDFC - 00 00                 - add [rax],al
+
+		LPBYTE drawComponentStructAddress = (LPBYTE)*(__int64*)Utils::calculateAbsoluteAddress(aobBlocks[HUD_TOGGLE_ADDRESS_KEY], 4); //DevilMayCry5.exe+18679B24 - 48 8B 3D 5D214CEF     - mov rdi,[DevilMayCry5.exe+7B3BC88]
+		BYTE* drawComponentResultAddress = reinterpret_cast<BYTE*>(drawComponentStructAddress + HUD_TOGGLE_OFFSET_IN_STRUCT);
+		*drawComponentResultAddress = hideHud ? (BYTE)0 : (BYTE)1;
 	}
 
 

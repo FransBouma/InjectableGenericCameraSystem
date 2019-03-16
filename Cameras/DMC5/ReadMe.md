@@ -3,7 +3,7 @@ Injectable camera for Devil May Cry 5
 
 Current supported game version: v1.0+
 Camera version: 1.0.0  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/DMC5_100  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/DMC5_100F  
 Credits: Otis_Inf, Jim2Point0, Hattiwatti, K-putt. 
 
 Brought to you by [FRAMED. Screenshotting community](https://framedsc.github.io). 
@@ -17,6 +17,8 @@ Brought to you by [FRAMED. Screenshotting community](https://framedsc.github.io)
 	- Free unlimited camera movement and rotation 
 - Game pause / unpause, also in cut scenes. 
 - Resolution scaling
+- Hud toggle
+- Aspect Ratio selection.
 
 ### How to use
 Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.

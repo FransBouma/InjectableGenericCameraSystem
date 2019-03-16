@@ -60,6 +60,7 @@ namespace IGCS::GameSpecific
 	#define DISPLAYTYPE_INTERCEPT_KEY					"AOB_DISPLAYTYPE_INTERCEPT"
 	#define DOF_SELECTOR_WRITE_INTERCEPT_KEY			"AOB_DOF_SELECTOR_WRITE_INTERCEPT"
 	#define DOF_FAR_BLUR_STRENGTH_WRITE_KEY				"AOB_DOF_FAR_BLUR_STRENGTH_WRITE"
+	#define HUD_TOGGLE_ADDRESS_KEY						"AOB_HUD_TOGGLE_ADDRESS_KEY"
 
 	// Indices in the structures read by interceptors 
 	#define COORDS_IN_STRUCT_OFFSET						-0xF0
@@ -69,4 +70,5 @@ namespace IGCS::GameSpecific
 	#define TIMESTOP_FLOAT_OFFSET						0x380		// set float to 1.0 to proceed normally, 0.000001 to pause
 	#define DISPLAYTYPE_IN_STRUCT_OFFSET				0x74
 	#define DOF_SELECTOR_IN_STRUCT_OFFSET				0x4C		// set to 1 for the dof we need.
+	#define HUD_TOGGLE_OFFSET_IN_STRUCT					0x8
 }

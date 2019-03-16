@@ -409,6 +409,6 @@ namespace IGCS
 	void System::toggleHudRenderState()
 	{
 		_hudToggled = !_hudToggled;
-		InterceptorHelper::toggleHudRenderState(_aobBlocks, _hudToggled);
+		InterceptorHelper::toggleHud(_aobBlocks, _hudToggled);
 	}
 }

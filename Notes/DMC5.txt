@@ -28,6 +28,18 @@ DevilMayCry5.exe+185ADDF7 - 0FB6 40 08            - movzx eax,byte ptr [rax+08]
 DevilMayCry5.exe+185ADDFB - C3                    - ret 
 DevilMayCry5.exe+185ADDFC - 00 00                 - add [rax],al
 
+Same address, but more unique piece of code for AOB:
+DevilMayCry5.exe+18679B15 - 80 78 08 00           - cmp byte ptr [rax+08],00 { 0 }
+DevilMayCry5.exe+18679B19 - 0F84 E3010000         - je DevilMayCry5.exe+18679D02
+DevilMayCry5.exe+18679B1F - 48 89 7C 24 30        - mov [rsp+30],rdi
+DevilMayCry5.exe+18679B24 - 48 8B 3D 5D214CEF     - mov rdi,[DevilMayCry5.exe+7B3BC88] <<< READ address at this address.
+DevilMayCry5.exe+18679B2B - 80 7F 08 00           - cmp byte ptr [rdi+08],00 { 0 }
+DevilMayCry5.exe+18679B2F - 66 C7 47 0A 0000      - mov word ptr [rdi+0A],0000 { 0 }
+DevilMayCry5.exe+18679B35 - 0F84 9E010000         - je DevilMayCry5.exe+18679CD9
+DevilMayCry5.exe+18679B3B - 48 8B 05 C6C93DEF     - mov rax,[DevilMayCry5.exe+7A56508] { (176) }
+DevilMayCry5.exe+18679B42 - 48 8B 48 48           - mov rcx,[rax+48]
+DevilMayCry5.exe+18679B46 - 48 85 C9              - test rcx,rcx
+
 
 
 DOF type read:
