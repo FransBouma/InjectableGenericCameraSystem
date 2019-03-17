@@ -19,6 +19,11 @@ Brought to you by [FRAMED. Screenshotting community](https://framedsc.github.io)
 - Resolution scaling
 - Hud toggle
 - Aspect Ratio selection.
+- DoF removal in cutscenes.
+
+### Important: DirectX 11 only
+The tools only work with DirectX11 of the game. The game itself starts with DirectX 12 by default. To switch back
+to DirectX 11, please see [this guide](https://framedsc.github.io/GameGuides/devil_may_cry_5.htm).
 
 ### How to use
 Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.

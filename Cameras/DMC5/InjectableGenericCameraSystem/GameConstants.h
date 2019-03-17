@@ -30,7 +30,7 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Devil May Cray 5 v1.0"
+	#define GAME_NAME									"Devil May Cry 5 v1.0"
 	#define CAMERA_VERSION								"1.0.0"
 	#define CAMERA_CREDITS								"Otis_Inf, Jim2Point0, Hattiwatti and K-putt"
 	#define GAME_WINDOW_TITLE							"Devil May Cry 5"
