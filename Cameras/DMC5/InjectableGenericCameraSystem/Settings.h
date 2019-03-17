@@ -23,11 +23,11 @@ namespace IGCS
 		int cameraControlDevice;		// 0==keyboard/mouse, 1 == gamepad, 2 == both, see Defaults.h
 		bool allowCameraMovementWhenMenuIsUp;
 		bool disableInGameDofWhenCameraIsEnabled;
+		int displayType;				// 0 - 6
 
 		// settings not persisted to config file.
 		// add settings to edit here.
 		float resolutionScale;			// 0.5-10.0
-		int displayType;				// 0 - 6
 		/* 
 		Interesting display types (enum, starts with 0)
 		0000000144555CB4:"Fit"	== 0
@@ -57,6 +57,8 @@ namespace IGCS
 			rotationSpeed = Utils::clamp(iniFile.GetFloat("rotationSpeed", "CameraSettings"), 0.0f, DEFAULT_ROTATION_SPEED);
 			fovChangeSpeed = Utils::clamp(iniFile.GetFloat("fovChangeSpeed", "CameraSettings"), 0.0f, DEFAULT_FOV_SPEED);
 			cameraControlDevice = Utils::clamp(iniFile.GetInt("cameraControlDevice", "CameraSettings"), 0, DEVICE_ID_ALL, DEVICE_ID_ALL);
+			disableInGameDofWhenCameraIsEnabled = iniFile.GetBool("disableInGameDofWhenCameraIsEnabled", "CameraSettings");
+			displayType = Utils::clamp(iniFile.GetInt("displayType", "CameraSettings"), 0, 6, 3);
 
 			// load keybindings. They might not be there, or incomplete. 
 			for (std::pair<ActionType, ActionData*> kvp : keyBindingPerActionType)
@@ -85,6 +87,8 @@ namespace IGCS
 			iniFile.SetFloat("rotationSpeed", rotationSpeed, "", "CameraSettings");
 			iniFile.SetFloat("fovChangeSpeed", fovChangeSpeed, "", "CameraSettings");
 			iniFile.SetInt("cameraControlDevice", cameraControlDevice, "", "CameraSettings");
+			iniFile.SetBool("disableInGameDofWhenCameraIsEnabled", disableInGameDofWhenCameraIsEnabled, "", "CameraSettings");
+			iniFile.SetInt("displayType", displayType, "", "CameraSettings");
 
 			// save keybindings
 			if (!keyBindingPerActionType.empty())
@@ -115,11 +119,11 @@ namespace IGCS
 			cameraControlDevice = DEVICE_ID_ALL;
 			allowCameraMovementWhenMenuIsUp = false;
 			disableInGameDofWhenCameraIsEnabled = false;
+			displayType = 1;
 
 			if (!persistedOnly)
 			{
 				resolutionScale = 1.0f;
-				displayType = 2;
 			}
 		}
 	};
