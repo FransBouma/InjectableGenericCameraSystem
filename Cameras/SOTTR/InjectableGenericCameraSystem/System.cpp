@@ -41,6 +41,7 @@
 #include "OverlayConsole.h"
 #include "OverlayControl.h"
 #include "MinHook.h"
+#include "Console.h"
 
 namespace IGCS
 {
@@ -324,7 +325,13 @@ namespace IGCS
 		OverlayControl::init();
 		Globals::instance().mainWindowHandle(Utils::findMainWindow(GetCurrentProcessId()));
 		Input::registerRawInput();
+#ifdef _DX12_
+		Console::Init();
+		Console::WriteHeader();
+#else
 		DX11Hooker::initializeHook();
+#endif // _DX12_
+
 		InputHooker::setInputHooks();
 
 		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);

@@ -57,10 +57,13 @@ namespace IGCS::OverlayControl
 	void addNotification(string notificationText)
 	{
 		EnterCriticalSection(&_notificationCriticalSection);
+#ifndef _DX12_
 			Notification toAdd;
 			toAdd.notificationText = notificationText;
 			toAdd.timeFirstDisplayed = -1.0f;
 			_activeNotifications.push_back(toAdd);
+
+#endif // !_DX12_
 			OverlayConsole::instance().logLine(notificationText.c_str());
 		LeaveCriticalSection(&_notificationCriticalSection);
 	}

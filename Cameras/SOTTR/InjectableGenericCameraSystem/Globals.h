@@ -146,6 +146,7 @@ namespace IGCS
 		Gamepad& gamePad() { return _gamePad; }
 		Settings& settings() { return _settings; }
 		map<string, LPVOID>& hookedFunctions() { return _hookedFunctions; }
+		bool d3d11Initialized() { return nullptr != _device && nullptr!=_context; }
 		ID3D11Device* device() const { return _device; }
 		ID3D11DeviceContext* context() const { return _context; }
 		ID3D11RenderTargetView* mainRenderTargetView() const { return _mainRenderTargetView; }

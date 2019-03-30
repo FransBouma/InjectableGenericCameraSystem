@@ -200,8 +200,11 @@ namespace IGCS::DX11Hooker
 		render_target_view_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 		pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
 		ID3D11RenderTargetView* mainRenderTargetView;
-		Globals::instance().device()->CreateRenderTargetView(pBackBuffer, &render_target_view_desc, &mainRenderTargetView);
-		Globals::instance().mainRenderTargetView(mainRenderTargetView);
+		if (Globals::instance().d3d11Initialized())
+		{
+			Globals::instance().device()->CreateRenderTargetView(pBackBuffer, &render_target_view_desc, &mainRenderTargetView);
+			Globals::instance().mainRenderTargetView(mainRenderTargetView);
+		}
 		pBackBuffer->Release();
 	}
 
@@ -214,10 +217,13 @@ namespace IGCS::DX11Hooker
 
 	void initImGui()
 	{
-		ImGui_ImplDX11_Init(IGCS::Globals::instance().mainWindowHandle(), Globals::instance().device(), Globals::instance().context());
-		ImGuiIO& io = ImGui::GetIO();
-		io.IniFilename = IGCS_OVERLAY_INI_FILENAME;
-		initImGuiStyle();
+		if (Globals::instance().d3d11Initialized())
+		{
+			ImGui_ImplDX11_Init(IGCS::Globals::instance().mainWindowHandle(), Globals::instance().device(), Globals::instance().context());
+			ImGuiIO& io = ImGui::GetIO();
+			io.IniFilename = IGCS_OVERLAY_INI_FILENAME;
+			initImGuiStyle();
+		}
 	}
 
 

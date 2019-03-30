@@ -102,6 +102,8 @@ cameraWrite1Interceptor PROC
 ;SOTTR.exe+5EE33CD - 0F28 4A 70            - movaps xmm1,[rdx+70]
 ;SOTTR.exe+5EE33D1 - 66 0F7F 49 70         - movdqa [rcx+70],xmm1
 ;SOTTR.exe+5EE33D6 - 0F28 82 80000000      - movaps xmm0,[rdx+00000080]
+
+
 ;SOTTR.exe+5EE33DD - 66 0F7F 81 80000000   - movdqa [rcx+00000080],xmm0					<< INTERCEPT HERE << WRITE COORDS
 ;SOTTR.exe+5EE33E5 - 0F28 8A A0000000      - movaps xmm1,[rdx+000000A0]
 ;SOTTR.exe+5EE33EC - 0F29 89 A0000000      - movaps [rcx+000000A0],xmm1					<< WRITE QUATERNION

@@ -86,7 +86,6 @@ namespace IGCS::InputHooker
 	{
 		map<string, LPVOID>& hookedFunctions = Globals::instance().hookedFunctions();
 		XINPUTGETSTATE toCall = (XINPUTGETSTATE)hookedFunctions["XInputGetState"];
-
 		// first call the original function
 		DWORD toReturn = toCall(dwUserIndex, pState);
 		// check if the passed in pState is equal to our gamestate. If so, always allow.
@@ -124,7 +123,7 @@ namespace IGCS::InputHooker
 		GETMESSAGEW toCall = (GETMESSAGEW)hookedFunctions["GetMessageW"];
 
 		// first call the original function
-		if (!toCall(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax))
+		if (nullptr != toCall && !toCall(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax))
 		{
 			return FALSE;
 		}
@@ -139,7 +138,7 @@ namespace IGCS::InputHooker
 		map<string, LPVOID>& hookedFunctions = Globals::instance().hookedFunctions();
 		PEEKMESSAGEA toCall = (PEEKMESSAGEA)hookedFunctions["PeekMessageA"];
 		// first call the original function
-		if (!toCall(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg))
+		if (nullptr != toCall && !toCall(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg))
 		{
 			return FALSE;
 		}
@@ -153,7 +152,7 @@ namespace IGCS::InputHooker
 		// first call the original function
 		map<string, LPVOID>& hookedFunctions = Globals::instance().hookedFunctions();
 		PEEKMESSAGEW toCall = (PEEKMESSAGEW)hookedFunctions["PeekMessageW"];
-		if (!hookedPeekMessageW(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg))
+		if (nullptr!=toCall && !toCall(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg))
 		{
 			return FALSE;
 		}
@@ -186,9 +185,9 @@ namespace IGCS::InputHooker
 		map<string, LPVOID>& hookedFunctions = Globals::instance().hookedFunctions();
 
 		LPVOID hookedFunction = nullptr;
-		if (MH_CreateHookApiEx(L"xinput1_3", "XInputGetState", &detourXInputGetState, &hookedFunction) != MH_OK)
+		if (MH_CreateHookApiEx(L"XINPUT1_3", "XInputGetState", &detourXInputGetState, &hookedFunction) != MH_OK)
 		{
-			OverlayConsole::instance().logError("Hooking XInput1_3 failed!");
+			OverlayConsole::instance().logError("Hooking XINPUT1_3 failed!");
 		}
 		hookedFunctions["XInputGetState"] = hookedFunction;
 		OverlayConsole::instance().logDebug("Hook set to XInputSetState");
