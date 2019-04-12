@@ -92,7 +92,6 @@ re2.exe+AD0BA0C - 48 85 C9              - test rcx,rcx
 re2.exe+AD0BA0F - 0F85 88040000         - jne re2.exe+AD0BE9D
 
 
-
 COORDS
 re2.exe+AD0B7D9 - 0F85 BE060000         - jne re2.exe+AD0BE9D
 re2.exe+AD0B7DF - F3 0F10 86 80000000   - movss xmm0,[rsi+00000080]
