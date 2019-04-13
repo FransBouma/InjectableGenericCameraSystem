@@ -170,9 +170,9 @@ namespace IGCS::InputHooker
 	{
 		InitializeCriticalSectionAndSpinCount(&_messageProcessCriticalSection, 0x400);
 
-		if (MH_CreateHookApiEx(L"XINPUT1_3", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
+		if (MH_CreateHookApiEx(L"XINPUT9_1_0", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
 		{
-			OverlayConsole::instance().logError("Hooking XINPUT1_3 failed! Try injecting the camera a bit later (when the level has loaded) and after using the controller in the game.");
+			OverlayConsole::instance().logError("Hooking XINPUT9_1_0 failed! Try injecting the camera a bit later (when the level has loaded) and after using the controller in the game.");
 		}
 		OverlayConsole::instance().logDebug("Hook set to XInputGetState");
 

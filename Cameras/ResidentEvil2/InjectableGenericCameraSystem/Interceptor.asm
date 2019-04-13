@@ -87,7 +87,7 @@ cameraStructInterceptor PROC
 ;re2.exe+AD0B479 - 44 0F29 4C 24 50      - movaps [rsp+50],xmm9
 ;re2.exe+AD0B47F - 48 85 C9              - test rcx,rcx
 ;re2.exe+AD0B482 - 74 23                 - je re2.exe+AD0B4A7
-	mov [g_camera1StructAddress], rdx
+	mov [g_cameraStructAddress], rdx
 	movss xmm0, dword ptr [rax+38h]
 	cmp byte ptr [g_cameraEnabled], 1
 	je exit
@@ -101,26 +101,20 @@ cameraStructInterceptor ENDP
 cameraWrite1Interceptor PROC
 ; fov write 2
 ;re2.exe+AD0B845 - 0F84 DA050000         - je re2.exe+AD0BE25
-;re2.exe+AD0B84B - F3 0F10 78 30         - movss xmm7,[rax+30]
-;re2.exe+AD0B850 - F3 44 0F10 40 34      - movss xmm8,[rax+34]
-;re2.exe+AD0B856 - 8B 40 38              - mov eax,[rax+38]							<< INTERCEPT HERE
+;re2.exe+AD0B84B - F3 0F10 78 30         - movss xmm7,[rax+30]						
+;re2.exe+AD0B850 - F3 44 0F10 40 34      - movss xmm8,[rax+34]						<< INTERCEPT HERE
+;re2.exe+AD0B856 - 8B 40 38              - mov eax,[rax+38]							
 ;re2.exe+AD0B859 - 89 87 A4000000        - mov [rdi+000000A4],eax					<< WRITE FOV
-;re2.exe+AD0B85F - 48 8B 43 50           - mov rax,[rbx+50]
+;re2.exe+AD0B85F - 48 8B 43 50           - mov rax,[rbx+50]							<< CONTINUE HERE
 ;re2.exe+AD0B863 - 48 8B 48 18           - mov rcx,[rax+18]
-;re2.exe+AD0B867 - 48 85 C9              - test rcx,rcx								<< CONTINUE HERE
+;re2.exe+AD0B867 - 48 85 C9              - test rcx,rcx						
 ;re2.exe+AD0B86A - 0F85 2D060000         - jne re2.exe+AD0BE9D
+	movss xmm8, dword ptr [rax+34h]	
+	mov eax,[rax+38h]
 	cmp byte ptr [g_cameraEnabled], 1
-	jne originalCode:
-noWrites:
-	mov eax,[rax+38h]
-	mov rax,[rbx+50h]
-	mov rcx,[rax+18h]
-	jmp exit
+	je exit
 originalCode:
-	mov eax,[rax+38h]
 	mov [rdi+000000A4h],eax
-	mov rax,[rbx+50h]
-	mov rcx,[rax+18h]
 exit:
 	jmp qword ptr [_cameraWrite1InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite1Interceptor ENDP

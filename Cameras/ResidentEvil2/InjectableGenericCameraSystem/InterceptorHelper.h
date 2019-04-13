@@ -37,4 +37,5 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void setPostCameraStructHooks(std::map<std::string, AOBBlock*> &aobBlocks);
 	void toggleHud(std::map<std::string, AOBBlock*> &aobBlocks, bool hideHud);
 	void toggleInGameDoFOff(std::map<std::string, AOBBlock*> &aobBlocks, bool switchOff);
+	void toggleVignetteOff(AOBBlock* vignetteWriteAddress);
 }

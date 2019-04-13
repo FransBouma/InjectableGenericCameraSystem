@@ -67,18 +67,18 @@ namespace IGCS::GameSpecific::InterceptorHelper
 {
 	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, map<string, AOBBlock*> &aobBlocks)
 	{
-		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "F3 0F 11 46 38 48 8B 43 50 48 83 78 18 00 75 ?? F3 0F", 1);	
-		aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE1_INTERCEPT_KEY, "41 8B 06 89 47 40 41 8B 46 04 89 47 44 41 8B 46 08 89 47 48 41 8B 46 0C 89 47 4C 80 BF D2 00 00 00 00", 1);
-		aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE2_INTERCEPT_KEY, "8B 08 89 4F 40 8B 48 04 89 4F 44 8B 48 08 89 4F 48 8B 40 0C 89 47 4C 80 BF D2 00 00 00 00", 1);
-		aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE3_INTERCEPT_KEY, "EB ?? | 41 8B 06 89 47 30 41 8B 46 04 89 47 34 41 8B 46 08 89 47 38 80 BF D2 00 00 00 00", 1);
-		aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE4_INTERCEPT_KEY, "EB ?? | 41 8B 06 89 47 30 41 8B 46 04 89 47 34 41 8B 46 08 89 47 38 80 BF D2 00 00 00 00", 1);
+		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "F3 0F 10 40 38 F3 0F 11 82 A4 00 00 00 48 83 79 18 00", 1);	
+		aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE1_INTERCEPT_KEY, "F3 44 0F 10 40 34 8B 40 38 89 87 A4 00 00 00", 1);
+		aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE2_INTERCEPT_KEY, "F2 0F 5A C0 F3 0F 11 87 A4 00 00 00 48 8B 43 50 48 8B 48 18", 1);
+		aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE3_INTERCEPT_KEY, "F3 0F 10 96 88 00 00 00 | F3 0F 11 87 80 00 00 00 F3 0F 11 8F 84 00 00 00 F3 0F 11 97 88 00 00 00 48 8B 43 50", 1);
+		aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE4_INTERCEPT_KEY, "0F 10 86 90 00 00 00 0F 11 87 90 00 00 00 48 8B 43 50 48 83 78 18 00", 1);
 		aobBlocks[TIMESTOP_READ_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_READ_INTERCEPT_KEY, "F3 0F 10 87 84 03 00 00 0F 2F C2 F3 0F 10 9F 80 03 00 00", 1);
-		aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY] = new AOBBlock(RESOLUTION_SCALE_INTERCEPT_KEY, "F3 0F 10 80 6C 12 00 00 48 8D 44 24 3C F3 41 0F 59 46 40", 1);
+		aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY] = new AOBBlock(RESOLUTION_SCALE_INTERCEPT_KEY, "F3 0F 10 80 CC 11 00 00 48 8D 44 24 54 F3 41 0F 59 46 40", 1);
 		aobBlocks[DISPLAYTYPE_INTERCEPT_KEY] = new AOBBlock(DISPLAYTYPE_INTERCEPT_KEY, "44 0F 29 44 24 40 44 0F 29 4C 24 30 F3 0F 11 45 10 F3 0F 11 4D 14", 1);
 		aobBlocks[DOF_SELECTOR_WRITE_INTERCEPT_KEY] = new AOBBlock(DOF_SELECTOR_WRITE_INTERCEPT_KEY, "89 51 4C 85 D2 74 0E 83 EA 01 74 09 83 FA 01 75 08 88 51 50 C3", 1);
-		aobBlocks[DOF_FAR_BLUR_STRENGTH_WRITE_KEY] = new AOBBlock(DOF_FAR_BLUR_STRENGTH_WRITE_KEY, "8B 00 89 41 74 48 8D 44 24 10 48 8D 4C 24 08 F3 0F 11 4C 24 10", 1);
-		aobBlocks[HUD_TOGGLE_ADDRESS_KEY] = new AOBBlock(HUD_TOGGLE_ADDRESS_KEY, "48 8B 3D | ?? ?? ?? ?? 80 7F 08 00 66 C7 47 0A 00 00", 1);
-		aobBlocks[VIGNETTE_REMOVAL_ADDRESS_KEY] = new AOBBlock(VIGNETTE_REMOVAL_ADDRESS_KEY, "48 8B 3D | ?? ?? ?? ?? 80 7F 08 00 66 C7 47 0A 00 00", 1);
+		aobBlocks[DOF_FAR_BLUR_STRENGTH_WRITE_KEY] = new AOBBlock(DOF_FAR_BLUR_STRENGTH_WRITE_KEY, "8B 00 89 81 8C 00 00 00 48 8D 44 24 10 48 8D 4C 24 08", 1);
+		aobBlocks[HUD_TOGGLE_ADDRESS_KEY] = new AOBBlock(HUD_TOGGLE_ADDRESS_KEY, "48 8B 3D | ?? ?? ?? ?? 80 7F 08 00 66 C7 47 0A 00 00 0F 84", 1);
+		aobBlocks[VIGNETTE_REMOVAL_ADDRESS_KEY] = new AOBBlock(VIGNETTE_REMOVAL_ADDRESS_KEY, "8B 87 3C 01 00 00 89 83 DC 00 00 00 8B 87 CC 01 00 00", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -99,20 +99,56 @@ namespace IGCS::GameSpecific::InterceptorHelper
 
 	void setCameraStructInterceptorHook(map<string, AOBBlock*> &aobBlocks)
 	{
-		GameImageHooker::setHook(aobBlocks[CAMERA1_ADDRESS_INTERCEPT_KEY], 0x0E, &_cameraStructInterceptionContinue, &cameraStructInterceptor);
-		GameImageHooker::setHook(aobBlocks[CAMERA2_ADDRESS_INTERCEPT_KEY], 0x0E, &_cameraStructInterceptionContinue, &cameraStructInterceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY], 0x12, &_cameraStructInterceptionContinue, &cameraStructInterceptor);
 	}
 
 
 	void setPostCameraStructHooks(map<string, AOBBlock*> &aobBlocks)
 	{
-		GameImageHooker::setHook(aobBlocks[CAMERA1_WRITE1_INTERCEPT_KEY], 0x1B, &_cameraWrite1InterceptionContinue, &cameraWrite1Interceptor);
-		GameImageHooker::setHook(aobBlocks[CAMERA1_WRITE2_INTERCEPT_KEY], 0x17, &_cameraWrite2InterceptionContinue, &cameraWrite2Interceptor);
-		GameImageHooker::setHook(aobBlocks[CAMERA1_WRITE3_INTERCEPT_KEY], 0x14, &_cameraWrite3InterceptionContinue, &cameraWrite3Interceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY], 0x0F, &_cameraWrite1InterceptionContinue, &cameraWrite1Interceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY], 0x10, &_cameraWrite2InterceptionContinue, &cameraWrite2Interceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY], 0x18, &_cameraWrite3InterceptionContinue, &cameraWrite3Interceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY], 0x0E, &_cameraWrite4InterceptionContinue, &cameraWrite4Interceptor);
 		GameImageHooker::setHook(aobBlocks[TIMESTOP_READ_INTERCEPT_KEY], 0x13, &_timestopReadInterceptionContinue, &timestopReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY], 0x13, &_resolutionScaleReadInterceptionContinue, &resolutionScaleReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[DISPLAYTYPE_INTERCEPT_KEY], 0x11, &_displayTypeInterceptionContinue, &displayTypeInterceptor);
 		GameImageHooker::setHook(aobBlocks[DOF_SELECTOR_WRITE_INTERCEPT_KEY], 0x19, &_dofSelectorWriteInterceptionContinue, &dofSelectorWriteInterceptor);
+
+		toggleVignetteOff(aobBlocks[VIGNETTE_REMOVAL_ADDRESS_KEY]);
+	}
+
+
+	void toggleVignetteOff(AOBBlock* vignetteWriteAddress)
+	{
+		//re2.exe+FFA7BD8 - 89 83 D4000000        - mov [rbx+000000D4],eax
+		//re2.exe+FFA7BDE - 8B 87 38010000        - mov eax,[rdi+00000138]
+		//re2.exe+FFA7BE4 - 89 83 D8000000        - mov [rbx+000000D8],eax
+		//re2.exe+FFA7BEA - 8B 87 3C010000        - mov eax,[rdi+0000013C]				<< CHANGE INTO: XOR eax, eax; + 4 nops. See below:
+		//re2.exe+FFA7BF0 - 89 83 DC000000        - mov [rbx+000000DC],eax
+		//re2.exe+FFA7BF6 - 8B 87 CC010000        - mov eax,[rdi+000001CC]
+		//re2.exe+FFA7BFC - 89 83 88010000        - mov [rbx+00000188],eax
+		//re2.exe+FFA7C02 - 8B 87 DC010000        - mov eax,[rdi+000001DC]
+		//re2.exe+FFA7C08 - 89 83 8C010000        - mov [rbx+0000018C],eax
+		//re2.exe+FFA7C0E - 0F10 87 E0010000      - movups xmm0,[rdi+000001E0]
+		//re2.exe+FFA7C15 - 0F11 83 90010000      - movups [rbx+00000190],xmm0
+		//re2.exe+FFA7C1C - 0F10 87 F0010000      - movups xmm0,[rdi+000001F0]
+		//
+		//change that into:
+		//re2.exe+FFA7BDE - 8B 87 38010000        - mov eax,[rdi+00000138]
+		//re2.exe+FFA7BE4 - 89 83 D8000000        - mov [rbx+000000D8],eax
+		//re2.exe+FFA7BEA - 31 C0                 - xor eax,eax
+		//re2.exe+FFA7BEC - 90                    - nop 
+		//re2.exe+FFA7BED - 90                    - nop 
+		//re2.exe+FFA7BEE - 90                    - nop 
+		//re2.exe+FFA7BEF - 90                    - nop 
+		//re2.exe+FFA7BF0 - 89 83 DC000000        - mov [rbx+000000DC],eax
+		//re2.exe+FFA7BF6 - 8B 87 CC010000        - mov eax,[rdi+000001CC]
+		//re2.exe+FFA7BFC - 89 83 88010000        - mov [rbx+00000188],eax
+		//re2.exe+FFA7C02 - 8B 87 DC010000        - mov eax,[rdi+000001DC]
+
+		// we're not going to re-enable it, so just write over it. xor eax, eax is 31, c0, plus 4 nops
+		BYTE statementBytes[6] = { 0x31, 0xC0, 0x90, 0x90, 0x90, 0x90 };			//re2.exe+FFA7BEA - 8B 87 3C010000        - mov eax,[rdi+0000013C]				<< CHANGE INTO: XOR eax, eax; + 4 nops.
+		GameImageHooker::writeRange(vignetteWriteAddress, statementBytes, 6);
 	}
 
 
@@ -120,24 +156,23 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	// otherwise we'll place a 0 there which makes the hud disappear.
 	void toggleHud(map<string, AOBBlock*> &aobBlocks, bool hideHud)
 	{
-		//DevilMayCry5.exe+18679B15 - 80 78 08 00           - cmp byte ptr [rax+08],00 { 0 }
-		//DevilMayCry5.exe+18679B19 - 0F84 E3010000         - je DevilMayCry5.exe+18679D02
-		//DevilMayCry5.exe+18679B1F - 48 89 7C 24 30        - mov [rsp+30],rdi
-		//DevilMayCry5.exe+18679B24 - 48 8B 3D 5D214CEF     - mov rdi,[DevilMayCry5.exe+7B3BC88] <<< READ address at this address, add 8. Write 0 to toggle hud OFF, 1 for normal operation.
-		//DevilMayCry5.exe+18679B2B - 80 7F 08 00           - cmp byte ptr [rdi+08],00 { 0 }
-		//DevilMayCry5.exe+18679B2F - 66 C7 47 0A 0000      - mov word ptr [rdi+0A],0000 { 0 }
-		//DevilMayCry5.exe+18679B35 - 0F84 9E010000         - je DevilMayCry5.exe+18679CD9
-		//DevilMayCry5.exe+18679B3B - 48 8B 05 C6C93DEF     - mov rax,[DevilMayCry5.exe+7A56508] { (176) }
-		//DevilMayCry5.exe+18679B42 - 48 8B 48 48           - mov rcx,[rax+48]
-		//DevilMayCry5.exe+18679B46 - 48 85 C9              - test rcx,rcx
-		// Obtained through:
-		//DevilMayCry5.exe+185ADDE8 - 0F1F 84 00 00000000   - nop [rax+rax+00000000]
-		//DevilMayCry5.exe+185ADDF0 - 48 8B 05 91DE58EF     - mov rax,[DevilMayCry5.exe+7B3BC88] <<< READ address at this address, add 8. Write 0 to toggle hud OFF, 1 for normal operation.
-		//DevilMayCry5.exe+185ADDF7 - 0FB6 40 08            - movzx eax,byte ptr [rax+08]
-		//DevilMayCry5.exe+185ADDFB - C3                    - ret 
-		//DevilMayCry5.exe+185ADDFC - 00 00                 - add [rax],al
-
-		LPBYTE drawComponentStructAddress = (LPBYTE)*(__int64*)Utils::calculateAbsoluteAddress(aobBlocks[HUD_TOGGLE_ADDRESS_KEY], 4); //DevilMayCry5.exe+18679B24 - 48 8B 3D 5D214CEF     - mov rdi,[DevilMayCry5.exe+7B3BC88]
+		//re2.exe+F5AD6D2 - 49 89 D5              - mov r13,rdx
+		//re2.exe+F5AD6D5 - 80 78 08 00           - cmp byte ptr [rax+08],00 { 0 }
+		//re2.exe+F5AD6D9 - 0F84 E3010000         - je re2.exe+F5AD8C2
+		//re2.exe+F5AD6DF - 48 89 7C 24 30        - mov [rsp+30],rdi
+		//re2.exe+F5AD6E4 - 48 8B 3D FDDCBBF7     - mov rdi,[re2.exe+716B3E8] { (0) }			<< READ ADDRESS, add 8 for hud toggle. Write 0 to toggle hud off, 1 for normal operation.
+		//re2.exe+F5AD6EB - 80 7F 08 00           - cmp byte ptr [rdi+08],00 { 0 }
+		//re2.exe+F5AD6EF - 66 C7 47 0A 0000      - mov word ptr [rdi+0A],0000 { 0 }
+		//re2.exe+F5AD6F5 - 0F84 9E010000         - je re2.exe+F5AD899
+		//re2.exe+F5AD6FB - 48 8B 05 16EAACF7     - mov rax,[re2.exe+707C118] { (2B51B380) }
+		//re2.exe+F5AD702 - 48 8B 48 48           - mov rcx,[rax+48]
+		//re2.exe+F5AD706 - 48 85 C9              - test rcx,rcx
+		//re2.exe+F5AD709 - 74 19                 - je re2.exe+F5AD724
+		//re2.exe+F5AD70B - 80 B9 11020000 00     - cmp byte ptr [rcx+00000211],00 { 0 }
+		//re2.exe+F5AD712 - 75 09                 - jne re2.exe+F5AD71D
+		//re2.exe+F5AD714 - E8 773D81F2           - call re2.exe+1DC1490
+		//re2.exe+F5AD719 - 84 C0                 - test al,al
+		LPBYTE drawComponentStructAddress = (LPBYTE)*(__int64*)Utils::calculateAbsoluteAddress(aobBlocks[HUD_TOGGLE_ADDRESS_KEY], 4); //re2.exe+F5AD6E4 - 48 8B 3D FDDCBBF7     - mov rdi,[re2.exe+716B3E8]
 		BYTE* drawComponentResultAddress = reinterpret_cast<BYTE*>(drawComponentStructAddress + HUD_TOGGLE_OFFSET_IN_STRUCT);
 		*drawComponentResultAddress = hideHud ? (BYTE)0 : (BYTE)1;
 	}
@@ -152,32 +187,28 @@ namespace IGCS::GameSpecific::InterceptorHelper
 			CameraManipulator::selectDoF(1);
 
 			// write xor eax, eax at the far blur strength value read, so it's always 0
-			//DevilMayCry5.exe+194C767A - 48 8D 4C 24 08        - lea rcx,[rsp+08]
-			//DevilMayCry5.exe+194C767F - 8B 00                 - mov eax,[rax]
-			//DevilMayCry5.exe+194C7681 - 89 82 C4010000        - mov [rdx+000001C4],eax
-			//DevilMayCry5.exe+194C7687 - 48 8D 44 24 10        - lea rax,[rsp+10]
-			//DevilMayCry5.exe+194C768C - 48 0F46 C1            - cmovbe rax,rcx
-			//DevilMayCry5.exe+194C7690 - F3 0F11 4C 24 10      - movss [rsp+10],xmm1
-			//DevilMayCry5.exe+194C7696 - 49 8B 48 38           - mov rcx,[r8+38]
-			//DevilMayCry5.exe+194C769A - C7 44 24 08 17B7D138  - mov [rsp+08],38D1B717 { (0) }
-			//DevilMayCry5.exe+194C76A2 - 8B 00                 - mov eax,[rax]						<< REPLACE WITH XOR eax, eax (31 C0 xor eax, eax)
-			//DevilMayCry5.exe+194C76A4 - 89 41 74              - mov [rcx+74],eax					<< FAR BLUR WRITE. Set to 0 to make sure there's no dof
-			//DevilMayCry5.exe+194C76A7 - 48 8D 44 24 10        - lea rax,[rsp+10]
-			//DevilMayCry5.exe+194C76AC - 48 8D 4C 24 08        - lea rcx,[rsp+08]
-			//DevilMayCry5.exe+194C76B1 - F3 0F11 4C 24 10      - movss [rsp+10],xmm1
-			//DevilMayCry5.exe+194C76B7 - 48 0F46 C1            - cmovbe rax,rcx
-			//DevilMayCry5.exe+194C76BB - C7 44 24 08 17B7D138  - mov [rsp+08],38D1B717 { (0) }
-			//DevilMayCry5.exe+194C76C3 - 49 8B 48 40           - mov rcx,[r8+40]
-			//DevilMayCry5.exe+194C76C7 - 8B 00                 - mov eax,[rax]
-			//DevilMayCry5.exe+194C76C9 - 89 81 9C000000        - mov [rcx+0000009C],eax
-			//DevilMayCry5.exe+194C76CF - C3                    - ret 
-			BYTE statementBytes[2] = { 0x31, 0xC0 };			//DevilMayCry5.exe+194C76A2 - 8B 00 - mov eax,[rax] -> xor eax, eax
+			//re2.exe+102BCEDC - 48 0F46 C1            - cmovbe rax,rcx
+			//re2.exe+102BCEE0 - F3 0F11 4C 24 10      - movss [rsp+10],xmm1
+			//re2.exe+102BCEE6 - 49 8B 48 38           - mov rcx,[r8+38]
+			//re2.exe+102BCEEA - C7 44 24 08 17B7D138  - mov [rsp+08],38D1B717 { (-11776) }
+			//re2.exe+102BCEF2 - 8B 00                 - mov eax,[rax]							<<< replace with XOR eax, eax
+			//re2.exe+102BCEF4 - 89 81 8C000000        - mov [rcx+0000008C],eax					<< FAR BLUR WRITE. Set to 0 to make sure there's no dof
+			//re2.exe+102BCEFA - 48 8D 44 24 10        - lea rax,[rsp+10]
+			//re2.exe+102BCEFF - 48 8D 4C 24 08        - lea rcx,[rsp+08]
+			//re2.exe+102BCF04 - F3 0F11 4C 24 10      - movss [rsp+10],xmm1
+			//re2.exe+102BCF0A - 48 0F46 C1            - cmovbe rax,rcx
+			//re2.exe+102BCF0E - C7 44 24 08 17B7D138  - mov [rsp+08],38D1B717 { (-11776) }
+			//re2.exe+102BCF16 - 49 8B 48 40           - mov rcx,[r8+40]
+			//re2.exe+102BCF1A - 8B 00                 - mov eax,[rax]
+			//re2.exe+102BCF1C - 89 81 B4000000        - mov [rcx+000000B4],eax
+			//re2.exe+102BCF22 - C3                    - ret 
+			BYTE statementBytes[2] = { 0x31, 0xC0 };			//re2.exe+102BCEF2 - 8B 00                 - mov eax,[rax]							<<< replace with XOR eax, eax
 			GameImageHooker::writeRange(aobBlocks[DOF_FAR_BLUR_STRENGTH_WRITE_KEY], statementBytes, 2);
 		}
 		else
 		{
 			// only restore the xor eax, eax with the original statement. The camera disable will enable the right dof as it will enable the write to the dof selector.
-			BYTE statementBytes[2] = { 0x8B, 0x00 };			//DevilMayCry5.exe+194C76A2 - 8B 00 - mov eax,[rax]
+			BYTE statementBytes[2] = { 0x8B, 0x00 };			//re2.exe+102BCEF2 - 8B 00                 - mov eax,[rax]
 			GameImageHooker::writeRange(aobBlocks[DOF_FAR_BLUR_STRENGTH_WRITE_KEY], statementBytes, 2);
 		}
 	}

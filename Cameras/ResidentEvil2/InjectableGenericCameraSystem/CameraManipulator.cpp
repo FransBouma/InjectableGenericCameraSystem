@@ -28,7 +28,6 @@
 #include "stdafx.h"
 #include "CameraManipulator.h"
 #include "GameConstants.h"
-#include "InterceptorHelper.h"
 #include "Globals.h"
 #include "OverlayConsole.h"
 
@@ -177,7 +176,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 
 	bool isCameraFound()
 	{
-		return nullptr != g_camera1StructAddress || nullptr!=g_camera2StructAddress;
+		return nullptr != g_cameraStructAddress;
 	}
 
 
