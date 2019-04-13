@@ -69,7 +69,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 		}
 
 		float* gameSpeedInMemory = reinterpret_cast<float*>(g_timestopStructAddress + TIMESTOP_FLOAT_OFFSET);
-		*gameSpeedInMemory = pauseGame ? 0.00001f : 1.0f;
+		*gameSpeedInMemory = pauseGame ? 0.0f : 1.0f;
 	}
 
 

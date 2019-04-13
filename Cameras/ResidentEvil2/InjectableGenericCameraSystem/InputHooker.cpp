@@ -164,17 +164,37 @@ namespace IGCS::InputHooker
 	}
 
 
+	void setXInputHook(bool enableHook)
+	{
+		if (nullptr != hookedXInputGetState)
+		{
+			return;
+		}
+		if (MH_CreateHookApiEx(L"XINPUT1_3", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
+		{
+			OverlayConsole::instance().logError("Hooking XINPUT1_3 failed! Try re-enabling the hook with the button on the settings tab after you've used the controller in-game.");
+		}
+		if (enableHook)
+		{
+			if (MH_EnableHook(MH_ALL_HOOKS) == MH_OK)
+			{
+				OverlayConsole::instance().logLine("Hook to XInputGetState enabled");
+			}
+		}
+		else
+		{
+			OverlayConsole::instance().logDebug("Hook set to XInputGetState");
+		}
+	}
+	
+
 	// Sets the input hooks for the various input related functions we defined own wrapper functions for. After a successful hook setup
 	// they're enabled. 
 	void setInputHooks()
 	{
 		InitializeCriticalSectionAndSpinCount(&_messageProcessCriticalSection, 0x400);
 
-		if (MH_CreateHookApiEx(L"XINPUT9_1_0", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
-		{
-			OverlayConsole::instance().logError("Hooking XINPUT9_1_0 failed! Try injecting the camera a bit later (when the level has loaded) and after using the controller in the game.");
-		}
-		OverlayConsole::instance().logDebug("Hook set to XInputGetState");
+		setXInputHook(false);
 
 		if (MH_CreateHookApiEx(L"user32", "GetMessageA", &detourGetMessageA, &hookedGetMessageA) != MH_OK)
 		{

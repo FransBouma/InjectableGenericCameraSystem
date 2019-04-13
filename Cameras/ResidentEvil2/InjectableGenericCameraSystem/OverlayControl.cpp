@@ -11,6 +11,7 @@
 #include "Globals.h"
 #include "CameraManipulator.h"
 #include "Input.h"
+#include "InputHooker.h"
 #include <atomic>
 
 using namespace std;
@@ -267,6 +268,11 @@ Special thanks to:
 			currentSettings.init(true);
 			settingsChanged = true;
 		}
+		ImGui::SameLine();
+		if (ImGui::Button("Rehook XInput"))
+		{
+			InputHooker::setXInputHook(true);
+		}
 
 		if (ImGui::CollapsingHeader("Camera movement options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
@@ -288,7 +294,7 @@ Special thanks to:
 		if (ImGui::CollapsingHeader("Misc. camera options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			settingsChanged |= ImGui::SliderFloat("Field of View (FoV) zoom speed", &currentSettings.fovChangeSpeed, 0.0001f, 2.0f, "%.01f");
-			settingsChanged |= ImGui::SliderFloat("Resolution scale factor", &currentSettings.resolutionScale, 0.1f, RESOLUTION_SCALE_MAX, "%.1f");
+			settingsChanged |= ImGui::SliderFloat("Resolution scale factor", &currentSettings.resolutionScale, 0.1f, 5.0f, "%.1f");
 			ImGui::SameLine(); showHelpMarker("Be careful with values bigger than 2 as it could make\nthe game crash due to too much overhead.\nYou can specify values bigger than 4-5 by using\nCtrl-click and then type the value.\nMax is 10.0.");
 			settingsChanged |= ImGui::Combo("Display Type", &currentSettings.displayType, "Fit\0Uniform 4x3\0Uniform 16x9\0Uniform 16x10\0Uniform 21x9\0Uniform 32x9\0Uniform 48x9\0\0");
 			ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.3f) - 11.0f);

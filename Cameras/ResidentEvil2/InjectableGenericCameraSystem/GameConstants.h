@@ -32,16 +32,16 @@ namespace IGCS::GameSpecific
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Resident Evil 2 v1.0"
 	#define CAMERA_VERSION								"1.0.0"
-	#define CAMERA_CREDITS								"Otis_Inf, Jim2Point0"
+	#define CAMERA_CREDITS								"Otis_Inf and Jim2Point0"
 	#define GAME_WINDOW_TITLE							"RESIDENT EVIL 2"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
 	#define INITIAL_YAW_RADIANS							0.0f	// around Y axis	(up)
 	#define INITIAL_ROLL_RADIANS						0.0f	// around Z axis	(into the screen)
 	#define CONTROLLER_Y_INVERT							false
 	#define FASTER_MULTIPLIER							5.0f
-	#define SLOWER_MULTIPLIER							0.1f
+	#define SLOWER_MULTIPLIER							0.07f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
-	#define DEFAULT_MOVEMENT_SPEED						0.07f
+	#define DEFAULT_MOVEMENT_SPEED						0.05f
 	#define DEFAULT_ROTATION_SPEED						0.01f
 	#define DEFAULT_FOV_SPEED							0.3f	// fov in degrees
 	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f

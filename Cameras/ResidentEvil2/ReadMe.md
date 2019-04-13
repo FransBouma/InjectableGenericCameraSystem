@@ -1,10 +1,10 @@
-Injectable camera for Devil May Cry 5
+Injectable camera for Resident Evil 2
 ============================
 
 Current supported game version: v1.0+
-Camera version: 1.0.1  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/DMC5_101  
-Credits: Otis_Inf, Jim2Point0, Hattiwatti, K-putt. 
+Camera version: 1.0.0  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/RE2_100  
+Credits: Otis_Inf and Jim2Point0.
 
 Brought to you by [FRAMED. Screenshotting community](https://framedsc.github.io). 
 
@@ -20,10 +20,11 @@ Brought to you by [FRAMED. Screenshotting community](https://framedsc.github.io)
 - Hud toggle
 - Aspect Ratio selection.
 - DoF removal in cutscenes.
+- Vignette removal
 
 ### Important: DirectX 11 only
-The tools only work with DirectX11 of the game. The game itself starts with DirectX 12 by default. To switch back
-to DirectX 11, please see [this guide](https://framedsc.github.io/GameGuides/devil_may_cry_5.htm).
+The tools only work with DirectX11 of the game. Use the in-game setting to switch to DirectX11 if you've opted to use DirectX12
+*before* you inject the tools.
 
 ### How to use
 Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.
