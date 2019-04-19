@@ -289,7 +289,7 @@ namespace IGCS::Input
 							}
 						}
 					}
-					if (pRawData->header.dwType == RIM_TYPEKEYBOARD)
+					if (pRawData->header.dwType == RIM_TYPEKEYBOARD && IGCS_SUPPORT_RAWKEYBOARDINPUT)
 					{
 						// convert keyboard input to keypress/keydown.
 						if (pRawData->data.keyboard.VKey != 0xFF)
@@ -305,7 +305,6 @@ namespace IGCS::Input
 			break;
 			// simply return true for all messages related to mouse / keyboard so they won't reach the message pump of the main window. 
 			case WM_KEYDOWN:
-			case WM_SYSKEYDOWN:
 				if (lpMsg->wParam < 256)
 				{
 					g_keyStates[lpMsg->wParam] = 0x88;
@@ -313,12 +312,31 @@ namespace IGCS::Input
 				toReturn = true;
 				break;
 			case WM_KEYUP:
-			case WM_SYSKEYUP:
 				if (lpMsg->wParam < 256)
 				{
 					g_keyStates[lpMsg->wParam] = 0x08;
 				}
 				toReturn = true;
+				break;
+			case WM_SYSKEYDOWN:
+				if (IGCS_SUPPORT_RAWKEYBOARDINPUT)
+				{
+					if (lpMsg->wParam < 256)
+					{
+						g_keyStates[lpMsg->wParam] = 0x88;
+					}
+					toReturn = true;
+				}
+				break;
+			case WM_SYSKEYUP:
+				if (IGCS_SUPPORT_RAWKEYBOARDINPUT)
+				{
+					if (lpMsg->wParam < 256)
+					{
+						g_keyStates[lpMsg->wParam] = 0x08;
+					}
+					toReturn = true;
+				}
 				break;
 			case WM_CAPTURECHANGED:
 			case WM_LBUTTONDBLCLK:
