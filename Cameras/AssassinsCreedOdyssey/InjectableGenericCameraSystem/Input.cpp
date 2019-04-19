@@ -124,9 +124,11 @@ namespace IGCS::Input
 	void resetKeyStates()
 	{
 		// clear 0x08 bit on keys in keystate array so we avoid repeat issues.
+		ImGuiIO& io = ImGui::GetIO();
 		for (int i = 0; i < 256; i++)
 		{
 			g_keyStates[i] &= ~0x08;
+			io.KeysDown[i] = 0x00;
 		}
 	}
 
@@ -216,14 +218,13 @@ namespace IGCS::Input
 			return false;
 		}
 
+		ImGuiIO& io = ImGui::GetIO();
 		// first handle the message through the Imgui handler so we get an up to date IO structure for the overlay
 		LRESULT handledByImGuiHandler = ImGui_ImplDX11_WndProcHandler(handleToUse, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
-
 		if (!handledByImGuiHandler)
 		{
 			// grab mouse position
 			ScreenToClient(static_cast<HWND>(handleToUse), &lpMsg->pt);
-			ImGuiIO& io = ImGui::GetIO();
 			io.MousePos.x = static_cast<float>(lpMsg->pt.x);
 			io.MousePos.y = static_cast<float>(lpMsg->pt.y);
 		}
@@ -288,6 +289,15 @@ namespace IGCS::Input
 							}
 						}
 					}
+					if (pRawData->header.dwType == RIM_TYPEKEYBOARD)
+					{
+						// convert keyboard input to keypress/keydown.
+						if (pRawData->data.keyboard.VKey != 0xFF)
+						{
+							g_keyStates[pRawData->data.keyboard.VKey] = (pRawData->data.keyboard.Flags & RI_KEY_BREAK) == 0 ? 0x88 : 0x08;
+							io.KeysDown[pRawData->data.keyboard.VKey] = 0x01;
+						}
+					}
 				}
 				delete lpb;
 				toReturn = true;
@@ -295,6 +305,7 @@ namespace IGCS::Input
 			break;
 			// simply return true for all messages related to mouse / keyboard so they won't reach the message pump of the main window. 
 			case WM_KEYDOWN:
+			case WM_SYSKEYDOWN:
 				if (lpMsg->wParam < 256)
 				{
 					g_keyStates[lpMsg->wParam] = 0x88;
@@ -302,6 +313,7 @@ namespace IGCS::Input
 				toReturn = true;
 				break;
 			case WM_KEYUP:
+			case WM_SYSKEYUP:
 				if (lpMsg->wParam < 256)
 				{
 					g_keyStates[lpMsg->wParam] = 0x08;

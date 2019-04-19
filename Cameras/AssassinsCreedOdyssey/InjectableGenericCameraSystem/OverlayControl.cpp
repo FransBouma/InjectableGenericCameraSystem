@@ -12,6 +12,7 @@
 #include "CameraManipulator.h"
 #include "Input.h"
 #include <atomic>
+#include "InputHooker.h"
 
 using namespace std;
 
@@ -77,7 +78,6 @@ namespace IGCS::OverlayControl
 		Globals::instance().saveSettingsIfRequired(ImGui::GetIO().DeltaTime);
 
 		ImGui_ImplDX11_NewFrame();
-		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);     // Normally user code doesn't need/want to call it because positions are saved in .ini file anyway. 
 		auto& io = ImGui::GetIO();
 		io.MouseDrawCursor = _showMainWindow;
 		renderSplash();
@@ -268,7 +268,11 @@ Special thanks to:
 			currentSettings.init(true);
 			settingsChanged = true;
 		}
-
+		ImGui::SameLine();
+		if (ImGui::Button("Rehook XInput"))
+		{
+			InputHooker::setXInputHook(true);
+		}
 		if (ImGui::CollapsingHeader("Camera movement options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			settingsChanged |= ImGui::SliderFloat("Fast movement multiplier", &currentSettings.fastMovementMultiplier, 0.1f, 100.0f, "%.3f");

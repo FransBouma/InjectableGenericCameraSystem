@@ -162,19 +162,38 @@ namespace IGCS::InputHooker
 		}
 		LeaveCriticalSection(&_messageProcessCriticalSection);
 	}
+	   
+
+	void setXInputHook(bool enableHook)
+	{
+		if (nullptr != hookedXInputGetState)
+		{
+			return;
+		}
+		if (MH_CreateHookApiEx(L"xinput9_1_0", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
+		{
+			OverlayConsole::instance().logError("Hooking XINPUT failed! Try re-enabling the hook with the button on the settings tab after you've used the controller in-game.");
+		}
+		if (enableHook)
+		{
+			if (MH_EnableHook(MH_ALL_HOOKS) == MH_OK)
+			{
+				OverlayConsole::instance().logLine("Hook to XInputGetState enabled");
+			}
+		}
+		else
+		{
+			OverlayConsole::instance().logDebug("Hook set to XInputGetState");
+		}
+	}
 
 
-	// Sets the input hooks for the various input related functions we defined own wrapper functions for. After a successful hook setup
-	// they're enabled. 
+	// Sets the input hooks for the various input related functions we defined own wrapper functions for. After a successful hook setup they're enabled. 
 	void setInputHooks()
 	{
 		InitializeCriticalSectionAndSpinCount(&_messageProcessCriticalSection, 0x400);
 
-		if (MH_CreateHookApiEx(L"xinput9_1_0", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
-		{
-			OverlayConsole::instance().logError("Hooking XInput9_1_0 failed!");
-		}
-		OverlayConsole::instance().logDebug("Hook set to XInputSetState");
+		setXInputHook(false);
 
 		if (MH_CreateHookApiEx(L"user32", "GetMessageA", &detourGetMessageA, &hookedGetMessageA) != MH_OK)
 		{

@@ -30,4 +30,5 @@
 namespace IGCS::InputHooker
 {
 	void setInputHooks();
+	void setXInputHook(bool enableHook);
 }
