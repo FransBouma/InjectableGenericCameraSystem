@@ -206,6 +206,19 @@ re2.exe+102BCF22 - C3                    - ret
 
 One is for blur 1, one is for blur 2. We'll select blur 1 so we have to intercept 1. 
 
+Sharpening removal:
+re2.exe+10210590 - 0F84 00010000         - je re2.exe+10210696
+re2.exe+10210596 - 48 8B 8E 884A0000     - mov rcx,[rsi+00004A88]
+re2.exe+1021059D - E8 CEA6E3F1           - call re2.exe+204AC70
+re2.exe+102105A2 - 80 BB FD000000 00     - cmp byte ptr [rbx+000000FD],00 { 0 }
+re2.exe+102105A9 - 48 89 C7              - mov rdi,rax
+re2.exe+102105AC - 74 05                 - je re2.exe+102105B3							<< NOP so it ends up using the jmp to 5DF
+re2.exe+102105AE - 0F57 C0               - xorps xmm0,xmm0
+re2.exe+102105B1 - EB 2C                 - jmp re2.exe+102105DF
+re2.exe+102105B3 - 8B 83 94010000        - mov eax,[rbx+00000194]						<< AA type check. TAA uses '4'. 
+re2.exe+102105B9 - 83 F8 03              - cmp eax,03 { 3 }
+re2.exe+102105BC - 75 0A                 - jne re2.exe+102105C8
+
 ------------
 alternative cameras:
 FOV (cutscene / gameplay)
