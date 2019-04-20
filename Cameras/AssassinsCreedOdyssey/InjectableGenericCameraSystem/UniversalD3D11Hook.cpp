@@ -89,13 +89,14 @@ namespace IGCS::DX11Hooker
 						OverlayConsole::instance().logDebug("DX11 Context: %p", (void*)_context);
 					}
 					createRenderTarget(pSwapChain);
-					initImGui();
-
+					OverlayControl::initImGui();
+					ImGui_ImplDX11_Init(_device, _context);
 					_initializeDeviceAndContext = false;
 				}
 				// render our own stuff
-				_context->OMSetRenderTargets(1, &_mainRenderTargetView, NULL);
 				OverlayControl::renderOverlay();
+				_context->OMSetRenderTargets(1, &_mainRenderTargetView, NULL);
+				ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 				Input::resetKeyStates();
 				Input::resetMouseState();
 			}
@@ -191,34 +192,5 @@ namespace IGCS::DX11Hooker
 			_mainRenderTargetView->Release();
 			_mainRenderTargetView = nullptr;
 		}
-	}
-
-
-	void initImGui()
-	{
-		Console::WriteLine("InitImgui Start");
-		Sleep(6000);
-			
-		ImGuiIO& io = ImGui::GetIO();
-		Console::WriteLine("InitImgui IO retrieved");
-		Sleep(2000);
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		Console::WriteLine("InitImgui Config flag set");
-		Sleep(2000);
-		io.IniFilename = IGCS_OVERLAY_INI_FILENAME;
-		Console::WriteLine("InitImgui ini file set");
-		Sleep(2000);
-		ImGui::StyleColorsDark();
-
-
-		Console::WriteLine("InitImgui Win32Init");
-		Sleep(2000);
-		ImGui_ImplWin32_Init(IGCS::Globals::instance().mainWindowHandle());
-		Console::WriteLine("InitImgui DX11Init");
-		Sleep(2000);
-		ImGui_ImplDX11_Init(_device, _context);
-
-		Console::WriteLine("InitImgui End");
-		Sleep(2000);
 	}
 }

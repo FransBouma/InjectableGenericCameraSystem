@@ -9,5 +9,6 @@ namespace IGCS::OverlayControl
 	void renderOverlay();
 	bool isMainMenuVisible();
 	void addNotification(std::string notificationText);
+	void initImGui();
 }
 
