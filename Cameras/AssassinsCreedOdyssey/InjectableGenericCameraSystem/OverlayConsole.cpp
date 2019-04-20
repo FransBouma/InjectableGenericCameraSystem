@@ -61,7 +61,7 @@ namespace IGCS
 			int old_size = _buf.size();
 			va_list args_copy;
 			va_copy(args_copy, args);
-			_buf.appendv(fmt, args_copy);
+			_buf.appendfv(fmt, args_copy);
 
 			for (int new_size = _buf.size(); old_size < new_size; old_size++)
 			{

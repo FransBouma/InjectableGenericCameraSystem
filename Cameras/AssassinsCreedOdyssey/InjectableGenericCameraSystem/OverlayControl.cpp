@@ -2,7 +2,7 @@
 #include "OverlayControl.h"
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
-#include "imgui_internal.h"
+#include "imgui_impl_win32.h"
 #include "OverlayConsole.h"
 #include "GameConstants.h"
 #include <algorithm>
@@ -78,6 +78,9 @@ namespace IGCS::OverlayControl
 		Globals::instance().saveSettingsIfRequired(ImGui::GetIO().DeltaTime);
 
 		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
 		auto& io = ImGui::GetIO();
 		io.MouseDrawCursor = _showMainWindow;
 		renderSplash();

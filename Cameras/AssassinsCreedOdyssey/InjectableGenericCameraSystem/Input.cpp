@@ -29,7 +29,7 @@
 #include "input.h"
 #include "Utils.h"
 #include "Globals.h"
-#include "imgui_impl_dx11.h"
+#include "imgui_impl_win32.h"
 #include "OverlayConsole.h"
 #include "OverlayControl.h"
 #include <mutex>
@@ -220,7 +220,7 @@ namespace IGCS::Input
 
 		ImGuiIO& io = ImGui::GetIO();
 		// first handle the message through the Imgui handler so we get an up to date IO structure for the overlay
-		LRESULT handledByImGuiHandler = ImGui_ImplDX11_WndProcHandler(handleToUse, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
+		LRESULT handledByImGuiHandler = ImGui_ImplWin32_WndProcHandler(handleToUse, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
 		if (!handledByImGuiHandler)
 		{
 			// grab mouse position
