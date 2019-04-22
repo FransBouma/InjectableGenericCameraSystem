@@ -37,7 +37,7 @@
 #include "input.h"
 #include "CameraManipulator.h"
 #include "GameImageHooker.h"
-#include "UniversalD3D11Hook.h"
+#include "D3D11Hooker.h"
 #include "OverlayConsole.h"
 #include "OverlayControl.h"
 #include "MinHook.h"
@@ -340,7 +340,7 @@ namespace IGCS
 		Globals::instance().mainWindowHandle(Utils::findMainWindow(GetCurrentProcessId()));
 		InputHooker::setInputHooks();
 		Input::registerRawInput();
-		DX11Hooker::initializeHook();
+		D3D11Hooker::initializeHook();
 
 		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
 		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);

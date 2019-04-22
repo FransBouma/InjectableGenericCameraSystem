@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <d3d11.h> 
-#include "UniversalD3D11Hook.h"
+#include "D3D11Hooker.h"
 #include "Console.h"
 #include "MinHook.h"
 #include "Globals.h"
@@ -15,7 +15,7 @@
 
 #pragma comment(lib, "d3d11.lib")
 
-namespace IGCS::DX11Hooker
+namespace IGCS::D3D11Hooker
 {
 	#define DXGI_PRESENT_INDEX			8
 	#define DXGI_RESIZEBUFFERS_INDEX	13
@@ -24,12 +24,11 @@ namespace IGCS::DX11Hooker
 	// Forward declarations
 	void createRenderTarget(IDXGISwapChain* pSwapChain);
 	void cleanupRenderTarget();
-	void initImGui();
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Typedefs of functions to hook
-	typedef HRESULT(__stdcall *D3D11PresentHook) (IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
-	typedef HRESULT(__stdcall *D3D11ResizeBuffersHook) (IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags);
+	typedef HRESULT(__stdcall *DXGIPresentHook) (IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
+	typedef HRESULT(__stdcall *DXGIResizeBuffersHook) (IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags);
 
 	static ID3D11Device* _device = nullptr;
 	static ID3D11DeviceContext* _context = nullptr;
@@ -37,20 +36,20 @@ namespace IGCS::DX11Hooker
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Pointers to the original hooked functions
-	static D3D11PresentHook hookedD3D11Present = nullptr;
-	static D3D11ResizeBuffersHook hookedD3D11ResizeBuffers = nullptr;
+	static DXGIPresentHook hookedDXGIPresent = nullptr;
+	static DXGIResizeBuffersHook hookedDXGIResizeBuffers = nullptr;
 
 	static bool _tmpSwapChainInitialized = false;
 	static atomic_bool _imGuiInitializing = false;
 	static atomic_bool _initializeDeviceAndContext = true;
 	static atomic_bool _presentInProgress = false;
 
-	HRESULT __stdcall detourD3D11ResizeBuffers(IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags)
+	HRESULT __stdcall detourDXGIResizeBuffers(IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags)
 	{
 		_imGuiInitializing = true;
 		ImGui_ImplDX11_InvalidateDeviceObjects();
 		cleanupRenderTarget();
-		HRESULT toReturn = hookedD3D11ResizeBuffers(pSwapChain, bufferCount, width, height, newFormat, swapChainFlags);
+		HRESULT toReturn = hookedDXGIResizeBuffers(pSwapChain, bufferCount, width, height, newFormat, swapChainFlags);
 		createRenderTarget(pSwapChain);
 		ImGui_ImplDX11_CreateDeviceObjects();
 		_imGuiInitializing = false;
@@ -58,7 +57,7 @@ namespace IGCS::DX11Hooker
 	}
 
 
-	HRESULT __stdcall detourD3D11Present(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
+	HRESULT __stdcall detourDXGIPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 	{
 		if (_presentInProgress)
 		{
@@ -102,7 +101,7 @@ namespace IGCS::DX11Hooker
 			}
 
 		}
-		HRESULT toReturn = hookedD3D11Present(pSwapChain, SyncInterval, Flags);
+		HRESULT toReturn = hookedDXGIPresent(pSwapChain, SyncInterval, Flags);
 		_presentInProgress = false;
 		return toReturn;
 	}
@@ -133,15 +132,12 @@ namespace IGCS::DX11Hooker
 		}
 
 		__int64* pSwapChainVtable = NULL;
-		__int64* pDeviceContextVTable = NULL;
 		pSwapChainVtable = (__int64*)pTmpSwapChain;
 		pSwapChainVtable = (__int64*)pSwapChainVtable[0];
-		pDeviceContextVTable = (__int64*)pTmpContext;
-		pDeviceContextVTable = (__int64*)pDeviceContextVTable[0];
 
 		OverlayConsole::instance().logDebug("Present Address: %p", (void*)(__int64*)pSwapChainVtable[DXGI_PRESENT_INDEX]);
 
-		if (MH_CreateHook((LPBYTE)pSwapChainVtable[DXGI_PRESENT_INDEX], &detourD3D11Present, reinterpret_cast<LPVOID*>(&hookedD3D11Present)) != MH_OK)
+		if (MH_CreateHook((LPBYTE)pSwapChainVtable[DXGI_PRESENT_INDEX], &detourDXGIPresent, reinterpret_cast<LPVOID*>(&hookedDXGIPresent)) != MH_OK)
 		{
 			IGCS::Console::WriteError("Hooking Present failed!");
 		}
@@ -152,7 +148,7 @@ namespace IGCS::DX11Hooker
 
 		OverlayConsole::instance().logDebug("ResizeBuffers Address: %p", (__int64*)pSwapChainVtable[DXGI_RESIZEBUFFERS_INDEX]);
 
-		if (MH_CreateHook((LPBYTE)pSwapChainVtable[DXGI_RESIZEBUFFERS_INDEX], &detourD3D11ResizeBuffers, reinterpret_cast<LPVOID*>(&hookedD3D11ResizeBuffers)) != MH_OK)
+		if (MH_CreateHook((LPBYTE)pSwapChainVtable[DXGI_RESIZEBUFFERS_INDEX], &detourDXGIResizeBuffers, reinterpret_cast<LPVOID*>(&hookedDXGIResizeBuffers)) != MH_OK)
 		{
 			IGCS::Console::WriteError("Hooking ResizeBuffers failed!");
 		}
