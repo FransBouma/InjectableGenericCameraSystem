@@ -98,7 +98,6 @@ namespace IGCS::D3D11Hooker
 				Input::resetKeyStates();
 				Input::resetMouseState();
 			}
-
 		}
 		HRESULT toReturn = hookedDXGIPresent(pSwapChain, SyncInterval, Flags);
 		_presentInProgress = false;

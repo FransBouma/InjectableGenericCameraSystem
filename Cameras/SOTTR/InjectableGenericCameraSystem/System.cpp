@@ -37,7 +37,7 @@
 #include "input.h"
 #include "CameraManipulator.h"
 #include "GameImageHooker.h"
-#include "UniversalD3D11Hook.h"
+#include "D3D11Hooker.h"
 #include "OverlayConsole.h"
 #include "OverlayControl.h"
 #include "MinHook.h"
@@ -111,16 +111,17 @@ namespace IGCS
 	void System::handleUserInput()
 	{
 		Globals::instance().gamePad().update();
-		bool altPressed = Input::keyDown(VK_LMENU) || Input::keyDown(VK_RMENU);
-		bool rcontrolPressed = Input::keyDown(VK_RCONTROL);
-		bool lcontrolPressed = Input::keyDown(VK_LCONTROL);
+		if (_applyHammerPrevention)
+		{
+			_applyHammerPrevention = false;
+			// sleep main thread for 200ms so key repeat delay is simulated. 
+			Sleep(200);
+		}
 
-		if (Input::keyDown(IGCS_KEY_TOGGLE_OVERLAY) && (lcontrolPressed || rcontrolPressed))
+		if (Input::isActionActivated(ActionType::ToggleOverlay))
 		{
 			OverlayControl::toggleOverlay();
-			Sleep(350);		// wait 100ms to avoid fast keyboard hammering
-			// we're done now. 
-			return;
+			_applyHammerPrevention = true;
 		}
 		if (!_cameraStructFound)
 		{
@@ -132,7 +133,7 @@ namespace IGCS
 			// stop here, so keys used in the camera system won't affect anything of the camera
 			return;
 		}
-		if (Input::keyDown(IGCS_KEY_CAMERA_ENABLE))
+		if (Input::isActionActivated(ActionType::CameraEnable))
 		{
 			if (g_cameraEnabled)
 			{
@@ -149,17 +150,17 @@ namespace IGCS
 			}
 			g_cameraEnabled = g_cameraEnabled == 0 ? (BYTE)1 : (BYTE)0;
 			displayCameraState();
-			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+			_applyHammerPrevention = true;
 		}
-		if (Input::keyDown(IGCS_KEY_FOV_RESET) && Globals::instance().keyboardMouseControlCamera())
+		if (Input::isActionActivated(ActionType::FovReset) && Globals::instance().keyboardMouseControlCamera())
 		{
 			CameraManipulator::resetFoV();
 		}
-		if (Input::keyDown(IGCS_KEY_FOV_DECREASE) && Globals::instance().keyboardMouseControlCamera())
+		if (Input::isActionActivated(ActionType::FovDecrease) && Globals::instance().keyboardMouseControlCamera())
 		{
 			CameraManipulator::changeFoV(-Globals::instance().settings().fovChangeSpeed);
 		}
-		if (Input::keyDown(IGCS_KEY_FOV_INCREASE) && Globals::instance().keyboardMouseControlCamera())
+		if (Input::isActionActivated(ActionType::FovIncrease) && Globals::instance().keyboardMouseControlCamera())
 		{
 			CameraManipulator::changeFoV(Globals::instance().settings().fovChangeSpeed);
 		}
@@ -169,18 +170,17 @@ namespace IGCS
 			// camera is disabled. We simply disable all input to the camera movement, by returning now.
 			return;
 		}
-		if (Input::keyDown(IGCS_KEY_BLOCK_INPUT))
+		if (Input::isActionActivated(ActionType::BlockInput))
 		{
 			toggleInputBlockState(!Globals::instance().inputBlocked());
-			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+			_applyHammerPrevention = true;
 		}
 		_camera.resetMovement();
 		Settings& settings = Globals::instance().settings();
-		float multiplier = altPressed ? settings.fastMovementMultiplier : rcontrolPressed ? settings.slowMovementMultiplier : 1.0f;
-		if (Input::keyDown(IGCS_KEY_CAMERA_LOCK))
+		if (Input::isActionActivated(ActionType::CameraLock)) 
 		{
 			toggleCameraMovementLockState(!_cameraMovementLocked);
-			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+			_applyHammerPrevention = true;
 		}
 		if (_cameraMovementLocked)
 		{
@@ -188,6 +188,9 @@ namespace IGCS
 			return;
 		}
 
+		bool altPressed = Utils::altPressed();
+		bool rcontrolPressed = Utils::keyDown(VK_RCONTROL);
+		float multiplier = altPressed ? settings.fastMovementMultiplier : rcontrolPressed ? settings.slowMovementMultiplier : 1.0f;
 		handleKeyboardCameraMovement(multiplier);
 		handleMouseCameraMovement(multiplier);
 		handleGamePadMovement(multiplier);
@@ -267,51 +270,51 @@ namespace IGCS
 		{
 			return;
 		}
-		if (Input::keyDown(IGCS_KEY_MOVE_FORWARD))
+		if (Input::isActionActivated(ActionType::MoveForward, true))
 		{
 			_camera.moveForward(multiplier);
 		}
-		if (Input::keyDown(IGCS_KEY_MOVE_BACKWARD))
+		if (Input::isActionActivated(ActionType::MoveBackward, true))
 		{
 			_camera.moveForward(-multiplier);
 		}
-		if (Input::keyDown(IGCS_KEY_MOVE_RIGHT))
+		if (Input::isActionActivated(ActionType::MoveRight, true))
 		{
 			_camera.moveRight(multiplier);
 		}
-		if (Input::keyDown(IGCS_KEY_MOVE_LEFT))
+		if (Input::isActionActivated(ActionType::MoveLeft, true))
 		{
 			_camera.moveRight(-multiplier);
 		}
-		if (Input::keyDown(IGCS_KEY_MOVE_UP))
+		if (Input::isActionActivated(ActionType::MoveUp, true))
 		{
 			_camera.moveUp(multiplier);
 		}
-		if (Input::keyDown(IGCS_KEY_MOVE_DOWN))
+		if (Input::isActionActivated(ActionType::MoveDown, true))
 		{
 			_camera.moveUp(-multiplier);
 		}
-		if (Input::keyDown(IGCS_KEY_ROTATE_DOWN))
+		if (Input::isActionActivated(ActionType::RotateDown, true))
 		{
 			_camera.pitch(-multiplier);
 		}
-		if (Input::keyDown(IGCS_KEY_ROTATE_UP))
+		if (Input::isActionActivated(ActionType::RotateUp, true))
 		{
 			_camera.pitch(multiplier);
 		}
-		if (Input::keyDown(IGCS_KEY_ROTATE_RIGHT))
+		if (Input::isActionActivated(ActionType::RotateRight, true))
 		{
 			_camera.yaw(multiplier);
 		}
-		if (Input::keyDown(IGCS_KEY_ROTATE_LEFT))
+		if (Input::isActionActivated(ActionType::RotateLeft, true))
 		{
 			_camera.yaw(-multiplier);
 		}
-		if (Input::keyDown(IGCS_KEY_TILT_LEFT))
+		if (Input::isActionActivated(ActionType::TiltLeft, true))
 		{
 			_camera.roll(multiplier);
 		}
-		if (Input::keyDown(IGCS_KEY_TILT_RIGHT))
+		if (Input::isActionActivated(ActionType::TiltRight, true))
 		{
 			_camera.roll(-multiplier);
 		}
@@ -323,16 +326,13 @@ namespace IGCS
 	{
 		MH_Initialize();
 		OverlayControl::init();
+		// first grab the window handle
 		Globals::instance().mainWindowHandle(Utils::findMainWindow(GetCurrentProcessId()));
-		Input::registerRawInput();
-#ifdef _DX12_
-		Console::Init();
-		Console::WriteHeader();
-#else
-		DX11Hooker::initializeHook();
-#endif // _DX12_
-
+		// then initialize imgui and the rest.
+		OverlayControl::initImGui();
 		InputHooker::setInputHooks();
+		Input::registerRawInput();
+		D3D11Hooker::initializeHook();
 
 		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
 		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);

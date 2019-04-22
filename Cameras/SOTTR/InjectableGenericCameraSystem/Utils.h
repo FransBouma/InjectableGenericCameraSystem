@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2019, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -36,7 +36,6 @@ namespace IGCS
 
 namespace IGCS::Utils
 {
-
 	struct handle_data {
 		unsigned long process_id;
 		HWND best_handle;
@@ -48,13 +47,13 @@ namespace IGCS::Utils
 		return value < min ? default
 			: value > max ? default: value;
 	}
-	
+
 	template <typename T>
 	T clamp(T value, T min, T default)
 	{
-		return value < min ? default : value;
+		return value < min ? default: value;
 	}
-	
+
 
 	HWND findMainWindow(unsigned long process_id);
 	MODULEINFO getModuleInfoOfContainingProcess();
@@ -64,4 +63,7 @@ namespace IGCS::Utils
 	LPBYTE calculateAbsoluteAddress(AOBBlock* locationData, int nextOpCodeOffset);
 	std::string formatString(const char *fmt, va_list args);
 	bool stringStartsWith(const char *a, const char *b);
+	bool keyDown(int virtualKeyCode);
+	bool altPressed();
+	std::string vkCodeToString(int vkCode);
 }

@@ -2,7 +2,7 @@
 #include "OverlayControl.h"
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
-#include "imgui_internal.h"
+#include "imgui_impl_win32.h"
 #include "OverlayConsole.h"
 #include "GameConstants.h"
 #include <algorithm>
@@ -12,6 +12,7 @@
 #include "CameraManipulator.h"
 #include "Input.h"
 #include <atomic>
+#include "InputHooker.h"
 
 using namespace std;
 
@@ -33,6 +34,7 @@ namespace IGCS::OverlayControl
 	static atomic<float> _timeSplashFirstShown = -1;
 	static ImVec2 _splashWindowSize;
 	static atomic_int _menuItemSelected = 0;
+	static atomic_short _actionKeyBindingEditing = -1;
 	static bool _showMainWindow = false;
 	
 	//-----------------------------------------------
@@ -42,9 +44,13 @@ namespace IGCS::OverlayControl
 	void renderHelp();
 	void renderSettings();
 	void renderMainWindow();
+	void renderKeyBindings();
 	void renderSplash();
 	void updateNotificationStore();
 	void ShowHelpMarker(const char* desc);
+	void startKeyBindingCapturing(short actionType);
+	void endKeyBindingCapturing(bool acceptCollectedBinding);
+	void initImGuiStyle();
 
 	//-----------------------------------------------
 	// code
@@ -57,13 +63,10 @@ namespace IGCS::OverlayControl
 	void addNotification(string notificationText)
 	{
 		EnterCriticalSection(&_notificationCriticalSection);
-#ifndef _DX12_
 			Notification toAdd;
 			toAdd.notificationText = notificationText;
 			toAdd.timeFirstDisplayed = -1.0f;
 			_activeNotifications.push_back(toAdd);
-
-#endif // !_DX12_
 			OverlayConsole::instance().logLine(notificationText.c_str());
 		LeaveCriticalSection(&_notificationCriticalSection);
 	}
@@ -76,7 +79,9 @@ namespace IGCS::OverlayControl
 		Globals::instance().saveSettingsIfRequired(ImGui::GetIO().DeltaTime);
 
 		ImGui_ImplDX11_NewFrame();
-		ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);     // Normally user code doesn't need/want to call it because positions are saved in .ini file anyway. 
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
 		auto& io = ImGui::GetIO();
 		io.MouseDrawCursor = _showMainWindow;
 		renderSplash();
@@ -100,8 +105,8 @@ namespace IGCS::OverlayControl
 		{
 			auto itemSpacing = ImVec2(ImGui::GetStyle().ItemSpacing.x*2.0f, ImGui::GetStyle().ItemSpacing.y);
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, itemSpacing);
-			const char *const menu_items[] = { "Settings", "Console", "Help", "About" };
-			for (int i = 0; i < 4; i++)
+			const char *const menu_items[] = { "Settings", "Key-bindings", "Console", "Help", "About" };
+			for (int i = 0; i < 5; i++)
 			{
 				if (ImGui::Selectable(menu_items[i], _menuItemSelected == i, 0, ImVec2(ImGui::CalcTextSize(menu_items[i]).x, 0)))
 				{
@@ -119,13 +124,16 @@ namespace IGCS::OverlayControl
 		case 0: // settings
 			renderSettings();
 			break;
-		case 1:	// console
+		case 1: // key bindings
+			renderKeyBindings();
+			break;
+		case 2: // console
 			IGCS::OverlayConsole::instance().draw();
 			break;
-		case 2:	// help
+		case 3:	// help
 			renderHelp();
 			break;
-		case 3:	// about
+		case 4:	// about
 			renderAbout();
 			break;
 		}
@@ -140,7 +148,7 @@ namespace IGCS::OverlayControl
 		ImGui::Text("Camera credits: %s", CAMERA_CREDITS);
 		ImGui::Spacing();
 		ImGui::Text(R"(Powered by Injectable Generic Camera System (IGCS). 
-Copyright (c) 2018 Otis_Inf (Frans Bouma). All rights reserved.
+Copyright (c) 2019 Otis_Inf (Frans Bouma). All rights reserved.
 https://github.com/FransBouma/InjectableGenericCameraSystem
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -198,23 +206,32 @@ Special thanks to:
 
 		if (ImGui::CollapsingHeader("Camera tools controls"))
 		{
-			ImGui::TextUnformatted("Ctrl-Ins                              : Show / Hide Camera tools main window");
-			ImGui::TextUnformatted("Ctrl + Mouse wheel                    : Resize font");
-			ImGui::TextUnformatted("Ins                                   : Enable/Disable camera");
-			ImGui::TextUnformatted("Home                                  : Lock/unlock camera movement");
-			ImGui::TextUnformatted("ALT + rotate/move                     : Faster rotate / move");
-			ImGui::TextUnformatted("Right-CTRL + rotate/move              : Slower rotate / move");
-			ImGui::TextUnformatted("Controller Y-button + l/r-stick       : Faster rotate / move");
-			ImGui::TextUnformatted("Controller X-button + l/r-stick       : Slower rotate / move");
-			ImGui::TextUnformatted("Arrow up/down or mouse or r-stick     : Rotate camera up/down");
-			ImGui::TextUnformatted("Arrow left/right or mouse or r-stick  : Rotate camera left/right");
-			ImGui::TextUnformatted("Numpad 8/Numpad 5 or l-stick          : Move camera forward/backward");
-			ImGui::TextUnformatted("Numpad 4/Numpad 6 or l-stick          : Move camera left / right");
-			ImGui::TextUnformatted("Numpad 7/Numpad 9 or l/r-trigger      : Move camera up / down");
-			ImGui::TextUnformatted("Numpad 1/Numpad 3 or d-pad left/right : Tilt camera left / right");
-			ImGui::TextUnformatted("Numpad +/- or d-pad up/down           : Increase / decrease FoV");
-			ImGui::TextUnformatted("Numpad * or controller B-button       : Reset FoV");
-			ImGui::TextUnformatted("Numpad .                              : Block input to game for camera control device.");
+			ImGui::Text("Show / Hide Camera tools main window : %s", Globals::instance().getActionData(ActionType::ToggleOverlay)->toString().c_str());
+			ImGui::Text("Resize font                          : Ctrl + Mouse wheel");
+			ImGui::Text("Enable/Disable camera                : %s", Globals::instance().getActionData(ActionType::CameraEnable)->toString().c_str());
+			ImGui::Text("Lock / unlock camera movement        : %s", Globals::instance().getActionData(ActionType::CameraLock)->toString().c_str());
+			//ImGui::Text("Toggle HUD                           : %s", Globals::instance().getActionData(ActionType::HudToggle)->toString().c_str());
+			ImGui::Text("Faster rotate / move                 : Alt + rotate / move");
+			ImGui::Text("Slower rotate / move                 : Ctrl + rotate / move");
+			ImGui::Text("Faster rotate / move                 : Controller Y-button + l/r-stick");
+			ImGui::Text("Slower rotate / move                 : Controller X-button + l/r-stick");
+			ImGui::Text("Rotate camera up/down                : %s/%s or mouse or r-stick", Globals::instance().getActionData(ActionType::RotateUp)->toString().c_str(), 
+																							Globals::instance().getActionData(ActionType::RotateDown)->toString().c_str());
+			ImGui::Text("Rotate camera left/right             : %s/%s or mouse or r-stick", Globals::instance().getActionData(ActionType::RotateLeft)->toString().c_str(), 
+																							Globals::instance().getActionData(ActionType::RotateRight)->toString().c_str());
+			ImGui::Text("Move camera forward/backward         : %s/%s or l-stick", Globals::instance().getActionData(ActionType::MoveForward)->toString().c_str(), 
+																				   Globals::instance().getActionData(ActionType::MoveBackward)->toString().c_str());
+			ImGui::Text("Move camera left / right             : %s/%s or l-stick", Globals::instance().getActionData(ActionType::MoveLeft)->toString().c_str(),
+																				   Globals::instance().getActionData(ActionType::MoveRight)->toString().c_str());
+			ImGui::Text("Move camera up / down                : %s/%s or l/r-trigger", Globals::instance().getActionData(ActionType::MoveUp)->toString().c_str(),
+																					   Globals::instance().getActionData(ActionType::MoveDown)->toString().c_str());
+			ImGui::Text("Tilt camera left / right             : %s/%s or d-pad left/right", Globals::instance().getActionData(ActionType::TiltLeft)->toString().c_str(),
+																							Globals::instance().getActionData(ActionType::TiltRight)->toString().c_str());
+			ImGui::Text("Increase / decrease FoV              : %s/%s or d-pad up/down", Globals::instance().getActionData(ActionType::FovIncrease)->toString().c_str(),
+																						 Globals::instance().getActionData(ActionType::FovDecrease)->toString().c_str());
+			ImGui::Text("Reset FoV                            : %s or controller B-button", Globals::instance().getActionData(ActionType::FovReset)->toString().c_str());
+			ImGui::Text("Block input to game                  : %s", Globals::instance().getActionData(ActionType::BlockInput)->toString().c_str());
+			//ImGui::Text("Toggle game pause                    : %s", Globals::instance().getActionData(ActionType::Timestop)->toString().c_str());
 		}
 
 		if (ImGui::CollapsingHeader("Settings editor help"))
@@ -252,7 +269,11 @@ Special thanks to:
 			currentSettings.init(true);
 			settingsChanged = true;
 		}
-
+		ImGui::SameLine();
+		if (ImGui::Button("Rehook XInput"))
+		{
+			InputHooker::setXInputHook(true);
+		}
 		if (ImGui::CollapsingHeader("Camera movement options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			settingsChanged |= ImGui::SliderFloat("Fast movement multiplier", &currentSettings.fastMovementMultiplier, 0.1f, 100.0f, "%.3f");
@@ -282,6 +303,58 @@ Special thanks to:
 		GameSpecific::CameraManipulator::applySettingsToGameState();
 	}
 
+
+	void renderKeyBindings()
+	{
+		if (_actionKeyBindingEditing >= 0)
+		{
+			// a keybinding is being edited. Read current pressed keys into the collector, cumulatively;
+			Input::collectPressedKeysCumulatively();
+		}
+		if (ImGui::CollapsingHeader("Key-binding editing help"))
+		{
+			ImGui::PushTextWrapPos();
+			ImGui::TextUnformatted("Please click inside the textbox of the key-binding you want to change to change it. You can bind multiple actions to the same key combination. A key-binding with no other key than Alt, Shift and/or Ctrl won't be accepted as a valid key-binding.\n\n");
+			ImGui::TextUnformatted("NOTE: The 'Alt' key and the 'Right-Ctrl' key are hard-coded bound to augment acceleration of movement/rotation. Using these keys in your key-bindings for movement/rotation actions will therefore not have the desired effect. If you need to use a special key with the movement/rotation actions, use Shift instead. E.g. Shift-Up to move forward, Up for rotate up");
+			ImGui::PopTextWrapPos();
+		}
+		if (ImGui::CollapsingHeader("Configurable key-bindings", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.2f);
+			for (short i = 0; i < (short)ActionType::Amount; i++)
+			{
+				ActionData* action = Globals::instance().getActionData(static_cast<ActionType>(i));
+				if (nullptr == action)
+				{
+					continue;
+				}
+				string textBoxContents = (_actionKeyBindingEditing == i) ? Globals::instance().getKeyCollector().toString() : action->toString();	// The 'press a key' is inside ActionData.
+				ImGui::Text("%s", action->getDescription().c_str());
+				ImGui::SameLine(ImGui::GetWindowWidth() * 0.4f);
+				string keyBindingInputName = "##" + action->getName();	// a label starting with "##" is considered 'hidden' and can be used to add multiple elements in a list. 
+				ImGui::InputText(keyBindingInputName.c_str(), (char*)textBoxContents.c_str(), textBoxContents.size(), ImGuiInputTextFlags_ReadOnly);
+				if (ImGui::IsItemClicked())
+				{
+					startKeyBindingCapturing(i);
+				}
+				if (_actionKeyBindingEditing == i)
+				{
+					ImGui::SameLine();
+					// binding is being edited. This is ok, there's just 1 binding being edited at a time. 
+					if (ImGui::Button("OK"))
+					{
+						endKeyBindingCapturing(true);
+					}
+					ImGui::SameLine();
+					if (ImGui::Button("Cancel"))
+					{
+						endKeyBindingCapturing(false);
+					}
+				}
+			}
+			ImGui::PopItemWidth();
+		}
+	}
 
 	void renderNotifications()
 	{
@@ -393,5 +466,92 @@ Special thanks to:
 			ImGui::EndTooltip();
 		}
 	}
+
+
+	void startKeyBindingCapturing(short actionType)
+	{
+		if (_actionKeyBindingEditing == actionType)
+		{
+			return;
+		}
+		if (_actionKeyBindingEditing >= 0)
+		{
+			endKeyBindingCapturing(false);
+		}
+		_actionKeyBindingEditing = actionType;
+	}
+
+
+	void endKeyBindingCapturing(bool acceptCollectedBinding)
+	{
+		ActionData& keyCollector = Globals::instance().getKeyCollector();
+		if (acceptCollectedBinding && _actionKeyBindingEditing >= 0 && keyCollector.isValid())
+		{
+			Globals::instance().updateActionDataForAction(static_cast<ActionType>((short)_actionKeyBindingEditing));
+		}
+		_actionKeyBindingEditing = -1;
+		keyCollector.clear();
+	}
+
+	void initImGui()
+	{
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.IniFilename = IGCS_OVERLAY_INI_FILENAME;
+		ImGui::StyleColorsDark();
+		initImGuiStyle();
+		ImGui_ImplWin32_Init(IGCS::Globals::instance().mainWindowHandle());
+	}
+
+
+	void initImGuiStyle()
+	{
+		ImGuiStyle& style = ImGui::GetStyle();
+
+		style.WindowRounding = 2.0f;
+		style.FrameRounding = 1.0f;
+		style.ScrollbarSize = 16.0f;
+		style.ScrollbarRounding = 2.0f;
+
+		style.Colors[ImGuiCol_Text] = ImVec4(0.84f, 0.84f, 0.88f, 1.00f);
+		style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.24f, 0.29f, 1.00f);
+		style.Colors[ImGuiCol_WindowBg] = ImVec4(0.07f, 0.07f, 0.09f, 0.90f);
+		style.Colors[ImGuiCol_ChildWindowBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		style.Colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+		style.Colors[ImGuiCol_Border] = ImVec4(0.80f, 0.80f, 0.83f, 0.3125f);
+		style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);
+		style.Colors[ImGuiCol_FrameBg] = ImVec4(0.22f, 0.22f, 0.24f, 0.31f);
+		style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.24f, 0.24f, 0.25f, 1.00f);
+		style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.35f, 0.35f, 0.38f, 1.00f);
+		style.Colors[ImGuiCol_TitleBg] = ImVec4(0.27f, 0.27f, 0.33f, 0.37f);
+		style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.40f, 0.40f, 0.80f, 0.20f);
+		style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+		style.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.37f, 0.37f, 0.42f, 0.42f);
+		style.Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.09f, 0.09f, 0.10f, 1.00f);
+		style.Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.45f, 0.45f, 0.45f, 0.30f);
+		style.Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);
+		style.Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);
+		style.Colors[ImGuiCol_CheckMark] = ImVec4(0.80f, 0.80f, 0.83f, 0.53f);
+		style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.65f, 0.31f, 0.00f, 0.71f);
+		style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);
+		style.Colors[ImGuiCol_Button] = ImVec4(0.65f, 0.31f, 0.00f, 0.86f);
+		style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.80f, 0.41f, 0.00f, 1.00f);
+		style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+		style.Colors[ImGuiCol_Header] = ImVec4(0.50f, 0.50f, 0.53f, 0.49f);
+		style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.47f, 0.47f, 0.49f, 1.00f);
+		style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.40f, 0.40f, 0.44f, 0.31f);
+		style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.44f, 0.44f, 0.44f, 0.30f);
+		style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);
+		style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.59f, 0.59f, 0.59f, 1.00f);
+		style.Colors[ImGuiCol_PlotLines] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
+		style.Colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
+		style.Colors[ImGuiCol_PlotHistogram] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
+		style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
+		style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
+		style.Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
+	}
 }
+
+
 

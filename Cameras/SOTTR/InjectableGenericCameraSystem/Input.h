@@ -27,10 +27,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "stdafx.h"
+#include "ActionData.h"
 
 namespace IGCS::Input
 {
-	bool keyDown(int virtualKeyCode);
 	long getMouseDeltaX();
 	long getMouseDeltaY();
 	void processRawMouseData(const RAWMOUSE *rmouse);
@@ -40,4 +40,7 @@ namespace IGCS::Input
 	void resetKeyStates();
 	void resetMouseState();
 	void setKeyboardMouseStateInImGuiIO();
+	bool isActionActivated(ActionType type);
+	bool isActionActivated(ActionType type, bool altCtrlShiftOptional);
+	void collectPressedKeysCumulatively();
 }

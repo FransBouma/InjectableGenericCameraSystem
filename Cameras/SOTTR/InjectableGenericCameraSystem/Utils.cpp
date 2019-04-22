@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2019, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -31,11 +31,29 @@
 #include "AOBBlock.h"
 #include "OverlayConsole.h"
 #include <comdef.h>
+#include <codecvt>
 
 using namespace std;
 
 namespace IGCS::Utils
 {
+	// This table is from Reshade.
+	static const char vkCodeToStringLookup[256][16] =
+	{
+		"", "", "", "Cancel", "", "", "", "", "Backspace", "Tab", "", "", "Clear", "Enter", "", "",
+		"Shift", "Control", "Alt", "Pause", "Caps Lock", "", "", "", "", "", "", "Escape", "", "", "", "",
+		"Space", "Page Up", "Page Down", "End", "Home", "Left Arrow", "Up Arrow", "Right Arrow", "Down Arrow",
+		"Select", "", "", "Print Screen", "Insert", "Delete", "Help",
+		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "", "", "", "", "", "",
+		"", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
+		"P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Left Windows", "Right Windows", "", "", "Sleep",
+		"Numpad 0", "Numpad 1", "Numpad 2", "Numpad 3", "Numpad 4", "Numpad 5", "Numpad 6", "Numpad 7", "Numpad 8", "Numpad 9",
+		"Numpad *", "Numpad +", "", "Numpad -", "Numpad Decimal", "Numpad /",
+		"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "F16",
+		"F17", "F18", "F19", "F20", "F21", "F22", "F23", "F24", "", "", "", "", "", "", "", "",
+		"Num Lock", "Scroll Lock",
+	};
+
 
 	BOOL isMainWindow(HWND handle)
 	{
@@ -69,7 +87,7 @@ namespace IGCS::Utils
 		data.best_handle = handle;
 		return FALSE;
 	}
-	
+
 
 	MODULEINFO getModuleInfoOfContainingProcess()
 	{
@@ -78,7 +96,7 @@ namespace IGCS::Utils
 		if (nullptr != processHandle)
 		{
 			DWORD cbNeeded;
-			if(!EnumProcessModulesEx(processHandle, &processModule, sizeof(processModule), &cbNeeded, LIST_MODULES_32BIT | LIST_MODULES_64BIT))
+			if (!EnumProcessModulesEx(processHandle, &processModule, sizeof(processModule), &cbNeeded, LIST_MODULES_32BIT | LIST_MODULES_64BIT))
 			{
 				processModule = nullptr;
 			}
@@ -99,7 +117,7 @@ namespace IGCS::Utils
 		return toReturn;
 	}
 
-	
+
 	MODULEINFO getModuleInfoOfDll(LPCWSTR libraryName)
 	{
 		HANDLE processHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
@@ -232,14 +250,33 @@ namespace IGCS::Utils
 
 		int len = vsnprintf(NULL, 0, fmt, args_copy);
 		char* buffer = new char[len + 2];
-		vsnprintf(buffer, len+1, fmt, args_copy);
-		string toReturn(buffer, len+1);
+		vsnprintf(buffer, len + 1, fmt, args_copy);
+		string toReturn(buffer, len + 1);
 		return toReturn;
 	}
-
 
 	bool stringStartsWith(const char *a, const char *b)
 	{
 		return strncmp(a, b, strlen(b)) == 0 ? 1 : 0;
+	}
+
+	bool keyDown(int virtualKeyCode)
+	{
+		return (GetKeyState(virtualKeyCode) & 0x8000);
+	}
+
+	bool altPressed()
+	{
+		return keyDown(VK_LMENU) || keyDown(VK_RMENU);
+	}
+
+	std::string vkCodeToString(int vkCode)
+	{
+		if (vkCode > 255 || vkCode < 0)
+		{
+			return "";
+		}
+		string toReturn = vkCodeToStringLookup[vkCode];
+		return toReturn;
 	}
 }
