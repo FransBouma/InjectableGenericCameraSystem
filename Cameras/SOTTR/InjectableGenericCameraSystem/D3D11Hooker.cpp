@@ -125,7 +125,7 @@ namespace IGCS::D3D11Hooker
 		IDXGISwapChain* pTmpSwapChain;
 		if (FAILED(D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, NULL, &featureLevel, 1, D3D11_SDK_VERSION, &swapChainDesc, &pTmpSwapChain, &pTmpDevice, NULL, &pTmpContext)))
 		{
-			IGCS::Console::WriteError("Failed to create directX device and swapchain!");
+			IGCS::Console::WriteError("Failed to create Direct3D 11 Device and SwapChain! You're running the Direct3D12 version of the game?");
 			return;
 		}
 

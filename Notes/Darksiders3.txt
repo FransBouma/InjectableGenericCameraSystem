@@ -1,0 +1,65 @@
+Darksiders 3
+======================
+
+HUD toggle: 
+Darksiders3-Win64-Shipping.exe+2A50CC - 48 81 EC C8020000     - sub rsp,000002C8 { 712 }
+Darksiders3-Win64-Shipping.exe+2A50D3 - 48 8B 05 7642DE02     - mov rax,[Darksiders3-Win64-Shipping.exe+3089350] { (1750E9B3338) }
+Darksiders3-Win64-Shipping.exe+2A50DA - 48 8B D9              - mov rbx,rcx
+Darksiders3-Win64-Shipping.exe+2A50DD - 83 38 00              - cmp dword ptr [rax],00                           <<< IF 1 -> hud hidden.
+Darksiders3-Win64-Shipping.exe+2A50E0 - 0F8F CA090000         - jg Darksiders3-Win64-Shipping.exe+2A5AB0
+Darksiders3-Win64-Shipping.exe+2A50E6 - 49 89 7B 10           - mov [r11+10],rdi
+Darksiders3-Win64-Shipping.exe+2A50EA - 4D 89 6B E8           - mov [r11-18],r13
+
+Resolution scaling: (sg.ResolutionQuality)
+Darksiders3-Win64-Shipping.exe+13C3A86 - 65 48 8B 04 25 58000000  - mov rax,gs:[00000058] { 88 }
+Darksiders3-Win64-Shipping.exe+13C3A8F - 8B 0D 3B5BF501        - mov ecx,[Darksiders3-Win64-Shipping.exe+33195D0] { (0) }
+Darksiders3-Win64-Shipping.exe+13C3A95 - BA 18000000           - mov edx,00000018 { 24 }
+Darksiders3-Win64-Shipping.exe+13C3A9A - 48 8B 0C C8           - mov rcx,[rax+rcx*8]
+Darksiders3-Win64-Shipping.exe+13C3A9E - 8B 04 0A              - mov eax,[rdx+rcx]
+Darksiders3-Win64-Shipping.exe+13C3AA1 - 39 05 0919EF01        - cmp [Darksiders3-Win64-Shipping.exe+32B53B0],eax { (-2147482863) }
+Darksiders3-Win64-Shipping.exe+13C3AA7 - 7F 56                 - jg Darksiders3-Win64-Shipping.exe+13C3AFF
+Darksiders3-Win64-Shipping.exe+13C3AA9 - 80 3D 1491CE01 00     - cmp byte ptr [Darksiders3-Win64-Shipping.exe+30ACBC4],00 { (1),0 }
+Darksiders3-Win64-Shipping.exe+13C3AB0 - 48 8B 1D F118EF01     - mov rbx,[Darksiders3-Win64-Shipping.exe+32B53A8] { (212907941A8) }
+Darksiders3-Win64-Shipping.exe+13C3AB7 - 74 11                 - je Darksiders3-Win64-Shipping.exe+13C3ACA
+Darksiders3-Win64-Shipping.exe+13C3AB9 - FF 15 59E9B100        - call qword ptr [Darksiders3-Win64-Shipping.exe+1EE2418] { ->KERNEL32.GetCurrentThreadId }
+Darksiders3-Win64-Shipping.exe+13C3ABF - 3B 05 DF90CE01        - cmp eax,[Darksiders3-Win64-Shipping.exe+30ACBA4] { (6676) }
+Darksiders3-Win64-Shipping.exe+13C3AC5 - 0F94 C0               - sete al
+Darksiders3-Win64-Shipping.exe+13C3AC8 - EB 02                 - jmp Darksiders3-Win64-Shipping.exe+13C3ACC
+Darksiders3-Win64-Shipping.exe+13C3ACA - B0 01                 - mov al,01 { 1 }
+Darksiders3-Win64-Shipping.exe+13C3ACC - 0FB6 C0               - movzx eax,al
+Darksiders3-Win64-Shipping.exe+13C3ACF - 0F57 C0               - xorps xmm0,xmm0
+Darksiders3-Win64-Shipping.exe+13C3AD2 - 48 83 F0 01           - xor rax,01 { 1 }
+Darksiders3-Win64-Shipping.exe+13C3AD6 - F3 0F10 0C 83         - movss xmm1,[rbx+rax*4]				<< READ resolution scale (100 is 100%). 
+Darksiders3-Win64-Shipping.exe+13C3ADB - F3 0F59 0D 39C9BA00   - mulss xmm1,[Darksiders3-Win64-Shipping.exe+1F7041C] { (0.01) }
+Darksiders3-Win64-Shipping.exe+13C3AE3 - 0F2F C8               - comiss xmm1,xmm0
+Darksiders3-Win64-Shipping.exe+13C3AE6 - 77 0E                 - ja Darksiders3-Win64-Shipping.exe+13C3AF6
+
+Higher res shadows:
+sg.ShadowQuality 4
+(not doable through value changes in-memory)
+r.Shadow.DistanceScale 4 (detailed shadows farther away)
+r.AmbientOcclusionRadiusScale=0.08
+r.MaxAnisotropy=16
+To disable dof: 
+r.DepthOfFieldQuality 0
+r.Streaming.LimitPoolSizeToVRAM 0
+r.Streaming.PoolSize 4096
+r.AmbientOcclusionMaxQuality 1
+r.AmbientOcclusionLevels 3
+r.AmbientOcclusionRadiusScale 0.08
+Switch off TAA for FXAA
+r.PostProcessAAQuality 2
+r.AmbientOcclusion.Compute 1 (compute shader, better quality)
+r.Streaming.MaxTempMemoryAllowed 256 (faster streaming)
+
+
+Timestop:
+Darksiders3-Win64-Shipping.exe+13EA044 - 84 C0                 - test al,al
+Darksiders3-Win64-Shipping.exe+13EA046 - 74 0C                 - je Darksiders3-Win64-Shipping.exe+13EA054
+Darksiders3-Win64-Shipping.exe+13EA048 - F7 83 90090000 00100000 - test [rbx+00000990],1000 { 4096 }
+Darksiders3-Win64-Shipping.exe+13EA052 - 75 08                 - jne Darksiders3-Win64-Shipping.exe+13EA05C
+Darksiders3-Win64-Shipping.exe+13EA054 - 30 C0                 - xor al,al						<< replace with mov al, 01 to pause
+Darksiders3-Win64-Shipping.exe+13EA056 - 48 83 C4 20           - add rsp,20 { 32 }
+Darksiders3-Win64-Shipping.exe+13EA05A - 5B                    - pop rbx
+Darksiders3-Win64-Shipping.exe+13EA05B - C3                    - ret 
+

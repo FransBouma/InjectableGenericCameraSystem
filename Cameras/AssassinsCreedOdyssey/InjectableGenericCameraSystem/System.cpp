@@ -337,7 +337,10 @@ namespace IGCS
 	{
 		MH_Initialize();
 		OverlayControl::init();
+		// first grab the window handle
 		Globals::instance().mainWindowHandle(Utils::findMainWindow(GetCurrentProcessId()));
+		// then initialize imgui and the rest.
+		OverlayControl::initImGui();
 		InputHooker::setInputHooks();
 		Input::registerRawInput();
 		D3D11Hooker::initializeHook();

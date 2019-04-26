@@ -303,6 +303,7 @@
     <ClInclude Include="CDataFile.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="D3D11Hooker.h" />
+    <ClInclude Include="D3D12Hooker.h" />
     <ClInclude Include="Defaults.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GameImageHooker.h" />
@@ -317,6 +318,7 @@
     <ClInclude Include="Overlay\imconfig.h" />
     <ClInclude Include="Overlay\imgui.h" />
     <ClInclude Include="Overlay\imgui_impl_dx11.h" />
+    <ClInclude Include="Overlay\imgui_impl_dx12.h" />
     <ClInclude Include="Overlay\imgui_impl_win32.h" />
     <ClInclude Include="Overlay\imgui_internal.h" />
     <ClInclude Include="Overlay\imstb_rectpack.h" />
@@ -338,6 +340,7 @@
     <ClCompile Include="CDataFile.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="D3D11Hooker.cpp" />
+    <ClCompile Include="D3D12Hooker.cpp" />
     <ClCompile Include="GameImageHooker.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="Main.cpp">
@@ -377,6 +380,7 @@
     <ClCompile Include="Overlay\imgui_demo.cpp" />
     <ClCompile Include="Overlay\imgui_draw.cpp" />
     <ClCompile Include="Overlay\imgui_impl_dx11.cpp" />
+    <ClCompile Include="Overlay\imgui_impl_dx12.cpp" />
     <ClCompile Include="Overlay\imgui_impl_win32.cpp" />
     <ClCompile Include="Overlay\imgui_widgets.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -38,6 +38,7 @@
 #include "CameraManipulator.h"
 #include "GameImageHooker.h"
 #include "D3D11Hooker.h"
+#include "D3D12Hooker.h"
 #include "OverlayConsole.h"
 #include "OverlayControl.h"
 #include "MinHook.h"
@@ -332,7 +333,11 @@ namespace IGCS
 		OverlayControl::initImGui();
 		InputHooker::setInputHooks();
 		Input::registerRawInput();
+#ifdef _DX12_
+		D3D12Hooker::initializeHook();
+#else
 		D3D11Hooker::initializeHook();
+#endif
 
 		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
 		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);

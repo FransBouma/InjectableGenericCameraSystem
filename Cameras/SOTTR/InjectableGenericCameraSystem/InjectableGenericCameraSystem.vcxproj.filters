@@ -124,6 +124,12 @@
     <ClInclude Include="Settings.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="D3D12Hooker.h">
+      <Filter>Hooking</Filter>
+    </ClInclude>
+    <ClInclude Include="Overlay\imgui_impl_dx12.h">
+      <Filter>Overlay\Imgui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InterceptorHelper.cpp">
@@ -200,6 +206,12 @@
     </ClCompile>
     <ClCompile Include="ActionData.cpp">
       <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D12Hooker.cpp">
+      <Filter>Hooking</Filter>
+    </ClCompile>
+    <ClCompile Include="Overlay\imgui_impl_dx12.cpp">
+      <Filter>Overlay\Imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
