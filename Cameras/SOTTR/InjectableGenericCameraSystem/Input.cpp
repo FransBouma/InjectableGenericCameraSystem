@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2019, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -29,7 +29,7 @@
 #include "input.h"
 #include "Utils.h"
 #include "Globals.h"
-#include "imgui_impl_dx11.h"
+#include "imgui_impl_win32.h"
 #include "OverlayConsole.h"
 #include "OverlayControl.h"
 #include <mutex>
@@ -69,14 +69,66 @@ namespace IGCS::Input
 	}
 
 
+	void collectPressedKeysCumulatively()
+	{
+		// check which keys are down. For keycode, the last one wins.
+		ActionData& toCollectInto = Globals::instance().getKeyCollector();
+
+		// keys below 7 aren't interesting.
+		for (int i = 7; i < 256; i++)
+		{
+			if ((g_keyStates[i] & 0x88) == 0x88 || (g_keyStates[i] & 0x80)==0x80)
+			{
+				// this key is down.
+				switch (i)
+				{
+				case VK_MENU:
+					toCollectInto.setAltRequired();
+					break;
+				case VK_CONTROL:
+					toCollectInto.setCtrlRequired();
+					break;
+				case VK_SHIFT:
+					toCollectInto.setShiftRequired();
+					break;
+				default:
+					toCollectInto.setKeyCode(i);
+					break;
+				}
+			}
+		}
+	}
+
+
+	bool isActionActivated(ActionType type)
+	{
+		return isActionActivated(type, false);
+	}
+
+
+	// altCtrlOptional is only effective for actions which don't have alt/ctrl/shift as a required key. Actions which do have one or more of these
+	// keys as required, will ignore altCtrlShiftOptional and always test for these keys. 
+	bool isActionActivated(ActionType type, bool altCtrlOptional)
+	{
+		ActionData* data = Globals::instance().getActionData(type);
+		if (nullptr == data)
+		{
+			return false;
+		}
+		return data->isActive(altCtrlOptional);
+	}
+
+
 	// Resets the states in the keystates buffer by resetting their lower 4 bits. This will make sure the keystate interpretation code in NewFrame will
 	// only pick up the key when its Keydown message was received the first time. 0x88/0x08 is used as this is the way GetKeyState() is reporting states too.
 	void resetKeyStates()
 	{
 		// clear 0x08 bit on keys in keystate array so we avoid repeat issues.
+		ImGuiIO& io = ImGui::GetIO();
 		for (int i = 0; i < 256; i++)
 		{
 			g_keyStates[i] &= ~0x08;
+			io.KeysDown[i] = 0x00;
 		}
 	}
 
@@ -94,17 +146,11 @@ namespace IGCS::Input
 
 	void setMouseButtonState(int button, bool down)
 	{
-		if (button < 0 || button > 3)
+		if (button < 0 || button >= 3)
 		{
 			return;
 		}
 		g_mouseButtonStates[button] = down ? 0x88 : 0x08;
-	}
-
-
-	bool keyDown(int virtualKeyCode)
-	{
-		return (GetKeyState(virtualKeyCode) & 0x8000);
 	}
 
 
@@ -160,25 +206,25 @@ namespace IGCS::Input
 	// returns true if the message was handled by this method, otherwise false.
 	bool handleMessage(LPMSG lpMsg)
 	{
+		if (lpMsg == nullptr || lpMsg->hwnd == nullptr)
+		{
+			return false;
+		}
+
 		// simply use our main window handle.
 		HWND handleToUse = Globals::instance().mainWindowHandle();
 		if (handleToUse == nullptr)
 		{
 			return false;
 		}
-		if (lpMsg == nullptr || lpMsg->hwnd == nullptr)
-		{
-			return false;
-		}
 
+		ImGuiIO& io = ImGui::GetIO();
 		// first handle the message through the Imgui handler so we get an up to date IO structure for the overlay
-		LRESULT handledByImGuiHandler = ImGui_ImplDX11_WndProcHandler(handleToUse, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
-
+		LRESULT handledByImGuiHandler = ImGui_ImplWin32_WndProcHandler(handleToUse, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
 		if (!handledByImGuiHandler)
 		{
 			// grab mouse position
 			ScreenToClient(static_cast<HWND>(handleToUse), &lpMsg->pt);
-			ImGuiIO& io = ImGui::GetIO();
 			io.MousePos.x = static_cast<float>(lpMsg->pt.x);
 			io.MousePos.y = static_cast<float>(lpMsg->pt.y);
 		}
@@ -243,6 +289,15 @@ namespace IGCS::Input
 							}
 						}
 					}
+					if (pRawData->header.dwType == RIM_TYPEKEYBOARD && IGCS_SUPPORT_RAWKEYBOARDINPUT)
+					{
+						// convert keyboard input to keypress/keydown.
+						if (pRawData->data.keyboard.VKey != 0xFF)
+						{
+							g_keyStates[pRawData->data.keyboard.VKey] = (pRawData->data.keyboard.Flags & RI_KEY_BREAK) == 0 ? 0x88 : 0x08;
+							io.KeysDown[pRawData->data.keyboard.VKey] = 0x01;
+						}
+					}
 				}
 				delete lpb;
 				toReturn = true;
@@ -262,6 +317,26 @@ namespace IGCS::Input
 					g_keyStates[lpMsg->wParam] = 0x08;
 				}
 				toReturn = true;
+				break;
+			case WM_SYSKEYDOWN:
+				if (IGCS_SUPPORT_RAWKEYBOARDINPUT)
+				{
+					if (lpMsg->wParam < 256)
+					{
+						g_keyStates[lpMsg->wParam] = 0x88;
+					}
+					toReturn = true;
+				}
+				break;
+			case WM_SYSKEYUP:
+				if (IGCS_SUPPORT_RAWKEYBOARDINPUT)
+				{
+					if (lpMsg->wParam < 256)
+					{
+						g_keyStates[lpMsg->wParam] = 0x08;
+					}
+					toReturn = true;
+				}
 				break;
 			case WM_CAPTURECHANGED:
 			case WM_LBUTTONDBLCLK:

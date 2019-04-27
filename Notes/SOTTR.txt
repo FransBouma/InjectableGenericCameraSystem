@@ -72,3 +72,6 @@ SOTTR.exe+853FC80 - 49 8B 8F E0070000     - mov rcx,[r15+000007E0]
 SOTTR.exe+853FC87 - 49 89 C5              - mov r13,rax
 SOTTR.exe+853FC8A - 48 89 44 24 48        - mov [rsp+48],rax
 
+// TIMESTOP (latest)
+SOTTR.exe+7D0C3B9 - C6 05 45C289FB 02     - mov byte ptr [SOTTR.exe+35A8605],02 		<< 2 is pause, 0 is continue. Alt TAB resets it
+

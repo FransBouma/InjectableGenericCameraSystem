@@ -70,9 +70,6 @@
     <ClInclude Include="AOBBlock.h">
       <Filter>Hooking</Filter>
     </ClInclude>
-    <ClInclude Include="UniversalD3D11Hook.h">
-      <Filter>Hooking</Filter>
-    </ClInclude>
     <ClInclude Include="Overlay\imconfig.h">
       <Filter>Overlay\Imgui</Filter>
     </ClInclude>
@@ -83,15 +80,6 @@
       <Filter>Overlay\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="Overlay\imgui_internal.h">
-      <Filter>Overlay\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Overlay\stb_rect_pack.h">
-      <Filter>Overlay\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Overlay\stb_textedit.h">
-      <Filter>Overlay\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Overlay\stb_truetype.h">
       <Filter>Overlay\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="OverlayConsole.h">
@@ -111,6 +99,21 @@
     </ClInclude>
     <ClInclude Include="ActionData.h">
       <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Overlay\imgui_impl_win32.h">
+      <Filter>Overlay\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Overlay\imstb_rectpack.h">
+      <Filter>Overlay\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Overlay\imstb_textedit.h">
+      <Filter>Overlay\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Overlay\imstb_truetype.h">
+      <Filter>Overlay\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11Hooker.h">
+      <Filter>Hooking</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -153,9 +156,6 @@
     <ClCompile Include="AOBBlock.cpp">
       <Filter>Hooking</Filter>
     </ClCompile>
-    <ClCompile Include="UniversalD3D11Hook.cpp">
-      <Filter>Hooking</Filter>
-    </ClCompile>
     <ClCompile Include="Overlay\imgui.cpp">
       <Filter>Overlay\Imgui</Filter>
     </ClCompile>
@@ -182,6 +182,15 @@
     </ClCompile>
     <ClCompile Include="ActionData.cpp">
       <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Overlay\imgui_impl_win32.cpp">
+      <Filter>Overlay\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Overlay\imgui_widgets.cpp">
+      <Filter>Overlay\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11Hooker.cpp">
+      <Filter>Hooking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

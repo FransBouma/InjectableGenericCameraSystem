@@ -37,7 +37,8 @@ namespace IGCS
 	#define IGCS_OVERLAY_INI_FILENAME				"IGCS_overlay.ini"
 	#define IGCS_SETTINGS_INI_FILENAME				"IGCS_settings.ini"
 	#define IGCS_SETTINGS_SAVE_DELAY				5.0f	// in seconds
-	#define IGCS_SPLASH_DURATION					8.0f	// in seconds
+	#define IGCS_SPLASH_DURATION					8.0f	// in seconds	
+	#define IGCS_SUPPORT_RAWKEYBOARDINPUT			true	// if set to false, raw keyboard input is ignored.
 
 	// Keyboard system control
 	#define IGCS_KEY_TOGGLE_OVERLAY					VK_INSERT		// With control

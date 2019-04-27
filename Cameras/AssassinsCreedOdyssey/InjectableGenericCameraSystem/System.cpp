@@ -37,7 +37,7 @@
 #include "input.h"
 #include "CameraManipulator.h"
 #include "GameImageHooker.h"
-#include "UniversalD3D11Hook.h"
+#include "D3D11Hooker.h"
 #include "OverlayConsole.h"
 #include "OverlayControl.h"
 #include "MinHook.h"
@@ -337,10 +337,13 @@ namespace IGCS
 	{
 		MH_Initialize();
 		OverlayControl::init();
+		// first grab the window handle
 		Globals::instance().mainWindowHandle(Utils::findMainWindow(GetCurrentProcessId()));
+		// then initialize imgui and the rest.
+		OverlayControl::initImGui();
 		InputHooker::setInputHooks();
 		Input::registerRawInput();
-		DX11Hooker::initializeHook();
+		D3D11Hooker::initializeHook();
 
 		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
 		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);
@@ -352,6 +355,9 @@ namespace IGCS
 		_camera.setPitch(INITIAL_PITCH_RADIANS);
 		_camera.setRoll(INITIAL_ROLL_RADIANS);
 		_camera.setYaw(INITIAL_YAW_RADIANS);
+
+		// apply initial settings
+		CameraManipulator::applySettingsToGameState();
 	}
 
 
