@@ -112,8 +112,18 @@ namespace IGCS::D3D12Hooker
 		return toReturn;
 	}
 
+	LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	{
+		return DefWindowProc(hWnd, msg, wParam, lParam);
+	}
+
 	void initializeHook()
 	{
+		// Create application window
+		WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("IGCS TmpWindow"), NULL };
+		::RegisterClassEx(&wc);
+		HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("IGCS TmpWindow"), WS_OVERLAPPEDWINDOW, 100, 100, 100, 100, NULL, NULL, wc.hInstance, NULL);
+
 		_tmpSwapChainInitialized = false;
 		D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 
@@ -149,14 +159,14 @@ namespace IGCS::D3D12Hooker
 		// THEN create the swapchain, passing the commandqueue
 		DXGI_SWAP_CHAIN_DESC swapChainDesc;
 		ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
-		swapChainDesc.BufferCount = 3;
+		swapChainDesc.BufferCount = 2;
 		swapChainDesc.BufferDesc.Width = 0;
 		swapChainDesc.BufferDesc.Height = 0;
 		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
 		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		swapChainDesc.OutputWindow = IGCS::Globals::instance().mainWindowHandle();
+		swapChainDesc.OutputWindow = hwnd;
 		swapChainDesc.SampleDesc.Count = 1;
 		swapChainDesc.SampleDesc.Quality = 0;
 		swapChainDesc.Windowed = TRUE;
@@ -226,6 +236,9 @@ namespace IGCS::D3D12Hooker
 		pTmpDevice->Release();
 		//pTmpSwapChain1->Release();
 		pTmpSwapChain->Release();
+
+		CloseWindow(hwnd);
+
 		_tmpSwapChainInitialized = true;
 
 		OverlayConsole::instance().logDebug("DX12 hooks set");

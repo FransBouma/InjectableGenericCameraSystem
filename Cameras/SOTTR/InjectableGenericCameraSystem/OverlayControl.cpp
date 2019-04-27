@@ -2,6 +2,7 @@
 #include "OverlayControl.h"
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
+#include "imgui_impl_dx12.h"
 #include "imgui_impl_win32.h"
 #include "OverlayConsole.h"
 #include "GameConstants.h"
@@ -78,7 +79,11 @@ namespace IGCS::OverlayControl
 		Input::setKeyboardMouseStateInImGuiIO();
 		Globals::instance().saveSettingsIfRequired(ImGui::GetIO().DeltaTime);
 
+#ifdef _DX12_
+		ImGui_ImplDX12_NewFrame();
+#else
 		ImGui_ImplDX11_NewFrame();
+#endif
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
