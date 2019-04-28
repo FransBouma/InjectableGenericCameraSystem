@@ -34,15 +34,16 @@ namespace IGCS::D3D12Hooker
 	typedef HRESULT(__stdcall *DXGIPresentHook) (IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
 	typedef HRESULT(__stdcall *DXGIResizeBuffersHook) (IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags);
 
-	static ID3D12CommandAllocator* _commandAllocator = nullptr;
+	static ID3D12CommandAllocator* _commandAllocators[10] = {}; // should be enough.
 	static ID3D12Device* _device = nullptr;
 	static ID3D12DescriptorHeap* _rtvDescHeap = nullptr;
 	static ID3D12DescriptorHeap* _srvDescHeap = nullptr;
 	static ID3D12CommandQueue* _commandQueue = nullptr;
 	static ID3D12GraphicsCommandList* _commandList = nullptr;
-	static D3D12_CPU_DESCRIPTOR_HANDLE  _mainRenderTargetDescriptor;
-	static ID3D12Resource* _mainRenderTargetResource;
-
+	static D3D12_CPU_DESCRIPTOR_HANDLE  _mainRenderTargetDescriptors[10] = {}; // should be enough.
+	static ID3D12Resource* _mainRenderTargetResources[10] = {};	// should be enough.
+	static UINT _numberOfBuffersInFlight = 10;
+	
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Pointers to the original hooked functions
 	static DXGIPresentHook hookedDXGIPresent = nullptr;
@@ -84,18 +85,22 @@ namespace IGCS::D3D12Hooker
 				// render our own stuff
 				OverlayControl::renderOverlay();
 				// d3d12 rendering code. 
-				_commandAllocator->Reset();
+				IDXGISwapChain3* pSwapChain3 = nullptr;
+				pSwapChain->QueryInterface(IID_PPV_ARGS(&pSwapChain3));
+				UINT backBufferIdx = pSwapChain3->GetCurrentBackBufferIndex();
+				pSwapChain3->Release();
+				_commandAllocators[backBufferIdx]->Reset();
 				D3D12_RESOURCE_BARRIER barrier = {};
 				barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 				barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-				barrier.Transition.pResource = _mainRenderTargetResource;
+				barrier.Transition.pResource = _mainRenderTargetResources[backBufferIdx];
 				barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 				barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
 				barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
-				_commandList->Reset(_commandAllocator, NULL);
+				_commandList->Reset(_commandAllocators[backBufferIdx], NULL);
 				_commandList->ResourceBarrier(1, &barrier);
-				_commandList->OMSetRenderTargets(1, &_mainRenderTargetDescriptor, FALSE, NULL);
+				_commandList->OMSetRenderTargets(1, &_mainRenderTargetDescriptors[backBufferIdx], FALSE, NULL);
 				_commandList->SetDescriptorHeaps(1, &_srvDescHeap);
 				ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), _commandList);
 				barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -119,7 +124,8 @@ namespace IGCS::D3D12Hooker
 
 	void initializeHook()
 	{
-		// Create application window
+		// Create tmp window. We initialize the swapchain on this window. As we own this swapchain we won't run into access denied issues if the swapchain is
+		// exclusive to the window of the game. 
 		WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("IGCS TmpWindow"), NULL };
 		::RegisterClassEx(&wc);
 		HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("IGCS TmpWindow"), WS_OVERLAPPEDWINDOW, 100, 100, 100, 100, NULL, NULL, wc.hInstance, NULL);
@@ -171,40 +177,13 @@ namespace IGCS::D3D12Hooker
 		swapChainDesc.SampleDesc.Quality = 0;
 		swapChainDesc.Windowed = TRUE;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-			   
-		//swapChainDesc.BufferCount = 2;
-		//swapChainDesc.Width = 0;
-		//swapChainDesc.Height = 0;
-		//swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		//swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
-		//swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		//swapChainDesc.SampleDesc.Count = 1;
-		//swapChainDesc.SampleDesc.Quality = 0;
-		//swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
-		//swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-		//swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
-		//swapChainDesc.Stereo = FALSE;
 
 		IDXGISwapChain* pTmpSwapChain;
-		HRESULT swapChainCreateResult = pTmpDXGIFactory->CreateSwapChain(pTmpCommandQueue, &swapChainDesc,  &pTmpSwapChain);
-		if(FAILED(swapChainCreateResult))
+		if(FAILED(pTmpDXGIFactory->CreateSwapChain(pTmpCommandQueue, &swapChainDesc, &pTmpSwapChain)))
 		{
 			IGCS::Console::WriteError("Failed to create Direct3D 12 SwapChain! You're running the Direct3D11 version of the game?");
-			stringstream stream;
-			stream << std::hex << (int)swapChainCreateResult;
-			string errorCode = "HRESULT: 0x" + stream.str();
-			IGCS::Console::WriteError(errorCode);
 			return;
 		}
-
-		// the swapchain is a dxgiswapchain1, which inherits from dxgiswapchain, we therefore do a queryinterface for the dxgiswapchain instead, and use that
-		// pointer to obtain the vtable.
-		//IDXGISwapChain* pTmpSwapChain;
-		//if (FAILED(pTmpSwapChain1->QueryInterface(IID_PPV_ARGS(&pTmpSwapChain))))
-		//{
-		//	IGCS::Console::WriteError("Failed to obtain IDXGISwapChain pointer! You're running the Direct3D11 version of the game?");
-		//	return;
-		//}
 		
 		__int64* pSwapChainVtable = NULL;
 		pSwapChainVtable = (__int64*)pTmpSwapChain;
@@ -234,7 +213,6 @@ namespace IGCS::D3D12Hooker
 
 		pTmpCommandQueue->Release();
 		pTmpDevice->Release();
-		//pTmpSwapChain1->Release();
 		pTmpSwapChain->Release();
 
 		CloseWindow(hwnd);
@@ -256,11 +234,20 @@ namespace IGCS::D3D12Hooker
 			IGCS::Console::WriteError("Failed to get device from hooked swapchain");
 			return;
 		}
+
+		DXGI_SWAP_CHAIN_DESC desc;
+		pSwapChain->GetDesc(&desc);
+		_numberOfBuffersInFlight = desc.BufferCount;
+		if (_numberOfBuffersInFlight > 10)
+		{
+			_numberOfBuffersInFlight = 10;
+		}
+
 		OverlayConsole::instance().logDebug("DX12 Device: %p", (void*)_device);
 		// create rtv descriptor heap
 		D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc = {};
 		rtvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-		rtvDescriptorHeapDesc.NumDescriptors = 1;
+		rtvDescriptorHeapDesc.NumDescriptors = _numberOfBuffersInFlight;
 		rtvDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 		rtvDescriptorHeapDesc.NodeMask = 1;
 		if (FAILED(_device->CreateDescriptorHeap(&rtvDescriptorHeapDesc, IID_PPV_ARGS(&_rtvDescHeap))))
@@ -268,8 +255,16 @@ namespace IGCS::D3D12Hooker
 			IGCS::Console::WriteError("Failed to create RTV descriptor heap");
 			return;
 		}
+
 		OverlayConsole::instance().logDebug("RTV ID3D12DescriptorHeap: %p", (void*)_rtvDescHeap);
-		_mainRenderTargetDescriptor = _rtvDescHeap->GetCPUDescriptorHandleForHeapStart();
+
+		SIZE_T rtvDescriptorSize = _device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = _rtvDescHeap->GetCPUDescriptorHandleForHeapStart();
+		for (int i = 0; i < _numberOfBuffersInFlight;i++)
+		{
+			_mainRenderTargetDescriptors[i] = rtvHandle;
+			rtvHandle.ptr += rtvDescriptorSize;
+		}
 
 		// create srv descriptor heap
 		D3D12_DESCRIPTOR_HEAP_DESC srvDescriptorHeapDesc = {};
@@ -292,16 +287,18 @@ namespace IGCS::D3D12Hooker
 			IGCS::Console::WriteError("Failed to create D3D12CommandQueue");
 		}
 		OverlayConsole::instance().logDebug("ID3D12CommandQueue: %p", (void*)_commandQueue);
-
-		// create command allocator
-		if (FAILED(_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_commandAllocator))))
+		
+		// create command allocators
+		for (int i = 0; i < _numberOfBuffersInFlight; i++)
 		{
-			IGCS::Console::WriteError("Failed to create D3D12CommandAllocator");
+			if (FAILED(_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_commandAllocators[i]))))
+			{
+				IGCS::Console::WriteError("Failed to create D3D12CommandAllocator");
+			}
+			OverlayConsole::instance().logDebug("ID3D12CommandAllocator %d: %p", i, (void*)_commandAllocators[i]);
 		}
-		OverlayConsole::instance().logDebug("ID3D12CommandAllocator: %p", (void*)_commandAllocator);
-
 		// create command list 
-		if (FAILED(_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _commandAllocator, NULL, IID_PPV_ARGS(&_commandList))))
+		if (FAILED(_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _commandAllocators[0], NULL, IID_PPV_ARGS(&_commandList))))
 		{
 			IGCS::Console::WriteError("Failed to create D3D12CommandList");
 		}
@@ -317,20 +314,29 @@ namespace IGCS::D3D12Hooker
 
 	void createRenderTarget(IDXGISwapChain* pSwapChain)
 	{
+		for (int i = 0; i < _numberOfBuffersInFlight; i++)
+		{
+			_mainRenderTargetResources[i] = nullptr;
+		}
 		ID3D12Resource* pBackBuffer;
-		pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
-		_device->CreateRenderTargetView(pBackBuffer, NULL, _mainRenderTargetDescriptor);
-		_mainRenderTargetResource = pBackBuffer;
-		pBackBuffer->Release();
+		for (int i = 0; i < _numberOfBuffersInFlight; i++)
+		{
+			pSwapChain->GetBuffer(i, IID_PPV_ARGS(&pBackBuffer));
+			_device->CreateRenderTargetView(pBackBuffer, NULL, _mainRenderTargetDescriptors[i]);
+			_mainRenderTargetResources[i] = pBackBuffer;
+		}
 	}
 
 
 	void cleanupRenderTarget()
 	{
-		if (nullptr != _mainRenderTargetResource)
+		for (int i = 0; i < _numberOfBuffersInFlight; i++)
 		{
-			_mainRenderTargetResource->Release();
-			_mainRenderTargetResource = nullptr;
+			if (nullptr != _mainRenderTargetResources[i])
+			{
+				_mainRenderTargetResources[i]->Release();
+				_mainRenderTargetResources[i] = nullptr;
+			}
 		}
 	}
 }
