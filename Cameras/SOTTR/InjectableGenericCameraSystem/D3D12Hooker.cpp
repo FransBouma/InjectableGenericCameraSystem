@@ -252,7 +252,7 @@ namespace IGCS::D3D12Hooker
 		rtvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		rtvDescriptorHeapDesc.NumDescriptors = _numberOfBuffersInFlight;
 		rtvDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-		rtvDescriptorHeapDesc.NodeMask = 1;
+		rtvDescriptorHeapDesc.NodeMask = 0;
 		if (FAILED(_device->CreateDescriptorHeap(&rtvDescriptorHeapDesc, IID_PPV_ARGS(&_rtvDescHeap))))
 		{
 			IGCS::Console::WriteError("Failed to create RTV descriptor heap");
@@ -279,12 +279,12 @@ namespace IGCS::D3D12Hooker
 			IGCS::Console::WriteError("Failed to create SRV descriptor heap");
 		}
 		OverlayConsole::instance().logDebug("SRV ID3D12DescriptorHeap: %p", (void*)_srvDescHeap);
-		
+		 
 		// create command queue
 		D3D12_COMMAND_QUEUE_DESC commandQueueDesc = {};
 		commandQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 		commandQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-		commandQueueDesc.NodeMask = 1;
+		commandQueueDesc.NodeMask = 0;
 		if (FAILED(_device->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&_commandQueue))))
 		{
 			IGCS::Console::WriteError("Failed to create D3D12CommandQueue");
@@ -308,7 +308,7 @@ namespace IGCS::D3D12Hooker
 		OverlayConsole::instance().logDebug("ID3D12CommandList: %p", (void*)_commandList);
 
 		createRenderTarget(pSwapChain);
-		ImGui_ImplDX12_Init(_device, 1, DXGI_FORMAT_R8G8B8A8_UNORM, _srvDescHeap->GetCPUDescriptorHandleForHeapStart(), _srvDescHeap->GetGPUDescriptorHandleForHeapStart());
+		ImGui_ImplDX12_Init(_device, _numberOfBuffersInFlight, DXGI_FORMAT_R8G8B8A8_UNORM, _srvDescHeap->GetCPUDescriptorHandleForHeapStart(), _srvDescHeap->GetGPUDescriptorHandleForHeapStart());
 		_initializeD3D12Structures = false;
 
 		// *pfew!* finally we've created all the objects D3D12 needs, using a convoluted set of interfaces. If only they had the power to design the interfaces themselves! 
