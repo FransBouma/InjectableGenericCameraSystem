@@ -28,6 +28,7 @@ namespace IGCS::D3D12Hooker
 	void createRenderTarget(IDXGISwapChain* pSwapChain);
 	void cleanupRenderTarget();
 	void initD3D12Structures(IDXGISwapChain* pSwapChain);
+	void setTransitionState(ID3D12Resource* resource, D3D12_RESOURCE_STATES from, D3D12_RESOURCE_STATES to);
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Typedefs of functions to hook
@@ -90,22 +91,12 @@ namespace IGCS::D3D12Hooker
 				UINT backBufferIdx = pSwapChain3->GetCurrentBackBufferIndex();
 				pSwapChain3->Release();
 				_commandAllocators[backBufferIdx]->Reset();
-				D3D12_RESOURCE_BARRIER barrier = {};
-				barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-				barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-				barrier.Transition.pResource = _mainRenderTargetResources[backBufferIdx];
-				barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-				barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-				barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-
+				setTransitionState(_mainRenderTargetResources[backBufferIdx], D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 				_commandList->Reset(_commandAllocators[backBufferIdx], NULL);
-				_commandList->ResourceBarrier(1, &barrier);
 				_commandList->OMSetRenderTargets(1, &_mainRenderTargetDescriptors[backBufferIdx], FALSE, NULL);
 				_commandList->SetDescriptorHeaps(1, &_srvDescHeap);
 				ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), _commandList);
-				barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-				barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-				_commandList->ResourceBarrier(1, &barrier);
+				setTransitionState(_mainRenderTargetResources[backBufferIdx], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 				_commandList->Close();
 				_commandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&_commandList);
 				Input::resetKeyStates();
@@ -116,6 +107,18 @@ namespace IGCS::D3D12Hooker
 		_presentInProgress = false;
 		return toReturn;
 	}
+	
+
+	void setTransitionState(ID3D12Resource* resource, D3D12_RESOURCE_STATES from, D3D12_RESOURCE_STATES to)
+	{
+		D3D12_RESOURCE_BARRIER transition = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION };
+		transition.Transition.pResource = resource;
+		transition.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+		transition.Transition.StateBefore = from;
+		transition.Transition.StateAfter = to;
+		_commandList->ResourceBarrier(1, &transition);
+	}
+
 
 	LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
