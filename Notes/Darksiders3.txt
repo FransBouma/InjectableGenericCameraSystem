@@ -63,3 +63,34 @@ Darksiders3-Win64-Shipping.exe+13EA056 - 48 83 C4 20           - add rsp,20 { 32
 Darksiders3-Win64-Shipping.exe+13EA05A - 5B                    - pop rbx
 Darksiders3-Win64-Shipping.exe+13EA05B - C3                    - ret 
 
+
+// enable cheats: 
+00007FF7829D0D1C | 48:8B8E F0000000         | mov rcx,qword ptr ds:[rsi+F0]           | rsi+F0:" Mb\n"
+00007FF7829D0D23 | 48:85C9                  | test rcx,rcx                            |
+00007FF7829D0D26 | 74 10                    | je darksiders3-win64-shipping_dump.7FF7 |
+00007FF7829D0D28 | 48:8B01                  | mov rax,qword ptr ds:[rcx]              |
+00007FF7829D0D2B | 48:8BD3                  | mov rdx,rbx                             |
+00007FF7829D0D2E | FF90 50070000            | call qword ptr ds:[rax+750]             |		<<< CHANGE INTO xor al, al | inc al | nop | nop
+00007FF7829D0D34 | 84C0                     | test al,al                              |
+00007FF7829D0D36 | 75 05                    | jne darksiders3-win64-shipping_dump.7FF |
+00007FF7829D0D38 | 40:84FF                  | test dil,dil                            |
+00007FF7829D0D3B | 74 67                    | je darksiders3-win64-shipping_dump.7FF7 |
+00007FF7829D0D3D | 33FF                     | xor edi,edi                             |
+00007FF7829D0D3F | 48:897C24 40             | mov qword ptr ss:[rsp+40],rdi           |
+00007FF7829D0D44 | 48:39BB 28040000         | cmp qword ptr ds:[rbx+428],rdi          |
+00007FF7829D0D4B | 74 22                    | je darksiders3-win64-shipping_dump.7FF7 |
+00007FF7829D0D4D | E8 1E541E00              | call darksiders3-win64-shipping_dump.7F |
+00007FF7829D0D52 | 48:8B93 28040000         | mov rdx,qword ptr ds:[rbx+428]          |
+00007FF7829D0D59 | 48:8BCA                  | mov rcx,rdx                             |
+
+becomes:
+Darksiders3-Win64-Shipping.exe+1540D28 - 48 8B 01              - mov rax,[rcx]
+Darksiders3-Win64-Shipping.exe+1540D2B - 48 8B D3              - mov rdx,rbx
+Darksiders3-Win64-Shipping.exe+1540D2E - 30 C0                 - xor al,al
+Darksiders3-Win64-Shipping.exe+1540D30 - FE C0                 - inc al
+Darksiders3-Win64-Shipping.exe+1540D32 - 90                    - nop 
+Darksiders3-Win64-Shipping.exe+1540D33 - 90                    - nop 
+Darksiders3-Win64-Shipping.exe+1540D34 - 84 C0                 - test al,al
+Darksiders3-Win64-Shipping.exe+1540D36 - 75 05                 - jne Darksiders3-Win64-Shipping.exe+1540D3D
+
+so basically make sure the jmp is taken and the call isn't made.
