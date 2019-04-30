@@ -302,8 +302,8 @@
     <ClInclude Include="CameraManipulator.h" />
     <ClInclude Include="CDataFile.h" />
     <ClInclude Include="Console.h" />
-    <ClInclude Include="D3D11Hooker.h" />
-    <ClInclude Include="D3D12Hooker.h" />
+    <ClInclude Include="D3D11ExternalWindow.h" />
+    <ClInclude Include="D3D11InternalOverlay.h" />
     <ClInclude Include="Defaults.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GameImageHooker.h" />
@@ -324,9 +324,6 @@
     <ClInclude Include="Overlay\imstb_rectpack.h" />
     <ClInclude Include="Overlay\imstb_textedit.h" />
     <ClInclude Include="Overlay\imstb_truetype.h" />
-    <ClInclude Include="Overlay\stb_rect_pack.h" />
-    <ClInclude Include="Overlay\stb_textedit.h" />
-    <ClInclude Include="Overlay\stb_truetype.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="System.h" />
@@ -339,8 +336,8 @@
     <ClCompile Include="CameraManipulator.cpp" />
     <ClCompile Include="CDataFile.cpp" />
     <ClCompile Include="Console.cpp" />
-    <ClCompile Include="D3D11Hooker.cpp" />
-    <ClCompile Include="D3D12Hooker.cpp" />
+    <ClCompile Include="D3D11InternalOverlay.cpp" />
+    <ClCompile Include="D3D11ExternalWindow.cpp" />
     <ClCompile Include="GameImageHooker.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="Main.cpp">

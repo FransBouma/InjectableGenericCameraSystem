@@ -82,15 +82,6 @@
     <ClInclude Include="Overlay\imgui_internal.h">
       <Filter>Overlay\Imgui</Filter>
     </ClInclude>
-    <ClInclude Include="Overlay\stb_rect_pack.h">
-      <Filter>Overlay\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Overlay\stb_textedit.h">
-      <Filter>Overlay\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Overlay\stb_truetype.h">
-      <Filter>Overlay\Imgui</Filter>
-    </ClInclude>
     <ClInclude Include="OverlayConsole.h">
       <Filter>Overlay</Filter>
     </ClInclude>
@@ -102,9 +93,6 @@
     </ClInclude>
     <ClInclude Include="CDataFile.h">
       <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="D3D11Hooker.h">
-      <Filter>Hooking</Filter>
     </ClInclude>
     <ClInclude Include="Overlay\imstb_truetype.h">
       <Filter>Overlay\Imgui</Filter>
@@ -124,8 +112,11 @@
     <ClInclude Include="Settings.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="D3D12Hooker.h">
-      <Filter>Hooking</Filter>
+    <ClInclude Include="D3D11InternalOverlay.h">
+      <Filter>Overlay</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D11ExternalWindow.h">
+      <Filter>Overlay</Filter>
     </ClInclude>
     <ClInclude Include="Overlay\imgui_impl_dx12.h">
       <Filter>Overlay\Imgui</Filter>
@@ -201,14 +192,14 @@
     <ClCompile Include="Overlay\imgui_widgets.cpp">
       <Filter>Overlay\Imgui</Filter>
     </ClCompile>
-    <ClCompile Include="D3D11Hooker.cpp">
-      <Filter>Hooking</Filter>
-    </ClCompile>
     <ClCompile Include="ActionData.cpp">
       <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="D3D12Hooker.cpp">
-      <Filter>Hooking</Filter>
+    <ClCompile Include="D3D11InternalOverlay.cpp">
+      <Filter>Overlay</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D11ExternalWindow.cpp">
+      <Filter>Overlay</Filter>
     </ClCompile>
     <ClCompile Include="Overlay\imgui_impl_dx12.cpp">
       <Filter>Overlay\Imgui</Filter>

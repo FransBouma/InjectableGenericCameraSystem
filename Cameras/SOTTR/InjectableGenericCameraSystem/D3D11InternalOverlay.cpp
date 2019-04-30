@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <d3d11.h> 
-#include "D3D11Hooker.h"
+#include "D3D11InternalOverlay.h"
 #include "Console.h"
 #include "MinHook.h"
 #include "Globals.h"
@@ -15,7 +15,11 @@
 
 #pragma comment(lib, "d3d11.lib")
 
-namespace IGCS::D3D11Hooker
+///////////////////////
+// Defines hooks and render code for an internal overlay, using DX11. For DX11 games, use this internal overlay to have a nice overlay in the same viewport as
+// the game.
+///////////////////////
+namespace IGCS::D3D11InternalOverlay
 {
 	#define DXGI_PRESENT_INDEX			8
 	#define DXGI_RESIZEBUFFERS_INDEX	13

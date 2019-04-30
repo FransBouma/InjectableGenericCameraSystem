@@ -79,7 +79,7 @@ namespace IGCS::OverlayControl
 		Input::setKeyboardMouseStateInImGuiIO();
 		Globals::instance().saveSettingsIfRequired(ImGui::GetIO().DeltaTime);
 
-#ifdef _DX12_
+#if _DX12_
 		ImGui_ImplDX12_NewFrame();
 #else
 		ImGui_ImplDX11_NewFrame();
