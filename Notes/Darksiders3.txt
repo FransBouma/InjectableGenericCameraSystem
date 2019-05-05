@@ -94,3 +94,145 @@ Darksiders3-Win64-Shipping.exe+1540D34 - 84 C0                 - test al,al
 Darksiders3-Win64-Shipping.exe+1540D36 - 75 05                 - jne Darksiders3-Win64-Shipping.exe+1540D3D
 
 so basically make sure the jmp is taken and the call isn't made.
+
+// GameEngine->GameViewport offset in GameEngine:
+00007FF72082EC2A | 4C:8B10                  | mov r10,qword ptr ds:[rax]      
+00007FF72082EC2D | 48:8B52 30               | mov rdx,qword ptr ds:[rdx+30]   
+00007FF72082EC31 | 41:FF92 48020000         | call qword ptr ds:[r10+248]     
+00007FF72082EC38 | 48:8B8F 100E0000         | mov rcx,qword ptr ds:[rdi+E10]  
+00007FF72082EC3F | 48:89B7 20070000         | mov qword ptr ds:[rdi+720],rsi  			<<< OFFSET is 0x720
+00007FF72082EC46 | 48:8B51 30               | mov rdx,qword ptr ds:[rcx+30]   
+00007FF72082EC4A | 48:89B2 38020000         | mov qword ptr ds:[rdx+238],rsi  
+00007FF72082EC51 | 48:8D4D 67               | lea rcx,qword ptr ss:[rbp+67]   
+
+// GameEngine->ConsoleClass offset in GameEngine: UConsole::GetPrivateStaticClass... 
+// THIS CODE is a lot of times in memory. Find references to this function, then see if we can follow that with some logic, like
+// the address the call is to + an offset to lift the RIP value from memory.
+00007FF720C366D0 | 4C:8BDC                  | mov r11,rsp                                        | 
+00007FF720C366D3 | 48:83EC 78               | sub rsp,78                                         |
+00007FF720C366D7 | 48:8B05 9ACEBA01         | mov rax,qword ptr ds:[7FF7227E3578]                |	<< PrivateStaticClass. 
+00007FF720C366DE | 48:85C0                  | test rax,rax                                       |
+00007FF720C366E1 | 0F85 86000000            | jne darksiders3-win64-shipping_dump.7FF720C3676D   |
+00007FF720C366E7 | 884424 68                | mov byte ptr ss:[rsp+68],al                        |
+00007FF720C366EB | 4C:8D0D 1E78B3FE         | lea r9,qword ptr ds:[7FF71F76DF10]                 |
+00007FF720C366F2 | 48:8D05 67740200         | lea rax,qword ptr ds:[7FF720C5DB60]                |
+00007FF720C366F9 | 49:8943 E8               | mov qword ptr ds:[r11-18],rax                      |
+00007FF720C366FD | 4C:8D05 74CEBA01         | lea r8,qword ptr ds:[7FF7227E3578]                 |
+00007FF720C36704 | 48:8D05 859BB1FE         | lea rax,qword ptr ds:[7FF71F750290]                |
+00007FF720C3670B | 49:8943 E0               | mov qword ptr ds:[r11-20],rax                      |
+00007FF720C3670F | 48:8D15 E4D6F500         | lea rdx,qword ptr ds:[7FF721B93DFA]                | 00007FF721B93DFA:L"Console"
+00007FF720C36716 | 48:8D05 83DDC6FE         | lea rax,qword ptr ds:[7FF71F8A44A0]                |
+00007FF720C3671D | 49:8943 D8               | mov qword ptr ds:[r11-28],rax                      |
+00007FF720C36721 | 48:8D0D 009EE400         | lea rcx,qword ptr ds:[7FF721A80528]                | 00007FF721A80528:L"/Script/Engine"
+00007FF720C36728 | 48:8D05 41FB0C00         | lea rax,qword ptr ds:[7FF720D06270]                |
+00007FF720C3672F | 49:8943 D0               | mov qword ptr ds:[r11-30],rax                      |
+00007FF720C36733 | 48:8D05 36EEFFFF         | lea rax,qword ptr ds:[7FF720C35570]                |
+00007FF720C3673A | 49:8943 C8               | mov qword ptr ds:[r11-38],rax                      |
+00007FF720C3673E | 48:8D05 1B488D00         | lea rax,qword ptr ds:[7FF72150AF60]                | 00007FF72150AF60:L"Input"
+00007FF720C36745 | 49:8943 C0               | mov qword ptr ds:[r11-40],rax                      |
+00007FF720C36749 | 49:C743 B8 00000000      | mov qword ptr ds:[r11-48],0                        |
+00007FF720C36751 | C74424 28 0C000010       | mov dword ptr ss:[rsp+28],1000000C                 |
+00007FF720C36759 | C74424 20 30010000       | mov dword ptr ss:[rsp+20],130                      |
+00007FF720C36761 | E8 5A4CEEFE              | call darksiders3-win64-shipping_dump.7FF71FB1B3C0  |
+00007FF720C36766 | 48:8B05 0BCEBA01         | mov rax,qword ptr ds:[7FF7227E3578]                |
+00007FF720C3676D | 48:83C4 78               | add rsp,78                                         |
+00007FF720C36771 | C3                       | ret                                                |
+
+
+// GameViewportClient->ViewportConsole offset in GameViewportClient:
+00007FF720BF10BF | 48:8B05 FAD6BE01         | mov rax,qword ptr ds:[7FF7227DE7C0]              		<< GEngine
+00007FF720BF10C6 | 48:8B88 20070000         | mov rcx,qword ptr ds:[rax+720]                   		<< ViewPortClient:  0x720
+00007FF720BF10CD | 48:85C9                  | test rcx,rcx                                     
+00007FF720BF10D0 | 74 14                    | je darksiders3-win64-shipping_dump.7FF720BF10E6  
+00007FF720BF10D2 | 48:8B49 40               | mov rcx,qword ptr ds:[rcx+40]                    		<< ViewportConsole: 0x40
+00007FF720BF10D6 | 48:85C9                  | test rcx,rcx                                     
+00007FF720BF10D9 | 74 0B                    | je darksiders3-win64-shipping_dump.7FF720BF10E6  
+00007FF720BF10DB | 48:8B01                  | mov rax,qword ptr ds:[rcx]                       
+00007FF720BF10DE | 33D2                     | xor edx,edx                                      
+00007FF720BF10E0 | FF90 78020000            | call qword ptr ds:[rax+278]                      
+
+// GEngine reference:
+00007FF71F8BDF3F | 48:33C4                  | xor rax,rsp                                       
+00007FF71F8BDF42 | 48:8985 90000000         | mov qword ptr ss:[rbp+90],rax                     
+00007FF71F8BDF49 | 48:8B05 58FCCF02         | mov rax,qword ptr ds:[7FF7225BDBA8]               	<< GEngine reference
+00007FF71F8BDF50 | 49:8BF8                  | mov rdi,r8                                        
+00007FF71F8BDF53 | 41:8360 18 FE            | and dword ptr ds:[r8+18],FFFFFFFE                 
+00007FF71F8BDF58 | 48:8BF2                  | mov rsi,rdx                                       
+00007FF71F8BDF5B | 49:8940 10               | mov qword ptr ds:[r8+10],rax                      
+00007FF71F8BDF5F | 4C:8BF1                  | mov r14,rcx                                       
+00007FF71F8BDF62 | E8 59B70D00              | call darksiders3-win64-shipping_dump.7FF71F9996C0 
+00007FF71F8BDF67 | 48:8BD8                  | mov rbx,rax                                       
+
+//GLog retrieval: 
+00007FF7BFDD71E3 | 49:8BF4                  | mov rsi,r12                                       
+00007FF7BFDD71E6 | 41:0FB65E 31             | movzx ebx,byte ptr ds:[r14+31]                    
+00007FF7BFDD71EB | 41:0FB67E 30             | movzx edi,byte ptr ds:[r14+30]                    
+00007FF7BFDD71F0 | E8 1B9579FE              | call darksiders3-win64-shipping_dump.7FF7BE570710 <<<< CALL TO GetGlobalLogSingleton
+00007FF7BFDD71F5 | 44:8BCF                  | mov r9d,edi                                       
+00007FF7BFDD71F8 | 895C24 20                | mov dword ptr ss:[rsp+20],ebx                     
+00007FF7BFDD71FC | 4C:8BC6                  | mov r8,rsi                                        
+00007FF7BFDD71FF | 48:8D15 1A4DD700         | lea rdx,qword ptr ds:[7FF7C0B4BF20]               >> SEARCH FOR  | 00007FF7C0B4BF20:L"FUdpSocketBuilder: Failed to configure multicast for %s (loopback: %i, ttl: %i)"
+00007FF7BFDD7206 | 48:8BC8                  | mov rcx,rax                                       
+00007FF7BFDD7209 | E8 92EA79FE              | call darksiders3-win64-shipping_dump.7FF7BE575CA0 
+00007FF7BFDD720E | 41:837E 18 00            | cmp dword ptr ds:[r14+18],0                       
+00007FF7BFDD7213 | 74 04                    | je darksiders3-win64-shipping_dump.7FF7BFDD7219   
+00007FF7BFDD7215 | 4D:8B66 10               | mov r12,qword ptr ds:[r14+10]                     
+
+Console creator asm:
+00007FF781D40EF0 | 48:895C24 10             | mov qword ptr ss:[rsp+10],rbx                                                              | gameviewportclient.cpp:1972
+00007FF781D40EF5 | 48:897424 20             | mov qword ptr ss:[rsp+20],rsi                                                              |
+00007FF781D40EFA | 57                       | push rdi                                                                                   |
+00007FF781D40EFB | 48:83EC 40               | sub rsp,40                                                                                 |
+00007FF781D40EFF | 8B41 08                  | mov eax,dword ptr ds:[rcx+8]                                                               | gameviewportclient.cpp:1979
+00007FF781D40F02 | 33DB                     | xor ebx,ebx                                                                                |
+00007FF781D40F04 | C1E8 04                  | shr eax,4                                                                                  |
+00007FF781D40F07 | 48:8BF1                  | mov rsi,rcx                                                                                | gameviewportclient.cpp:1972, rsi:"LdrpInitializeProcess"
+00007FF781D40F0A | 48:895C24 60             | mov qword ptr ss:[rsp+60],rbx                                                              | gameviewportclient.cpp:1979
+00007FF781D40F0F | A8 01                    | test al,1                                                                                  |
+00007FF781D40F11 | 74 19                    | je platformergame.7FF781D40F2C                                                             |
+00007FF781D40F13 | 48:8D4C24 50             | lea rcx,qword ptr ss:[rsp+50]                                                              | [rsp+50]:"LdrpInitializeProcess"
+00007FF781D40F18 | 885C24 50                | mov byte ptr ss:[rsp+50],bl                                                                |
+00007FF781D40F1C | E8 0FCA9D01              | call <platformergame.DispatchCheckVerify<bool,<lambda_c1a6a604e53f7772aaaee31bbfd11968> >> |
+00007FF781D40F21 | 84C0                     | test al,al                                                                                 |
+00007FF781D40F23 | 74 02                    | je platformergame.7FF781D40F27                                                             |
+00007FF781D40F25 | 90                       | nop                                                                                        |
+00007FF781D40F26 | CC                       | int3                                                                                       |
+00007FF781D40F27 | 48:8BFB                  | mov rdi,rbx                                                                                |
+00007FF781D40F2A | EB 04                    | jmp platformergame.7FF781D40F30                                                            |
+00007FF781D40F2C | 48:8B79 20               | mov rdi,qword ptr ds:[rcx+20]                                                              |
+00007FF781D40F30 | 48:399F 00010000         | cmp qword ptr ds:[rdi+100],rbx                                                             |
+00007FF781D40F37 | 74 2B                    | je platformergame.7FF781D40F64                                                             |
+00007FF781D40F39 | E8 92E68D00              | call <platformergame.UConsole::GetPrivateStaticClass>                                      |
+00007FF781D40F3E | 48:85C0                  | test rax,rax                                                                               |
+00007FF781D40F41 | 74 21                    | je platformergame.7FF781D40F64                                                             |
+00007FF781D40F43 | 48:8B97 00010000         | mov rdx,qword ptr ds:[rdi+100]                                                             |
+00007FF781D40F4A | 4C:8D40 38               | lea r8,qword ptr ds:[rax+38]                                                               |
+00007FF781D40F4E | 48:6340 40               | movsxd rax,dword ptr ds:[rax+40]                                                           |
+00007FF781D40F52 | 3B42 40                  | cmp eax,dword ptr ds:[rdx+40]                                                              |
+00007FF781D40F55 | 7F 0D                    | jg platformergame.7FF781D40F64                                                             |
+00007FF781D40F57 | 48:8BC8                  | mov rcx,rax                                                                                |
+00007FF781D40F5A | 48:8B42 38               | mov rax,qword ptr ds:[rdx+38]                                                              |
+00007FF781D40F5E | 4C:3904C8                | cmp qword ptr ds:[rax+rcx*8],r8                                                            |
+00007FF781D40F62 | 74 03                    | je platformergame.7FF781D40F67                                                             |
+00007FF781D40F64 | 48:8BD3                  | mov rdx,rbx                                                                                |
+00007FF781D40F67 | 4C:8B4424 60             | mov r8,qword ptr ss:[rsp+60]                                                               |
+00007FF781D40F6C | 45:33C9                  | xor r9d,r9d                                                                                |
+00007FF781D40F6F | 48:895C24 30             | mov qword ptr ss:[rsp+30],rbx                                                              |
+00007FF781D40F74 | 48:8BCE                  | mov rcx,rsi                                                                                | rsi:"LdrpInitializeProcess"
+00007FF781D40F77 | 885C24 28                | mov byte ptr ss:[rsp+28],bl                                                                |
+00007FF781D40F7B | 48:895C24 20             | mov qword ptr ss:[rsp+20],rbx                                                              |
+00007FF781D40F80 | E8 CB81FCFF              | call <platformergame.NewObject<UConsole>>                                                  |
+00007FF781D40F85 | 48:8946 48               | mov qword ptr ds:[rsi+48],rax                                                              | rsi+48:"he process %lx failed with status 0x%08lx\n"
+00007FF781D40F89 | 48:85C0                  | test rax,rax                                                                               | gameviewportclient.cpp:1981
+00007FF781D40F8C | 74 04                    | je platformergame.7FF781D40F92                                                             |
+00007FF781D40F8E | 48:8D58 30               | lea rbx,qword ptr ds:[rax+30]                                                              |
+00007FF781D40F92 | E8 B963E8FD              | call <platformergame.GetGlobalLogSingleton>                                                |
+00007FF781D40F97 | 48:8BC8                  | mov rcx,rax                                                                                |
+00007FF781D40F9A | 48:8BD3                  | mov rdx,rbx                                                                                |
+00007FF781D40F9D | E8 EE77E6FD              | call <platformergame.FOutputDeviceRedirector::AddOutputDevice>                             |
+00007FF781D40FA2 | 48:8B5C24 58             | mov rbx,qword ptr ss:[rsp+58]                                                              | gameviewportclient.cpp:1999, [rsp+58]:"LdrpInitializeProcess"
+00007FF781D40FA7 | 33C0                     | xor eax,eax                                                                                |
+00007FF781D40FA9 | 48:8B7424 68             | mov rsi,qword ptr ss:[rsp+68]                                                              |
+00007FF781D40FAE | 48:83C4 40               | add rsp,40                                                                                 |
+00007FF781D40FB2 | 5F                       | pop rdi                                                                                    |
+00007FF781D40FB3 | C3                       | ret                                                                                        |
