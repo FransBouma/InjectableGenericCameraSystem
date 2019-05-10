@@ -70,7 +70,7 @@ Darksiders3-Win64-Shipping.exe+13EA05B - C3                    - ret
 00007FF7829D0D26 | 74 10                    | je darksiders3-win64-shipping_dump.7FF7 |
 00007FF7829D0D28 | 48:8B01                  | mov rax,qword ptr ds:[rcx]              |
 00007FF7829D0D2B | 48:8BD3                  | mov rdx,rbx                             |
-00007FF7829D0D2E | FF90 50070000            | call qword ptr ds:[rax+750]             |		<<< CHANGE INTO xor al, al | inc al | nop | nop
+00007FF7829D0D2E | FF90 50070000            | call qword ptr ds:[rax+750]             |		<<< CHANGE INTO mov al, 01, nop,  nop | nop (b0, 01, 90, 90, 90, 90)
 00007FF7829D0D34 | 84C0                     | test al,al                              |
 00007FF7829D0D36 | 75 05                    | jne darksiders3-win64-shipping_dump.7FF |
 00007FF7829D0D38 | 40:84FF                  | test dil,dil                            |
@@ -177,6 +177,84 @@ so basically make sure the jmp is taken and the call isn't made.
 00007FF7BFDD720E | 41:837E 18 00            | cmp dword ptr ds:[r14+18],0                       
 00007FF7BFDD7213 | 74 04                    | je darksiders3-win64-shipping_dump.7FF7BFDD7219   
 00007FF7BFDD7215 | 4D:8B66 10               | mov r12,qword ptr ds:[r14+10]                     
+
+AddOutputDevice code:
+00007FF6253BC2C5 | 74 11                    | je darksiders3-win64-shipping_dump.7FF6253BC2D8    
+00007FF6253BC2C7 | 48:8B01                  | mov rax,qword ptr ds:[rcx]                         
+00007FF6253BC2CA | BA 01000000              | mov edx,1                                          
+00007FF6253BC2CF | FF10                     | call qword ptr ds:[rax]                            
+00007FF6253BC2D1 | 48:8B1D 408CEA02         | mov rbx,qword ptr ds:[7FF628264F18]                
+00007FF6253BC2D8 | E8 33443900              | call darksiders3-win64-shipping_dump.7FF625750710  
+00007FF6253BC2DD | 48:8BC8                  | mov rcx,rax                                        
+00007FF6253BC2E0 | 48:8BD3                  | mov rdx,rbx                                        
+00007FF6253BC2E3 | 48:83C4 20               | add rsp,20                                         
+00007FF6253BC2E7 | 5B                       | pop rbx                                            
+00007FF6253BC2E8 | E9 B3723800              | jmp darksiders3-win64-shipping_dump.7FF6257435A0   <<<<< FOutputDeviceRedirector::AddOutputDevice
+
+// Names tab root:
+Darksiders3-Win64-Shipping.exe+58CA47 - 33 C0                 - xor eax,eax
+Darksiders3-Win64-Shipping.exe+58CA49 - 33 D2                 - xor edx,edx
+Darksiders3-Win64-Shipping.exe+58CA4B - 89 83 00040000        - mov [rbx+00000400],eax
+Darksiders3-Win64-Shipping.exe+58CA51 - 41 B8 00040000        - mov r8d,00000400 { 1024 }
+Darksiders3-Win64-Shipping.exe+58CA57 - 48 8B CB              - mov rcx,rbx
+Darksiders3-Win64-Shipping.exe+58CA5A - 89 83 04040000        - mov [rbx+00000404],eax
+Darksiders3-Win64-Shipping.exe+58CA60 - E8 0D348B01           - call Darksiders3-Win64-Shipping.exe+1E3FE72 { ->->VCRUNTIME140.memset }
+Darksiders3-Win64-Shipping.exe+58CA65 - 48 8B C3              - mov rax,rbx
+Darksiders3-Win64-Shipping.exe+58CA68 - 48 89 1D 0930C402     - mov [Darksiders3-Win64-Shipping.exe+31CFA78],rbx  		<<< Address of pointer to address which contains start pointer of struct for GlobalNames
+Darksiders3-Win64-Shipping.exe+58CA6F - 48 8B 5C 24 20        - mov rbx,[rsp+20]
+Darksiders3-Win64-Shipping.exe+58CA74 - 48 83 C4 28           - add rsp,28 { 40 }
+Darksiders3-Win64-Shipping.exe+58CA78 - C3                    - ret 
+Darksiders3-Win64-Shipping.exe+58CA79 - 48 8B 5C 24 20        - mov rbx,[rsp+20]
+Darksiders3-Win64-Shipping.exe+58CA7E - 48 89 05 F32FC402     - mov [Darksiders3-Win64-Shipping.exe+31CFA78],rax 
+Darksiders3-Win64-Shipping.exe+58CA85 - 48 83 C4 28           - add rsp,28 { 40 }
+Darksiders3-Win64-Shipping.exe+58CA89 - C3                    - ret 
+
+Equivalent in example game: 
+00007FF7981E78E9 | 48:8BC8                  | mov rcx,rax                          |
+00007FF7981E78EC | E8 DED46803              | call <platformergame_dump.memset>    |
+00007FF7981E78F1 | 48:8BC3                  | mov rax,rbx                          | unrealnames.cpp:296
+00007FF7981E78F4 | 48:891D 0594F704         | mov qword ptr ds:[<Names>],rbx       |
+00007FF7981E78FB | 48:8B5C24 20             | mov rbx,qword ptr ss:[rsp+20]        |
+00007FF7981E7900 | 48:83C4 28               | add rsp,28                           | unrealnames.cpp:297
+00007FF7981E7904 | C3                       | ret                                  |
+00007FF7981E7905 | 33DB                     | xor ebx,ebx                          | unrealnames.cpp:294
+00007FF7981E7907 | 48:891D F293F704         | mov qword ptr ds:[<Names>],rbx       |
+00007FF7981E790E | 8BC3                     | mov eax,ebx                          | unrealnames.cpp:296
+00007FF7981E7910 | 48:8B5C24 20             | mov rbx,qword ptr ss:[rsp+20]        |
+00007FF7981E7915 | 48:83C4 28               | add rsp,28                           | unrealnames.cpp:297
+00007FF7981E7919 | C3                       | ret                                  |
+
+// GUObjectArray
+// Example game:
+00007FF7983C5EDC | 48:8D0D AD14DA04         | lea rcx,qword ptr ds:[<GUObjectArray>]                                                     | garbagecollection.cpp:1006
+00007FF7983C5EE3 | C605 E6E0D904 01         | mov byte ptr ds:[<GObjPurgeIsRequired>],1                                                  |
+00007FF7983C5EEA | E8 C1790C00              | call <platformergame_dump.FUObjectArray::DisableDisregardForGC>                            |
+00007FF7983C5EEF | C605 62E1A504 01         | mov byte ptr ds:[<GObjCurrentPurgeObjectIndexNeedsReset>],1                                | garbagecollection.cpp:1007
+00007FF7983C5EF6 | C605 D4E0D904 00         | mov byte ptr ds:[<GObjCurrentPurgeObjectIndexResetPastPermanent>],0                        | garbagecollection.cpp:1008
+00007FF7983C5EFD | 803D CCE0D904 00         | cmp byte ptr ds:[<GObjPurgeIsRequired>],0                                                  | garbagecollection.cpp:1011
+00007FF7983C5F04 | 0F84 130D0000            | je platformergame_dump.7FF7983C6C1D                                                        |
+00007FF7983C5F0A | 4C:89BC24 80020000       | mov qword ptr ss:[rsp+280],r15                                                             | garbagecollection.cpp:1016
+00007FF7983C5F12 | 44:0F298424 50020000     | movaps xmmword ptr ss:[rsp+250],xmm8                                                       |
+00007FF7983C5F1B | C685 D8010000 00         | mov byte ptr ss:[rbp+1D8],0                                                                |
+00007FF7983C5F22 | C605 E7DBD904 01         | mov byte ptr ds:[<GObjIncrementalPurgeIsInProgress>],1                                     | garbagecollection.cpp:1037
+00007FF7983C5F29 | 0FAEF8                   | sfence                                                                                     |
+
+// Darksiders:
+00007FF6258AEA5E | 48:8D0D 8BA2B002         | lea rcx,qword ptr ds:[7FF6283B8CF0]                                                        |
+00007FF6258AEA65 | C605 E087B002 01         | mov byte ptr ds:[7FF6283B724C],1                                                           |
+00007FF6258AEA6C | E8 CF330500              | call darksiders3-win64-shipping_dump.7FF625901E40                                          |
+00007FF6258AEA71 | C605 78107702 01         | mov byte ptr ds:[7FF62801FAF0],1                                                           |
+00007FF6258AEA78 | C605 CE87B002 00         | mov byte ptr ds:[7FF6283B724D],0                                                           |
+00007FF6258AEA7F | 803D C687B002 00         | cmp byte ptr ds:[7FF6283B724C],0                                                           |
+00007FF6258AEA86 | 0F84 6D060000            | je darksiders3-win64-shipping_dump.7FF6258AF0F9                                            |
+00007FF6258AEA8C | 48:899C24 C0000000       | mov qword ptr ss:[rsp+C0],rbx                                                              |
+00007FF6258AEA94 | 4C:89AC24 88000000       | mov qword ptr ss:[rsp+88],r13                                                              |
+00007FF6258AEA9C | 4C:89BC24 80000000       | mov qword ptr ss:[rsp+80],r15                                                              |
+00007FF6258AEAA4 | 0F297424 70              | movaps xmmword ptr ss:[rsp+70],xmm6                                                        |
+00007FF6258AEAA9 | 44:0F294424 50           | movaps xmmword ptr ss:[rsp+50],xmm8                                                        |
+00007FF6258AEAAF | C68424 D0000000 00       | mov byte ptr ss:[rsp+D0],0                                                                 |
+
+
 
 Console creator asm:
 00007FF781D40EF0 | 48:895C24 10             | mov qword ptr ss:[rsp+10],rbx                                                              | gameviewportclient.cpp:1972

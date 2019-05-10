@@ -59,4 +59,9 @@ I've written a long, in-depth article about how to create camera tools and how I
 ## Acknowledgements
 Some camera code uses [MinHook](https://github.com/TsudaKageyu/minhook) by Tsuda Kageyu.
 
+## Donations
+I do this for fun, not profit, but can't create cameras for games I don't own. If you want me to make cameras for new games, please donate
+to https://www.paypal.me/FransBouma. Additionally, after I've finished a game I usually uninstall it and it might be a camera gets broken after that date. 
+If you want me to fix that camera, I'll usually asked for a donation to my paypal account for compensation. 
+
 
