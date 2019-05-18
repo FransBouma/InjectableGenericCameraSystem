@@ -1,18 +1,61 @@
-APlagueTaleInnocence_x64.exe+193776 - F2 0F10 44 24 40      - movsd xmm0,[rsp+40]
-APlagueTaleInnocence_x64.exe+19377C - F2 0F11 46 70         - movsd [rsi+70],xmm0
-APlagueTaleInnocence_x64.exe+193781 - 8B 44 24 48           - mov eax,[rsp+48]
-APlagueTaleInnocence_x64.exe+193785 - 89 46 78              - mov [rsi+78],eax
-APlagueTaleInnocence_x64.exe+193788 - F2 0F10 44 24 50      - movsd xmm0,[rsp+50]
-APlagueTaleInnocence_x64.exe+19378E - F2 0F11 46 34         - movsd [rsi+34],xmm0			<< WRITE X, Y
-APlagueTaleInnocence_x64.exe+193793 - 8B 44 24 58           - mov eax,[rsp+58]
-APlagueTaleInnocence_x64.exe+193797 - 89 46 3C              - mov [rsi+3C],eax				<< WRITE Z
-APlagueTaleInnocence_x64.exe+19379A - C7 86 98000000 CDCC4C3D - mov [rsi+00000098],3D4CCCCD
-APlagueTaleInnocence_x64.exe+1937A4 - 45 84 FF              - test r15l,r15l
-APlagueTaleInnocence_x64.exe+1937A7 - 74 2E                 - je APlagueTaleInnocence_x64.exe+1937D7
-APlagueTaleInnocence_x64.exe+1937A9 - F3 0F10 45 38         - movss xmm0,[rbp+38]
-APlagueTaleInnocence_x64.exe+1937AE - F3 0F11 86 9C000000   - movss [rsi+0000009C],xmm0
-APlagueTaleInnocence_x64.exe+1937B6 - F3 0F10 4D 3C         - movss xmm1,[rbp+3C]
-APlagueTaleInnocence_x64.exe+1937BB - F3 0F11 8E A0000000   - movss [rsi+000000A0],xmm1
+In game camera:
+APlagueTaleInnocence_x64.exe+194268 - F3 0F10 05 94A9D100   - movss xmm0,[APlagueTaleInnocence_x64.exe+EAEC04] { (5.00) }
+APlagueTaleInnocence_x64.exe+194270 - 0F2F 86 B4000000      - comiss xmm0,[rsi+000000B4]
+APlagueTaleInnocence_x64.exe+194277 - 72 65                 - jb APlagueTaleInnocence_x64.exe+1942DE
+APlagueTaleInnocence_x64.exe+194279 - F3 0F11 4F 4C         - movss [rdi+4C],xmm1				<< WRITE X
+APlagueTaleInnocence_x64.exe+19427E - 48 8D 4F 50           - lea rcx,[rdi+50]
+APlagueTaleInnocence_x64.exe+194282 - F3 0F11 4F 58         - movss [rdi+58],xmm1
+APlagueTaleInnocence_x64.exe+194287 - 48 8D 47 5C           - lea rax,[rdi+5C]
+APlagueTaleInnocence_x64.exe+19428B - F3 0F10 86 BC000000   - movss xmm0,[rsi+000000BC]
+APlagueTaleInnocence_x64.exe+194293 - F3 0F10 09            - movss xmm1,[rcx]
+APlagueTaleInnocence_x64.exe+194297 - F3 0F10 9E B4000000   - movss xmm3,[rsi+000000B4]
+APlagueTaleInnocence_x64.exe+19429F - F3 0F11 44 24 48      - movss [rsp+48],xmm0
+APlagueTaleInnocence_x64.exe+1942A5 - F3 0F11 44 24 40      - movss [rsp+40],xmm0
+
+APlagueTaleInnocence_x64.exe+192D7F - E8 3602C800           - call APlagueTaleInnocence_x64.exe+E12FBA { ->->ucrtbase.powf }
+APlagueTaleInnocence_x64.exe+192D84 - F3 0F10 0D EC1BCF00   - movss xmm1,[APlagueTaleInnocence_x64.exe+E84978] { (1.00) }
+APlagueTaleInnocence_x64.exe+192D8C - F3 0F5C C8            - subss xmm1,xmm0
+APlagueTaleInnocence_x64.exe+192D90 - F3 0F59 CE            - mulss xmm1,xmm6
+APlagueTaleInnocence_x64.exe+192D94 - F3 41 0F58 C8         - addss xmm1,xmm8
+APlagueTaleInnocence_x64.exe+192D99 - F3 0F11 0B            - movss [rbx],xmm1					<< WRITE Y
+APlagueTaleInnocence_x64.exe+192D9D - 0F28 74 24 50         - movaps xmm6,[rsp+50]
+APlagueTaleInnocence_x64.exe+192DA2 - 0F28 7C 24 40         - movaps xmm7,[rsp+40]
+APlagueTaleInnocence_x64.exe+192DA7 - 44 0F28 44 24 30      - movaps xmm8,[rsp+30]
+APlagueTaleInnocence_x64.exe+192DAD - 44 0F28 4C 24 20      - movaps xmm9,[rsp+20]
+APlagueTaleInnocence_x64.exe+192DB3 - 48 83 C4 60           - add rsp,60 { 96 }
+APlagueTaleInnocence_x64.exe+192DB7 - 5B                    - pop rbx
+APlagueTaleInnocence_x64.exe+192DB8 - C3                    - ret 
+
+APlagueTaleInnocence_x64.exe+1942B9 - 48 89 4C 24 30        - mov [rsp+30],rcx
+APlagueTaleInnocence_x64.exe+1942BE - 48 8B 4F 08           - mov rcx,[rdi+08]
+APlagueTaleInnocence_x64.exe+1942C2 - 48 89 44 24 28        - mov [rsp+28],rax
+APlagueTaleInnocence_x64.exe+1942C7 - F3 0F11 7C 24 20      - movss [rsp+20],xmm7
+APlagueTaleInnocence_x64.exe+1942CD - E8 EEE9FFFF           - call APlagueTaleInnocence_x64.exe+192CC0
+APlagueTaleInnocence_x64.exe+1942D2 - F3 0F11 77 54         - movss [rdi+54],xmm6				<< WRITE Z
+APlagueTaleInnocence_x64.exe+1942D7 - F3 0F11 77 60         - movss [rdi+60],xmm6
+APlagueTaleInnocence_x64.exe+1942DC - EB 18                 - jmp APlagueTaleInnocence_x64.exe+1942F6
+APlagueTaleInnocence_x64.exe+1942DE - F2 0F10 4D D7         - movsd xmm1,[rbp-29]
+APlagueTaleInnocence_x64.exe+1942E3 - 8B 45 DF              - mov eax,[rbp-21]
+APlagueTaleInnocence_x64.exe+1942E6 - F2 0F11 4F 4C         - movsd [rdi+4C],xmm1
+
+// FOV
+APlagueTaleInnocence_x64.exe+197C27 - 0F54 05 92CDCE00      - andps xmm0,[APlagueTaleInnocence_x64.exe+E849C0] { (2147483647) }
+APlagueTaleInnocence_x64.exe+197C2E - 0F2F 05 FBCCCE00      - comiss xmm0,[APlagueTaleInnocence_x64.exe+E84930] { (0.00) }
+APlagueTaleInnocence_x64.exe+197C35 - 72 27                 - jb APlagueTaleInnocence_x64.exe+197C5E
+APlagueTaleInnocence_x64.exe+197C37 - F3 0F59 1D E1D5CE00   - mulss xmm3,[APlagueTaleInnocence_x64.exe+E85220] { (-30.30) }
+APlagueTaleInnocence_x64.exe+197C3F - 0F28 C2               - movaps xmm0,xmm2
+APlagueTaleInnocence_x64.exe+197C42 - 0F28 CB               - movaps xmm1,xmm3
+APlagueTaleInnocence_x64.exe+197C45 - E8 70B3C700           - call APlagueTaleInnocence_x64.exe+E12FBA { ->->ucrtbase.powf }
+APlagueTaleInnocence_x64.exe+197C4A - F3 0F10 0D 26CDCE00   - movss xmm1,[APlagueTaleInnocence_x64.exe+E84978] { (1.00) }
+APlagueTaleInnocence_x64.exe+197C52 - F3 0F5C C8            - subss xmm1,xmm0
+APlagueTaleInnocence_x64.exe+197C56 - F3 0F59 CE            - mulss xmm1,xmm6
+APlagueTaleInnocence_x64.exe+197C5A - F3 0F58 CF            - addss xmm1,xmm7
+APlagueTaleInnocence_x64.exe+197C5E - F3 0F11 0B            - movss [rbx],xmm1				<< WRITE GAME FOV
+APlagueTaleInnocence_x64.exe+197C62 - 0F28 74 24 30         - movaps xmm6,[rsp+30]
+APlagueTaleInnocence_x64.exe+197C67 - 0F28 7C 24 20         - movaps xmm7,[rsp+20]
+APlagueTaleInnocence_x64.exe+197C6C - 48 83 C4 40           - add rsp,40 { 64 }
+APlagueTaleInnocence_x64.exe+197C70 - 5B                    - pop rbx
+APlagueTaleInnocence_x64.exe+197C71 - C3                    - ret 
 
 Initial ansel FOV:
 APlagueTaleInnocence_x64.exe+5BECA8 - F3 0F59 05 A8949D00   - mulss xmm0,[APlagueTaleInnocence_x64.exe+F98158] { (57.30) } 140F98158
@@ -95,3 +138,53 @@ APlagueTaleInnocence_x64.exe+75A197 - 0F5B C0               - cvtdq2ps xmm0,xmm0
 APlagueTaleInnocence_x64.exe+75A19A - F3 0F5E C3            - divss xmm0,xmm3
 APlagueTaleInnocence_x64.exe+75A19E - FF 15 D40D7200        - call qword ptr [APlagueTaleInnocence_x64.exe+E7AF78] { ->ucrtbase.roundf }
 APlagueTaleInnocence_x64.exe+75A1A4 - F3 0F2C C0            - cvttss2si eax,xmm0
+
+// Always disable dof in ansel:
+APlagueTaleInnocence_x64.exe+5BF9F1 - 8B 81 A8000000        - mov eax,[rcx+000000A8]
+APlagueTaleInnocence_x64.exe+5BF9F7 - 89 82 A8000000        - mov [rdx+000000A8],eax
+APlagueTaleInnocence_x64.exe+5BF9FD - 48 8B 0D B40AF500     - mov rcx,[APlagueTaleInnocence_x64.exe+15104B8] { (022CA940) }
+APlagueTaleInnocence_x64.exe+5BFA04 - 80 BE A8000000 00     - cmp byte ptr [rsi+000000A8],00 { 0 }
+APlagueTaleInnocence_x64.exe+5BFA0B - 74 12                 - je APlagueTaleInnocence_x64.exe+5BFA1F      <<<<<<<< NOP so it will take the call. 
+APlagueTaleInnocence_x64.exe+5BFA0D - 48 85 C9              - test rcx,rcx
+APlagueTaleInnocence_x64.exe+5BFA10 - 74 0D                 - je APlagueTaleInnocence_x64.exe+5BFA1F
+APlagueTaleInnocence_x64.exe+5BFA12 - 45 33 C0              - xor r8d,r8d
+APlagueTaleInnocence_x64.exe+5BFA15 - BA 00100000           - mov edx,00001000 { 4096 }
+APlagueTaleInnocence_x64.exe+5BFA1A - E8 F12A2200           - call APlagueTaleInnocence_x64.exe+7E2510
+APlagueTaleInnocence_x64.exe+5BFA1F - C6 86 90000000 01     - mov byte ptr [rsi+00000090],01 { 1 }
+APlagueTaleInnocence_x64.exe+5BFA26 - B8 01000000           - mov eax,00000001 { 1 }
+
+
+Call to Pause function (in Start Session of Ansel)
+00000001405BF932 | 8847 04                  | mov byte ptr ds:[rdi+4],al                   |
+00000001405BF935 | 48:8D15 0C889D00         | lea rdx,qword ptr ds:[140F98148]             | 0000000140F98148:"Pause"
+00000001405BF93C | 0FB643 07                | movzx eax,byte ptr ds:[rbx+7]                |
+00000001405BF940 | 41:B8 01000000           | mov r8d,1                                    |  <<<<<<<< pause or unpause?
+00000001405BF946 | 8847 03                  | mov byte ptr ds:[rdi+3],al                   |
+00000001405BF949 | C647 07 00               | mov byte ptr ds:[rdi+7],0                    |
+00000001405BF94D | 8B43 08                  | mov eax,dword ptr ds:[rbx+8]                 |
+00000001405BF950 | 8947 10                  | mov dword ptr ds:[rdi+10],eax                |
+00000001405BF953 | 8B43 0C                  | mov eax,dword ptr ds:[rbx+C]                 |
+00000001405BF956 | 8947 0C                  | mov dword ptr ds:[rdi+C],eax                 |
+00000001405BF959 | 8B43 10                  | mov eax,dword ptr ds:[rbx+10]                |
+00000001405BF95C | 8947 08                  | mov dword ptr ds:[rdi+8],eax                 |
+00000001405BF95F | 48:8B0D 4AE8F400         | mov rcx,qword ptr ds:[14150E1B0]             |
+00000001405BF966 | E8 75FB1500              | call aplaguetaleinnocence_x64_dump.14071F4E0 |
+
+
+000000014046700B | 48:8D15 9E13AD00         | lea rdx,qword ptr ds:[140F383B0]             | 0000000140F383B0:"EnableDebugTools"
+0000000140467036 | 48:8D15 8B13AD00         | lea rdx,qword ptr ds:[140F383C8]             | 0000000140F383C8:"DisableDebugTools"
+
+APlagueTaleInnocence_x64.exe+5BF935 - 48 8D 15 0C889D00     - lea rdx,[APlagueTaleInnocence_x64.exe+F98148] { ("Pause") }
+
+
+00000001405BF5BE | CC                       | int3                                                                                       |
+00000001405BF5BF | CC                       | int3                                                                                       |
+00000001405BF5C0 | 48:8B0D E9EBF400         | mov rcx,qword ptr ds:[14150E1B0]                                                           |
+00000001405BF5C7 | 84D2                     | test dl,dl                                                                                 |
+00000001405BF5C9 | 48:8D15 788B9D00         | lea rdx,qword ptr ds:[140F98148]                                                           | 0000000140F98148:"Pause"
+00000001405BF5D0 | 41:B8 01000000           | mov r8d,1                                                                                  |
+00000001405BF5D6 | 75 07                    | jne aplaguetaleinnocence_x64_dump.1405BF5DF                                                |
+00000001405BF5D8 | 48:8D15 718B9D00         | lea rdx,qword ptr ds:[140F98150]                                                           | 0000000140F98150:"UnPause"
+00000001405BF5DF | E9 FCFE1500              | jmp aplaguetaleinnocence_x64_dump.14071F4E0                                                |
+00000001405BF5E4 | CC                       | int3                                                                                       |
+00000001405BF5E5 | CC                       | int3                                                                                       |
