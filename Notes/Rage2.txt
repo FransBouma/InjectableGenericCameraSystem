@@ -1,0 +1,33 @@
+Rage2.exe+313599 - F3 0F5C C8            - subss xmm1,xmm0
+Rage2.exe+31359D - F3 0F59 CE            - mulss xmm1,xmm6
+Rage2.exe+3135A1 - F3 0F58 C8            - addss xmm1,xmm0
+Rage2.exe+3135A5 - F3 41 0F11 8A C0000000  - movss [r10+000000C0],xmm1			>>> FOV WRITE 
+Rage2.exe+3135AE - F3 0F10 87 C8000000   - movss xmm0,[rdi+000000C8]
+Rage2.exe+3135B6 - F3 0F10 8B C8000000   - movss xmm1,[rbx+000000C8]
+Rage2.exe+3135BE - F3 0F5C C8            - subss xmm1,xmm0
+
+
+// Write Y coord camera:
+Rage2.exe+7641D - 44 0F29 24 24         - movaps [rsp],xmm12
+Rage2.exe+76422 - 41 0F28 C3            - movaps xmm0,xmm11
+Rage2.exe+76426 - F3 44 0F10 21         - movss xmm12,[rcx]
+Rage2.exe+7642B - F3 41 0F58 C3         - addss xmm0,xmm11
+Rage2.exe+76430 - 41 0F28 FC            - movaps xmm7,xmm12
+Rage2.exe+76434 - F3 0F59 DA            - mulss xmm3,xmm2
+Rage2.exe+76438 - 48 89 42 30           - mov [rdx+30],rax				<<<< WRITE X & Y
+Rage2.exe+7643C - 41 0F28 CC            - movaps xmm1,xmm12
+Rage2.exe+76440 - F3 0F59 E2            - mulss xmm4,xmm2
+Rage2.exe+76444 - 89 42 38              - mov [rdx+38],eax
+Rage2.exe+76447 - F3 0F59 F8            - mulss xmm7,xmm0
+Rage2.exe+7644B - F3 41 0F58 CC         - addss xmm1,xmm12
+Rage2.exe+76450 - 89 42 0C              - mov [rdx+0C],eax
+Rage2.exe+76453 - F3 0F59 E8            - mulss xmm5,xmm0
+
+
+Rage2.exe+761DD - 44 0F28 4C 24 70      - movaps xmm9,[rsp+70]
+Rage2.exe+761E3 - F3 45 0F11 51 30      - movss [r9+30],xmm10			<<<< WRITE X
+Rage2.exe+761E9 - 44 0F28 54 24 60      - movaps xmm10,[rsp+60]
+Rage2.exe+761EF - F3 45 0F11 41 34      - movss [r9+34],xmm8			<<<< WRITE Y
+Rage2.exe+761F5 - 44 0F28 84 24 80000000  - movaps xmm8,[rsp+00000080]
+Rage2.exe+761FE - F3 45 0F11 59 38      - movss [r9+38],xmm11
+Rage2.exe+76204 - 44 0F28 5C 24 50      - movaps xmm11,[rsp+50]

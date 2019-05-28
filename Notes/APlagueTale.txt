@@ -140,6 +140,21 @@ APlagueTaleInnocence_x64.exe+75A19E - FF 15 D40D7200        - call qword ptr [AP
 APlagueTaleInnocence_x64.exe+75A1A4 - F3 0F2C C0            - cvttss2si eax,xmm0
 
 // Always disable dof in ansel:
+// patch 3:
+APlagueTaleInnocence_x64.exe+5C00A0 - 8B 80 B0000000        - mov eax,[rax+000000B0]
+APlagueTaleInnocence_x64.exe+5C00A6 - 89 81 B0000000        - mov [rcx+000000B0],eax
+APlagueTaleInnocence_x64.exe+5C00AC - 48 8B 05 2504F500     - mov rax,[APlagueTaleInnocence_x64.exe+15104D8] { (0231E230) }
+APlagueTaleInnocence_x64.exe+5C00B3 - 80 BE A8000000 00     - cmp byte ptr [rsi+000000A8],00 { 0 }
+APlagueTaleInnocence_x64.exe+5C00BA - 74 15                 - je APlagueTaleInnocence_x64.exe+5C00D1      <<<<<<<< NOP so it will take the call. 
+APlagueTaleInnocence_x64.exe+5C00BC - 48 85 C0              - test rax,rax
+APlagueTaleInnocence_x64.exe+5C00BF - 74 10                 - je APlagueTaleInnocence_x64.exe+5C00D1
+APlagueTaleInnocence_x64.exe+5C00C1 - 45 33 C0              - xor r8d,r8d
+APlagueTaleInnocence_x64.exe+5C00C4 - BA 00100000           - mov edx,00001000 { 4096 }
+APlagueTaleInnocence_x64.exe+5C00C9 - 48 8B C8              - mov rcx,rax
+APlagueTaleInnocence_x64.exe+5C00CC - E8 9F252200           - call APlagueTaleInnocence_x64.exe+7E2670
+APlagueTaleInnocence_x64.exe+5C00D1 - C6 86 90000000 01     - mov byte ptr [rsi+00000090],01 { 1 }
+APlagueTaleInnocence_x64.exe+5C00D8 - B8 01000000           - mov eax,00000001 { 1 }
+// RTM:
 APlagueTaleInnocence_x64.exe+5BF9F1 - 8B 81 A8000000        - mov eax,[rcx+000000A8]
 APlagueTaleInnocence_x64.exe+5BF9F7 - 89 82 A8000000        - mov [rdx+000000A8],eax
 APlagueTaleInnocence_x64.exe+5BF9FD - 48 8B 0D B40AF500     - mov rcx,[APlagueTaleInnocence_x64.exe+15104B8] { (022CA940) }
