@@ -211,6 +211,7 @@ resolutionScaleReadInterceptor ENDP
 
 
 timestopReadInterceptor PROC
+; original
 ;DevilMayCry5.exe+179CA16D - 89 C1                 - mov ecx,eax
 ;DevilMayCry5.exe+179CA16F - F3 48 0F2A C1         - cvtsi2ss xmm0,rcx
 ;DevilMayCry5.exe+179CA174 - F3 0F58 C1            - addss xmm0,xmm1
@@ -227,10 +228,24 @@ timestopReadInterceptor PROC
 ;DevilMayCry5.exe+179CA1B5 - F3 0F11 87 84030000   - movss [rdi+00000384],xmm0
 ;DevilMayCry5.exe+179CA1BD - 0F97 D0               - seta al
 ;DevilMayCry5.exe+179CA1C0 - 84 C0                 - test al,al
-	mov [g_timestopStructAddress], rdi
-	movss xmm0, dword ptr [rdi+00000384h]
-	comiss xmm0,xmm2
-	movss xmm3, dword ptr [rdi+00000380h]
+; 
+; Update June 2019:
+;DevilMayCry5.exe+17DF6615 - F3 0F10 8B 84030000   - movss xmm1,[rbx+00000384]				<< INTERCEPT HERE
+;DevilMayCry5.exe+17DF661D - F3 0F10 83 84030000   - movss xmm0,[rbx+00000384]				<< READ ADDRESS. SET TO 1.0 for normal procedure, 0.00001 otherwise
+;DevilMayCry5.exe+17DF6625 - F3 0F59 8B 80030000   - mulss xmm1,[rbx+00000380]
+;DevilMayCry5.exe+17DF662D - 0F5A C0               - vcvtps2pd xmm0,xmm0					<< CONTINUE HERE
+;DevilMayCry5.exe+17DF6630 - F3 0F11 8B 84030000   - movss [rbx+00000384],xmm1
+;DevilMayCry5.exe+17DF6638 - F2 41 0F59 C1         - mulsd xmm0,xmm9
+;DevilMayCry5.exe+17DF663D - F2 48 0F2C C0         - cvttsd2si rax,xmm0
+;DevilMayCry5.exe+17DF6642 - 0F5A C1               - vcvtps2pd xmm0,xmm1
+;DevilMayCry5.exe+17DF6645 - 48 01 C6              - add rsi,rax
+;DevilMayCry5.exe+17DF6648 - F2 41 0F5E C0         - divsd xmm0,xmm8
+;DevilMayCry5.exe+17DF664D - 66 0F5A C0            - cvtpd2ps xmm0,xmm0
+;DevilMayCry5.exe+17DF6651 - F3 0F11 83 8C030000   - movss [rbx+0000038C],xmm0
+	mov [g_timestopStructAddress], rbx
+	movss xmm1, dword ptr [rbx+00000384h]
+	movss xmm0, dword ptr [rbx+00000384h]
+	mulss xmm1, dword ptr [rbx+00000380h]
 exit:
 	jmp qword ptr [_timestopReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 timestopReadInterceptor ENDP
