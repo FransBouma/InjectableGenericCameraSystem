@@ -327,6 +327,258 @@ ACOdyssey.exe+B2079A5 - 4C 23 30              - and r14,[rax]
 
 //////// HUD Renderer. Put a RET at the start to toggle hud OFF
 // Easy to find as there's a 'not rax' statement, which is rare. 
+// This can be in a different segment as the other code, so be sure to search in different segments!
+
+// v1.4.0
+ACOdyssey.exe+C97520 - 48 8B C4              - mov rax,rsp
+ACOdyssey.exe+C97523 - 48 89 58 08           - mov [rax+08],rbx
+ACOdyssey.exe+C97527 - 55                    - push rbp
+ACOdyssey.exe+C97528 - 56                    - push rsi
+ACOdyssey.exe+C97529 - 57                    - push rdi
+ACOdyssey.exe+C9752A - 41 54                 - push r12
+ACOdyssey.exe+C9752C - 41 55                 - push r13
+ACOdyssey.exe+C9752E - 41 56                 - push r14
+ACOdyssey.exe+C97530 - 41 57                 - push r15
+ACOdyssey.exe+C97532 - 48 8D 6C 24 B0        - lea rbp,[rsp-50]
+ACOdyssey.exe+C97537 - 48 81 EC 50010000     - sub rsp,00000150 { 336 }
+ACOdyssey.exe+C9753E - 0F29 70 B8            - movaps [rax-48],xmm6
+ACOdyssey.exe+C97542 - 0F29 78 A8            - movaps [rax-58],xmm7
+ACOdyssey.exe+C97546 - 44 0F29 40 98         - movaps [rax-68],xmm8
+ACOdyssey.exe+C9754B - 48 8B 05 0E239704     - mov rax,[ACOdyssey.exe+5609860] { (-602969832) }
+ACOdyssey.exe+C97552 - 48 33 C4              - xor rax,rsp
+ACOdyssey.exe+C97555 - 48 89 45 10           - mov [rbp+10],rax
+ACOdyssey.exe+C97559 - 4C 8B 62 18           - mov r12,[rdx+18]
+ACOdyssey.exe+C9755D - 48 8B DA              - mov rbx,rdx
+ACOdyssey.exe+C97560 - 48 8B 32              - mov rsi,[rdx]
+ACOdyssey.exe+C97563 - 45 8B F0              - mov r14d,r8d
+ACOdyssey.exe+C97566 - 48 8B 15 0365A204     - mov rdx,[ACOdyssey.exe+56BDA70] { (7FF7DDDB4CC0) }
+ACOdyssey.exe+C9756D - 4C 8B E9              - mov r13,rcx
+ACOdyssey.exe+C97570 - 48 89 4C 24 60        - mov [rsp+60],rcx
+ACOdyssey.exe+C97575 - 45 33 C0              - xor r8d,r8d
+ACOdyssey.exe+C97578 - 49 8B 84 24 B8010000  - mov rax,[r12+000001B8]
+ACOdyssey.exe+C97580 - 48 8B CB              - mov rcx,rbx
+ACOdyssey.exe+C97583 - 4C 8B B8 B84D0000     - mov r15,[rax+00004DB8]
+ACOdyssey.exe+C9758A - 48 8B 05 E757CD04     - mov rax,[ACOdyssey.exe+596CD78] { (1C782C42E20) }
+ACOdyssey.exe+C97591 - 8B B8 90000000        - mov edi,[rax+00000090]
+ACOdyssey.exe+C97597 - C1 EF 02              - shr edi,02 { 2 }
+ACOdyssey.exe+C9759A - 40 F6 D7              - not dil
+ACOdyssey.exe+C9759D - 40 80 E7 01           - and dil,01 { 1 }
+ACOdyssey.exe+C975A1 - E8 6A990B00           - call ACOdyssey.exe+D50F10
+ACOdyssey.exe+C975A6 - 48 8B 43 28           - mov rax,[rbx+28]
+ACOdyssey.exe+C975AA - 33 C9                 - xor ecx,ecx
+ACOdyssey.exe+C975AC - 38 48 14              - cmp [rax+14],cl
+ACOdyssey.exe+C975AF - 74 47                 - je ACOdyssey.exe+C975F8
+ACOdyssey.exe+C975B1 - C7 44 24 58 11000000  - mov [rsp+58],00000011 { 17 }
+ACOdyssey.exe+C975B9 - 4D 8D 87 A0630000     - lea r8,[r15+000063A0]
+ACOdyssey.exe+C975C0 - 89 4C 24 50           - mov [rsp+50],ecx
+ACOdyssey.exe+C975C4 - 45 33 C9              - xor r9d,r9d
+ACOdyssey.exe+C975C7 - 88 4C 24 48           - mov [rsp+48],cl
+ACOdyssey.exe+C975CB - 41 8B D6              - mov edx,r14d
+ACOdyssey.exe+C975CE - 88 4C 24 40           - mov [rsp+40],cl
+ACOdyssey.exe+C975D2 - 40 88 7C 24 38        - mov [rsp+38],dil
+ACOdyssey.exe+C975D7 - 88 4C 24 30           - mov [rsp+30],cl
+ACOdyssey.exe+C975DB - 48 89 4C 24 28        - mov [rsp+28],rcx
+ACOdyssey.exe+C975E0 - 89 4C 24 20           - mov [rsp+20],ecx
+ACOdyssey.exe+C975E4 - 48 8B CB              - mov rcx,rbx
+ACOdyssey.exe+C975E7 - E8 B4EB0A00           - call ACOdyssey.exe+D461A0
+ACOdyssey.exe+C975EC - 33 C9                 - xor ecx,ecx
+ACOdyssey.exe+C975EE - C7 83 F0060000 FFFFFFFF - mov [rbx+000006F0],FFFFFFFF { -1 }
+ACOdyssey.exe+C975F8 - 40 88 7C 24 30        - mov [rsp+30],dil
+ACOdyssey.exe+C975FD - 4D 8D 8F 00650000     - lea r9,[r15+00006500]
+ACOdyssey.exe+C97604 - 48 89 4C 24 28        - mov [rsp+28],rcx
+ACOdyssey.exe+C97609 - 45 8B C6              - mov r8d,r14d
+ACOdyssey.exe+C9760C - 49 8B CD              - mov rcx,r13
+ACOdyssey.exe+C9760F - C7 44 24 20 04000000  - mov [rsp+20],00000004 { 4 }
+ACOdyssey.exe+C97617 - 48 8B D3              - mov rdx,rbx
+ACOdyssey.exe+C9761A - E8 91070000           - call ACOdyssey.exe+C97DB0
+ACOdyssey.exe+C9761F - 33 D2                 - xor edx,edx
+ACOdyssey.exe+C97621 - 48 8B CB              - mov rcx,rbx
+ACOdyssey.exe+C97624 - E8 27260B00           - call ACOdyssey.exe+D49C50
+ACOdyssey.exe+C97629 - 0F10 15 F8C1CD03      - movups xmm2,[ACOdyssey.exe+4973828] { (0.00) }
+ACOdyssey.exe+C97630 - 48 8B CE              - mov rcx,rsi
+ACOdyssey.exe+C97633 - F3 0F10 3D 09C83703   - movss xmm7,[ACOdyssey.exe+4013E44] { (1.00) }
+ACOdyssey.exe+C9763B - 0F57 F6               - xorps xmm6,xmm6
+ACOdyssey.exe+C9763E - 0F28 C2               - movaps xmm0,xmm2
+ACOdyssey.exe+C97641 - F3 0F11 7C 24 30      - movss [rsp+30],xmm7
+ACOdyssey.exe+C97647 - 0FC6 C2 FF            - shufps xmm0,xmm2,-01 { 255 }
+ACOdyssey.exe+C9764B - 0F28 CA               - movaps xmm1,xmm2
+ACOdyssey.exe+C9764E - F3 48 0F2C C0         - cvttss2si rax,xmm0
+ACOdyssey.exe+C97653 - 0F28 C2               - movaps xmm0,xmm2
+ACOdyssey.exe+C97656 - 0FC6 CA AA            - shufps xmm1,xmm2,-56 { 170 }
+ACOdyssey.exe+C9765A - 0FC6 C2 55            - shufps xmm0,xmm2,55 { 85 }
+ACOdyssey.exe+C9765E - F3 4C 0F2C C0         - cvttss2si r8,xmm0
+ACOdyssey.exe+C97663 - F3 4C 0F2C C9         - cvttss2si r9,xmm1
+ACOdyssey.exe+C97668 - F3 48 0F2C D2         - cvttss2si rdx,xmm2
+ACOdyssey.exe+C9766D - F3 0F11 74 24 28      - movss [rsp+28],xmm6
+ACOdyssey.exe+C97673 - 0F11 54 24 68         - movups [rsp+68],xmm2
+ACOdyssey.exe+C97678 - 89 44 24 20           - mov [rsp+20],eax
+ACOdyssey.exe+C9767C - E8 4F9AEAFF           - call ACOdyssey.exe+B410D0
+ACOdyssey.exe+C97681 - 49 8D 94 24 00010000  - lea rdx,[r12+00000100]
+ACOdyssey.exe+C97689 - 45 33 C0              - xor r8d,r8d
+ACOdyssey.exe+C9768C - 48 8B CB              - mov rcx,rbx
+ACOdyssey.exe+C9768F - E8 4C8F0B00           - call ACOdyssey.exe+D505E0
+ACOdyssey.exe+C97694 - 48 8D 15 E53E9904     - lea rdx,[ACOdyssey.exe+562B580] { (1.00) }
+ACOdyssey.exe+C9769B - 48 8D 4D 90           - lea rcx,[rbp-70]
+ACOdyssey.exe+C9769F - E8 1CBF0700           - call ACOdyssey.exe+D135C0
+ACOdyssey.exe+C976A4 - 45 0F57 C0            - xorps xmm8,xmm8
+ACOdyssey.exe+C976A8 - 4C 8D 4D 80           - lea r9,[rbp-80]
+ACOdyssey.exe+C976AC - 4C 8D 45 90           - lea r8,[rbp-70]
+ACOdyssey.exe+C976B0 - 44 0F29 45 80         - movaps [rbp-80],xmm8
+ACOdyssey.exe+C976B5 - 48 8D 55 90           - lea rdx,[rbp-70]
+ACOdyssey.exe+C976B9 - 48 8B CB              - mov rcx,rbx
+ACOdyssey.exe+C976BC - E8 1F7A0B00           - call ACOdyssey.exe+D4F0E0
+ACOdyssey.exe+C976C1 - 4C 8B 8E 40020000     - mov r9,[rsi+00000240]
+ACOdyssey.exe+C976C8 - 49 8B 91 C01A0000     - mov rdx,[r9+00001AC0]
+ACOdyssey.exe+C976CF - 48 85 D2              - test rdx,rdx
+ACOdyssey.exe+C976D2 - 74 48                 - je ACOdyssey.exe+C9771C
+ACOdyssey.exe+C976D4 - 49 8B 89 C0210000     - mov rcx,[r9+000021C0]
+ACOdyssey.exe+C976DB - 8B 81 B8020000        - mov eax,[rcx+000002B8]
+ACOdyssey.exe+C976E1 - 4D 8B 84 C1 D0210000  - mov r8,[r9+rax*8+000021D0]
+ACOdyssey.exe+C976E9 - 4C 23 81 B0020000     - and r8,[rcx+000002B0]
+ACOdyssey.exe+C976F0 - 8B 89 BC020000        - mov ecx,[rcx+000002BC]
+ACOdyssey.exe+C976F6 - 49 D3 E8              - shr r8,cl
+ACOdyssey.exe+C976F9 - 45 85 C0              - test r8d,r8d
+ACOdyssey.exe+C976FC - 74 03                 - je ACOdyssey.exe+C97701
+ACOdyssey.exe+C976FE - 0F28 F7               - movaps xmm6,xmm7
+ACOdyssey.exe+C97701 - 49 8B 49 28           - mov rcx,[r9+28]
+ACOdyssey.exe+C97705 - 0F28 DE               - movaps xmm3,xmm6
+ACOdyssey.exe+C97708 - 41 B8 02000000        - mov r8d,00000002 { 2 }
+ACOdyssey.exe+C9770E - C6 44 24 20 00        - mov byte ptr [rsp+20],00 { 0 }
+ACOdyssey.exe+C97713 - 48 8B 01              - mov rax,[rcx]
+ACOdyssey.exe+C97716 - FF 90 A8010000        - call qword ptr [rax+000001A8]
+ACOdyssey.exe+C9771C - 4C 8D AE 30020000     - lea r13,[rsi+00000230]
+ACOdyssey.exe+C97723 - 41 BA 00000000        - mov r10d,00000000 { 0 }
+ACOdyssey.exe+C97729 - 4D 85 ED              - test r13,r13
+ACOdyssey.exe+C9772C - 48 8B C6              - mov rax,rsi
+ACOdyssey.exe+C9772F - 49 0F44 C2            - cmove rax,r10
+ACOdyssey.exe+C97733 - 4C 8B 88 40020000     - mov r9,[rax+00000240]
+ACOdyssey.exe+C9773A - 4D 8B 81 C0210000     - mov r8,[r9+000021C0]
+ACOdyssey.exe+C97741 - 41 8B 90 C8020000     - mov edx,[r8+000002C8]
+ACOdyssey.exe+C97748 - 49 8B 80 C0020000     - mov rax,[r8+000002C0]
+ACOdyssey.exe+C9774F - 48 F7 D0              - not rax
+ACOdyssey.exe+C97752 - 49 21 84 D1 D0210000  - and [r9+rdx*8+000021D0],rax
+ACOdyssey.exe+C9775A - B8 01000000           - mov eax,00000001 { 1 }
+ACOdyssey.exe+C9775F - 41 8B 88 CC020000     - mov ecx,[r8+000002CC]
+ACOdyssey.exe+C97766 - 48 D3 E0              - shl rax,cl
+ACOdyssey.exe+C97769 - 49 23 80 C0020000     - and rax,[r8+000002C0]
+ACOdyssey.exe+C97770 - 49 09 84 D1 D0210000  - or [r9+rdx*8+000021D0],rax
+ACOdyssey.exe+C97778 - 48 8B C6              - mov rax,rsi
+ACOdyssey.exe+C9777B - 4D 85 ED              - test r13,r13
+ACOdyssey.exe+C9777E - 41 B1 FF              - mov r9l,-01 { 255 }
+ACOdyssey.exe+C97781 - 49 0F44 C2            - cmove rax,r10
+ACOdyssey.exe+C97785 - 4C 8B 90 40020000     - mov r10,[rax+00000240]
+ACOdyssey.exe+C9778C - 49 8B 92 C0210000     - mov rdx,[r10+000021C0]
+ACOdyssey.exe+C97793 - 44 8B 82 D8020000     - mov r8d,[rdx+000002D8]
+ACOdyssey.exe+C9779A - 48 8B 82 D0020000     - mov rax,[rdx+000002D0]
+ACOdyssey.exe+C977A1 - 48 F7 D0              - not rax
+ACOdyssey.exe+C977A4 - 4B 21 84 C2 D0210000  - and [r10+r8*8+000021D0],rax
+ACOdyssey.exe+C977AC - B8 FF000000           - mov eax,000000FF { 255 }
+ACOdyssey.exe+C977B1 - 8B 8A DC020000        - mov ecx,[rdx+000002DC]
+ACOdyssey.exe+C977B7 - 48 D3 E0              - shl rax,cl
+ACOdyssey.exe+C977BA - 49 8B CD              - mov rcx,r13
+ACOdyssey.exe+C977BD - 48 23 82 D0020000     - and rax,[rdx+000002D0]
+ACOdyssey.exe+C977C4 - 4B 09 84 C2 D0210000  - or [r10+r8*8+000021D0],rax
+ACOdyssey.exe+C977CC - 45 33 C0              - xor r8d,r8d
+ACOdyssey.exe+C977CF - 41 8D 50 05           - lea edx,[r8+05]
+ACOdyssey.exe+C977D3 - E8 98AEE6FF           - call ACOdyssey.exe+B02670
+ACOdyssey.exe+C977D8 - 41 B9 02000000        - mov r9d,00000002 { 2 }
+ACOdyssey.exe+C977DE - 45 33 C0              - xor r8d,r8d
+ACOdyssey.exe+C977E1 - 33 D2                 - xor edx,edx
+ACOdyssey.exe+C977E3 - 49 8B CD              - mov rcx,r13
+ACOdyssey.exe+C977E6 - E8 A5AFE6FF           - call ACOdyssey.exe+B02790
+ACOdyssey.exe+C977EB - 4D 85 ED              - test r13,r13
+ACOdyssey.exe+C977EE - 49 8D 45 10           - lea rax,[r13+10]
+ACOdyssey.exe+C977F2 - 41 B8 40020000        - mov r8d,00000240 { 576 }
+ACOdyssey.exe+C977F8 - 49 0F44 C0            - cmove rax,r8
+ACOdyssey.exe+C977FC - 48 8B 10              - mov rdx,[rax]
+ACOdyssey.exe+C977FF - 48 8B 82 C0210000     - mov rax,[rdx+000021C0]
+ACOdyssey.exe+C97806 - 8B 88 08020000        - mov ecx,[rax+00000208]
+ACOdyssey.exe+C9780C - 48 8B 80 00020000     - mov rax,[rax+00000200]
+ACOdyssey.exe+C97813 - 48 F7 D0              - not rax
+ACOdyssey.exe+C97816 - 48 21 84 CA D0210000  - and [rdx+rcx*8+000021D0],rax
+ACOdyssey.exe+C9781E - 49 8D 45 10           - lea rax,[r13+10]
+ACOdyssey.exe+C97822 - 4D 85 ED              - test r13,r13
+ACOdyssey.exe+C97825 - 49 0F44 C0            - cmove rax,r8
+ACOdyssey.exe+C97829 - 4C 8B 08              - mov r9,[rax]
+ACOdyssey.exe+C9782C - 4D 8B 81 C0210000     - mov r8,[r9+000021C0]
+ACOdyssey.exe+C97833 - 41 8B 90 88020000     - mov edx,[r8+00000288]
+ACOdyssey.exe+C9783A - 49 8B 80 80020000     - mov rax,[r8+00000280]
+ACOdyssey.exe+C97841 - 48 F7 D0              - not rax
+ACOdyssey.exe+C97844 - 49 21 84 D1 D0210000  - and [r9+rdx*8+000021D0],rax
+ACOdyssey.exe+C9784C - B8 01000000           - mov eax,00000001 { 1 }
+ACOdyssey.exe+C97851 - 41 8B 88 8C020000     - mov ecx,[r8+0000028C]
+ACOdyssey.exe+C97858 - 48 D3 E0              - shl rax,cl
+ACOdyssey.exe+C9785B - 49 23 80 80020000     - and rax,[r8+00000280]
+ACOdyssey.exe+C97862 - 41 B8 00000000        - mov r8d,00000000 { 0 }
+ACOdyssey.exe+C97868 - 49 09 84 D1 D0210000  - or [r9+rdx*8+000021D0],rax
+ACOdyssey.exe+C97870 - 48 8B C6              - mov rax,rsi
+ACOdyssey.exe+C97873 - 4D 85 ED              - test r13,r13
+ACOdyssey.exe+C97876 - 49 0F44 C0            - cmove rax,r8
+ACOdyssey.exe+C9787A - 48 8B 90 40020000     - mov rdx,[rax+00000240]
+ACOdyssey.exe+C97881 - 48 8B 82 C0210000     - mov rax,[rdx+000021C0]
+ACOdyssey.exe+C97888 - 8B 88 A8020000        - mov ecx,[rax+000002A8]
+ACOdyssey.exe+C9788E - 48 8B 80 A0020000     - mov rax,[rax+000002A0]
+ACOdyssey.exe+C97895 - 48 F7 D0              - not rax
+ACOdyssey.exe+C97898 - 48 21 84 CA D0210000  - and [rdx+rcx*8+000021D0],rax
+ACOdyssey.exe+C978A0 - 48 8B C6              - mov rax,rsi
+ACOdyssey.exe+C978A3 - 4D 85 ED              - test r13,r13
+ACOdyssey.exe+C978A6 - 49 0F44 C0            - cmove rax,r8
+ACOdyssey.exe+C978AA - 4C 8B 88 40020000     - mov r9,[rax+00000240]
+ACOdyssey.exe+C978B1 - 4D 8B 81 C0210000     - mov r8,[r9+000021C0]
+ACOdyssey.exe+C978B8 - 41 8B 90 48030000     - mov edx,[r8+00000348]
+ACOdyssey.exe+C978BF - 49 8B 80 40030000     - mov rax,[r8+00000340]
+ACOdyssey.exe+C978C6 - 48 F7 D0              - not rax
+ACOdyssey.exe+C978C9 - 49 21 84 D1 D0210000  - and [r9+rdx*8+000021D0],rax
+ACOdyssey.exe+C978D1 - B8 03000000           - mov eax,00000003 { 3 }
+ACOdyssey.exe+C978D6 - 41 8B 88 4C030000     - mov ecx,[r8+0000034C]
+ACOdyssey.exe+C978DD - 48 D3 E0              - shl rax,cl
+ACOdyssey.exe+C978E0 - 49 8B CD              - mov rcx,r13
+ACOdyssey.exe+C978E3 - 49 23 80 40030000     - and rax,[r8+00000340]
+ACOdyssey.exe+C978EA - 49 09 84 D1 D0210000  - or [r9+rdx*8+000021D0],rax
+ACOdyssey.exe+C978F2 - 33 D2                 - xor edx,edx
+ACOdyssey.exe+C978F4 - E8 4763E6FF           - call ACOdyssey.exe+AFDC40
+ACOdyssey.exe+C978F9 - 33 D2                 - xor edx,edx
+ACOdyssey.exe+C978FB - 49 8B CD              - mov rcx,r13
+ACOdyssey.exe+C978FE - E8 3D63E6FF           - call ACOdyssey.exe+AFDC40
+ACOdyssey.exe+C97903 - B9 40020000           - mov ecx,00000240 { 576 }
+ACOdyssey.exe+C97908 - 49 8D 45 10           - lea rax,[r13+10]
+ACOdyssey.exe+C9790C - 4D 85 ED              - test r13,r13
+ACOdyssey.exe+C9790F - 48 0F44 C1            - cmove rax,rcx
+ACOdyssey.exe+C97913 - 4C 8B 08              - mov r9,[rax]
+ACOdyssey.exe+C97916 - 4D 8B 81 C0210000     - mov r8,[r9+000021C0]
+ACOdyssey.exe+C9791D - 41 8B 90 38030000     - mov edx,[r8+00000338]
+ACOdyssey.exe+C97924 - 49 8B 80 30030000     - mov rax,[r8+00000330]
+ACOdyssey.exe+C9792B - 48 F7 D0              - not rax
+ACOdyssey.exe+C9792E - 49 21 84 D1 D0210000  - and [r9+rdx*8+000021D0],rax
+ACOdyssey.exe+C97936 - B8 03000000           - mov eax,00000003 { 3 }
+ACOdyssey.exe+C9793B - 41 8B 88 3C030000     - mov ecx,[r8+0000033C]
+ACOdyssey.exe+C97942 - 48 D3 E0              - shl rax,cl
+ACOdyssey.exe+C97945 - 48 8B CB              - mov rcx,rbx
+ACOdyssey.exe+C97948 - 49 23 80 30030000     - and rax,[r8+00000330]
+ACOdyssey.exe+C9794F - 45 33 C0              - xor r8d,r8d
+ACOdyssey.exe+C97952 - 49 09 84 D1 D0210000  - or [r9+rdx*8+000021D0],rax
+ACOdyssey.exe+C9795A - C6 83 48060000 01     - mov byte ptr [rbx+00000648],01 { 1 }
+ACOdyssey.exe+C97961 - 48 8B 15 D85BA204     - mov rdx,[ACOdyssey.exe+56BD540] { (7FF7DDDB4D98) }
+ACOdyssey.exe+C97968 - E8 A3950B00           - call ACOdyssey.exe+D50F10
+ACOdyssey.exe+C9796D - 48 8B 43 28           - mov rax,[rbx+28]
+ACOdyssey.exe+C97971 - 80 78 14 00           - cmp byte ptr [rax+14],00 { 0 }
+ACOdyssey.exe+C97975 - 74 47                 - je ACOdyssey.exe+C979BE
+ACOdyssey.exe+C97977 - 33 C0                 - xor eax,eax
+ACOdyssey.exe+C97979 - C7 44 24 58 11000000  - mov [rsp+58],00000011 { 17 }
+ACOdyssey.exe+C97981 - 89 44 24 50           - mov [rsp+50],eax
+ACOdyssey.exe+C97985 - 4D 8D 87 78690000     - lea r8,[r15+00006978]
+ACOdyssey.exe+C9798C - 88 44 24 48           - mov [rsp+48],al
+ACOdyssey.exe+C97990 - 45 33 C9              - xor r9d,r9d
+ACOdyssey.exe+C97993 - 88 44 24 40           - mov [rsp+40],al
+ACOdyssey.exe+C97997 - 41 8B D6              - mov edx,r14d
+ACOdyssey.exe+C9799A - 40 88 7C 24 38        - mov [rsp+38],dil
+ACOdyssey.exe+C9799F - 48 8B CB              - mov rcx,rbx
+ACOdyssey.exe+C979A2 - 88 44 24 30           - mov [rsp+30],al
+etc.
+
+
+
+// 1.1.4+
 ACOdyssey.exe+C0DFCC0 - 48 89 E0              - mov rax,rsp
 ACOdyssey.exe+C0DFCC3 - 48 89 58 08           - mov [rax+08],rbx
 ACOdyssey.exe+C0DFCC7 - 55                    - push rbp
@@ -731,3 +983,19 @@ ACOdyssey.exe+B699660 - F3 0F11 4C 24 7C      - movss [rsp+7C],xmm1
 ACOdyssey.exe+B699666 - E8 15F240F5           - call ACOdyssey.exe+AA8880
 ACOdyssey.exe+B69966B - 48 8B 8E 18010000     - mov rcx,[rsi+00000118]
 ACOdyssey.exe+B699672 - 0F28 F0               - movaps xmm6,xmm0
+
+// v1.4.0: 
+ACOdyssey.exe+CDD2E2 - 0F29 4C 24 40         - movaps [rsp+40],xmm1
+ACOdyssey.exe+CDD2E7 - E8 54F9FFFF           - call ACOdyssey.exe+CDCC40
+ACOdyssey.exe+CDD2EC - EB 0E                 - jmp ACOdyssey.exe+CDD2FC
+ACOdyssey.exe+CDD2EE - 4D 8B C7              - mov r8,r15
+ACOdyssey.exe+CDD2F1 - 48 8B D5              - mov rdx,rbp
+ACOdyssey.exe+CDD2F4 - 49 8B CE              - mov rcx,r14
+ACOdyssey.exe+CDD2F7 - E8 14B80000           - call ACOdyssey.exe+CE8B10						>> Render character (nop call-> no character. still arrows and sword is present)
+ACOdyssey.exe+CDD2FC - 0FB7 8D 26010000      - movzx ecx,word ptr [rbp+00000126]
+ACOdyssey.exe+CDD303 - 8B D0                 - mov edx,eax
+ACOdyssey.exe+CDD305 - 49 8B 46 28           - mov rax,[r14+28]
+ACOdyssey.exe+CDD309 - 83 E1 03              - and ecx,03 { 3 }
+ACOdyssey.exe+CDD30C - 0F28 C7               - movaps xmm0,xmm7
+ACOdyssey.exe+CDD30F - F3 0F10 70 10         - movss xmm6,[rax+10]
+

@@ -122,7 +122,7 @@ namespace IGCS
 		LeaveCriticalSection(&_contentCriticalSection);
 		if (_scrollToBottom)
 		{
-			ImGui::SetScrollHere(1.0f);
+			//ImGui::SetScrollHere(1.0f);
 		}
 		_scrollToBottom = false;
 		ImGui::EndChild();

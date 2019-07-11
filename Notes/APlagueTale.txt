@@ -123,6 +123,21 @@ APlagueTaleInnocence_x64.exe+1A0805 - 90                    - nop
 APlagueTaleInnocence_x64.exe+1A0806 - 44 0F28 5D B0         - movaps xmm11,[rbp-50]
 APlagueTaleInnocence_x64.exe+1A080B - 4C 8B 55 18           - mov r10,[rbp+18]
 APlagueTaleInnocence_x64.exe+1A080F - 4D 85 D2              - test r10,r10
+// version of June 20, 2019
+APlagueTaleInnocence_x64.exe+1A169F - 0F28 44 24 50         - movaps xmm0,[rsp+50]
+APlagueTaleInnocence_x64.exe+1A16A4 - 66 0F7F 85 70040000   - movdqa [rbp+00000470],xmm0
+APlagueTaleInnocence_x64.exe+1A16AC - 48 8D 4D 00           - lea rcx,[rbp+00]
+APlagueTaleInnocence_x64.exe+1A16B0 - E8 EB380000           - call APlagueTaleInnocence_x64.exe+1A4FA0
+APlagueTaleInnocence_x64.exe+1A16B5 - 90                    - nop 
+APlagueTaleInnocence_x64.exe+1A16B6 - 44 0F28 5D B0         - movaps xmm11,[rbp-50]
+APlagueTaleInnocence_x64.exe+1A16BB - 4C 8B 55 18           - mov r10,[rbp+18]
+APlagueTaleInnocence_x64.exe+1A16BF - 4D 85 D2              - test r10,r10
+APlagueTaleInnocence_x64.exe+1A16C2 - 0F84 CC000000         - je APlagueTaleInnocence_x64.exe+1A1794
+APlagueTaleInnocence_x64.exe+1A16C8 - 0F1F 84 00 00000000   - nop [rax+rax+00000000]
+APlagueTaleInnocence_x64.exe+1A16D0 - 49 8B 8A 10010000     - mov rcx,[r10+00000110]
+
+
+
 
 AR correction:
 APlagueTaleInnocence_x64.exe+75A179 - 66 41 0F6E C9         - movd xmm1,r9d
@@ -140,6 +155,16 @@ APlagueTaleInnocence_x64.exe+75A19E - FF 15 D40D7200        - call qword ptr [AP
 APlagueTaleInnocence_x64.exe+75A1A4 - F3 0F2C C0            - cvttss2si eax,xmm0
 
 // Always disable dof in ansel:
+// patch 20-jun
+APlagueTaleInnocence_x64.exe+5CA46C - 48 8B 05 2D64F500     - mov rax,[APlagueTaleInnocence_x64.exe+15208A0] { (00689AC0) }
+APlagueTaleInnocence_x64.exe+5CA473 - 80 BE A8000000 00     - cmp byte ptr [rsi+000000A8],00 { 0 }
+AlwaysDisableDOFInAnsel             - 74 15                 - je APlagueTaleInnocence_x64.exe+5CA491      <<<<<<<< NOP so it will take the call. 
+APlagueTaleInnocence_x64.exe+5CA47C - 48 85 C0              - test rax,rax
+APlagueTaleInnocence_x64.exe+5CA47F - 74 10                 - je APlagueTaleInnocence_x64.exe+5CA491
+APlagueTaleInnocence_x64.exe+5CA481 - 45 33 C0              - xor r8d,r8d
+APlagueTaleInnocence_x64.exe+5CA484 - BA 00100000           - mov edx,00001000 { 4096 }
+APlagueTaleInnocence_x64.exe+5CA489 - 48 8B C8              - mov rcx,rax
+APlagueTaleInnocence_x64.exe+5CA48C - E8 1F252200           - call APlagueTaleInnocence_x64.exe+7EC9B0
 // patch 3:
 APlagueTaleInnocence_x64.exe+5C00A0 - 8B 80 B0000000        - mov eax,[rax+000000B0]
 APlagueTaleInnocence_x64.exe+5C00A6 - 89 81 B0000000        - mov [rcx+000000B0],eax
