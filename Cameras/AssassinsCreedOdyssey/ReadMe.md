@@ -1,9 +1,9 @@
 Injectable camera for Assassin's Creed Odyssey
 ============================
 
-Current supported game version: v1.1.4+ (UPlay version)  
-Camera version: 1.0.6  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/ACOD_106  
+Current supported game version: v1.4.0+ (UPlay version)  
+Camera version: 1.0.7  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/ACOD_107  
 Credits: Otis_Inf. 
 
 ### Features
@@ -21,6 +21,7 @@ Credits: Otis_Inf.
 - Fog control (much higher than photomode allows)
 
 ### Change log:
+v1.0.7: Fix for 1.4.0 of the game.
 v1.0.6: Fixed ToD interception
 v1.0.5: Fix for 1.1.4 of the game. 
 v1.0.4: Multiple actions bound to the same key are now supported.
