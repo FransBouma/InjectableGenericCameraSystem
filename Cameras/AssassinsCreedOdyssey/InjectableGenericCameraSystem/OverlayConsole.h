@@ -35,7 +35,6 @@ namespace IGCS
 		ImGuiTextBuffer     _buf;
 		ImGuiTextFilter     _filter;
 		ImVector<int>       _lineOffsets;        // Index to lines offset
-		bool                _scrollToBottom;
 	};
 }
 

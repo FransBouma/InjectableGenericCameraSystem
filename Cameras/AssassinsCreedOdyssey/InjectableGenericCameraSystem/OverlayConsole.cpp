@@ -70,7 +70,6 @@ namespace IGCS
 					_lineOffsets.push_back(old_size);
 				}
 			}
-			_scrollToBottom = true;
 		LeaveCriticalSection(&_contentCriticalSection);
 	}
 
@@ -120,11 +119,6 @@ namespace IGCS
 				ImGui::LogFinish();
 			}
 		LeaveCriticalSection(&_contentCriticalSection);
-		if (_scrollToBottom)
-		{
-			//ImGui::SetScrollHere(1.0f);
-		}
-		_scrollToBottom = false;
 		ImGui::EndChild();
 	}
 }
