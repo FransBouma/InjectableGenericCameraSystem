@@ -27,6 +27,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "stdafx.h"
+#include "ScanPattern.h"
 
 namespace IGCS
 {
@@ -58,7 +59,7 @@ namespace IGCS::Utils
 	HWND findMainWindow(unsigned long process_id);
 	MODULEINFO getModuleInfoOfContainingProcess();
 	MODULEINFO getModuleInfoOfDll(LPCWSTR libraryName);
-	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, AOBBlock* const toScanFor);
+	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, ScanPattern pattern);
 	BYTE CharToByte(char c);
 	LPBYTE calculateAbsoluteAddress(AOBBlock* locationData, int nextOpCodeOffset);
 	std::string formatString(const char *fmt, va_list args);

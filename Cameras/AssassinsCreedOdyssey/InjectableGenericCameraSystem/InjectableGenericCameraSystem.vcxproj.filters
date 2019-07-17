@@ -115,6 +115,9 @@
     <ClInclude Include="D3D11Hooker.h">
       <Filter>Hooking</Filter>
     </ClInclude>
+    <ClInclude Include="ScanPattern.h">
+      <Filter>Hooking</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InterceptorHelper.cpp">
@@ -190,6 +193,9 @@
       <Filter>Overlay\Imgui</Filter>
     </ClCompile>
     <ClCompile Include="D3D11Hooker.cpp">
+      <Filter>Hooking</Filter>
+    </ClCompile>
+    <ClCompile Include="ScanPattern.cpp">
       <Filter>Hooking</Filter>
     </ClCompile>
   </ItemGroup>

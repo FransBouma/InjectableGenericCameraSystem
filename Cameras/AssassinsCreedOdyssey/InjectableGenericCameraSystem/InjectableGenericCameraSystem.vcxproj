@@ -178,6 +178,7 @@
     <ClInclude Include="Overlay\imstb_rectpack.h" />
     <ClInclude Include="Overlay\imstb_textedit.h" />
     <ClInclude Include="Overlay\imstb_truetype.h" />
+    <ClInclude Include="ScanPattern.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="System.h" />
@@ -220,6 +221,7 @@
     <ClCompile Include="Overlay\imgui_impl_dx11.cpp" />
     <ClCompile Include="Overlay\imgui_impl_win32.cpp" />
     <ClCompile Include="Overlay\imgui_widgets.cpp" />
+    <ClCompile Include="ScanPattern.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

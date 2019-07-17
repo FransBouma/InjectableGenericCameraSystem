@@ -169,14 +169,14 @@ namespace IGCS::Utils
 	}
 
 
-	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, AOBBlock* const toScanFor)
+	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, ScanPattern pattern)
 	{
-		BYTE firstByte = *(toScanFor->bytePattern());
-		__int64 length = (__int64)imageAddress + imageSize - toScanFor->patternSize();
+		BYTE firstByte = pattern.bytePattern()[0];
+		__int64 length = (__int64)imageAddress + imageSize - pattern.patternSize();
 
 		LPBYTE toReturn = nullptr;
 		LPBYTE startOfScan = imageAddress;
-		for (int occurrence = 0; occurrence < toScanFor->occurrence(); occurrence++)
+		for (int occurrence = 0; occurrence < pattern.occurrence(); occurrence++)
 		{
 			// reset the pointer found, as we're not interested in this occurrence, we need a following occurrence.
 			toReturn = nullptr;
@@ -186,7 +186,7 @@ namespace IGCS::Utils
 
 				if ((x & 0xFF) == firstByte)
 				{
-					if (DataCompare(reinterpret_cast<BYTE*>(i), toScanFor->bytePattern(), toScanFor->patternMask()))
+					if (DataCompare(reinterpret_cast<BYTE*>(i), pattern.bytePattern(), pattern.patternMask()))
 					{
 						toReturn = reinterpret_cast<BYTE*>(i);
 						break;
@@ -194,7 +194,7 @@ namespace IGCS::Utils
 				}
 				if ((x & 0xFF00) >> 8 == firstByte)
 				{
-					if (DataCompare(reinterpret_cast<BYTE*>(i + 1), toScanFor->bytePattern(), toScanFor->patternMask()))
+					if (DataCompare(reinterpret_cast<BYTE*>(i + 1), pattern.bytePattern(), pattern.patternMask()))
 					{
 						toReturn = reinterpret_cast<BYTE*>(i + 1);
 						break;
@@ -202,7 +202,7 @@ namespace IGCS::Utils
 				}
 				if ((x & 0xFF0000) >> 16 == firstByte)
 				{
-					if (DataCompare(reinterpret_cast<BYTE*>(i + 2), toScanFor->bytePattern(), toScanFor->patternMask()))
+					if (DataCompare(reinterpret_cast<BYTE*>(i + 2), pattern.bytePattern(), pattern.patternMask()))
 					{
 						toReturn = reinterpret_cast<BYTE*>(i + 2);
 						break;
@@ -210,7 +210,7 @@ namespace IGCS::Utils
 				}
 				if ((x & 0xFF000000) >> 24 == firstByte)
 				{
-					if (DataCompare(reinterpret_cast<BYTE*>(i + 3), toScanFor->bytePattern(), toScanFor->patternMask()))
+					if (DataCompare(reinterpret_cast<BYTE*>(i + 3), pattern.bytePattern(), pattern.patternMask()))
 					{
 						toReturn = reinterpret_cast<BYTE*>(i + 3);
 						break;

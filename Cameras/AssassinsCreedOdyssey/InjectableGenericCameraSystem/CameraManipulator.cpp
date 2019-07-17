@@ -212,18 +212,26 @@ namespace IGCS::GameSpecific::CameraManipulator
 			valueToStore = Utils::clamp(valueToStore, 0.0f, 24.0f, 0.0f);
 			*todInMemory = valueToStore;
 		}
-		if (isCameraFound && g_cameraEnabled && currentSettings.disableInGameDofWhenCameraIsEnabled)
-		{
-			BYTE* cameraStruct = (BYTE*)g_cameraStructAddress;
-			*(cameraStruct + DOF_ENABLE1_IN_STRUCT_OFFSET) = (BYTE)0;
-			*(cameraStruct + DOF_ENABLE1_IN_STRUCT_OFFSET) = (BYTE)0;
-		}
 		if (nullptr != g_fogStructAddress)
 		{
 			float* fogStrengthInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG_STRENGTH_IN_STRUCT_OFFSET);
 			*fogStrengthInMemory = currentSettings.fogStrength;
 			float* fogStartCurveInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG_START_CURVE_IN_STRUCT_OFFSET);
 			*fogStartCurveInMemory = currentSettings.fogStartCurve;
+		}
+		// refactored in its own function so we can apply this too when the camera is enabled. 
+		killInGameDofIfNeeded();
+	}
+
+
+	void killInGameDofIfNeeded()
+	{
+		Settings& currentSettings = Globals::instance().settings();
+		if (isCameraFound() && g_cameraEnabled && currentSettings.disableInGameDofWhenCameraIsEnabled)
+		{
+			BYTE* cameraStruct = (BYTE*)g_cameraStructAddress;
+			*(cameraStruct + DOF_ENABLE1_IN_STRUCT_OFFSET) = (BYTE)0;
+			*(cameraStruct + DOF_ENABLE1_IN_STRUCT_OFFSET) = (BYTE)0;
 		}
 	}
 

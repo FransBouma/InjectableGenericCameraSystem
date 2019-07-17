@@ -114,7 +114,7 @@ namespace IGCS
 		{
 			_applyHammerPrevention = false;
 			// sleep main thread for 200ms so key repeat delay is simulated. 
-			Sleep(200);
+			Sleep(300);
 		}
 
 		if (Input::isActionActivated(ActionType::ToggleOverlay))
@@ -150,6 +150,7 @@ namespace IGCS
 			}
 			g_cameraEnabled = g_cameraEnabled == 0 ? (BYTE)1 : (BYTE)0;
 			displayCameraState();
+			CameraManipulator::killInGameDofIfNeeded();
 			_applyHammerPrevention = true;
 		}
 		if (Input::isActionActivated(ActionType::FovReset) && Globals::instance().keyboardMouseControlCamera())

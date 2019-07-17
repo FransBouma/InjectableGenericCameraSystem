@@ -28,6 +28,7 @@
 #pragma once
 #include "AOBBlock.h"
 #include "Utils.h"
+#include "ScanPattern.h"
 
 namespace IGCS
 {
@@ -39,23 +40,21 @@ namespace IGCS
 
 		bool scan(LPBYTE imageAddress, DWORD imageSize);
 		LPBYTE locationInImage() { return _locationInImage; }
-		LPBYTE bytePattern() { return _bytePattern; }
-		int occurrence() { return _occurrence; }
-		int patternSize() { return _patternSize; }
-		char* patternMask() { return _patternMask; }
 		int customOffset() { return _customOffset; }
 		LPBYTE absoluteAddress() { return (LPBYTE)(_locationInImage + (DWORD)customOffset()); }
+		void addAlternative(std::string bytePatternAsString, int occurrence);
+		bool found() { return _found; }
+		void markAsNonCritical() { _isNonCritical = true; }
+		bool isNonCritical() { return _isNonCritical; }
+		int patternIndexThatMatched() { return _patternIndexThatMatched; }
 
 	private:
-		void createAOBPatternFromStringPattern(std::string pattern);
-
+		bool _found;
+		bool _isNonCritical;
 		std::string _blockName;
-		std::string _bytePatternAsString;
-		LPBYTE _bytePattern;
-		char* _patternMask;
-		int _patternSize;
+		std::vector<ScanPattern> _scanPatterns;
 		int _customOffset;
-		int _occurrence;		// starts at 1: if there are more occurrences, and e.g. the 3rd has to be picked, set this to 3.
+		int _patternIndexThatMatched;
 		LPBYTE _locationInImage;	// the location to use after the scan has been completed.
 	};
 }

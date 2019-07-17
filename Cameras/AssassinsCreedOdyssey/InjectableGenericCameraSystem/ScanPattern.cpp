@@ -27,67 +27,74 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "AOBBlock.h"
-#include "Utils.h"
-#include "OverlayConsole.h"
 #include "ScanPattern.h"
-
-using namespace std;
 
 namespace IGCS
 {
-	AOBBlock::AOBBlock(string blockName, string bytePatternAsString, int occurrence)
-		: _blockName{ blockName }, _customOffset{ 0 }, _locationInImage{ nullptr }, _found{ false },
-		_isNonCritical{ false }, _patternIndexThatMatched { 0 }
+	ScanPattern::ScanPattern(std::string bytePatternAsString, int occurrence) : 
+		_bytePatternAsString{ bytePatternAsString }, _occurrence{ occurrence }, _bytePattern{ nullptr }, _patternMask{ nullptr }, _patternSize{-1}, 
+		_customOffset{ 0 }
 	{
-		addAlternative(bytePatternAsString, occurrence);
+		createAOBPatternFromStringPattern();
 	}
 
 
-	AOBBlock::~AOBBlock()
+	ScanPattern::~ScanPattern()
 	{
 	}
 
 
-	// Adds an alternative AOB pattern + occurrence. Will be used if a previous pattern failed. 
-	void AOBBlock::addAlternative(std::string bytePatternAsString, int occurrence)
+	// Updates this pattern with the data used with an aob scan. This pattern contains a string in the form of "aa bb ??" where '??' is a byte
+	// which has to be skipped in the comparison, and 'aa' and 'bb' are hexadecimal bytes which have to have that value at that position.
+	// If a '|' is specified in the pattern, the position of the byte following it is the start offset returned by the aob scanner, instead of
+	// the position of the first byte of the pattern. 
+	void ScanPattern::createAOBPatternFromStringPattern()
 	{
-		ScanPattern toAdd = ScanPattern(bytePatternAsString, occurrence);
-		_scanPatterns.push_back(toAdd);
-	}
-
-
-	bool AOBBlock::scan(LPBYTE imageAddress, DWORD imageSize)
-	{
-		_patternIndexThatMatched = -1;
-		bool toReturn = _isNonCritical;		// by default this is false, so we'll return false by default if something fails, otherwise we silently 'succeed'. 
-		LPBYTE aobPatternLocation = nullptr;
-		int patternIndex = -1;
-		for (auto& scanPattern : _scanPatterns)
+		if (_bytePattern != nullptr)
 		{
-			patternIndex++;
-			aobPatternLocation = Utils::findAOBPattern(imageAddress, imageSize, scanPattern);
-			if (nullptr == aobPatternLocation)
+			// already initialized
+			return;
+		}
+		int index = 0;
+		char* pChar = (char*)_bytePatternAsString.c_str();
+		_patternSize = static_cast<int>(_bytePatternAsString.size());
+		_bytePattern = (LPBYTE)calloc(_patternSize, sizeof(BYTE));
+		_patternMask = (char*)calloc((__int64)_patternSize + 2, sizeof(char));
+		_customOffset = 0;
+
+		while (*pChar)
+		{
+			if (*pChar == ' ')
 			{
-				// not found, try next
+				pChar++;
 				continue;
 			}
-			// found
-			_patternIndexThatMatched = patternIndex;
-			_customOffset = scanPattern.customOffset();
-			break;
+
+			if (*pChar == '|')
+			{
+				pChar++;
+				_customOffset = index;
+				continue;
+			}
+
+			if (*pChar == '?')
+			{
+				_patternMask[index++] += '?';
+				pChar += 2;
+				continue;
+			}
+
+			_patternMask[index] = 'x';
+			_bytePattern[index++] = (CharToByte(pChar[0]) << 4) + CharToByte(pChar[1]);
+			pChar += 2;
 		}
-		if (nullptr == aobPatternLocation)
-		{
-			OverlayConsole::instance().logError("Can't find pattern for block '%s'! Hook not set.", _blockName.c_str());
-			return toReturn;
-		}
-		else
-		{
-			OverlayConsole::instance().logDebug("Pattern for block '%s' found at address: %p", _blockName.c_str(), (void*)aobPatternLocation);
-			_found = true;
-		}
-		_locationInImage = aobPatternLocation;
-		return true;
+	}
+	
+
+	BYTE ScanPattern::CharToByte(char c)
+	{
+		BYTE b;
+		sscanf_s(&c, "%hhx", &b);
+		return b;
 	}
 }
