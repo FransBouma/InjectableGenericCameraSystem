@@ -115,11 +115,11 @@
     <ClInclude Include="D3D11InternalOverlay.h">
       <Filter>Overlay</Filter>
     </ClInclude>
-    <ClInclude Include="D3D11ExternalWindow.h">
-      <Filter>Overlay</Filter>
-    </ClInclude>
     <ClInclude Include="Overlay\imgui_impl_dx12.h">
       <Filter>Overlay\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D12InternalOverlay.h">
+      <Filter>Overlay</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -198,11 +198,11 @@
     <ClCompile Include="D3D11InternalOverlay.cpp">
       <Filter>Overlay</Filter>
     </ClCompile>
-    <ClCompile Include="D3D11ExternalWindow.cpp">
-      <Filter>Overlay</Filter>
-    </ClCompile>
     <ClCompile Include="Overlay\imgui_impl_dx12.cpp">
       <Filter>Overlay\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D12InternalOverlay.cpp">
+      <Filter>Overlay</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

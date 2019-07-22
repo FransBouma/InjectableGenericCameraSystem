@@ -38,7 +38,7 @@
 #include "CameraManipulator.h"
 #include "GameImageHooker.h"
 #include "D3D11InternalOverlay.h"
-#include "D3D11ExternalWindow.h"
+#include "D3D12InternalOverlay.h"
 #include "OverlayConsole.h"
 #include "OverlayControl.h"
 #include "MinHook.h"
@@ -334,7 +334,7 @@ namespace IGCS
 		InputHooker::setInputHooks();
 		Input::registerRawInput();
 #ifdef _DX12_
-		D3D11ExternalWindow::createExternalWindow();
+		D3D12InternalOverlay::initializeHook();
 #else
 		D3D11InternalOverlay::initializeHook();
 #endif
