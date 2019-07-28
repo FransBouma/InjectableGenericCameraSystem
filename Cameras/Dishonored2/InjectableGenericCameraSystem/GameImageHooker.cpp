@@ -39,7 +39,7 @@ namespace IGCS::GameImageHooker
 		*interceptionContinue = hostImageAddress + continueOffset;
 #ifdef _WIN64
 		// x64
-		byte instruction[14];	// 6 bytes of the jmp qword ptr [0] and 8 bytes for the real address which is stored right after the 6 bytes of jmp qword ptr [0] bytes 
+		BYTE instruction[14];	// 6 bytes of the jmp qword ptr [0] and 8 bytes for the real address which is stored right after the 6 bytes of jmp qword ptr [0] bytes 
 								// write bytes of jmp qword ptr [address], which is jmp qword ptr 0 offset.
 		memcpy(instruction, jmpFarInstructionBytes, sizeof(jmpFarInstructionBytes));
 		// now write the address. Do this with a recast of the pointer to an __int64 pointer to avoid endianmess.
@@ -49,7 +49,7 @@ namespace IGCS::GameImageHooker
 		// x86
 		// we will write a jmp <relative address> as x86 doesn't have a jmp <absolute address>. 
 		// calculate this relative address by using Destination - Current, which is: &asmFunction - (<base> + startOffset + 5), as jmp <relative> is 5 bytes.
-		byte instruction[5];
+		BYTE instruction[5];
 		instruction[0] = 0xE9;	// JMP relative
 		DWORD targetAddress = (DWORD)asmFunction - (((DWORD)startOfHookAddress) + 5);
 		DWORD* targetAddressLocationInInstruction = (DWORD*)&instruction[1];
@@ -78,15 +78,15 @@ namespace IGCS::GameImageHooker
 	}
 
 
-	void writeBytesToProcessMemory(LPBYTE startAddress, int length, byte value)
+	void writeBytesToProcessMemory(LPBYTE startAddress, int length, BYTE value)
 	{
-		byte* byteBuffer;
+		BYTE* byteBuffer;
 		if (length < 0 || length>1024)
 		{
 			// no can/wont do 
 			return;
 		}
-		byteBuffer = (byte*)malloc(length * sizeof(byte));
+		byteBuffer = (BYTE*)malloc(length * sizeof(BYTE));
 		for (int i = 0; i < length; i++)
 		{
 			byteBuffer[i] = value;
