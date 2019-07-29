@@ -340,7 +340,7 @@ namespace IGCS
 						  //0         1         2         3         4         5         6         7
 						  //01234567890123456789012345678901234567890123456789012345678901234567890123456789
 		Console::WriteLine("---[IGCS Help]---------------------------------------------------------------", CONSOLE_WHITE);
-		Console::WriteLine("INS                                   : Enable/Disable camera");
+		Console::WriteLine("DEL                                   : Enable/Disable camera");
 		Console::WriteLine("HOME                                  : Lock/unlock camera movement");
 		Console::WriteLine("ALT + rotate/move                     : Faster rotate / move");
 		Console::WriteLine("Right-CTRL + rotate/move              : Slower rotate / move");
