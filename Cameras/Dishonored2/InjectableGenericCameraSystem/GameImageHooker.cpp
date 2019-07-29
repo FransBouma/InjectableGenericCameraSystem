@@ -95,4 +95,12 @@ namespace IGCS::GameImageHooker
 		WriteProcessMemory(OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_WRITE, FALSE, GetCurrentProcessId()), startAddress, byteBuffer, length, &noBytesWritten);
 		free(byteBuffer);
 	}
+	
+
+	// Writes the bytes pointed at by bufferToWrite starting at address startAddress, for the length in 'length'.
+	void writeRange(LPBYTE startAddress, BYTE* bufferToWrite, int length)
+	{
+		SIZE_T noBytesWritten;
+		WriteProcessMemory(OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_WRITE, FALSE, GetCurrentProcessId()), startAddress, bufferToWrite, length, &noBytesWritten);
+	}
 }

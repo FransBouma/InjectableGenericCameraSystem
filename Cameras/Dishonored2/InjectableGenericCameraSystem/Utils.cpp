@@ -102,4 +102,18 @@ namespace IGCS::Utils
 		EnumWindows(enumWindowsCallback, (LPARAM)&data);
 		return data.best_handle;
 	}
+
+	
+	// ripRelativeValueAddress is the address of the rip relative value to read for the calculation.
+	// nextOpCodeOffset is used to calculate the address of the next instruction as that's the address the rip relative value is relative off. In general
+	// this is 4 (the size of the int32 for the rip relative value), but sometimes the rip relative value is inside an instruction following one or more bytes before the 
+	// next instruction starts.
+	LPBYTE calculateAbsoluteAddress(LPBYTE ripRelativeValueAddress, int nextOpCodeOffset)
+	{
+		assert(ripRelativeValueAddress != nullptr);
+		// ripRelativeValueAddress is the absolute address of a DWORD value which is a RIP relative offset. A calculation has to be performed on x64 to
+		// calculate from that rip relative value and its location the real absolute address it refers to. That address is returned.
+		return  ripRelativeValueAddress + nextOpCodeOffset + *((__int32*)ripRelativeValueAddress);
+	}
+
 }

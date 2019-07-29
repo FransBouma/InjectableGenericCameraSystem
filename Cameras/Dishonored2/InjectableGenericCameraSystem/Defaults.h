@@ -36,7 +36,7 @@ namespace IGCS
 	#define FRAME_SLEEP				8		// in milliseconds
 
 	// Keyboard camera control
-	#define IGCS_KEY_CAMERA_ENABLE		VK_DELETE
+	#define IGCS_KEY_CAMERA_ENABLE		VK_INSERT
 	#define IGCS_KEY_CAMERA_LOCK		VK_HOME
 	#define IGCS_KEY_ROTATE_RIGHT		VK_RIGHT		// pitch
 	#define IGCS_KEY_ROTATE_LEFT		VK_LEFT

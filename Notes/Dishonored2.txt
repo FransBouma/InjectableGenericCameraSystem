@@ -1,7 +1,5 @@
 // CVars: https://pastebin.com/1DezCKBT
 
-CONTINUE: rs_FPSTargeted
-
 HUD display variable:
 Dishonored2.exe+8D8510 - 48 83 EC 08           - sub rsp,08 { 8 }
 Dishonored2.exe+8D8514 - 4C 8B C9              - mov r9,rcx
@@ -100,6 +98,52 @@ Dishonored2.exe+A2DE8F - 33 C0                 - xor eax,eax
 Dishonored2.exe+A2DE91 - 48 83 C4 28           - add rsp,28 { 40 }
 Dishonored2.exe+A2DE95 - C3                    - ret 
 
+// Ansel stopsession function in exe
+Dishonored2.exe+A2DEA0 - 48 83 EC 68           - sub rsp,68 { 104 }
+Dishonored2.exe+A2DEA4 - 48 C7 44 24 30 FEFFFFFF - mov qword ptr [rsp+30],FFFFFFFE { -2 }
+Dishonored2.exe+A2DEAD - 8B 15 C52ECE01        - mov edx,[Dishonored2.exe+2710D78] { (0) }
+Dishonored2.exe+A2DEB3 - 48 8D 4C 24 38        - lea rcx,[rsp+38]
+Dishonored2.exe+A2DEB8 - E8 53C776FF           - call Dishonored2.exe+19A610
+Dishonored2.exe+A2DEBD - 90                    - nop 
+Dishonored2.exe+A2DEBE - 41 B0 01              - mov r8l,01 { 1 }
+Dishonored2.exe+A2DEC1 - 48 8B 10              - mov rdx,[rax]
+Dishonored2.exe+A2DEC4 - 48 8D 0D E5FD1A03     - lea rcx,[Dishonored2.exe+3BDDCB0] { (7FF7F9CDDCC0) }
+Dishonored2.exe+A2DECB - E8 909271FF           - call Dishonored2.exe+147160
+Dishonored2.exe+A2DED0 - 90                    - nop 
+Dishonored2.exe+A2DED1 - 8B 4C 24 44           - mov ecx,[rsp+44]
+Dishonored2.exe+A2DED5 - 8B C1                 - mov eax,ecx
+Dishonored2.exe+A2DED7 - C1 E8 1F              - shr eax,1F { 31 }
+Dishonored2.exe+A2DEDA - A8 01                 - test al,01 { 1 }
+Dishonored2.exe+A2DEDC - 75 3A                 - jne Dishonored2.exe+A2DF18
+Dishonored2.exe+A2DEDE - 48 83 7C 24 38 00     - cmp qword ptr [rsp+38],00 { 0 }
+Dishonored2.exe+A2DEE4 - 74 32                 - je Dishonored2.exe+A2DF18
+Dishonored2.exe+A2DEE6 - C1 E9 1E              - shr ecx,1E { 30 }
+Dishonored2.exe+A2DEE9 - F6 C1 01              - test cl,01 { 1 }
+Dishonored2.exe+A2DEEC - 74 2A                 - je Dishonored2.exe+A2DF18
+Dishonored2.exe+A2DEEE - E8 5D2E78FF           - call Dishonored2.exe+1B0D50
+
+// Ansel updateCamera caller
+Dishonored2.exe+41A668 - F3 0F10 83 703A0000   - movss xmm0,[rbx+00003A70]
+Dishonored2.exe+41A670 - C6 05 C0662F02 00     - mov byte ptr [Dishonored2.exe+2710D37],00 { (0),0 }
+Dishonored2.exe+41A677 - F3 0F59 05 B971C501   - mulss xmm0,[Dishonored2.exe+2071838] { (57.30) }
+Dishonored2.exe+41A67F - F3 0F11 05 054FC303   - movss [Dishonored2.exe+404F58C],xmm0 { (48.98) }				<< FOV
+Dishonored2.exe+41A687 - F3 0F10 83 783A0000   - movss xmm0,[rbx+00003A78]
+Dishonored2.exe+41A68F - F3 0F11 05 D94EC303   - movss [Dishonored2.exe+404F570],xmm0 { (-55.43) }				<< X
+Dishonored2.exe+41A697 - F3 0F10 8B 7C3A0000   - movss xmm1,[rbx+00003A7C]
+Dishonored2.exe+41A69F - F3 0F11 0D CD4EC303   - movss [Dishonored2.exe+404F574],xmm1 { (-161.03) }				<< Y
+Dishonored2.exe+41A6A7 - F3 0F10 83 803A0000   - movss xmm0,[rbx+00003A80]
+Dishonored2.exe+41A6AF - F3 0F10 4D 97         - movss xmm1,[rbp-69]
+Dishonored2.exe+41A6B4 - F3 0F11 05 BC4EC303   - movss [Dishonored2.exe+404F578],xmm0 { (68.13) }				<< Z
+Dishonored2.exe+41A6BC - F3 0F10 45 9B         - movss xmm0,[rbp-65]
+Dishonored2.exe+41A6C1 - F3 0F11 0D B34EC303   - movss [Dishonored2.exe+404F57C],xmm1 { (-0.01) }				<< qX
+Dishonored2.exe+41A6C9 - F3 0F10 4D 9F         - movss xmm1,[rbp-61]
+Dishonored2.exe+41A6CE - F3 0F11 05 AA4EC303   - movss [Dishonored2.exe+404F580],xmm0 { (0.01) }
+Dishonored2.exe+41A6D6 - F3 0F10 45 A3         - movss xmm0,[rbp-5D]
+Dishonored2.exe+41A6DB - F3 0F11 05 A54EC303   - movss [Dishonored2.exe+404F588],xmm0 { (0.68) }
+Dishonored2.exe+41A6E3 - F3 0F11 0D 994EC303   - movss [Dishonored2.exe+404F584],xmm1 { (0.74) }
+Dishonored2.exe+41A6EB - 48 8D 0D 7E4EC303     - lea rcx,[Dishonored2.exe+404F570] { (-55.43) }
+Dishonored2.exe+41A6F2 - FF 15 40998201        - call qword ptr [Dishonored2.exe+1C44038] <<<<<< AnselSDK::UpdateCamera
+
 // g_stopTime
 Dishonored2.exe+15AF770 - 33 DB                 - xor ebx,ebx
 Dishonored2.exe+15AF772 - 48 89 1D 4FA36402     - mov [Dishonored2.exe+3BF9AC8],rbx { (0) }
@@ -182,9 +226,6 @@ Dishonored2.exe+157AF79 - 48 89 3D A8571401     - mov [Dishonored2.exe+26C0728],
 
 // disable pause on loss of focus
 Dishonored2.exe+152CF8A - 89 1D 282BEE01        - mov [Dishonored2.exe+340FAB8],ebx { (0.01) }
-
-// call updateCamera in ansel
-Dishonored2.exe+41A6F2 - FF 15 40998201        - call qword ptr [Dishonored2.exe+1C44038] { ->AnselSDK64.dll+1810 }
 
 // Camera
 // XYZ. Used for many addresses. Filter out our camera. Filter out our camera. RCX contains a value that's not matching the intercepted pointer
@@ -288,62 +329,6 @@ Dishonored2.exe+A3B77A - C3                    - ret
 Dishonored2.exe+A3B77B - 0FB6 05 E555CD01      - movzx eax,byte ptr [Dishonored2.exe+2710D67] { (20480) }
 Dishonored2.exe+A3B782 - 30 C9                 - xor cl,cl
 Dishonored2.exe+A3B784 - 0B C1                 - or eax,ecx
-
-
-
-
-
-
-
-// Pause function? (does enable the menu tho)
-Dishonored2.exe+A3B790 - 40 53                 - push rbx
-Dishonored2.exe+A3B792 - 48 83 EC 20           - sub rsp,20 { 32 }
-Dishonored2.exe+A3B796 - 48 8B 01              - mov rax,[rcx]
-Dishonored2.exe+A3B799 - 48 8B D9              - mov rbx,rcx
-Dishonored2.exe+A3B79C - FF 50 40              - call qword ptr [rax+40]
-Dishonored2.exe+A3B79F - 84 C0                 - test al,al
-Dishonored2.exe+A3B7A1 - 74 5B                 - je Dishonored2.exe+A3B7FE
-Dishonored2.exe+A3B7A3 - 48 8B 8B F82F3100     - mov rcx,[rbx+00312FF8]
-Dishonored2.exe+A3B7AA - 48 85 C9              - test rcx,rcx
-Dishonored2.exe+A3B7AD - 74 39                 - je Dishonored2.exe+A3B7E8
-Dishonored2.exe+A3B7AF - F6 81 D1000000 08     - test byte ptr [rcx+000000D1],08 { 8 }
-Dishonored2.exe+A3B7B6 - 75 46                 - jne Dishonored2.exe+A3B7FE
-Dishonored2.exe+A3B7B8 - 48 8D 15 61B11C03     - lea rdx,[Dishonored2.exe+3C06920] { (2001FCDFCE8) }
-
-// called from:
-Dishonored2.exe+12A621 - 83 3D 90542E03 00     - cmp dword ptr [Dishonored2.exe+340FAB8],00 				<< win_pauseOnFocusLoss var. 
-Dishonored2.exe+12A628 - 74 5A                 - je Dishonored2.exe+12A684
-Dishonored2.exe+12A62A - 48 8B 05 2F167602     		- mov rax,[Dishonored2.exe+288BC60] { (7FF60AA7B0F8) }
-Dishonored2.exe+12A631 - 48 8D 0D 28167602     		- lea rcx,[Dishonored2.exe+288BC60] { (7FF60AA7B0F8) }
-Dishonored2.exe+12A638 - FF 90 90010000        		- call qword ptr [rax+00000190]
-Dishonored2.exe+12A63E - 48 85 C0              		- test rax,rax
-Dishonored2.exe+12A641 - 74 41                 		- je Dishonored2.exe+12A684
-Dishonored2.exe+12A643 - 48 8B 05 16167602     		- mov rax,[Dishonored2.exe+288BC60] { (7FF60AA7B0F8) }
-Dishonored2.exe+12A64A - 48 8D 0D 0F167602     		- lea rcx,[Dishonored2.exe+288BC60] { (7FF60AA7B0F8) }
-Dishonored2.exe+12A651 - FF 90 90010000        		- call qword ptr [rax+00000190]
-Dishonored2.exe+12A657 - 48 8B C8              		- mov rcx,rax
-Dishonored2.exe+12A65A - 48 8B 10              		- mov rdx,[rax]
-Dishonored2.exe+12A65D - FF 52 40              		- call qword ptr [rdx+40]
-Dishonored2.exe+12A660 - 84 C0                 		- test al,al
-Dishonored2.exe+12A662 - 74 20                 		- je Dishonored2.exe+12A684
-Dishonored2.exe+12A664 - 48 8B 05 F5157602     		- mov rax,[Dishonored2.exe+288BC60] { (7FF60AA7B0F8) }
-Dishonored2.exe+12A66B - 48 8D 0D EE157602     		- lea rcx,[Dishonored2.exe+288BC60] { (7FF60AA7B0F8) }
-Dishonored2.exe+12A672 - FF 90 90010000        		- call qword ptr [rax+00000190]
-Dishonored2.exe+12A678 - 48 8B C8              		- mov rcx,rax
-Dishonored2.exe+12A67B - 48 8B 10              		- mov rdx,[rax]
-Dishonored2.exe+12A67E - FF 92 F0000000        		- call qword ptr [rdx+000000F0]
-Dishonored2.exe+12A684 - 80 3D 96442E03 00     - cmp byte ptr [Dishonored2.exe+340EB21],00 { (0),0 }
-Dishonored2.exe+12A68B - C6 05 92442E03 00     - mov byte ptr [Dishonored2.exe+340EB24],00 { (65536),0 }
-
-
-
-
-
-
-
-
-
-
 
 
 // Interesting other vars:

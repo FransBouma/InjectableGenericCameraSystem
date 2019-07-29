@@ -32,5 +32,7 @@
 
 namespace IGCS::GameSpecific::InterceptorHelper
 {
-	void disableAnselChecks(LPBYTE hostImageAddress);
+	void fixAnsel(LPBYTE hostImageAddress);
+	void startAnselSession(LPBYTE hostImageAddress);
+	void stopAnselSession(LPBYTE hostImageAddress);
 }

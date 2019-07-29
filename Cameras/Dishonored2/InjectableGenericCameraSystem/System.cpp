@@ -91,7 +91,7 @@ namespace IGCS
 		}
 
 		// calculate new camera values
-		XMVECTOR newLookQuaternion = GameSpecific::CameraManipulator::getCurrentQuaternion(); // _camera.calculateLookQuaternion();
+		XMVECTOR newLookQuaternion = _camera.calculateLookQuaternion();
 		XMFLOAT3 currentCoords = GameSpecific::CameraManipulator::getCurrentCameraCoords();
 		XMFLOAT3 newCoords = _camera.calculateNewCoords(currentCoords, newLookQuaternion);
 		GameSpecific::CameraManipulator::writeNewCameraValuesToGameData(newLookQuaternion, newCoords);
@@ -119,12 +119,14 @@ namespace IGCS
 			{
 				// it's going to be disabled, make sure things are alright when we give it back to the host
 				CameraManipulator::restoreOriginalCameraValues();
+				InterceptorHelper::stopAnselSession(_hostImageAddress);
 				toggleCameraMovementLockState(false);
 			}
 			else
 			{
 				// it's going to be enabled, so cache the original values before we enable it so we can restore it afterwards
 				CameraManipulator::cacheOriginalCameraValues();
+				InterceptorHelper::startAnselSession(_hostImageAddress);
 				_camera.resetAngles();
 			}
 			g_cameraEnabled = g_cameraEnabled == 0 ? (BYTE)1 : (BYTE)0;
@@ -292,7 +294,7 @@ namespace IGCS
 		_camera.setRoll(INITIAL_ROLL_RADIANS);
 		_camera.setYaw(INITIAL_YAW_RADIANS);
 		// initialize the writes after the camera has been found and initialized, as they rely on the camera struct address.
-		GameSpecific::InterceptorHelper::disableAnselChecks(_hostImageAddress);
+		GameSpecific::InterceptorHelper::fixAnsel(_hostImageAddress);
 	}
 
 
@@ -338,7 +340,7 @@ namespace IGCS
 						  //0         1         2         3         4         5         6         7
 						  //01234567890123456789012345678901234567890123456789012345678901234567890123456789
 		Console::WriteLine("---[IGCS Help]---------------------------------------------------------------", CONSOLE_WHITE);
-		Console::WriteLine("DEL                                   : Enable/Disable camera");
+		Console::WriteLine("INS                                   : Enable/Disable camera");
 		Console::WriteLine("HOME                                  : Lock/unlock camera movement");
 		Console::WriteLine("ALT + rotate/move                     : Faster rotate / move");
 		Console::WriteLine("Right-CTRL + rotate/move              : Slower rotate / move");

@@ -38,4 +38,6 @@ namespace IGCS::Utils
 	HWND findMainWindow(unsigned long process_id);
 	HMODULE getBaseAddressOfContainingProcess();
 	HMODULE getBaseAddressOfDll(LPCWSTR libraryName);
+	LPBYTE calculateAbsoluteAddress(LPBYTE ripRelativeValueAddress, int nextOpCodeOffset);
+
 }

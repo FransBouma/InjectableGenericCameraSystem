@@ -66,7 +66,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 	// newCoords are the new coordinates for the camera in worldspace.
 	void writeNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoords)
 	{
-		/*
 		XMFLOAT4 qAsFloat4;
 		XMStoreFloat4(&qAsFloat4, newLookQuaternion);
 
@@ -76,7 +75,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 		lookInMemory[1] = qAsFloat4.y;
 		lookInMemory[2] = qAsFloat4.z;
 		lookInMemory[3] = qAsFloat4.w;
-		*/
+
 		// Coords
 		float* coordsInMemory = reinterpret_cast<float*>(_hostImageAddress + CAMERA_COORDS_IN_IMAGE_OFFSET);
 		coordsInMemory[0] = newCoords.x;
@@ -104,7 +103,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 			return;
 		}
 		float* fovAddress = reinterpret_cast<float*>(_hostImageAddress + FOV_IN_STRUCT_OFFSET);
-		*fovAddress = DEFAULT_FOV_DEGREES;
+		*fovAddress = _originalFoV;
 	}
 
 
