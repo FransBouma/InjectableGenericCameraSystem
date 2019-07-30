@@ -29,6 +29,8 @@
 #include "stdafx.h"
 #include "Camera.h"
 #include "Gamepad.h"
+#include <map>
+#include "AOBBlock.h"
 
 namespace IGCS
 {
@@ -38,8 +40,7 @@ namespace IGCS
 		System();
 		~System();
 
-		void start(HMODULE hostBaseAddress);
-		LPBYTE hostImageAddress() { return System::_hostImageAddress; }
+		void start(LPBYTE hostBaseAddress, DWORD hostImageSize);
 
 	private:
 		void mainLoop();
@@ -59,6 +60,8 @@ namespace IGCS
 		Camera _camera;
 		LPBYTE _hostImageAddress;
 		bool _cameraMovementLocked = false;
+		map<string, AOBBlock*> _aobBlocks;
+		DWORD _hostImageSize;
 	};
 }
 

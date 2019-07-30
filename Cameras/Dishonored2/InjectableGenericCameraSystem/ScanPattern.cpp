@@ -25,47 +25,76 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma once
+
 #include "stdafx.h"
 #include "ScanPattern.h"
 
 namespace IGCS
 {
-	// forward declaration to avoid cyclic dependency.
-	class AOBBlock;
-}
-
-namespace IGCS::Utils
-{
-	struct handle_data {
-		unsigned long process_id;
-		HWND best_handle;
-	};
-
-	template <typename T>
-	T clamp(T value, T min, T max, T default)
+	ScanPattern::ScanPattern(std::string bytePatternAsString, int occurrence) : 
+		_bytePatternAsString{ bytePatternAsString }, _occurrence{ occurrence }, _bytePattern{ nullptr }, _patternMask{ nullptr }, _patternSize{-1}, 
+		_customOffset{ 0 }
 	{
-		return value < min ? default
-			: value > max ? default: value;
+		createAOBPatternFromStringPattern();
+	}
+
+
+	ScanPattern::~ScanPattern()
+	{
+	}
+
+
+	// Updates this pattern with the data used with an aob scan. This pattern contains a string in the form of "aa bb ??" where '??' is a byte
+	// which has to be skipped in the comparison, and 'aa' and 'bb' are hexadecimal bytes which have to have that value at that position.
+	// If a '|' is specified in the pattern, the position of the byte following it is the start offset returned by the aob scanner, instead of
+	// the position of the first byte of the pattern. 
+	void ScanPattern::createAOBPatternFromStringPattern()
+	{
+		if (_bytePattern != nullptr)
+		{
+			// already initialized
+			return;
+		}
+		int index = 0;
+		char* pChar = (char*)_bytePatternAsString.c_str();
+		_patternSize = static_cast<int>(_bytePatternAsString.size());
+		_bytePattern = (LPBYTE)calloc(_patternSize, sizeof(BYTE));
+		_patternMask = (char*)calloc((__int64)_patternSize + 2, sizeof(char));
+		_customOffset = 0;
+
+		while (*pChar)
+		{
+			if (*pChar == ' ')
+			{
+				pChar++;
+				continue;
+			}
+
+			if (*pChar == '|')
+			{
+				pChar++;
+				_customOffset = index;
+				continue;
+			}
+
+			if (*pChar == '?')
+			{
+				_patternMask[index++] += '?';
+				pChar += 2;
+				continue;
+			}
+
+			_patternMask[index] = 'x';
+			_bytePattern[index++] = (CharToByte(pChar[0]) << 4) + CharToByte(pChar[1]);
+			pChar += 2;
+		}
 	}
 	
-	template <typename T>
-	T clamp(T value, T min, T default)
-	{
-		return value < min ? default : value;
-	}
-	
 
-	HWND findMainWindow(unsigned long process_id);
-	MODULEINFO getModuleInfoOfContainingProcess();
-	MODULEINFO getModuleInfoOfDll(LPCWSTR libraryName);
-	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, ScanPattern pattern);
-	BYTE CharToByte(char c);
-	LPBYTE calculateAbsoluteAddress(AOBBlock* locationData, int nextOpCodeOffset);
-	std::string formatString(const char *fmt, va_list args);
-	std::string formatStringFlexible(const char* fmt, ...);
-	bool stringStartsWith(const char *a, const char *b);
-	bool keyDown(int virtualKeyCode);
-	bool altPressed();
-	std::string vkCodeToString(int vkCode);
+	BYTE ScanPattern::CharToByte(char c)
+	{
+		BYTE b;
+		sscanf_s(&c, "%hhx", &b);
+		return b;
+	}
 }

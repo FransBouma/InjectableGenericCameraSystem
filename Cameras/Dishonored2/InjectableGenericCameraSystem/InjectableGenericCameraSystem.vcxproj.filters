@@ -64,6 +64,12 @@
     <ClInclude Include="InterceptorHelper.h">
       <Filter>Game Specific</Filter>
     </ClInclude>
+    <ClInclude Include="AOBBlock.h">
+      <Filter>Hooking</Filter>
+    </ClInclude>
+    <ClInclude Include="ScanPattern.h">
+      <Filter>Hooking</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CameraManipulator.cpp">
@@ -104,6 +110,12 @@
     </ClCompile>
     <ClCompile Include="InterceptorHelper.cpp">
       <Filter>Game Specific</Filter>
+    </ClCompile>
+    <ClCompile Include="AOBBlock.cpp">
+      <Filter>Hooking</Filter>
+    </ClCompile>
+    <ClCompile Include="ScanPattern.cpp">
+      <Filter>Hooking</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -37,19 +37,19 @@ using namespace std;
 
 namespace IGCS::GameSpecific::CameraManipulator
 {
-	static LPBYTE _hostImageAddress = nullptr;
+	static LPBYTE _cameraStructAddress = nullptr;
 	static float _originalLookData[4];
 	static float _originalCoordsData[3];
 	static float _originalFoV;
 
-	void setImageAddress(LPBYTE hostImageAddress)
+	void setCameraStructAddress(LPBYTE structAddress)
 	{
-		_hostImageAddress = hostImageAddress;
+		_cameraStructAddress = structAddress;
 	}
 
 	XMFLOAT3 getCurrentCameraCoords()
 	{
-		float* coordsInMemory = reinterpret_cast<float*>(_hostImageAddress + CAMERA_COORDS_IN_IMAGE_OFFSET);
+		float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_STRUCT_OFFSET);
 		XMFLOAT3 currentCoords = XMFLOAT3(coordsInMemory);
 		return currentCoords;
 	}
@@ -57,7 +57,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 
 	XMVECTOR getCurrentQuaternion()
 	{
-		float* quaternionInMemory = reinterpret_cast<float*>(_hostImageAddress + CAMERA_QUATERNION_IN_IMAGE_OFFSET);
+		float* quaternionInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_QUATERNION_IN_STRUCT_OFFSET);
 		return XMVectorSet(quaternionInMemory[0], quaternionInMemory[1], quaternionInMemory[2], quaternionInMemory[3]);
 	}
 
@@ -70,14 +70,14 @@ namespace IGCS::GameSpecific::CameraManipulator
 		XMStoreFloat4(&qAsFloat4, newLookQuaternion);
 
 		// quaternion
-		float* lookInMemory = reinterpret_cast<float*>(_hostImageAddress + CAMERA_QUATERNION_IN_IMAGE_OFFSET);
+		float* lookInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_QUATERNION_IN_STRUCT_OFFSET);
 		lookInMemory[0] = qAsFloat4.x;
 		lookInMemory[1] = qAsFloat4.y;
 		lookInMemory[2] = qAsFloat4.z;
 		lookInMemory[3] = qAsFloat4.w;
 
 		// Coords
-		float* coordsInMemory = reinterpret_cast<float*>(_hostImageAddress + CAMERA_COORDS_IN_IMAGE_OFFSET);
+		float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_STRUCT_OFFSET);
 		coordsInMemory[0] = newCoords.x;
 		coordsInMemory[1] = newCoords.y;
 		coordsInMemory[2] = newCoords.z;
@@ -87,49 +87,49 @@ namespace IGCS::GameSpecific::CameraManipulator
 	// changes the FoV with the specified amount
 	void changeFoV(float amount)
 	{
-		if (nullptr == _hostImageAddress)
+		if (nullptr == _cameraStructAddress)
 		{
 			return;
 		}
-		float* fovAddress = reinterpret_cast<float*>(_hostImageAddress + FOV_IN_STRUCT_OFFSET);
+		float* fovAddress = reinterpret_cast<float*>(_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
 		*fovAddress += amount;
 	}
 
 
 	void resetFOV()
 	{
-		if (nullptr == _hostImageAddress)
+		if (nullptr == _cameraStructAddress)
 		{
 			return;
 		}
-		float* fovAddress = reinterpret_cast<float*>(_hostImageAddress + FOV_IN_STRUCT_OFFSET);
-		*fovAddress = _originalFoV;
+		float* fovAddress = reinterpret_cast<float*>(_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
+		*fovAddress = DEFAULT_FOV_IN_DEGREES;	// original fov always contains 0. 
 	}
 
 
 	// should restore the camera values in the camera structures to the cached values. This assures the free camera is always enabled at the original camera location.
 	void restoreOriginalCameraValues()
 	{
-		if (nullptr == _hostImageAddress)
+		if (nullptr == _cameraStructAddress)
 		{
 			return;
 		}
-		float* lookInMemory = reinterpret_cast<float*>(_hostImageAddress + CAMERA_QUATERNION_IN_IMAGE_OFFSET);
-		float* coordsInMemory = reinterpret_cast<float*>(_hostImageAddress + CAMERA_COORDS_IN_IMAGE_OFFSET);
+		float* lookInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_QUATERNION_IN_STRUCT_OFFSET);
+		float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_STRUCT_OFFSET);
 		memcpy(lookInMemory, _originalLookData, 4 * sizeof(float));
 		memcpy(coordsInMemory, _originalCoordsData, 3 * sizeof(float));
-		float *fovInMemory = reinterpret_cast<float*>(_hostImageAddress + FOV_IN_STRUCT_OFFSET);
+		float *fovInMemory = reinterpret_cast<float*>(_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
 		*fovInMemory = _originalFoV;
 	}
 
 
 	void cacheOriginalCameraValues()
 	{
-		float* lookInMemory = reinterpret_cast<float*>(_hostImageAddress + CAMERA_QUATERNION_IN_IMAGE_OFFSET);
-		float* coordsInMemory = reinterpret_cast<float*>(_hostImageAddress + CAMERA_COORDS_IN_IMAGE_OFFSET);
+		float* lookInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_QUATERNION_IN_STRUCT_OFFSET);
+		float* coordsInMemory = reinterpret_cast<float*>(_cameraStructAddress + CAMERA_COORDS_IN_STRUCT_OFFSET);
 		memcpy(_originalLookData, lookInMemory, 4 * sizeof(float));
 		memcpy(_originalCoordsData, coordsInMemory, 3 * sizeof(float));
-		float *fovInMemory = reinterpret_cast<float*>(_hostImageAddress + FOV_IN_STRUCT_OFFSET);
+		float *fovInMemory = reinterpret_cast<float*>(_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
 		_originalFoV = *fovInMemory;
 	}
 }

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2019, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -28,11 +28,33 @@
 #include "stdafx.h"
 #include "Utils.h"
 #include "GameConstants.h"
+#include "AOBBlock.h"
+#include "Console.h"
+#include <comdef.h>
+#include <codecvt>
 
 using namespace std;
 
 namespace IGCS::Utils
 {
+	// This table is from Reshade.
+	static const char vkCodeToStringLookup[256][16] = 
+	{
+		"", "", "", "Cancel", "", "", "", "", "Backspace", "Tab", "", "", "Clear", "Enter", "", "",
+		"Shift", "Control", "Alt", "Pause", "Caps Lock", "", "", "", "", "", "", "Escape", "", "", "", "",
+		"Space", "Page Up", "Page Down", "End", "Home", "Left Arrow", "Up Arrow", "Right Arrow", "Down Arrow", 
+		"Select", "", "", "Print Screen", "Insert", "Delete", "Help",
+		"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "", "", "", "", "", "",
+		"", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
+		"P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Left Windows", "Right Windows", "", "", "Sleep",
+		"Numpad 0", "Numpad 1", "Numpad 2", "Numpad 3", "Numpad 4", "Numpad 5", "Numpad 6", "Numpad 7", "Numpad 8", "Numpad 9", 
+		"Numpad *", "Numpad +", "", "Numpad -", "Numpad Decimal", "Numpad /",
+		"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "F16",
+		"F17", "F18", "F19", "F20", "F21", "F22", "F23", "F24", "", "", "", "", "", "", "", "",
+		"Num Lock", "Scroll Lock",
+	};
+
+
 	BOOL isMainWindow(HWND handle)
 	{
 		BOOL toReturn = GetWindow(handle, GW_OWNER) == (HWND)0 && IsWindowVisible(handle);
@@ -43,9 +65,10 @@ namespace IGCS::Utils
 			LPWSTR title = new WCHAR[bufsize];
 			GetWindowText(handle, title, bufsize);
 			toReturn &= (_wcsicmp(title, TEXT(GAME_WINDOW_TITLE)) == 0);
-#ifdef _DEBUG
-			wcout << "Window found with title: '" << title << "'" << endl;
-#endif
+			// convert title to char* so we can display it
+			_bstr_t titleAsBstr(title);
+			char* titleAsChar = titleAsBstr;		// char conversion copy
+			Console::WriteDebugLine(Utils::formatStringFlexible("Window found with title: '%s'", titleAsChar));
 		}
 		return toReturn;
 	}
@@ -65,32 +88,53 @@ namespace IGCS::Utils
 	}
 	
 
-	HMODULE getBaseAddressOfContainingProcess()
+	MODULEINFO getModuleInfoOfContainingProcess()
 	{
-		TCHAR processName[MAX_PATH] = TEXT("<unknown>");
 		HANDLE processHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
-		HMODULE toReturn = NULL;
-
-		if (NULL != processHandle)
+		HMODULE processModule = nullptr;
+		if (nullptr != processHandle)
 		{
 			DWORD cbNeeded;
-			if (EnumProcessModulesEx(processHandle, &toReturn, sizeof(toReturn), &cbNeeded, LIST_MODULES_32BIT | LIST_MODULES_64BIT))
+			if(!EnumProcessModulesEx(processHandle, &processModule, sizeof(processModule), &cbNeeded, LIST_MODULES_32BIT | LIST_MODULES_64BIT))
 			{
-				GetModuleBaseName(processHandle, toReturn, processName, sizeof(processName) / sizeof(TCHAR));
+				processModule = nullptr;
 			}
-			else
+		}
+		MODULEINFO toReturn;
+		if (nullptr == processModule)
+		{
+			toReturn.lpBaseOfDll = nullptr;
+		}
+		else
+		{
+			if (!GetModuleInformation(processHandle, processModule, &toReturn, sizeof(MODULEINFO)))
 			{
-				toReturn = NULL;
+				toReturn.lpBaseOfDll = nullptr;
 			}
 		}
 		CloseHandle(processHandle);
 		return toReturn;
 	}
 
-
-	HMODULE getBaseAddressOfDll(LPCWSTR libraryName)
+	
+	MODULEINFO getModuleInfoOfDll(LPCWSTR libraryName)
 	{
-		return GetModuleHandle(libraryName);
+		HANDLE processHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, GetCurrentProcessId());
+		HMODULE dllModule = GetModuleHandle(libraryName);
+		MODULEINFO toReturn;
+		if (nullptr == dllModule)
+		{
+			toReturn.lpBaseOfDll = nullptr;
+		}
+		else
+		{
+			if (!GetModuleInformation(processHandle, dllModule, &toReturn, sizeof(MODULEINFO)))
+			{
+				toReturn.lpBaseOfDll = nullptr;
+			}
+		}
+		CloseHandle(processHandle);
+		return toReturn;
 	}
 
 
@@ -103,17 +147,144 @@ namespace IGCS::Utils
 		return data.best_handle;
 	}
 
-	
-	// ripRelativeValueAddress is the address of the rip relative value to read for the calculation.
+
+	BYTE CharToByte(char c)
+	{
+		BYTE b;
+		sscanf_s(&c, "%hhx", &b);
+		return b;
+	}
+
+
+	bool DataCompare(LPBYTE image, LPBYTE bytePattern, char* patternMask)
+	{
+		for (; *patternMask; ++patternMask, ++image, ++bytePattern)
+		{
+			if (*patternMask == 'x' && *image != *bytePattern)
+			{
+				return false;
+			}
+		}
+		return (*patternMask) == 0;
+	}
+
+
+	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, ScanPattern pattern)
+	{
+		BYTE firstByte = pattern.bytePattern()[0];
+		__int64 length = (__int64)imageAddress + imageSize - pattern.patternSize();
+
+		LPBYTE toReturn = nullptr;
+		LPBYTE startOfScan = imageAddress;
+		for (int occurrence = 0; occurrence < pattern.occurrence(); occurrence++)
+		{
+			// reset the pointer found, as we're not interested in this occurrence, we need a following occurrence.
+			toReturn = nullptr;
+			for (__int64 i = (__int64)startOfScan; i < length; i += 4)
+			{
+				unsigned x = *(unsigned*)(i);
+
+				if ((x & 0xFF) == firstByte)
+				{
+					if (DataCompare(reinterpret_cast<BYTE*>(i), pattern.bytePattern(), pattern.patternMask()))
+					{
+						toReturn = reinterpret_cast<BYTE*>(i);
+						break;
+					}
+				}
+				if ((x & 0xFF00) >> 8 == firstByte)
+				{
+					if (DataCompare(reinterpret_cast<BYTE*>(i + 1), pattern.bytePattern(), pattern.patternMask()))
+					{
+						toReturn = reinterpret_cast<BYTE*>(i + 1);
+						break;
+					}
+				}
+				if ((x & 0xFF0000) >> 16 == firstByte)
+				{
+					if (DataCompare(reinterpret_cast<BYTE*>(i + 2), pattern.bytePattern(), pattern.patternMask()))
+					{
+						toReturn = reinterpret_cast<BYTE*>(i + 2);
+						break;
+					}
+				}
+				if ((x & 0xFF000000) >> 24 == firstByte)
+				{
+					if (DataCompare(reinterpret_cast<BYTE*>(i + 3), pattern.bytePattern(), pattern.patternMask()))
+					{
+						toReturn = reinterpret_cast<BYTE*>(i + 3);
+						break;
+					}
+				}
+			}
+			if (nullptr == toReturn)
+			{
+				// not found, give up
+				return toReturn;
+			}
+			startOfScan = toReturn + 1;	// otherwise we'll match ourselves. 
+		}
+		return toReturn;
+	}
+
+
+	// locationData is the AOB block with the address of the rip relative value to read for the calculation.
 	// nextOpCodeOffset is used to calculate the address of the next instruction as that's the address the rip relative value is relative off. In general
 	// this is 4 (the size of the int32 for the rip relative value), but sometimes the rip relative value is inside an instruction following one or more bytes before the 
 	// next instruction starts.
-	LPBYTE calculateAbsoluteAddress(LPBYTE ripRelativeValueAddress, int nextOpCodeOffset)
+	LPBYTE calculateAbsoluteAddress(AOBBlock* locationData, int nextOpCodeOffset)
 	{
-		assert(ripRelativeValueAddress != nullptr);
+		assert(locationData != nullptr);
 		// ripRelativeValueAddress is the absolute address of a DWORD value which is a RIP relative offset. A calculation has to be performed on x64 to
 		// calculate from that rip relative value and its location the real absolute address it refers to. That address is returned.
+		LPBYTE ripRelativeValueAddress = locationData->locationInImage() + locationData->customOffset();
 		return  ripRelativeValueAddress + nextOpCodeOffset + *((__int32*)ripRelativeValueAddress);
 	}
 
+	string formatStringFlexible(const char* fmt, ...)
+	{
+		va_list args;
+		va_start(args, fmt);
+		string formattedArgs = Utils::formatString(fmt, args);
+		va_end(args);
+		return formattedArgs;
+	}
+
+
+	string formatString(const char *fmt, const va_list args)
+	{
+		va_list args_copy;
+		va_copy(args_copy, args);
+
+		int len = vsnprintf(NULL, 0, fmt, args_copy);
+		char* buffer = new char[len + 2];
+		vsnprintf(buffer, len+1, fmt, args_copy);
+		string toReturn(buffer, len+1);
+		return toReturn;
+	}
+
+	bool stringStartsWith(const char *a, const char *b)
+	{
+		return strncmp(a, b, strlen(b)) == 0 ? 1 : 0;
+	}
+	
+	bool keyDown(int virtualKeyCode)
+	{
+		return (GetKeyState(virtualKeyCode) & 0x8000);
+	}
+
+	bool altPressed()
+	{
+		return keyDown(VK_LMENU) || keyDown(VK_RMENU);
+	}
+
+	std::string vkCodeToString(int vkCode)
+	{
+		if (vkCode > 255 || vkCode < 0)
+		{
+			return "";
+		}
+		string toReturn = vkCodeToStringLookup[vkCode];
+		return toReturn;
+	}
 }

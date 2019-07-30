@@ -34,11 +34,14 @@ namespace IGCS::Console
 {
 	#define CONSOLE_WHITE	15
 	#define CONSOLE_NORMAL  7
+	#define CONSOLE_DEBUG	8
+	#define CONSOLE_ERROR	4
 
 	void Init();
 	void Release();
 	void WriteHeader();
 	void WriteLine(const string& toWrite);
+	void WriteDebugLine(const string& toWrite);
 	void WriteLine(const string& toWrite, int color);
 	void WriteError(const string& error);
 	void SetColor(int color);

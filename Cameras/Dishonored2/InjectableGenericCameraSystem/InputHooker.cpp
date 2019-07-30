@@ -168,45 +168,33 @@ namespace IGCS::InputHooker
 		{
 			Console::WriteError("Hooking XInput9_1_0 failed!");
 		}
-#ifdef _DEBUG
-		Console::WriteLine("Hook set to XInputGetState");
-#endif
+		Console::WriteDebugLine("Hook set to XInputGetState");
 
 		if (MH_CreateHookApiEx(L"user32", "GetMessageA", &detourGetMessageA, &hookedGetMessageA) != MH_OK)
 		{
 			Console::WriteError("Hooking GetMessageA failed!");
 		}
-#ifdef _DEBUG
-		Console::WriteLine("Hook set to GetMessageA");
-#endif
+		Console::WriteDebugLine("Hook set to GetMessageA");
 		if (MH_CreateHookApiEx(L"user32", "GetMessageW", &detourGetMessageW, &hookedGetMessageW) != MH_OK)
 		{
 			Console::WriteError("Hooking GetMessageW failed!");
 		}
-#ifdef _DEBUG
-		Console::WriteLine("Hook set to GetMessageW");
-#endif
+		Console::WriteDebugLine("Hook set to GetMessageW");
 		if (MH_CreateHookApiEx(L"user32", "PeekMessageA", &detourPeekMessageA, &hookedPeekMessageA) != MH_OK)
 		{
 			Console::WriteError("Hooking PeekMessageA failed!");
 		}
-#ifdef _DEBUG
-		Console::WriteLine("Hook set to PeekMessageA");
-#endif
+		Console::WriteDebugLine("Hook set to PeekMessageA");
 		if (MH_CreateHookApiEx(L"user32", "PeekMessageW", &detourPeekMessageW, &hookedPeekMessageW) != MH_OK)
 		{
 			Console::WriteError("Hooking PeekMessageW failed!");
 		}
-#ifdef _DEBUG
-		Console::WriteLine("Hook set to PeekMessageW");
-#endif
+		Console::WriteDebugLine("Hook set to PeekMessageW");
 
 		// Enable all hooks
 		if (MH_EnableHook(MH_ALL_HOOKS) == MH_OK)
 		{
-#ifdef _DEBUG
 			Console::WriteLine("All hooks enabled");
-#endif
 		}
 		else
 		{

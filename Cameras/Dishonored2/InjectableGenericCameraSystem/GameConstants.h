@@ -30,22 +30,76 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Dishonored 2, v1.77.9+"
-	#define CAMERA_VERSION								"1.0.1"
+	#define GAME_NAME									"Dishonored 2 (v1.77.9+) or Dishonored: Death of the Outsider (v1.145+)"
+	#define CAMERA_VERSION								"1.0.2"
 	#define CAMERA_CREDITS								"Otis_Inf"
-	#define GAME_WINDOW_TITLE							"Dishonored 2"
+	#define GAME_WINDOW_TITLE							"Dishonored"
 	#define INITIAL_PITCH_RADIANS						0.0f
 	#define INITIAL_YAW_RADIANS							0.0f
 	#define INITIAL_ROLL_RADIANS						0.0f
 	#define CONTROLLER_Y_INVERT							true
-	#define FASTER_MULTIPLIER							6.0f
+	#define FASTER_MULTIPLIER							7.0f
 	#define SLOWER_MULTIPLIER							0.08f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
-	#define DEFAULT_MOVEMENT_SPEED						0.07f
+	#define DEFAULT_MOVEMENT_SPEED						0.025f
 	#define DEFAULT_ROTATION_SPEED						0.015f
 	#define DEFAULT_FOV_SPEED							0.15f
+	#define DEFAULT_FOV_IN_DEGREES						48.0f
 	#define DEFAULT_Z_MOVEMENT_MULTIPLIER				0.5f
 	// End Mandatory constants
+
+	// AOB Keys for interceptor's AOB scanner
+	#define ANSEL_START_SESSION_KEY				"AOB_ANSEL_START_SESSION_KEY"
+	#define ANSEL_STOP_SESSION_KEY				"AOB_ANSEL_STOP_SESSION_KEY"
+	#define ANSEL_SETUP_UPDATECAMERA_KEY		"AOB_ANSEL_SETUP_UPDATECAMERA_KEY"
+	#define ANSEL_SDK_GETCONFIGURATION_KEY		"AOB_ANSEL_SDK_GETCONFIGURATION_KEY"
+	#define WIN_PAUSEONFOCUSLOSS_KEY			"AOB_WIN_PAUSEONFOCUSLOSS_KEY"
+
+	// StartSession jump offsets to nop, relative from start of function
+	// v1.77.9
+	//Dishonored2.exe+A2DD90 - 48 83 EC 28           - sub rsp,28 { 40 }
+	//Dishonored2.exe+A2DD94 - 48 8B 0D CD2FCE01     - mov rcx,[Dishonored2.exe+2710D68] 
+	//Dishonored2.exe+A2DD9B - 48 85 C9              - test rcx,rcx
+	//Dishonored2.exe+A2DD9E - 0F84 EB000000         - je Dishonored2.exe+A2DE8F				<<< NOP
+	//Dishonored2.exe+A2DDA4 - 48 8B 01              - mov rax,[rcx]
+	//Dishonored2.exe+A2DDA7 - FF 90 E8000000        - call qword ptr [rax+000000E8]
+	//Dishonored2.exe+A2DDAD - 84 C0                 - test al,al
+	//Dishonored2.exe+A2DDAF - 0F85 DA000000         - jne Dishonored2.exe+A2DE8F				<<< NOP
+	//Dishonored2.exe+A2DDB5 - 48 8B 0D AC2FCE01     - mov rcx,[Dishonored2.exe+2710D68] 
+	//Dishonored2.exe+A2DDBC - 48 8B 01              - mov rax,[rcx]
+	//Dishonored2.exe+A2DDBF - FF 90 F8000000        - call qword ptr [rax+000000F8]
+	//Dishonored2.exe+A2DDC5 - 84 C0                 - test al,al
+	//Dishonored2.exe+A2DDC7 - 0F85 C2000000         - jne Dishonored2.exe+A2DE8F				<<< NOP
+	//Dishonored2.exe+A2DDCD - 48 8B 0D 942FCE01     - mov rcx,[Dishonored2.exe+2710D68] 
+	//Dishonored2.exe+A2DDD4 - 48 8B 01              - mov rax,[rcx]
+	//Dishonored2.exe+A2DDD7 - FF 50 40              - call qword ptr [rax+40]
+	//Dishonored2.exe+A2DDDA - 84 C0                 - test al,al
+	//Dishonored2.exe+A2DDDC - 0F84 AD000000         - je Dishonored2.exe+A2DE8F				<<< NOP
+	//Dishonored2.exe+A2DDE2 - 48 8B 05 371DB702     - mov rax,[Dishonored2.exe+359FB20] 
+	//Dishonored2.exe+A2DDE9 - 48 8D 0D 301DB702     - lea rcx,[Dishonored2.exe+359FB20] 
+	//Dishonored2.exe+A2DDF0 - FF 90 10010000        - call qword ptr [rax+00000110]
+	//Dishonored2.exe+A2DDF6 - 84 C0                 - test al,al
+	//Dishonored2.exe+A2DDF8 - 0F85 91000000         - jne Dishonored2.exe+A2DE8F				<<< NOP
+	//Dishonored2.exe+A2DDFE - 48 8B 0D 632FCE01     - mov rcx,[Dishonored2.exe+2710D68] 
+	//Dishonored2.exe+A2DE05 - 48 81 C1 C86E1F00     - add rcx,001F6EC8 { 2059976 }
+	//Dishonored2.exe+A2DE0C - E8 9F4DEAFF           - call Dishonored2.exe+8D2BB0
+	//Dishonored2.exe+A2DE11 - 83 F8 05              - cmp eax,05 { 5 }
+	//Dishonored2.exe+A2DE14 - 74 79                 - je Dishonored2.exe+A2DE8F				<<< NOP
+	//Dishonored2.exe+A2DE16 - E8 A5066EFF           - call Dishonored2.exe+10E4C0
+	//Dishonored2.exe+A2DE1B - 8B 05 B7FE1A03        - mov eax,[Dishonored2.exe+3BDDCD8] 
+	//Dishonored2.exe+A2DE21 - 48 8D 0D 88FE1A03     - lea rcx,[Dishonored2.exe+3BDDCB0] 
+	//Dishonored2.exe+A2DE28 - 33 D2                 - xor edx,edx
+	//Dishonored2.exe+A2DE2A - 89 05 482FCE01        - mov [Dishonored2.exe+2710D78],eax 
+	//Dishonored2.exe+A2DE30 - E8 2B9571FF           - call Dishonored2.exe+147360
+	//Dishonored2.exe+A2DE35 - 48 8D 0D 64B1B602     - lea rcx,[Dishonored2.exe+3598FA0] 
+	//Dishonored2.exe+A2DE3C - B2 01                 - mov dl,01 { 1 }
+	#define STARTSESSION_JMP_OFFSET1			0xE
+	#define STARTSESSION_JMP_OFFSET2			0x1F
+	#define STARTSESSION_JMP_OFFSET3			0x37
+	#define STARTSESSION_JMP_OFFSET4			0x4C
+	#define STARTSESSION_JMP_OFFSET5			0x68
+	#define STARTSESSION_JMP_OFFSET6			0x84
+
 
 	// Indices in the structures read by interceptors 
 	// Ansel updateCamera caller
@@ -69,7 +123,8 @@ namespace IGCS::GameSpecific
 	//Dishonored2.exe+41A6E3 - F3 0F11 0D 994EC303   - movss [Dishonored2.exe+404F584],xmm1 { (0.74) }
 	//Dishonored2.exe+41A6EB - 48 8D 0D 7E4EC303     - lea rcx,[Dishonored2.exe+404F570] { (-55.43) }
 	//Dishonored2.exe+41A6F2 - FF 15 40998201        - call qword ptr [Dishonored2.exe+1C44038] <<<<<< AnselSDK::UpdateCamera
-	#define CAMERA_QUATERNION_IN_IMAGE_OFFSET			0x404F57C
-	#define CAMERA_COORDS_IN_IMAGE_OFFSET				0x404F570		
-	#define FOV_IN_STRUCT_OFFSET						0x404F58C
+	// offsets are relative to the X coordinate address (which is the first value in the struct
+	#define CAMERA_QUATERNION_IN_STRUCT_OFFSET			0xC
+	#define CAMERA_COORDS_IN_STRUCT_OFFSET				0x0
+	#define FOV_IN_STRUCT_OFFSET						0x1C
 }

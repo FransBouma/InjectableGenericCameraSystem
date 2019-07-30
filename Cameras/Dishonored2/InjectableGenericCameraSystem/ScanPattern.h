@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2019, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -26,18 +26,30 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "stdafx.h"
 
-using namespace DirectX;
-
-namespace IGCS::GameSpecific::CameraManipulator
+namespace IGCS
 {
-	void writeNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoords);
-	XMVECTOR getCurrentQuaternion();
-	void restoreOriginalCameraValues();
-	void cacheOriginalCameraValues();
-	void changeFoV(float amount);
-	void setCameraStructAddress(LPBYTE structAddress);
-	XMFLOAT3 getCurrentCameraCoords();
-	void resetFOV();
+	class ScanPattern
+	{
+	public:
+		ScanPattern(std::string bytePatternAsString, int occurrence);
+		~ScanPattern();
+
+		int occurrence() { return _occurrence; }
+		LPBYTE bytePattern() { return _bytePattern; }
+		char* patternMask() { return _patternMask; }
+		int customOffset() { return _customOffset; }
+		int patternSize() { return _patternSize; }
+
+	private:
+		void createAOBPatternFromStringPattern();
+		BYTE CharToByte(char c);
+
+		std::string _bytePatternAsString;
+		int _occurrence = -1;
+		LPBYTE _bytePattern = nullptr;
+		char* _patternMask = nullptr;
+		int _patternSize = -1;
+		int _customOffset = 0;
+	};
 }

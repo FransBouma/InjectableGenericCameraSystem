@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2019, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -26,18 +26,35 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#include "stdafx.h"
+#include "AOBBlock.h"
+#include "Utils.h"
+#include "ScanPattern.h"
 
-using namespace DirectX;
-
-namespace IGCS::GameSpecific::CameraManipulator
+namespace IGCS
 {
-	void writeNewCameraValuesToGameData(XMVECTOR newLookQuaternion, XMFLOAT3 newCoords);
-	XMVECTOR getCurrentQuaternion();
-	void restoreOriginalCameraValues();
-	void cacheOriginalCameraValues();
-	void changeFoV(float amount);
-	void setCameraStructAddress(LPBYTE structAddress);
-	XMFLOAT3 getCurrentCameraCoords();
-	void resetFOV();
+	class AOBBlock
+	{
+	public:
+		AOBBlock(std::string blockName, std::string bytePatternAsString, int occurrence);
+		~AOBBlock();
+
+		bool scan(LPBYTE imageAddress, DWORD imageSize);
+		LPBYTE locationInImage() { return _locationInImage; }
+		int customOffset() { return _customOffset; }
+		LPBYTE absoluteAddress() { return (LPBYTE)(_locationInImage + (DWORD)customOffset()); }
+		void addAlternative(std::string bytePatternAsString, int occurrence);
+		bool found() { return _found; }
+		void markAsNonCritical() { _isNonCritical = true; }
+		bool isNonCritical() { return _isNonCritical; }
+		int patternIndexThatMatched() { return _patternIndexThatMatched; }
+
+	private:
+		bool _found;
+		bool _isNonCritical;
+		std::string _blockName;
+		std::vector<ScanPattern> _scanPatterns;
+		int _customOffset;
+		int _patternIndexThatMatched;
+		LPBYTE _locationInImage;	// the location to use after the scan has been completed.
+	};
 }

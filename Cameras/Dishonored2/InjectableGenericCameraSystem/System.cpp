@@ -52,14 +52,15 @@ namespace IGCS
 	}
 
 
-	void System::start(HMODULE hostBaseAddress)
+	void System::start(LPBYTE hostBaseAddress, DWORD hostImageSize)
 	{
 		Globals::instance().systemActive(true);
 		_hostImageAddress = (LPBYTE)hostBaseAddress;
+		_hostImageSize = hostImageSize;
 		Globals::instance().gamePad().setInvertLStickY(CONTROLLER_Y_INVERT);
 		Globals::instance().gamePad().setInvertRStickY(CONTROLLER_Y_INVERT);
-		displayHelp();
 		initialize();		// will block till camera is found
+		displayHelp();
 		mainLoop();
 	}
 
@@ -119,14 +120,14 @@ namespace IGCS
 			{
 				// it's going to be disabled, make sure things are alright when we give it back to the host
 				CameraManipulator::restoreOriginalCameraValues();
-				InterceptorHelper::stopAnselSession(_hostImageAddress);
+				InterceptorHelper::stopAnselSession();
 				toggleCameraMovementLockState(false);
 			}
 			else
 			{
 				// it's going to be enabled, so cache the original values before we enable it so we can restore it afterwards
 				CameraManipulator::cacheOriginalCameraValues();
-				InterceptorHelper::startAnselSession(_hostImageAddress);
+				InterceptorHelper::startAnselSession();
 				_camera.resetAngles();
 			}
 			g_cameraEnabled = g_cameraEnabled == 0 ? (BYTE)1 : (BYTE)0;
@@ -289,12 +290,12 @@ namespace IGCS
 	{
 		InputHooker::setInputHooks();
 		Input::registerRawInput();
-		GameSpecific::CameraManipulator::setImageAddress(_hostImageAddress);
+		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
 		_camera.setPitch(INITIAL_PITCH_RADIANS);
 		_camera.setRoll(INITIAL_ROLL_RADIANS);
 		_camera.setYaw(INITIAL_YAW_RADIANS);
 		// initialize the writes after the camera has been found and initialized, as they rely on the camera struct address.
-		GameSpecific::InterceptorHelper::fixAnsel(_hostImageAddress);
+		GameSpecific::InterceptorHelper::fixAnsel(_aobBlocks);
 	}
 
 

@@ -41,13 +41,20 @@ namespace IGCS::Console
 	void WriteHeader()
 	{
 		SetColor(CONSOLE_WHITE);
-		cout << "Injectable camera tools for " << GAME_NAME << ". Version: " << CAMERA_VERSION << endl;
+		cout << "Injectable camera tools for " << GAME_NAME << "." << endl << "Camera Version: " << CAMERA_VERSION << endl;
 		WriteLine("Powered by Injectable Generic Camera System by Otis_Inf");
 		WriteLine("Get your copy at: https://github.com/FransBouma/InjectableGenericCameraSystem");
 		cout << "Camera credits: " << CAMERA_CREDITS << endl;
 		SetColor(9);
 		WriteLine("-----------------------------------------------------------------------------");
 		SetColor(CONSOLE_NORMAL);
+	}
+
+	void WriteDebugLine(const string& toWrite)
+	{
+#if _DEBUG
+		WriteLine(toWrite, CONSOLE_DEBUG);
+#endif
 	}
 
 	void WriteLine(const string& toWrite, int color)
@@ -66,7 +73,7 @@ namespace IGCS::Console
 
 	void WriteError(const string& error)
 	{
-		cerr << error << endl;
+		WriteLine(error, CONSOLE_ERROR);
 	}
 
 

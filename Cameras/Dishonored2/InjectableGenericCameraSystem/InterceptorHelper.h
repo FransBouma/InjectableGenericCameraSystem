@@ -32,7 +32,8 @@
 
 namespace IGCS::GameSpecific::InterceptorHelper
 {
-	void fixAnsel(LPBYTE hostImageAddress);
-	void startAnselSession(LPBYTE hostImageAddress);
-	void stopAnselSession(LPBYTE hostImageAddress);
+	void fixAnsel(std::map<std::string, AOBBlock*>& aobBlocks);
+	void startAnselSession();
+	void stopAnselSession();
+	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, std::map<std::string, AOBBlock*>& aobBlocks);
 }
