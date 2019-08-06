@@ -23,6 +23,11 @@ namespace IGCS
 		int cameraControlDevice;		// 0==keyboard/mouse, 1 == gamepad, 2 == both, see Defaults.h
 		bool allowCameraMovementWhenMenuIsUp;
 		bool disableInGameDofWhenCameraIsEnabled;
+		// Looking glass settings
+// TODO: CHANGE TO stdstring
+		float lkgViewDistance;
+		int lkgViewCount;
+		char screenshotDirectory[500];
 
 		// settings not persisted to config file.
 		// add settings to edit here.
@@ -50,6 +55,12 @@ namespace IGCS
 			rotationSpeed = Utils::clamp(iniFile.GetFloat("rotationSpeed", "CameraSettings"), 0.0f, DEFAULT_ROTATION_SPEED);
 			fovChangeSpeed = Utils::clamp(iniFile.GetFloat("fovChangeSpeed", "CameraSettings"), 0.0f, DEFAULT_FOV_SPEED);
 			cameraControlDevice = Utils::clamp(iniFile.GetInt("cameraControlDevice", "CameraSettings"), 0, DEVICE_ID_ALL, DEVICE_ID_ALL);
+			// looking glass settings
+			lkgViewDistance = Utils::clamp(iniFile.GetFloat("lkgViewDistance", "CameraSettings"), 0.0f, 100.0f);
+			lkgViewCount = Utils::clamp(iniFile.GetInt("lkgViewCount", "CameraSettings"), 0, 45);
+			std::string sds = iniFile.GetValue("screenshotDirectory", "CameraSettings");
+			std::copy(sds.begin(), sds.end(), screenshotDirectory);
+			screenshotDirectory[sds.size()] = '\0';
 
 			// load keybindings. They might not be there, or incomplete. 
 			for (std::pair<ActionType, ActionData*> kvp : keyBindingPerActionType)
@@ -78,6 +89,10 @@ namespace IGCS
 			iniFile.SetFloat("rotationSpeed", rotationSpeed, "", "CameraSettings");
 			iniFile.SetFloat("fovChangeSpeed", fovChangeSpeed, "", "CameraSettings");
 			iniFile.SetInt("cameraControlDevice", cameraControlDevice, "", "CameraSettings");
+			// Looking glass settings
+			iniFile.SetFloat("lkgViewDistance", lkgViewDistance, "", "CameraSettings");
+			iniFile.SetInt("lkgViewCount", lkgViewCount, "", "CameraSettings");
+			iniFile.SetValue("screenshotDirectory", screenshotDirectory, "", "CameraSettings");
 
 			// save keybindings
 			if (!keyBindingPerActionType.empty())
@@ -108,6 +123,10 @@ namespace IGCS
 			cameraControlDevice = DEVICE_ID_ALL;
 			allowCameraMovementWhenMenuIsUp = false;
 			disableInGameDofWhenCameraIsEnabled = false;
+			// Looking glass settings
+			lkgViewDistance = 1.0f;
+			lkgViewCount = 45;
+			strcpy(screenshotDirectory, "c:\\");
 
 			if (!persistedOnly)
 			{

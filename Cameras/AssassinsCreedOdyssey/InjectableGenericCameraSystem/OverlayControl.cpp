@@ -235,6 +235,13 @@ Special thanks to:
 			ImGui::Text("Reset FoV                            : %s or controller B-button", Globals::instance().getActionData(ActionType::FovReset)->toString().c_str());
 			ImGui::Text("Block input to game                  : %s", Globals::instance().getActionData(ActionType::BlockInput)->toString().c_str());
 			ImGui::Text("Toggle game pause                    : %s", Globals::instance().getActionData(ActionType::Timestop)->toString().c_str());
+
+			ImGui::Text("Previous view                        : %s", Globals::instance().getActionData(ActionType::LightfieldLeft)->toString().c_str());
+			ImGui::Text("Next view                            : %s", Globals::instance().getActionData(ActionType::LightfieldRight)->toString().c_str());
+			ImGui::Text("First view                           : Alt + %s", Globals::instance().getActionData(ActionType::LightfieldLeft)->toString().c_str());
+			ImGui::Text("Last view                            : Alt + %s", Globals::instance().getActionData(ActionType::LightfieldRight)->toString().c_str());
+			ImGui::Text("Lightfield capture                   : Ctrl + %s", Globals::instance().getActionData(ActionType::LightfieldPhoto)->toString().c_str());
+			ImGui::Text("Single screenshot                    : %s", Globals::instance().getActionData(ActionType::SingleScreenshot)->toString().c_str());
 		}
 
 		if (ImGui::CollapsingHeader("Settings editor help"))
@@ -314,6 +321,12 @@ Special thanks to:
 			// DOF enable / disable during camera
 			ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.3f) - 11.0f);
 			settingsChanged |= ImGui::Checkbox("Disable in-game DoF when camera is enabled", &currentSettings.disableInGameDofWhenCameraIsEnabled);
+		}
+		if (ImGui::CollapsingHeader("Looking Glass options", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			settingsChanged |= ImGui::SliderFloat("LKG view distance", &currentSettings.lkgViewDistance, 0.0f, 100.0f, "%.3f");
+			settingsChanged |= ImGui::SliderInt("LKG view count", &currentSettings.lkgViewCount, 0, 60);
+			settingsChanged |= ImGui::InputText("Screenshot output directory", currentSettings.screenshotDirectory, 500);
 		}
 		ImGui::PopItemWidth();
 		if (settingsChanged)
@@ -474,6 +487,7 @@ Special thanks to:
 	{
 		return _showMainWindow;
 	}
+
 
 	void showHelpMarker(const char* desc)
 	{

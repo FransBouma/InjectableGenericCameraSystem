@@ -41,6 +41,8 @@
 #include "OverlayConsole.h"
 #include "OverlayControl.h"
 #include "MinHook.h"
+#include <time.h>
+#include <direct.h>
 
 namespace IGCS
 {
@@ -82,7 +84,42 @@ namespace IGCS
 	// updates the data and camera for a frame 
 	void System::updateFrame()
 	{
-		handleUserInput();
+		if (!_isLightfieldCapturing)
+		{
+			handleUserInput();
+		}
+		else 
+		{
+			_camera.resetMovement();
+			if (_framesToGrab == 0) 
+			{ 
+				// all framebuffers grabbed
+				_isLightfieldCapturing = false;
+				moveLightfield(-1, true, false);
+				OverlayControl::addNotification("Lightfield photo end. Saving files...");
+				//CameraManipulator::setTimeStopValue(_timeStopped);
+				//InterceptorHelper::toggleHudRenderState(_aobBlocks, _hudToggled);
+			}
+			else 
+			{
+				// synchronize camera position with lightfield capture
+				/*char buf[100];
+				sprintf(buf, "[main] main: %d hook: %d", framesToGrab, DX11Hooker::framesRemaining());
+				OverlayControl::addNotification(buf);*/
+				if (!_lightfieldHookInited) 
+				{
+					OverlayControl::addNotification("Lightfield photo begin.");
+					startCapture(_framesToGrab);
+					_lightfieldHookInited = true;
+				}
+				else if (D3D11Hooker::framesRemaining() == _framesToGrab) 
+				{
+					--_framesToGrab;
+					moveLightfield(1, false, false);
+					D3D11Hooker::syncFramesToGrab(_framesToGrab);
+				}
+			}
+		}
 		writeNewCameraValuesToCameraStructs();
 	}
 	
@@ -140,6 +177,10 @@ namespace IGCS
 				CameraManipulator::restoreOriginalValuesAfterCameraDisable();
 				toggleCameraMovementLockState(false);
 				InterceptorHelper::toggleDofEnableWrite(_aobBlocks, true);
+				// disable all looking glass flags
+				_framesToGrab = 0;
+				_isLightfieldCapturing = false;
+				_lightfieldHookInited = false;
 			}
 			else
 			{
@@ -188,6 +229,13 @@ namespace IGCS
 			_applyHammerPrevention = true;
 		}
 		_camera.resetMovement();
+		if (Input::isActionActivated(ActionType::LightfieldPhoto))
+		{
+			if (takeLightfieldPhoto())
+			{
+				return;
+			}
+		}
 		Settings& settings = Globals::instance().settings();
 		if (Input::isActionActivated(ActionType::CameraLock))
 		{
@@ -202,6 +250,20 @@ namespace IGCS
 
 		bool altPressed = Utils::altPressed();
 		bool rcontrolPressed = Utils::keyDown(VK_RCONTROL);
+		if (Input::isActionActivated(ActionType::LightfieldLeft, true))
+		{
+			moveLightfield(-1, altPressed);
+			_applyHammerPrevention = true;
+		}
+		else
+		{
+			if (Input::isActionActivated(ActionType::LightfieldRight, true))
+			{
+				moveLightfield(1, altPressed);
+				_applyHammerPrevention = true;
+			}
+		}
+
 		float multiplier = altPressed ? settings.fastMovementMultiplier : rcontrolPressed ? settings.slowMovementMultiplier : 1.0f;
 		handleKeyboardCameraMovement(multiplier);
 		handleMouseCameraMovement(multiplier);
@@ -417,5 +479,88 @@ namespace IGCS
 	{
 		_hudToggled = !_hudToggled;
 		InterceptorHelper::toggleHudRenderState(_aobBlocks, _hudToggled);
+	}
+
+// Looking glass adjustments. TODO: REFACTOR
+	int direxists(const char* path) 
+	{
+		struct stat info;
+		if (stat(path, &info) != 0)
+			return 0;
+		else if (info.st_mode & S_IFDIR)
+			return 1;
+		else
+			return 0;
+	}
+
+	bool System::takeLightfieldPhoto()
+	{
+		if (!direxists(Globals::instance().settings().screenshotDirectory))
+		{
+			OverlayConsole::instance().logError("Screenshot target directory does not exist!");
+			_applyHammerPrevention = true;
+			return false;
+		}
+		if (_isLightfieldCapturing || !D3D11Hooker::isDoneSavingImages()) 
+		{
+			OverlayControl::addNotification("Please wait until files from the previous capture are written to disk.");
+			_applyHammerPrevention = true;
+			return false;
+		}
+		_lightfieldHookInited = false;
+		moveLightfield(-1, true, false);
+		//InterceptorHelper::toggleHudRenderState(_aobBlocks, true);
+		//CameraManipulator::setTimeStopValue(true);
+		_framesToGrab = Globals::instance().settings().lkgViewCount;
+		_isLightfieldCapturing = true;
+		return true;
+	}
+
+	void System::startCapture(int numViews = 1)
+	{
+		OverlayConsole::instance().logLine("Time stopped.");
+		time_t t = time(nullptr);
+		tm tm;
+		localtime_s(&tm, &t);
+		_screenshot_ts[0] = tm.tm_year + 1900;
+		_screenshot_ts[1] = tm.tm_mon + 1;
+		_screenshot_ts[2] = tm.tm_mday;
+		_screenshot_ts[3] = tm.tm_hour * 3600 + tm.tm_min * 60 + tm.tm_sec;
+		const int hour = _screenshot_ts[3] / 3600;
+		const int minute = (_screenshot_ts[3] - hour * 3600) / 60;
+		const int seconds = _screenshot_ts[3] - hour * 3600 - minute * 60;
+		char buf[500];
+		char* optional_backslash = "";
+		char* screenshot_dir = Globals::instance().settings().screenshotDirectory;
+		if (screenshot_dir[strlen(screenshot_dir) - 1] != '\\') {
+			optional_backslash = "\\";
+		}
+		sprintf(buf, "%s%s%.4d-%.2d-%.2d-%.2d-%.2d-%.2d", screenshot_dir, optional_backslash, _screenshot_ts[0], _screenshot_ts[1], _screenshot_ts[2], hour, minute, seconds);
+		mkdir(buf);
+		D3D11Hooker::takeScreenshot(buf, numViews);
+	}
+
+	void System::moveLightfield(int direction, bool end)
+	{
+		moveLightfield(direction, end, true);
+	}
+
+	void System::moveLightfield(int direction, bool end, bool log)
+	{
+		float dist = direction * (Globals::instance().settings().lkgViewDistance);
+		if (end) {
+			if (log) {
+				//OverlayConsole::instance().logLine((direction > 0) ? "Move to end." : "Move to start.");
+				OverlayControl::addNotification((direction > 0) ? "Move to end." : "Move to start.");
+			}
+			dist *= 0.5f * (Globals::instance().settings().lkgViewCount);
+			_camera.moveRight(dist / Globals::instance().settings().movementSpeed); // scale to be independent of camera movement speed
+			return;
+		}
+		if (log) {
+			//OverlayConsole::instance().logLine((direction > 0) ? "Move to next." : "Move to previous.");
+			OverlayControl::addNotification((direction > 0) ? "Move to next." : "Move to previous.");
+		}
+		_camera.moveRight(dist / Globals::instance().settings().movementSpeed); // scale to be independent of camera movement speed
 	}
 }

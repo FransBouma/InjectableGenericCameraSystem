@@ -53,7 +53,12 @@ namespace IGCS
 		TiltRight,
 		Timestop,
 		ToggleOverlay,
+		LightfieldPhoto,
+		LightfieldLeft,
+		LightfieldRight,
+		SingleScreenshot,
 
+		// add new values above this line
 		Amount,
 	};
 
