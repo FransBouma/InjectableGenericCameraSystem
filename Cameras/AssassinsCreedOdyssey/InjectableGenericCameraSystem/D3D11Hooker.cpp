@@ -77,6 +77,8 @@ namespace IGCS::D3D11Hooker
 			return S_OK;
 		}
 		_presentInProgress = true;
+		bool validFrame = false;
+		UINT flagsToPass = Flags;
 		if (_tmpSwapChainInitialized)
 		{
 			if (!(Flags & DXGI_PRESENT_TEST) && !_imGuiInitializing)
@@ -104,20 +106,7 @@ namespace IGCS::D3D11Hooker
 					ImGui_ImplDX11_Init(_device, _context);
 					_initializeDeviceAndContext = false;
 				}
-				if (_framesToGrab > 0)
-				{
-					/*char buf[100];
-					sprintf(buf, "[hook] main: %d hook: %d", framesToGrabSync, framesToGrab);
-					OverlayControl::addNotification(buf);*/
-					if (_framesToGrab >= _framesToGrabSync) {
-						_fb_array.push_back(capture_frame(pSwapChain));
-						--_framesToGrab;
-						if (_framesToGrab == 0)
-						{
-							std::thread(saveAllFiles).detach();
-						}
-					}
-				}
+				validFrame = true;
 				// render our own stuff
 				OverlayControl::renderOverlay();
 				_context->OMSetRenderTargets(1, &_mainRenderTargetView, NULL);
@@ -125,9 +114,31 @@ namespace IGCS::D3D11Hooker
 				Input::resetKeyStates();
 				Input::resetMouseState();
 			}
-
 		}
-		HRESULT toReturn = hookedDXGIPresent(pSwapChain, SyncInterval, Flags);
+		bool grabFrame = false;
+		if (validFrame && _framesToGrab > 0)
+		{
+			// make sure the Present call doesn't synchronize, so it's waiting for the VBL and doesn't unbind the backbuffer. 
+			flagsToPass |= DXGI_PRESENT_DO_NOT_SEQUENCE;
+			grabFrame = true;
+		}
+		HRESULT toReturn = hookedDXGIPresent(pSwapChain, SyncInterval, flagsToPass);
+		// if we have to grab the frame, do it now.
+		if(grabFrame)
+		{
+			/*char buf[100];
+			sprintf(buf, "[hook] main: %d hook: %d", framesToGrabSync, framesToGrab);
+			OverlayControl::addNotification(buf);*/
+			if (_framesToGrab >= _framesToGrabSync) 
+			{
+				_fb_array.push_back(capture_frame(pSwapChain));
+				--_framesToGrab;
+				if (_framesToGrab == 0)
+				{
+					std::thread(saveAllFiles).detach();
+				}
+			}
+		}
 		_presentInProgress = false;
 		return toReturn;
 	}
