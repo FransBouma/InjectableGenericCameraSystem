@@ -24,6 +24,7 @@
 ///////////////////////
 namespace IGCS::D3D12InternalOverlay
 {
+#if _DX12_
 	#define DXGI_PRESENT_INDEX			8
 	#define DXGI_RESIZEBUFFERS_INDEX	13
 
@@ -346,4 +347,5 @@ namespace IGCS::D3D12InternalOverlay
 			}
 		}
 	}
+#endif //_DX12_
 }

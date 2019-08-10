@@ -157,8 +157,8 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)intermediate\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)InjectableGenericCameraSystem\Overlay;$(IncludePath)</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+    <IncludePath>$(SolutionDir)InjectableGenericCameraSystem\Overlay;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDX12|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -260,7 +260,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS;NDEBUG;_WINDOWS;_USRDLL;TESTINJECTDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;TESTINJECTDLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\MinHook\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -280,7 +280,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PreprocessorDefinitions>IMGUI_DISABLE_OBSOLETE_FUNCTIONS;NDEBUG;_WINDOWS;_USRDLL;TESTINJECTDLL_EXPORTS;_DX12_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;TESTINJECTDLL_EXPORTS;_DX12_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\dependencies\MinHook\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -303,7 +303,6 @@
     <ClInclude Include="CDataFile.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="D3D11InternalOverlay.h" />
-    <ClInclude Include="D3D12InternalOverlay.h" />
     <ClInclude Include="Defaults.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GameImageHooker.h" />
@@ -318,7 +317,6 @@
     <ClInclude Include="Overlay\imconfig.h" />
     <ClInclude Include="Overlay\imgui.h" />
     <ClInclude Include="Overlay\imgui_impl_dx11.h" />
-    <ClInclude Include="Overlay\imgui_impl_dx12.h" />
     <ClInclude Include="Overlay\imgui_impl_win32.h" />
     <ClInclude Include="Overlay\imgui_internal.h" />
     <ClInclude Include="Overlay\imstb_rectpack.h" />
@@ -337,7 +335,6 @@
     <ClCompile Include="CDataFile.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="D3D11InternalOverlay.cpp" />
-    <ClCompile Include="D3D12InternalOverlay.cpp" />
     <ClCompile Include="GameImageHooker.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="Main.cpp">
@@ -377,7 +374,6 @@
     <ClCompile Include="Overlay\imgui_demo.cpp" />
     <ClCompile Include="Overlay\imgui_draw.cpp" />
     <ClCompile Include="Overlay\imgui_impl_dx11.cpp" />
-    <ClCompile Include="Overlay\imgui_impl_dx12.cpp" />
     <ClCompile Include="Overlay\imgui_impl_win32.cpp" />
     <ClCompile Include="Overlay\imgui_widgets.cpp" />
     <ClCompile Include="stdafx.cpp">

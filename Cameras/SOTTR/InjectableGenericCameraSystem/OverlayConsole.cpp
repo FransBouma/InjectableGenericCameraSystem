@@ -2,7 +2,9 @@
 #include "OverlayConsole.h"
 #include "imgui.h"
 #include "Utils.h"
+#ifdef _DX12_
 #include "Console.h"
+#endif // _DX12_
 
 using namespace std;
 
@@ -28,7 +30,11 @@ namespace IGCS
 		va_start(args, fmt);
 		string formattedArgs = Utils::formatString(fmt, args);
 		va_end(args);
+#ifdef _DX12_
+		Console::WriteLine(formattedArgs);
+#else
 		logLine("%s %s", CONSOLE_DEBUG_PREFIX, formattedArgs.c_str());
+#endif //_DX12_
 #endif
 	}
 
@@ -39,7 +45,6 @@ namespace IGCS
 		va_start(args, fmt);
 		string formattedArgs = Utils::formatString(fmt, args);
 		va_end(args);
-
 		logLine("%s %s", CONSOLE_ERROR_PREFIX, formattedArgs.c_str());
 	}
 
@@ -50,8 +55,14 @@ namespace IGCS
 		va_start(args, fmt);
 		string format(fmt);
 		format += '\n';
+#ifdef _DX12_
+		string formattedArgs = Utils::formatString(fmt, args);
+		va_end(args);
+		Console::WriteLine(formattedArgs);
+#else
 		logLinev(format.c_str(), args);
 		va_end(args);
+#endif // _DX12_
 	}
 
 

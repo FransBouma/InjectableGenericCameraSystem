@@ -64,11 +64,13 @@ namespace IGCS::OverlayControl
 	void addNotification(string notificationText)
 	{
 		EnterCriticalSection(&_notificationCriticalSection);
+#if !_DX12_
 			Notification toAdd;
 			toAdd.notificationText = notificationText;
 			toAdd.timeFirstDisplayed = -1.0f;
 			_activeNotifications.push_back(toAdd);
 			OverlayConsole::instance().logLine(notificationText.c_str());
+#endif
 		LeaveCriticalSection(&_notificationCriticalSection);
 	}
 
@@ -80,7 +82,7 @@ namespace IGCS::OverlayControl
 		Globals::instance().saveSettingsIfRequired(ImGui::GetIO().DeltaTime);
 
 #if _DX12_
-		ImGui_ImplDX12_NewFrame();
+		//ImGui_ImplDX12_NewFrame();
 #else
 		ImGui_ImplDX11_NewFrame();
 #endif

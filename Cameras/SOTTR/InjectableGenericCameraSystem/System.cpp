@@ -329,15 +329,15 @@ namespace IGCS
 		OverlayControl::init();
 		// first grab the window handle
 		Globals::instance().mainWindowHandle(Utils::findMainWindow(GetCurrentProcessId()));
-		// then initialize imgui and the rest.
 		OverlayControl::initImGui();
-		InputHooker::setInputHooks();
-		Input::registerRawInput();
 #ifdef _DX12_
-		D3D12InternalOverlay::initializeHook();
+		Console::Init();
+		Console::WriteHeader();
 #else
 		D3D11InternalOverlay::initializeHook();
 #endif
+		InputHooker::setInputHooks();
+		Input::registerRawInput();
 
 		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
 		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);
