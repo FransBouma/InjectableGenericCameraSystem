@@ -1,0 +1,103 @@
+Kingdom come deliverance
+
+// Enable ansel everywhere:
+// Ansel Start session
+WHGame.DLL+1FA251C - 40 53                 - push rbx
+WHGame.DLL+1FA251E - 48 83 EC 20           - sub rsp,20 { 32 }
+WHGame.DLL+1FA2522 - 48 83 3D E62A8E00 00  - cmp qword ptr [WHGame.DLL+2885010],00 { (7FFB1E594720),0 }
+WHGame.DLL+1FA252A - 48 8B D9              - mov rbx,rcx
+WHGame.DLL+1FA252D - 75 04                 - jne WHGame.DLL+1FA2533			>> change to JMP
+WHGame.DLL+1FA252F - 31 C0                 - xor eax,eax
+WHGame.DLL+1FA2531 - EB 22                 - jmp WHGame.DLL+1FA2555
+WHGame.DLL+1FA2533 - E8 A81AFFFF           - call WHGame.DLL+1F93FE0
+WHGame.DLL+1FA2538 - 84 C0                 - test al,al
+WHGame.DLL+1FA253A - 74 F3                 - je WHGame.DLL+1FA252F			>> NOP
+WHGame.DLL+1FA253C - C6 43 04 00           - mov byte ptr [rbx+04],00 { 0 }
+WHGame.DLL+1FA2540 - E8 1B9787FE           - call WHGame.DLL+81BC60
+WHGame.DLL+1FA2545 - 48 8B 88 80000000     - mov rcx,[rax+00000080]
+WHGame.DLL+1FA254C - B8 01000000           - mov eax,00000001 { 1 }
+WHGame.DLL+1FA2551 - C6 41 0A 01           - mov byte ptr [rcx+0A],01 { 1 }
+WHGame.DLL+1FA2555 - 48 83 C4 20           - add rsp,20 { 32 }
+WHGame.DLL+1FA2559 - 5B                    - pop rbx
+WHGame.DLL+1FA255A - C3                    - ret 
+
+// Ansel stop session.
+WHGame.DLL+1FA257C - 48 83 EC 28           - sub rsp,28 { 40 }
+WHGame.DLL+1FA2580 - 48 83 3D 882A8E00 00  - cmp qword ptr [WHGame.DLL+2885010],00 { (7FFB1E594720),0 }
+WHGame.DLL+1FA2588 - 74 10                 - je WHGame.DLL+1FA259A
+WHGame.DLL+1FA258A - E8 D19687FE           - call WHGame.DLL+81BC60
+WHGame.DLL+1FA258F - 48 8B 88 80000000     - mov rcx,[rax+00000080]
+WHGame.DLL+1FA2596 - C6 41 0A 01           - mov byte ptr [rcx+0A],01 { 1 }
+WHGame.DLL+1FA259A - 48 83 C4 28           - add rsp,28 { 40 }
+WHGame.DLL+1FA259E - C3                    - ret 
+
+
+// Ansel unlimited range:
+WHGame.DLL+1F939DC - F3 0F58 F0            - addss xmm6,xmm0
+WHGame.DLL+1F939E0 - 41 0F28 C3            - movaps xmm0,xmm11
+WHGame.DLL+1F939E4 - F3 0F58 F1            - addss xmm6,xmm1
+WHGame.DLL+1F939E8 - F3 0F10 0D B0023A00   - movss xmm1,[WHGame.DLL+2333CA0] { (2.00) }
+WHGame.DLL+1F939F0 - E8 DD7119FF           - call WHGame.DLL+112ABD2 { ->->ucrtbase.dll+2CA60 }
+WHGame.DLL+1F939F5 - 0F2F F0               - comiss xmm6,xmm0
+WHGame.DLL+1F939F8 - 0F86 91000000         - jbe WHGame.DLL+1F93A8F			>> change to JMP
+WHGame.DLL+1F939FE - 48 8B 4B 38           - mov rcx,[rbx+38]
+WHGame.DLL+1F93A02 - F3 41 0F58 F5         - addss xmm6,xmm13
+WHGame.DLL+1F93A07 - 48 8D 55 DC           - lea rdx,[rbp-24]
+WHGame.DLL+1F93A0B - 48 8B 01              - mov rax,[rcx]
+WHGame.DLL+1F93A0E - F3 0F52 CE            - rsqrtss xmm1,xmm6
+WHGame.DLL+1F93A12 - 0F28 C6               - movaps xmm0,xmm6
+WHGame.DLL+1F93A15 - F3 0F11 8D C0000000   - movss [rbp+000000C0],xmm1
+WHGame.DLL+1F93A1D - 41 0F28 CA            - movaps xmm1,xmm10
+
+// Ansel coords, quaternion and fov. Cryengine.
+WHGame.DLL+1F8A736 - F3 0F10 0D 626E6F01   - movss xmm1,[WHGame.DLL+36815A0] { (703.49) }		>> X
+WHGame.DLL+1F8A73E - F3 0F11 0E            - movss [rsi],xmm1
+WHGame.DLL+1F8A742 - F3 0F10 05 5A6E6F01   - movss xmm0,[WHGame.DLL+36815A4] { (3491.64) }		>> Y
+WHGame.DLL+1F8A74A - F3 0F11 46 04         - movss [rsi+04],xmm0
+WHGame.DLL+1F8A74F - F3 0F10 0D 516E6F01   - movss xmm1,[WHGame.DLL+36815A8] { (124.24) }		>> Z
+WHGame.DLL+1F8A757 - F3 0F11 4E 08         - movss [rsi+08],xmm1
+WHGame.DLL+1F8A75C - F3 0F10 05 486E6F01   - movss xmm0,[WHGame.DLL+36815AC] { (-0.01) }		>> qX
+WHGame.DLL+1F8A764 - F3 0F11 46 0C         - movss [rsi+0C],xmm0
+WHGame.DLL+1F8A769 - F3 0F10 0D 3F6E6F01   - movss xmm1,[WHGame.DLL+36815B0] { (-0.01) }		>> qY
+WHGame.DLL+1F8A771 - F3 0F11 4E 10         - movss [rsi+10],xmm1
+WHGame.DLL+1F8A776 - F3 0F10 05 366E6F01   - movss xmm0,[WHGame.DLL+36815B4] { (0.71) }			>> qZ
+WHGame.DLL+1F8A77E - F3 0F11 46 14         - movss [rsi+14],xmm0
+WHGame.DLL+1F8A783 - F3 0F10 0D 2D6E6F01   - movss xmm1,[WHGame.DLL+36815B8] { (0.70) }			>> qW
+WHGame.DLL+1F8A78B - F3 0F11 4E 18         - movss [rsi+18],xmm1
+WHGame.DLL+1F8A790 - F3 0F10 05 246E6F01   - movss xmm0,[WHGame.DLL+36815BC] { (65.00) }		>> FoV
+
+// they're written first, before the UpdateCamera call..
+// Disable writes after one time after camera is enabled so the current coords are written at the start, 
+// and after that not written again. 
+WHGame.DLL+1F8A64C - F3 0F11 05 4C6F6F01   - movss [WHGame.DLL+36815A0],xmm0 { (729.46) }
+WHGame.DLL+1F8A654 - F3 0F10 4E 04         - movss xmm1,[rsi+04]
+WHGame.DLL+1F8A659 - F3 0F11 0D 436F6F01   - movss [WHGame.DLL+36815A4],xmm1 { (3425.57) }
+WHGame.DLL+1F8A661 - 48 8D 98 E8000000     - lea rbx,[rax+000000E8]
+WHGame.DLL+1F8A668 - F3 0F10 46 08         - movss xmm0,[rsi+08]
+WHGame.DLL+1F8A66D - F3 0F11 05 336F6F01   - movss [WHGame.DLL+36815A8],xmm0 { (76.50) }
+WHGame.DLL+1F8A675 - F3 0F10 4E 0C         - movss xmm1,[rsi+0C]
+WHGame.DLL+1F8A67A - F3 0F11 0D 2A6F6F01   - movss [WHGame.DLL+36815AC],xmm1 { (-0.43) }
+WHGame.DLL+1F8A682 - F3 0F10 46 10         - movss xmm0,[rsi+10]
+WHGame.DLL+1F8A687 - F3 0F11 05 216F6F01   - movss [WHGame.DLL+36815B0],xmm0 { (-0.10) }
+WHGame.DLL+1F8A68F - F3 0F10 4E 14         - movss xmm1,[rsi+14]
+WHGame.DLL+1F8A694 - F3 0F11 0D 186F6F01   - movss [WHGame.DLL+36815B4],xmm1 { (0.21) }
+WHGame.DLL+1F8A69C - F3 0F10 46 18         - movss xmm0,[rsi+18]
+WHGame.DLL+1F8A6A1 - F3 0F11 05 0F6F6F01   - movss [WHGame.DLL+36815B8],xmm0 { (0.87) }
+WHGame.DLL+1F8A6A9 - F3 0F10 4E 30         - movss xmm1,[rsi+30]
+WHGame.DLL+1F8A6AE - F3 0F59 0D 52973A00   - mulss xmm1,[WHGame.DLL+2333E08] { (180.00) }
+WHGame.DLL+1F8A6B6 - F3 0F5E 0D 72973A00   - divss xmm1,[WHGame.DLL+2333E30] { (3.14) }
+WHGame.DLL+1F8A6BE - F3 0F11 0D F66E6F01   - movss [WHGame.DLL+36815BC],xmm1 { (65.00) }
+WHGame.DLL+1F8A6C6 - F3 0F10 46 2C         - movss xmm0,[rsi+2C]
+WHGame.DLL+1F8A6CB - F3 0F11 05 F56E6F01   - movss [WHGame.DLL+36815C8],xmm0 { (0.05) }
+WHGame.DLL+1F8A6D3 - F3 0F10 4B 6C         - movss xmm1,[rbx+6C]
+WHGame.DLL+1F8A6D8 - F3 0F11 0D EC6E6F01   - movss [WHGame.DLL+36815CC],xmm1 { (8000.00) }
+WHGame.DLL+1F8A6E0 - F3 0F10 43 40         - movss xmm0,[rbx+40]
+WHGame.DLL+1F8A6E5 - F3 0F10 0D E7266E01   - movss xmm1,[WHGame.DLL+366CDD4] { (0.00) }
+WHGame.DLL+1F8A6ED - F3 0F11 05 DB6E6F01   - movss [WHGame.DLL+36815D0],xmm0 { (1.60) }
+WHGame.DLL+1F8A6F5 - F3 0F10 05 DB266E01   - movss xmm0,[WHGame.DLL+366CDD8] { (0.00) }
+WHGame.DLL+1F8A6FD - F3 0F11 05 BF6E6F01   - movss [WHGame.DLL+36815C4],xmm0 { (0.00) }
+WHGame.DLL+1F8A705 - F3 0F11 0D B36E6F01   - movss [WHGame.DLL+36815C0],xmm1 { (0.00) }
+WHGame.DLL+1F8A70D - FF 15 D5890200        - call qword ptr [WHGame.DLL+1FB30E8] { ->AnselSDK64.ansel::updateCamera }
+WHGame.DLL+1F8A713 - F3 0F10 06            - movss xmm0,[rsi]
+
+
