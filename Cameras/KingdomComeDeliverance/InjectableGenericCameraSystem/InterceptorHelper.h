@@ -36,4 +36,5 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void startAnselSession();
 	void stopAnselSession();
 	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, std::map<std::string, AOBBlock*>& aobBlocks);
+	void disableFovWrite(std::map<std::string, AOBBlock*>& aobBlocks);
 }

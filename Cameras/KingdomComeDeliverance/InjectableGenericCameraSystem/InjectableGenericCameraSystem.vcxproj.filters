@@ -118,4 +118,9 @@
       <Filter>Hooking</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <MASM Include="Interceptor.asm">
+      <Filter>Game Specific</Filter>
+    </MASM>
+  </ItemGroup>
 </Project>

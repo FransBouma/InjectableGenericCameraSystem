@@ -66,9 +66,30 @@ WHGame.DLL+1F8A783 - F3 0F10 0D 2D6E6F01   - movss xmm1,[WHGame.DLL+36815B8] { (
 WHGame.DLL+1F8A78B - F3 0F11 4E 18         - movss [rsi+18],xmm1
 WHGame.DLL+1F8A790 - F3 0F10 05 246E6F01   - movss xmm0,[WHGame.DLL+36815BC] { (65.00) }		>> FoV
 
+// AnselSDK::UpdateCamera
+// An alternative route: hook this, write the values in the struct in RCX. It's difficult however, as it also contains a RIP address
+// and we need to hook it at the start, and there's no space.... 
+AnselSDK64.ansel::updateCamera - 48 89 5C 24 08        - mov [rsp+08],rbx
+AnselSDK64.ansel::updateCamera+5- 57                    - push rdi
+AnselSDK64.ansel::updateCamera+6- 48 83 EC 20           - sub rsp,20 { 32 }
+AnselSDK64.ansel::updateCamera+A- 48 8B 1D AFC20900     - mov rbx,[AnselSDK64.dll+9DC80] { (0) }
+AnselSDK64.ansel::updateCamera+11- 48 8B F9              - mov rdi,rcx
+AnselSDK64.ansel::updateCamera+14- 48 85 DB              - test rbx,rbx
+AnselSDK64.ansel::updateCamera+17- 74 0E                 - je AnselSDK64.ansel::updateCamera+27
+AnselSDK64.ansel::updateCamera+19- 48 8B CB              - mov rcx,rbx
+AnselSDK64.ansel::updateCamera+1C- FF 15 EEE90600        - call qword ptr [AnselSDK64.dll+703D0] { ->AnselSDK64.setStopSessionCallback }
+AnselSDK64.ansel::updateCamera+22- 48 8B CF              - mov rcx,rdi
+AnselSDK64.ansel::updateCamera+25- FF D3                 - call rbx
+AnselSDK64.ansel::updateCamera+27- 48 8B 5C 24 30        - mov rbx,[rsp+30]
+AnselSDK64.ansel::updateCamera+2C- 48 83 C4 20           - add rsp,20 { 32 }
+AnselSDK64.ansel::updateCamera+30- 5F                    - pop rdi
+AnselSDK64.ansel::updateCamera+31- C3                    - ret 
+
+
 // they're written first, before the UpdateCamera call..
 // Disable writes after one time after camera is enabled so the current coords are written at the start, 
 // and after that not written again. 
+// We can do this relatively to RCX
 WHGame.DLL+1F8A64C - F3 0F11 05 4C6F6F01   - movss [WHGame.DLL+36815A0],xmm0 { (729.46) }
 WHGame.DLL+1F8A654 - F3 0F10 4E 04         - movss xmm1,[rsi+04]
 WHGame.DLL+1F8A659 - F3 0F11 0D 436F6F01   - movss [WHGame.DLL+36815A4],xmm1 { (3425.57) }
@@ -86,7 +107,7 @@ WHGame.DLL+1F8A6A1 - F3 0F11 05 0F6F6F01   - movss [WHGame.DLL+36815B8],xmm0 { (
 WHGame.DLL+1F8A6A9 - F3 0F10 4E 30         - movss xmm1,[rsi+30]
 WHGame.DLL+1F8A6AE - F3 0F59 0D 52973A00   - mulss xmm1,[WHGame.DLL+2333E08] { (180.00) }
 WHGame.DLL+1F8A6B6 - F3 0F5E 0D 72973A00   - divss xmm1,[WHGame.DLL+2333E30] { (3.14) }
-WHGame.DLL+1F8A6BE - F3 0F11 0D F66E6F01   - movss [WHGame.DLL+36815BC],xmm1 { (65.00) }
+WHGame.DLL+1F8A6BE - F3 0F11 0D F66E6F01   - movss [WHGame.DLL+36815BC],xmm1 { (65.00) }		<< NOP if our camera is enabled to have FOV 
 WHGame.DLL+1F8A6C6 - F3 0F10 46 2C         - movss xmm0,[rsi+2C]
 WHGame.DLL+1F8A6CB - F3 0F11 05 F56E6F01   - movss [WHGame.DLL+36815C8],xmm0 { (0.05) }
 WHGame.DLL+1F8A6D3 - F3 0F10 4B 6C         - movss xmm1,[rbx+6C]
@@ -100,4 +121,14 @@ WHGame.DLL+1F8A705 - F3 0F11 0D B36E6F01   - movss [WHGame.DLL+36815C0],xmm1 { (
 WHGame.DLL+1F8A70D - FF 15 D5890200        - call qword ptr [WHGame.DLL+1FB30E8] { ->AnselSDK64.ansel::updateCamera }
 WHGame.DLL+1F8A713 - F3 0F10 06            - movss xmm0,[rsi]
 
-
+// ANsel clip check:
+WHGame.DLL+1F8A86C - 48 8B 0D 0DA88F00     - mov rcx,[WHGame.DLL+2885080] { (7FFB3875D180) }
+WHGame.DLL+1F8A873 - 48 8B 01              - mov rax,[rcx]
+WHGame.DLL+1F8A876 - FF 90 90050000        - call qword ptr [rax+00000590]
+WHGame.DLL+1F8A87C - 4C 8B C6              - mov r8,rsi
+WHGame.DLL+1F8A87F - 48 8D 54 24 40        - lea rdx,[rsp+40]
+WHGame.DLL+1F8A884 - E8 57900000           - call WHGame.DLL+1F938E0		<< NOP FOR NO CLIP.
+WHGame.DLL+1F8A889 - 48 8B 5C 24 60        - mov rbx,[rsp+60]
+WHGame.DLL+1F8A88E - 48 8B 74 24 68        - mov rsi,[rsp+68]
+WHGame.DLL+1F8A893 - 48 83 C4 50           - add rsp,50 { 80 }
+WHGame.DLL+1F8A897 - 5F                    - pop rdi

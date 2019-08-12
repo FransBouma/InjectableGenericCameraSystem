@@ -129,6 +129,10 @@ namespace IGCS
 				CameraManipulator::cacheOriginalCameraValues();
 				InterceptorHelper::startAnselSession();
 				_camera.resetAngles();
+				// reset the flag to init the camera data. 
+				g_cameraDataInitialized = (BYTE)0;
+				InterceptorHelper::disableFovWrite(_aobBlocks);
+				CameraManipulator::resetFOV();
 			}
 			g_cameraEnabled = g_cameraEnabled == 0 ? (BYTE)1 : (BYTE)0;
 			displayCameraState();

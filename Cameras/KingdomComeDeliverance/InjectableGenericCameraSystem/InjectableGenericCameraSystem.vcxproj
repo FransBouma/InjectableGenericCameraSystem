@@ -215,6 +215,9 @@
       <Project>{783fedfb-5124-4f8c-87bc-70aa8490266b}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <MASM Include="Interceptor.asm" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />

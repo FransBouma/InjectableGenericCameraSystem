@@ -31,8 +31,7 @@
 #include "Gamepad.h"
 
 extern "C" BYTE g_cameraEnabled;
-extern "C" float g_ownFoVValue;
-extern "C" BYTE g_fovOverrideEnabled;
+extern "C" BYTE g_cameraDataInitialized;
 
 namespace IGCS
 {

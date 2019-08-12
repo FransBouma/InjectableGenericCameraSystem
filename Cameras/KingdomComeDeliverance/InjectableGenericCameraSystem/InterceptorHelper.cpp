@@ -36,6 +36,18 @@
 
 using namespace std;
 
+//--------------------------------------------------------------------------------------------------------------------------------
+// external asm functions
+extern "C" {
+	void cameraInitInterceptor();
+}
+
+// external addresses used in asm.
+extern "C" {
+	LPBYTE _cameraInitInterceptionContinue = nullptr;
+}
+
+
 namespace IGCS::GameSpecific::InterceptorHelper
 {
 	typedef void(__stdcall* AnselSessionStartStopFunction) ();
@@ -52,6 +64,9 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[ANSEL_SETUP_UPDATECAMERA_KEY] = new AOBBlock(ANSEL_SETUP_UPDATECAMERA_KEY, "F3 0F 10 0D | ?? ?? ?? ?? F3 0F 11 0E F3 0F 10 05 ?? ?? ?? ?? F3 0F 11 46 04 F3 0F 10 0D ?? ?? ?? ?? F3 0F 11 4E 08", 1);
 		aobBlocks[ANSEL_RANGELIMITER_KEY] = new AOBBlock(ANSEL_RANGELIMITER_KEY, "0F 86 ?? ?? ?? ?? 48 8B 4B 38 F3 41 0F 58 F5 48 8D 55 DC 48 8B 01", 1);
 		aobBlocks[ANSEL_CAMERADATA_WRITES_KEY] = new AOBBlock(ANSEL_CAMERADATA_WRITES_KEY, "F3 0F 10 0D | ?? ?? ?? ?? F3 0F 11 0E F3 0F 10 05 ?? ?? ?? ?? F3 0F 11 46 04 F3 0F 10 0D ?? ?? ?? ?? F3 0F 11 4E 08", 1);
+		aobBlocks[ANSEL_CAMERADATA_INIT_KEY] = new AOBBlock(ANSEL_CAMERADATA_INIT_KEY, "F3 0F 11 05 ?? ?? ?? ?? F3 0F 10 4E 04 F3 0F 11 0D ?? ?? ?? ?? 48 8D  98 E8 00 00 00 F3 0F 10 46 08 F3 0F 11 05 ?? ?? ?? ??", 1);
+		aobBlocks[ANSEL_FOV_WRITE_KEY] = new AOBBlock(ANSEL_FOV_WRITE_KEY, "F3 0F 11 0D ?? ?? ?? ?? F3 0F 10 46 2C F3 0F 11 05 ?? ?? ?? ?? F3 0F 10 4B 6C F3 0F 11 0D ?? ?? ?? ?? F3 0F 10 43 40", 1);
+		aobBlocks[ANSEL_NOCLIP_CHECK_KEY] = new AOBBlock(ANSEL_NOCLIP_CHECK_KEY, "FF 90 90 05 00 00 4C 8B C6 48 8D 54 24 40 | E8 ?? ?? ?? ?? 48 8B 5C 24 60 48 8B 74 24 68 48 83 C4 50", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -71,6 +86,14 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		if (aobBlocks[ANSEL_SETUP_UPDATECAMERA_KEY]->found())
 		{
 			CameraManipulator::setCameraStructAddress(Utils::calculateAbsoluteAddress(aobBlocks[ANSEL_SETUP_UPDATECAMERA_KEY], 4));
+		}
+		if (aobBlocks[ANSEL_CAMERADATA_INIT_KEY]->found())
+		{
+			GameImageHooker::setHook(aobBlocks[ANSEL_CAMERADATA_INIT_KEY], 0x5D, &_cameraInitInterceptionContinue, &cameraInitInterceptor);
+		}
+		if (aobBlocks[ANSEL_NOCLIP_CHECK_KEY]->found())
+		{
+			GameImageHooker::nopRange(aobBlocks[ANSEL_NOCLIP_CHECK_KEY]->absoluteAddress(), 5);
 		}
 
 		// AOBs in AnselSDK64 dll
@@ -96,6 +119,18 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		}
 	}
 
+
+	void disableFovWrite(map<string, AOBBlock*>& aobBlocks)
+	{
+		// if the writes have to be disabled, we first cache the original writes
+		if (!aobBlocks[ANSEL_FOV_WRITE_KEY]->found())
+		{
+			return;
+		}
+		// overwrite them with nops
+		GameImageHooker::nopRange(aobBlocks[ANSEL_FOV_WRITE_KEY]->absoluteAddress(), 8);
+	}
+	
 
 	void fixAnsel(map<string, AOBBlock*>& aobBlocks)
 	{
@@ -125,8 +160,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		//WHGame.DLL+1F93A1D - 41 0F28 CA            - movaps xmm1,xmm10
 
 		Console::WriteLine("Ansel range limit removed.");
-		BYTE instructionBytes2[7] = { 0xE9, 0x92, 0x0, 0x0, 0x0, 0x0, 0x90 };
-		GameImageHooker::writeRange(aobBlocks[ANSEL_RANGELIMITER_KEY]->absoluteAddress(), instructionBytes2, 7);
+		BYTE instructionBytes2[6] = { 0xE9, 0x92, 0x0, 0x0, 0x0, 0x90 };
+		GameImageHooker::writeRange(aobBlocks[ANSEL_RANGELIMITER_KEY]->absoluteAddress(), instructionBytes2, 6);
 	}
 
 

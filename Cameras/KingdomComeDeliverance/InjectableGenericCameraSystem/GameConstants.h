@@ -55,6 +55,9 @@ namespace IGCS::GameSpecific
 	#define ANSEL_SDK_GETCONFIGURATION_KEY		"AOB_ANSEL_SDK_GETCONFIGURATION_KEY"
 	#define ANSEL_RANGELIMITER_KEY				"AOB_ANSEL_RANGELIMITER_KEY"
 	#define ANSEL_CAMERADATA_WRITES_KEY			"AOB_ANSEL_CAMERADATA_WRITES_KEY"
+	#define ANSEL_CAMERADATA_INIT_KEY			"AOB_ANSEL_CAMERADATA_INIT_KEY"
+	#define ANSEL_FOV_WRITE_KEY					"AOB_ANSEL_FOV_WRITE_KEY"
+	#define ANSEL_NOCLIP_CHECK_KEY				"AOB_ANSEL_NOCLIP_CHECK_KEY"
 
 	// StartSession jump offsets to nop, relative from start of function
 	// v1.9.2
@@ -97,7 +100,7 @@ namespace IGCS::GameSpecific
 	//WHGame.DLL+1F8A78B - F3 0F11 4E 18         - movss [rsi+18],xmm1
 	//WHGame.DLL+1F8A790 - F3 0F10 05 246E6F01   - movss xmm0,[WHGame.DLL+36815BC] { (65.00) }		>> FoV
 	// offsets are relative to the X coordinate address (which is the first value in the struct
-	#define CAMERA_QUATERNION_IN_STRUCT_OFFSET			0xC
 	#define CAMERA_COORDS_IN_STRUCT_OFFSET				0x0
+	#define CAMERA_QUATERNION_IN_STRUCT_OFFSET			0xC
 	#define FOV_IN_STRUCT_OFFSET						0x1C
 }

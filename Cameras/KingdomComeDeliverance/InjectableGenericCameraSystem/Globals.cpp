@@ -33,8 +33,7 @@
 // MASM is rather tedious. 
 extern "C" {
 	BYTE g_cameraEnabled = 0;
-	BYTE g_fovOverrideEnabled = 0;
-	float g_ownFoVValue = 90.0f;
+	BYTE g_cameraDataInitialized = 0;
 }
 
 

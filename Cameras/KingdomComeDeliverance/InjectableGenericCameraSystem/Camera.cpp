@@ -48,12 +48,13 @@ namespace IGCS
 
 	XMVECTOR Camera::calculateLookQuaternion()
 	{
-		XMVECTOR xQ = XMQuaternionRotationNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f), -_roll);
-		XMVECTOR yQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), -_yaw);
-		XMVECTOR zQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), _pitch);
+		// cryengine specific
+		XMVECTOR xQ = XMQuaternionRotationNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f), -_pitch);
+		XMVECTOR yQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), _roll);
+		XMVECTOR zQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), -_yaw);
 
-		XMVECTOR tmpQ = XMQuaternionMultiply(zQ, yQ);
-		XMVECTOR qToReturn = XMQuaternionMultiply(xQ, tmpQ);
+		XMVECTOR tmpQ = XMQuaternionMultiply(xQ, zQ);
+		XMVECTOR qToReturn = XMQuaternionMultiply(yQ, tmpQ);
 		XMQuaternionNormalize(qToReturn);
 		return qToReturn;
 	}
@@ -96,13 +97,13 @@ namespace IGCS
 
 	void Camera::moveForward(float amount)
 	{
-		_direction.x += (_movementSpeed * amount);		// x into the screen
+		_direction.y += (_movementSpeed * amount);		// y into the screen
 		_movementOccurred = true;
 	}
 
 	void Camera::moveRight(float amount)
 	{
-		_direction.y += -(_movementSpeed * amount);		// y is left, so -y
+		_direction.x += (_movementSpeed * amount);		// x is right
 		_movementOccurred = true;
 	}
 
