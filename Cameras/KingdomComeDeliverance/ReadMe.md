@@ -12,6 +12,7 @@ Credits: Otis_Inf.
 	- Free unlimited camera movement and rotation 
 - Ansel everywhere
 - No clip-check anymore in Ansel/free camera
+- Makes all cvars writable
 
 NOTE: If you enable Ansel using Alt-F2, you shouldn't enable this camera. This camera uses the function in the game
 used by Ansel as well.

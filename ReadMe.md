@@ -40,6 +40,7 @@ automatically when you clone the repo. The camera uses DirectXMath for the 3D ma
 * Hellblade: Senua's Sacrifice: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Hellblade
 * Hitman 2016: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Hitman2016
 * Homefront: The Revolution: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/HomefrontTheRevolution
+* Kingdom Come Deliverance: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/KingdomComeDeliverance
 * Lords of the Fallen: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/LordsOfTheFallen
 * Mafia III: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Mafia3
 * Metal Gear Solid V: The Phantom Pain: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/MGS5
