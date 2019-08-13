@@ -1,7 +1,26 @@
 Injectable camera for Kingdom Come Deliverance
 ============================
 
-SOON!
+Current supported game version: v1.9.2+  
+Camera version: 1.0.0  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/KCD_100  
+Credits: Otis_Inf. 
+
+### Features
+- Camera control:
+	- FoV control
+	- Free unlimited camera movement and rotation 
+- Ansel everywhere
+- No clip-check anymore in Ansel/free camera
+
+NOTE: If you enable Ansel using Alt-F2, you shouldn't enable this camera. This camera uses the function in the game
+used by Ansel as well.
+
+During cutscenes, it's not possible to move the camera or even pause the game. Also, the black bars in cutscenes
+are still present. 
+
+### How to use
+Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.
 
 ### EULA
 To use these camera tools, you have to comply to the following:

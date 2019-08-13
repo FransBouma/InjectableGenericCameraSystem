@@ -132,3 +132,24 @@ WHGame.DLL+1F8A889 - 48 8B 5C 24 60        - mov rbx,[rsp+60]
 WHGame.DLL+1F8A88E - 48 8B 74 24 68        - mov rsi,[rsp+68]
 WHGame.DLL+1F8A893 - 48 83 C4 50           - add rsp,50 { 80 }
 WHGame.DLL+1F8A897 - 5F                    - pop rdi
+
+// Call update camera
+WHGame.DLL+12EEBD3 - E8 7CAB47FF           - call WHGame.DLL+769754
+WHGame.DLL+12EEBD8 - 48 8D 8B 08030000     - lea rcx,[rbx+00000308]
+WHGame.DLL+12EEBDF - 48 8B D7              - mov rdx,rdi
+WHGame.DLL+12EEBE2 - 48 8B 01              - mov rax,[rcx]
+WHGame.DLL+12EEBE5 - FF 50 08              - call qword ptr [rax+08]			>> Call function which will call updateCamera
+WHGame.DLL+12EEBE8 - 90                    - nop 
+WHGame.DLL+12EEBE9 - E9 71AC47FF           - jmp WHGame.DLL+76985F
+WHGame.DLL+12EEBEE - 48 8B 4B 08           - mov rcx,[rbx+08]
+WHGame.DLL+12EEBF2 - 48 8B D7              - mov rdx,rdi
+//... called by:
+WHGame.DLL+791A09 - 48 8B D7              - mov rdx,rdi
+WHGame.DLL+791A0C - 48 8B 48 38           - mov rcx,[rax+38]
+WHGame.DLL+791A10 - E8 D37DFDFF           - call WHGame.DLL+7697E8	>> Call code above
+WHGame.DLL+791A15 - 48 8D 4B C0           - lea rcx,[rbx-40]
+WHGame.DLL+791A19 - E8 8ED4DAFF           - call WHGame.DLL+53EEAC
+WHGame.DLL+791A1E - 48 85 C0              - test rax,rax
+WHGame.DLL+791A21 - 75 0B                 - jne WHGame.DLL+791A2E
+WHGame.DLL+791A23 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
+WHGame.DLL+791A28 - 48 83 C4 20           - add rsp,20 { 32 }
