@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Kingdom Come Deliverance (v1.9.2+)"
-	#define CAMERA_VERSION								"1.0.0"
+	#define CAMERA_VERSION								"1.0.1"
 	#define CAMERA_CREDITS								"Otis_Inf"
 	#define GAME_WINDOW_TITLE							"Kingdom Come Deliverance"
 	#define INITIAL_PITCH_RADIANS						0.0f
@@ -58,6 +58,7 @@ namespace IGCS::GameSpecific
 	#define ANSEL_CAMERADATA_INIT_KEY			"AOB_ANSEL_CAMERADATA_INIT_KEY"
 	#define ANSEL_FOV_WRITE_KEY					"AOB_ANSEL_FOV_WRITE_KEY"
 	#define ANSEL_NOCLIP_CHECK_KEY				"AOB_ANSEL_NOCLIP_CHECK_KEY"
+	#define ENABLE_CHEATS_KEY					"AOB_ENABLE_CHEATS_KEY"
 
 	// StartSession jump offsets to nop, relative from start of function
 	// v1.9.2

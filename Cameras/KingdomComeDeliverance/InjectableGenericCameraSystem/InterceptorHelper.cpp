@@ -67,6 +67,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[ANSEL_CAMERADATA_INIT_KEY] = new AOBBlock(ANSEL_CAMERADATA_INIT_KEY, "F3 0F 11 05 ?? ?? ?? ?? F3 0F 10 4E 04 F3 0F 11 0D ?? ?? ?? ?? 48 8D  98 E8 00 00 00 F3 0F 10 46 08 F3 0F 11 05 ?? ?? ?? ??", 1);
 		aobBlocks[ANSEL_FOV_WRITE_KEY] = new AOBBlock(ANSEL_FOV_WRITE_KEY, "F3 0F 11 0D ?? ?? ?? ?? F3 0F 10 46 2C F3 0F 11 05 ?? ?? ?? ?? F3 0F 10 4B 6C F3 0F 11 0D ?? ?? ?? ?? F3 0F 10 43 40", 1);
 		aobBlocks[ANSEL_NOCLIP_CHECK_KEY] = new AOBBlock(ANSEL_NOCLIP_CHECK_KEY, "FF 90 90 05 00 00 4C 8B C6 48 8D 54 24 40 | E8 ?? ?? ?? ?? 48 8B 5C 24 60 48 8B 74 24 68 48 83 C4 50", 1);
+		aobBlocks[ENABLE_CHEATS_KEY] = new AOBBlock(ENABLE_CHEATS_KEY, "80 BE DE 01 00 00 00 | 75 ?? 40 84 ED 0F 85 ?? ?? ?? ?? 85 DB", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -94,6 +95,12 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		if (aobBlocks[ANSEL_NOCLIP_CHECK_KEY]->found())
 		{
 			GameImageHooker::nopRange(aobBlocks[ANSEL_NOCLIP_CHECK_KEY]->absoluteAddress(), 5);
+		}
+		if (aobBlocks[ENABLE_CHEATS_KEY]->found())
+		{
+			// replace jne ... to jmp ...
+			BYTE jmpInstruction[1] = { 0xEB };
+			GameImageHooker::writeRange(aobBlocks[ENABLE_CHEATS_KEY]->absoluteAddress(), jmpInstruction, 1);
 		}
 
 		// AOBs in AnselSDK64 dll

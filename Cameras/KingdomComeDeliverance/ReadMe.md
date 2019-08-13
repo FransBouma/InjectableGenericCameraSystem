@@ -2,8 +2,8 @@ Injectable camera for Kingdom Come Deliverance
 ============================
 
 Current supported game version: v1.9.2+  
-Camera version: 1.0.0  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/KCD_100  
+Camera version: 1.0.1  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/KCD_101  
 Credits: Otis_Inf. 
 
 ### Features

@@ -153,3 +153,21 @@ WHGame.DLL+791A1E - 48 85 C0              - test rax,rax
 WHGame.DLL+791A21 - 75 0B                 - jne WHGame.DLL+791A2E
 WHGame.DLL+791A23 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
 WHGame.DLL+791A28 - 48 83 C4 20           - add rsp,20 { 32 }
+
+// Enable writing to all console commands:
+WHGame.DLL+73A223 - 25 00000040           - and eax,40000000 { 2.00 }
+WHGame.DLL+73A228 - 0F95 84 24 80000000   - setne byte ptr [rsp+00000080]
+WHGame.DLL+73A230 - 80 BE DE010000 00     - cmp byte ptr [rsi+000001DE],00 { 0 }
+WHGame.DLL+73A237 - 75 22                 - jne WHGame.DLL+73A25B			>> CHANGE TO JMP
+WHGame.DLL+73A239 - 40 84 ED              - test bpl,bpl
+WHGame.DLL+73A23C - 0F85 C464BA00         - jne WHGame.DLL+12E0706
+WHGame.DLL+73A242 - 85 DB                 - test ebx,ebx
+WHGame.DLL+73A244 - 0F85 BC64BA00         - jne WHGame.DLL+12E0706
+WHGame.DLL+73A24A - 45 85 F6              - test r14d,r14d
+WHGame.DLL+73A24D - 0F85 B364BA00         - jne WHGame.DLL+12E0706
+WHGame.DLL+73A253 - 85 C0                 - test eax,eax
+WHGame.DLL+73A255 - 0F85 AB64BA00         - jne WHGame.DLL+12E0706
+WHGame.DLL+73A25B - 48 83 BE 58010000 00  - cmp qword ptr [rsi+00000158],00 { 0 }
+WHGame.DLL+73A263 - 74 2F                 - je WHGame.DLL+73A294
+WHGame.DLL+73A265 - 48 8B 86 50010000     - mov rax,[rsi+00000150]
+WHGame.DLL+73A26C - 48 8B 00              - mov rax,[rax]
