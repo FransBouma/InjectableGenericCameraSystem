@@ -171,3 +171,142 @@ WHGame.DLL+73A25B - 48 83 BE 58010000 00  - cmp qword ptr [rsi+00000158],00 { 0 
 WHGame.DLL+73A263 - 74 2F                 - je WHGame.DLL+73A294
 WHGame.DLL+73A265 - 48 8B 86 50010000     - mov rax,[rsi+00000150]
 WHGame.DLL+73A26C - 48 8B 00              - mov rax,[rax]
+
+// useless camera hacks
+WHGame.DLL+76982C - 88 87 B0000000        - mov [rdi+000000B0],al
+WHGame.DLL+769832 - 88 53 1A              - mov [rbx+1A],dl
+WHGame.DLL+769835 - E8 A6E4FFFF           - call WHGame.DLL+767CE0
+WHGame.DLL+76983A - 38 53 28              - cmp [rbx+28],dl
+WHGame.DLL+76983D - 0F85 8D53B800         - jne WHGame.DLL+12EEBD0			>> ->JMP to move player and not camera in gameplay (not useful)
+WHGame.DLL+769843 - 38 53 18              - cmp [rbx+18],dl
+WHGame.DLL+769846 - 0F85 A253B800         - jne WHGame.DLL+12EEBEE			>> ->JMP to get 3rd person camera (not useful, no head!)
+WHGame.DLL+76984C - 48 8D 53 2C           - lea rdx,[rbx+2C]
+WHGame.DLL+769850 - 4C 8B C7              - mov r8,rdi
+WHGame.DLL+769853 - 4C 8B 4B 10           - mov r9,[rbx+10]
+WHGame.DLL+769857 - 48 8B CB              - mov rcx,rbx
+WHGame.DLL+76985A - E8 89FDFFFF           - call WHGame.DLL+7695E8
+WHGame.DLL+76985F - 48 8B 9C 24 10010000  - mov rbx,[rsp+00000110]
+WHGame.DLL+769867 - 48 81 C4 00010000     - add rsp,00000100 { 256 }
+
+
+// Real camera
+// coords write: 
+WHGame.DLL+92C254 - F3 44 0F11 5E 14      - movss [rsi+14],xmm11
+WHGame.DLL+92C25A - F3 44 0F11 46 18      - movss [rsi+18],xmm8
+WHGame.DLL+92C260 - 8B 44 24 38           - mov eax,[rsp+38]
+WHGame.DLL+92C264 - F2 0F11 06            - movsd [rsi],xmm0			// Write X & Y
+WHGame.DLL+92C268 - 89 46 08              - mov [rsi+08],eax			// Write Z
+WHGame.DLL+92C26B - C6 46 34 00           - mov byte ptr [rsi+34],00 { 0 }
+WHGame.DLL+92C26F - 44 0F28 74 24 70      - movaps xmm14,[rsp+70]
+WHGame.DLL+92C275 - 4C 8D 9C 24 00010000  - lea r11,[rsp+00000100]
+// Write 2
+WHGame.DLL+92C900 - F3 44 0F11 5A 14      - movss [rdx+14],xmm11
+WHGame.DLL+92C906 - F3 44 0F11 7A 18      - movss [rdx+18],xmm15
+WHGame.DLL+92C90C - F2 0F11 02            - movsd [rdx],xmm0			// X & Y
+WHGame.DLL+92C910 - 89 42 08              - mov [rdx+08],eax			// Z
+WHGame.DLL+92C913 - F3 44 0F11 4C 24 44   - movss [rsp+44],xmm9
+WHGame.DLL+92C91A - F3 44 0F11 5C 24 48   - movss [rsp+48],xmm11
+WHGame.DLL+92C921 - F3 44 0F11 7C 24 4C   - movss [rsp+4C],xmm15
+// Write 3
+WHGame.DLL+766B68 - 0F28 C2               - movaps xmm0,xmm2
+WHGame.DLL+766B6B - 0F14 C1               - unpcklps xmm0,xmm1
+WHGame.DLL+766B6E - F2 0F11 06            - movsd [rsi],xmm0			// X & Y
+WHGame.DLL+766B72 - 89 46 08              - mov [rsi+08],eax
+WHGame.DLL+766B75 - 4D 85 F6              - test r14,r14
+WHGame.DLL+766B78 - 74 1F                 - je WHGame.DLL+766B99
+WHGame.DLL+766B7A - 49 8B 7E 40           - mov rdi,[r14+40]
+WHGame.DLL+766B7E - 48 85 FF              - test rdi,rdi
+// Write 4
+WHGame.DLL+767AD8 - 8B 45 AF              - mov eax,[rbp-51]
+WHGame.DLL+767ADB - 0F14 C1               - unpcklps xmm0,xmm1
+WHGame.DLL+767ADE - F2 0F11 03            - movsd [rbx],xmm0			// X & Y
+WHGame.DLL+767AE2 - 89 43 08              - mov [rbx+08],eax			// Z
+WHGame.DLL+767AE5 - F3 0F10 93 9C000000   - movss xmm2,[rbx+0000009C]
+WHGame.DLL+767AED - F3 0F59 53 0C         - mulss xmm2,[rbx+0C]
+WHGame.DLL+767AF2 - F3 0F10 43 10         - movss xmm0,[rbx+10]
+WHGame.DLL+767AF7 - F3 0F59 83 A0000000   - mulss xmm0,[rbx+000000A0]
+// Write 5
+// It's unstable (writes to many addresses) when gameplay is on, but in a cutscene it's writing to just 1 address: the cutscene camera.
+// As this copies the whole struct, what we could do is when the camera is enabled, simply store our struct's address in the register and write
+// the values from our own struct (coords, quaternion, fov), otherwise proceed as normal. 
+// This also saves us from blocking writes all over the place. 
+// What's needed next is timestop. This could be found with the startsession in ansel.
+WHGame.DLL+767640 - F2 0F10 02            - movsd xmm0,[rdx]
+WHGame.DLL+767644 - F2 0F11 01            - movsd [rcx],xmm0			// Write X & Y
+WHGame.DLL+767648 - 8B 42 08              - mov eax,[rdx+08]
+WHGame.DLL+76764B - 89 41 08              - mov [rcx+08],eax			// Write Z
+WHGame.DLL+76764E - 8B 42 0C              - mov eax,[rdx+0C]
+WHGame.DLL+767651 - 89 41 0C              - mov [rcx+0C],eax
+WHGame.DLL+767654 - 8B 42 10              - mov eax,[rdx+10]
+WHGame.DLL+767657 - 89 41 10              - mov [rcx+10],eax
+WHGame.DLL+76765A - 8B 42 14              - mov eax,[rdx+14]
+WHGame.DLL+76765D - 89 41 14              - mov [rcx+14],eax
+WHGame.DLL+767660 - 8B 42 18              - mov eax,[rdx+18]
+WHGame.DLL+767663 - 89 41 18              - mov [rcx+18],eax
+WHGame.DLL+767666 - 8B 42 1C              - mov eax,[rdx+1C]
+WHGame.DLL+767669 - 89 41 1C              - mov [rcx+1C],eax
+WHGame.DLL+76766C - 8B 42 20              - mov eax,[rdx+20]
+
+// Timestop1. Pauses everything.
+WHGame.DLL+4175E4 - 80 79 60 00           - cmp byte ptr [rcx+60],00 { 0 }
+WHGame.DLL+4175E8 - 74 14                 - je WHGame.DLL+4175FE
+WHGame.DLL+4175EA - 83 FA 01              - cmp edx,01 { 1 }
+WHGame.DLL+4175ED - 74 13                 - je WHGame.DLL+417602
+WHGame.DLL+4175EF - 85 D2                 - test edx,edx
+WHGame.DLL+4175F1 - 75 05                 - jne WHGame.DLL+4175F8
+WHGame.DLL+4175F3 - 38 51 54              - cmp [rcx+54],dl						<< READ of timestop1.
+WHGame.DLL+4175F6 - 75 06                 - jne WHGame.DLL+4175FE
+WHGame.DLL+4175F8 - F3 0F10 41 48         - movss xmm0,[rcx+48]
+WHGame.DLL+4175FD - C3                    - ret 
+WHGame.DLL+4175FE - 0F57 C0               - xorps xmm0,xmm0
+WHGame.DLL+417601 - C3                    - ret 
+WHGame.DLL+417602 - F3 0F10 41 4C         - movss xmm0,[rcx+4C]
+WHGame.DLL+417607 - C3                    - ret 
+
+// Timestop2. Pauses animations of characters, not animations of trees/vegetation
+WHGame.DLL+76E164 - 48 8D 41 08           - lea rax,[rcx+08]
+WHGame.DLL+76E168 - 48 8D 48 2C           - lea rcx,[rax+2C]
+WHGame.DLL+76E16C - 48 3B C1              - cmp rax,rcx
+WHGame.DLL+76E16F - 74 0B                 - je WHGame.DLL+76E17C
+WHGame.DLL+76E171 - 83 38 00              - cmp dword ptr [rax],00 { 0 }		<< READ of timestop2
+WHGame.DLL+76E174 - 7F 09                 - jg WHGame.DLL+76E17F
+WHGame.DLL+76E176 - 48 83 C0 04           - add rax,04 { 4 }
+WHGame.DLL+76E17A - EB F0                 - jmp WHGame.DLL+76E16C
+WHGame.DLL+76E17C - 32 C0                 - xor al,al
+WHGame.DLL+76E17E - C3                    - ret 
+WHGame.DLL+76E17F - B0 01                 - mov al,01 { 1 }
+WHGame.DLL+76E181 - C3                    - ret 
+
+// Cutscene timestop:
+WHGame.DLL+57A6 - 83 BB 48070000 01     - cmp dword ptr [rbx+00000748],01 { 1 }
+WHGame.DLL+57AD - 75 10                 - jne WHGame.DLL+57BF
+WHGame.DLL+57AF - 83 BB A0040000 00     - cmp dword ptr [rbx+000004A0],00 { 0 }		<< READ of timestop
+WHGame.DLL+57B6 - 75 07                 - jne WHGame.DLL+57BF
+WHGame.DLL+57B8 - 48 FF 83 60070000     - inc [rbx+00000760]
+WHGame.DLL+57BF - 48 8B 4B 08           - mov rcx,[rbx+08]
+WHGame.DLL+57C3 - 8B BB 80000000        - mov edi,[rbx+00000080]
+WHGame.DLL+57C9 - 48 8D 53 1C           - lea rdx,[rbx+1C]
+WHGame.DLL+57CD - E8 EE670000           - call WHGame.DLL+BFC0
+WHGame.DLL+57D2 - 4C 8B 5B 08           - mov r11,[rbx+08]
+WHGame.DLL+57D6 - 41 83 BB 30090000 00  - cmp dword ptr [r11+00000930],00 { 0 }
+WHGame.DLL+57DE - 76 7E                 - jna WHGame.DLL+585E
+//or
+WHGame.DLL+6040 - 40 53                 - push rbx
+WHGame.DLL+6042 - 55                    - push rbp
+WHGame.DLL+6043 - 57                    - push rdi
+WHGame.DLL+6044 - 48 81 EC 10010000     - sub rsp,00000110 { 272 }
+WHGame.DLL+604B - 33 DB                 - xor ebx,ebx
+WHGame.DLL+604D - 8B EA                 - mov ebp,edx
+WHGame.DLL+604F - 48 8B F9              - mov rdi,rcx
+WHGame.DLL+6052 - 41 89 18              - mov [r8],ebx
+WHGame.DLL+6055 - 83 B9 A0040000 01     - cmp dword ptr [rcx+000004A0],01 { 1 }		<< READ of timestop
+WHGame.DLL+605C - 75 0D                 - jne WHGame.DLL+606B
+WHGame.DLL+605E - 33 C0                 - xor eax,eax
+WHGame.DLL+6060 - 48 81 C4 10010000     - add rsp,00000110 { 272 }
+WHGame.DLL+6067 - 5F                    - pop rdi
+WHGame.DLL+6068 - 5D                    - pop rbp
+WHGame.DLL+6069 - 5B                    - pop rbx
+WHGame.DLL+606A - C3                    - ret 
+WHGame.DLL+606B - 83 B9 1C080000 01     - cmp dword ptr [rcx+0000081C],01 { 1 }
+WHGame.DLL+6072 - 74 EA                 - je WHGame.DLL+605E
+
