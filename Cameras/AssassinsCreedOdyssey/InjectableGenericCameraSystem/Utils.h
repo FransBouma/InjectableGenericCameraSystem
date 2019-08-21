@@ -55,6 +55,9 @@ namespace IGCS::Utils
 		return value < min ? default : value;
 	}
 	
+	template<typename ... Args>
+	std::string formatString(const std::string& format, Args ... args);
+	std::string formatString(const char* fmt, va_list args);
 
 	HWND findMainWindow(unsigned long process_id);
 	MODULEINFO getModuleInfoOfContainingProcess();
@@ -62,7 +65,6 @@ namespace IGCS::Utils
 	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, ScanPattern pattern);
 	BYTE CharToByte(char c);
 	LPBYTE calculateAbsoluteAddress(AOBBlock* locationData, int nextOpCodeOffset);
-	std::string formatString(const char *fmt, va_list args);
 	bool stringStartsWith(const char *a, const char *b);
 	bool keyDown(int virtualKeyCode);
 	bool altPressed();

@@ -118,6 +118,9 @@
     <ClInclude Include="ScanPattern.h">
       <Filter>Hooking</Filter>
     </ClInclude>
+    <ClInclude Include="ScreenshotController.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InterceptorHelper.cpp">
@@ -197,6 +200,9 @@
     </ClCompile>
     <ClCompile Include="ScanPattern.cpp">
       <Filter>Hooking</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenshotController.cpp">
+      <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

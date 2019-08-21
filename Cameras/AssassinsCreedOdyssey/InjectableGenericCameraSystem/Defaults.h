@@ -75,6 +75,8 @@ namespace IGCS
 	#define IGCS_BUTTON_FASTER			Gamepad::button_t::Y
 	#define IGCS_BUTTON_SLOWER			Gamepad::button_t::X
 
+	#define IGCS_JPG_SCREENSHOT_QUALITY				98
+
 	static const BYTE jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]
 
 	#define DEVICE_ID_KEYBOARD_MOUSE			0

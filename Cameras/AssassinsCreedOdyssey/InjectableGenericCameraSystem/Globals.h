@@ -36,6 +36,7 @@
 #include "Settings.h"
 #include "ActionData.h"
 #include <map>
+#include "ScreenshotController.h"
 
 extern "C" BYTE g_cameraEnabled;
 extern "C" BYTE g_gamePaused;
@@ -66,6 +67,8 @@ namespace IGCS
 		ActionData* getActionData(ActionType type);
 		void updateActionDataForAction(ActionType type);
 		ActionData& getKeyCollector() { return _keyCollectorData; }
+		ScreenshotController& getScreenshotController() { return _screenshotController; }
+		void reinitializeScreenshotController();
 
 	private:
 		void initializeKeyBindings();
@@ -78,5 +81,6 @@ namespace IGCS
 		float _settingsDirtyTimer=0.0f;			// when settings are marked dirty, this is set with a value > 0 and decremented each frame. If 0, settings are saved. In seconds.
 		map<ActionType, ActionData*> _keyBindingPerActionType;
 		ActionData _keyCollectorData = ActionData("KeyCollector", "", 0, false, false, false);
+		ScreenshotController _screenshotController;
 	};
 }

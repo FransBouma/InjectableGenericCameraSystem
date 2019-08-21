@@ -43,6 +43,7 @@
 #include "MinHook.h"
 #include <time.h>
 #include <direct.h>
+#include "ScreenshotController.h"
 
 namespace IGCS
 {

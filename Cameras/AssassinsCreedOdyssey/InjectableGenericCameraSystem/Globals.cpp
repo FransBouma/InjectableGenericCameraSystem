@@ -101,6 +101,14 @@ namespace IGCS
 		}
 	}
 
+
+	void Globals::reinitializeScreenshotController()
+	{
+// TODO: add convolution frame count.
+		_screenshotController.initialize(_settings.screenshotDirectory, 0);
+	}
+
+
 	ActionData* Globals::getActionData(ActionType type)
 	{
 		if (_keyBindingPerActionType.count(type) != 1)

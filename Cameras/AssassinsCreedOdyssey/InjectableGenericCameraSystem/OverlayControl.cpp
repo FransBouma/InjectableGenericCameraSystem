@@ -322,11 +322,17 @@ Special thanks to:
 			ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.3f) - 11.0f);
 			settingsChanged |= ImGui::Checkbox("Disable in-game DoF when camera is enabled", &currentSettings.disableInGameDofWhenCameraIsEnabled);
 		}
-		if (ImGui::CollapsingHeader("Looking Glass options", ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader("Screenshot options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			settingsChanged |= ImGui::SliderFloat("LKG view distance", &currentSettings.lkgViewDistance, 0.0f, 100.0f, "%.3f");
-			settingsChanged |= ImGui::SliderInt("LKG view count", &currentSettings.lkgViewCount, 0, 60);
-			settingsChanged |= ImGui::InputText("Screenshot output directory", currentSettings.screenshotDirectory, 500);
+			bool screenshotSettingsChanged = false;
+			screenshotSettingsChanged |= ImGui::SliderFloat("LKG view distance", &currentSettings.lkgViewDistance, 0.0f, 100.0f, "%.3f");
+			screenshotSettingsChanged |= ImGui::SliderInt("LKG view count", &currentSettings.lkgViewCount, 0, 60);
+			screenshotSettingsChanged |= ImGui::InputText("Screenshot output directory", currentSettings.screenshotDirectory, 500);
+			if (screenshotSettingsChanged)
+			{
+				Globals::instance().reinitializeScreenshotController();
+			}
+			settingsChanged |= screenshotSettingsChanged;
 		}
 		ImGui::PopItemWidth();
 		if (settingsChanged)

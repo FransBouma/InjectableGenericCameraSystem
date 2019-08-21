@@ -13,8 +13,6 @@
 #include "Input.h"
 #include <atomic>
 #include <thread>
-#include "stb_image_write.h"
-#include "stb_image_resize.h"
 
 #pragma comment(lib, "d3d11.lib")
 
@@ -37,16 +35,6 @@ namespace IGCS::D3D11Hooker
 	static ID3D11DeviceContext* _context = nullptr;
 	static ID3D11RenderTargetView* _mainRenderTargetView = nullptr;
 
-	// Looking glass data
-	static UINT _width;
-	static UINT _height;
-// TODO: CHANGE to std:string
-	static char _filename[500];
-	static atomic_int _framesToGrab;
-	static atomic_int _framesToGrabSync;
-	static atomic_bool _isDoneSavingImages = true;
-	static std::vector<std::vector<uint8_t>> _fb_array;
-
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Pointers to the original hooked functions
 	static DXGIPresentHook hookedDXGIPresent = nullptr;
@@ -59,6 +47,7 @@ namespace IGCS::D3D11Hooker
 
 	HRESULT __stdcall detourDXGIResizeBuffers(IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags)
 	{
+		Globals::instance().getScreenshotController().reset();		// kill off any in-progress screenshot process
 		_imGuiInitializing = true;
 		ImGui_ImplDX11_InvalidateDeviceObjects();
 		cleanupRenderTarget();
@@ -79,6 +68,7 @@ namespace IGCS::D3D11Hooker
 		_presentInProgress = true;
 		bool validFrame = false;
 		UINT flagsToPass = Flags;
+		ScreenshotController& screenshotController = Globals::instance().getScreenshotController();
 		if (_tmpSwapChainInitialized)
 		{
 			if (!(Flags & DXGI_PRESENT_TEST) && !_imGuiInitializing)
@@ -116,7 +106,7 @@ namespace IGCS::D3D11Hooker
 			}
 		}
 		bool grabFrame = false;
-		if (validFrame && _framesToGrab > 0)
+		if (validFrame && screenshotController.shouldTakeShot())
 		{
 			// make sure the Present call doesn't synchronize, so it's waiting for the VBL and doesn't unbind the backbuffer. 
 			flagsToPass |= DXGI_PRESENT_DO_NOT_SEQUENCE;
@@ -126,22 +116,13 @@ namespace IGCS::D3D11Hooker
 		// if we have to grab the frame, do it now.
 		if(grabFrame)
 		{
-			/*char buf[100];
-			sprintf(buf, "[hook] main: %d hook: %d", framesToGrabSync, framesToGrab);
-			OverlayControl::addNotification(buf);*/
-			if (_framesToGrab >= _framesToGrabSync) 
-			{
-				_fb_array.push_back(capture_frame(pSwapChain));
-				--_framesToGrab;
-				if (_framesToGrab == 0)
-				{
-					std::thread(saveAllFiles).detach();
-				}
-			}
+			screenshotController.storeGrabbedShot(capture_frame(pSwapChain));
 		}
+		screenshotController.presentCalled();
 		_presentInProgress = false;
 		return toReturn;
 	}
+
 
 	void initializeHook()
 	{
@@ -217,8 +198,7 @@ namespace IGCS::D3D11Hooker
 		// get the width/height of the back buffer. 
 		D3D11_TEXTURE2D_DESC StagingDesc;
 		pBackBuffer->GetDesc(&StagingDesc);
-		_width = StagingDesc.Width;
-		_height = StagingDesc.Height;
+		Globals::instance().getScreenshotController().setBufferSize(StagingDesc.Width, StagingDesc.Height);
 		pBackBuffer->Release();
 	}
 
@@ -233,18 +213,10 @@ namespace IGCS::D3D11Hooker
 	}
 
 
-	void syncFramesToGrab(int ftgs)
-	{
-		_framesToGrabSync = ftgs;
-	}
-
-
 	std::vector<uint8_t> capture_frame(IDXGISwapChain* pSwapChain)
 	{
 		OverlayConsole::instance().logLine("capture_frame()");
 
-		std::vector<uint8_t> fbdata(_width * _height * 4);
-		uint8_t* buffer = fbdata.data();
 		D3D11_TEXTURE2D_DESC StagingDesc;
 		ID3D11Texture2D* pBackBuffer = NULL;
 		pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)& pBackBuffer);
@@ -259,10 +231,12 @@ namespace IGCS::D3D11Hooker
 		hr = _context->Map(pBackBufferStaging, 0, D3D11_MAP_READ, 0, &mapped);
 		if (FAILED(hr))
 		{
-			IGCS::Console::WriteError("Failed to map staging resource with screenshot capture! HRESULT is");
-			std::cout << "Failed to map staging resource with screenshot capture! HRESULT is '" << std::hex << hr << std::dec << "'.";
-			return fbdata;
+			IGCS::Console::WriteError("Failed to map staging resource with screenshot capture!");
+			std::vector<uint8_t> failed;
+			return failed;
 		}
+		std::vector<uint8_t> fbdata(StagingDesc.Width * StagingDesc.Height * 4);
+		uint8_t* buffer = fbdata.data();
 		auto mapped_data = static_cast<BYTE*>(mapped.pData);
 		const UINT pitch = StagingDesc.Width * 4;
 		for (UINT y = 0; y < StagingDesc.Height; y++)
@@ -284,57 +258,4 @@ namespace IGCS::D3D11Hooker
 		_context->Unmap(pBackBufferStaging, 0);
 		return fbdata;
 	}
-
-
-	void takeScreenshot(char* filename, int framesToGrab_ = 1)
-	{
-		_isDoneSavingImages = false;
-		_framesToGrab = framesToGrab_;
-		strcpy(_filename, filename);
-	}
-
-
-	int framesRemaining()
-	{
-		return _framesToGrab;
-	}
-
-
-	bool isDoneSavingImages()
-	{
-		return _isDoneSavingImages;
-	}
-
-
-	void saveAllFiles()
-	{
-		int i = 0;
-		for (std::vector<uint8_t> d : _fb_array) {
-			saveToFile(d, _filename, i);
-			++i;
-		}
-		_fb_array.clear();
-		_isDoneSavingImages = true;
-		char buf[500];
-		sprintf(buf, "All files saved out to %s", _filename);
-		OverlayControl::addNotification(buf);
-		return;
-	}
-
-
-	void saveToFile(std::vector<uint8_t> data, char* dirname, int framenum = 0)
-	{
-		char filename[500];
-		sprintf(filename, "%s\\%d.jpg", dirname, framenum);
-		bool _screenshot_save_success = false; // Default to a save failure unless it is reported to succeed below
-		_screenshot_save_success = stbi_write_jpg(filename, _width, _height, 4, data.data(), 80) != 0;
-		if (!_screenshot_save_success)
-		{
-			OverlayConsole::instance().logDebug("Failed to write screenshot of dimensions %dx%d to... %s", _width, _height, filename);
-		}
-		else {
-			OverlayConsole::instance().logDebug("Successfully wrote screenshot of dimensions %dx%d to... %s", _width, _height, filename);
-		}
-	}
-
 }
