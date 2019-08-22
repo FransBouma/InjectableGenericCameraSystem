@@ -31,6 +31,7 @@
 #include "InterceptorHelper.h"
 #include "Globals.h"
 #include "OverlayConsole.h"
+#include "Camera.h"
 
 using namespace DirectX;
 using namespace std;
@@ -57,6 +58,25 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static PauseGameFunction _pauseGameFunc = nullptr;
 	static UnpauseGameFunction _unpauseGameFunc = nullptr;
 
+	   
+	void updateCameraDataInGameData(Camera camera)
+	{
+		if (!g_cameraEnabled)
+		{
+			return;
+		}
+
+		// calculate new camera values. We have two cameras, but they might not be available both, so we have to test before we do anything. 
+		DirectX::XMVECTOR newLookQuaternion = camera.calculateLookQuaternion();
+		DirectX::XMFLOAT3 currentCoords;
+		DirectX::XMFLOAT3 newCoords;
+		if (isCameraFound())
+		{
+			currentCoords = getCurrentCameraCoords();
+			newCoords = camera.calculateNewCoords(currentCoords, newLookQuaternion);
+			writeNewCameraValuesToGameData(newCoords, newLookQuaternion);
+		}
+	}
 
 	void setPauseUnpauseGameFunctionPointers(LPBYTE pauseFunctionAddress, LPBYTE unpauseFunctionAddress)
 	{

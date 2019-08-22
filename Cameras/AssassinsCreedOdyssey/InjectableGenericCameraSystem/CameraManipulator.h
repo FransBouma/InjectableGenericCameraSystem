@@ -30,6 +30,7 @@
 
 namespace IGCS::GameSpecific::CameraManipulator
 {
+	void updateCameraDataInGameData(Camera camera);
 	void writeNewCameraValuesToGameData(DirectX::XMFLOAT3 newCoords, DirectX::XMVECTOR newLookQuaternion);
 	void restoreOriginalValuesAfterCameraDisable();
 	void cacheOriginalValuesBeforeCameraEnable();

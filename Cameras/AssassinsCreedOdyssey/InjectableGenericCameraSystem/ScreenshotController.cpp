@@ -32,6 +32,8 @@
 #include "stb_image_resize.h"
 #include "Defaults.h"
 #include "OverlayConsole.h"
+#include "OverlayControl.h"
+#include <direct.h>
 
 using namespace std;
 
@@ -45,7 +47,7 @@ namespace IGCS
 	{}
 
 
-	void ScreenshotController::initialize(string rootFolder, int amountOfFramesToWaitbetweenSteps)
+	void ScreenshotController::initialize(string rootFolder, int amountOfFramesToWaitbetweenSteps, float movementSpeed, float rotationSpeed)
 	{
 		if (_state != ScreenshotControllerState::Off)
 		{
@@ -54,6 +56,8 @@ namespace IGCS
 		}
 		_rootFolder = rootFolder;
 		_amountOfFramesToWaitbetweenSteps = amountOfFramesToWaitbetweenSteps;
+		_movementSpeed = movementSpeed;
+		_rotationSpeed = rotationSpeed;
 	}
 
 
@@ -65,7 +69,7 @@ namespace IGCS
 
 	void ScreenshotController::presentCalled()
 	{
-//TODO: add convolution counter handling
+// TODO: add convolution counter handling
 	}
 
 
@@ -92,9 +96,10 @@ namespace IGCS
 		// done
 	}
 
-	void ScreenshotController::startHorizontalPanoramaShot(float totalFoVInDegrees, int amountOfShots, float currentFoVInDegrees)
+	void ScreenshotController::startHorizontalPanoramaShot(Camera camera, float totalFoVInDegrees, int amountOfShots, float currentFoVInDegrees)
 	{
 		reset();
+		_camera = camera;
 		_totalFoVInDegrees = totalFoVInDegrees;
 		_amountOfShotsToTake = amountOfShots;
 		_currentFoVInDegrees = currentFoVInDegrees;
@@ -102,9 +107,10 @@ namespace IGCS
 	}
 
 
-	void ScreenshotController::startLightfieldShot(float distancePerStep, int amountOfShots)
+	void ScreenshotController::startLightfieldShot(Camera camera, float distancePerStep, int amountOfShots)
 	{
 		reset();
+		_camera = camera;
 		_distancePerStep = distancePerStep;
 		_amountOfShotsToTake = amountOfShots;
 		_typeOfShot = ScreenshotType::Lightfield;
@@ -116,9 +122,10 @@ namespace IGCS
 	}
 
 
-	void ScreenshotController::startTiledGridShot(int amountOfColumns, int amountOfRows, float currentFoVInDegrees)
+	void ScreenshotController::startTiledGridShot(Camera camera, int amountOfColumns, int amountOfRows, float currentFoVInDegrees)
 	{
 		reset();
+		_camera = camera;
 		_amountOfColumns = amountOfColumns;
 		_amountOfRows = amountOfRows;
 		_currentFoVInDegrees = currentFoVInDegrees;
@@ -127,6 +134,11 @@ namespace IGCS
 
 	void ScreenshotController::storeGrabbedShot(std::vector<uint8_t> grabbedShot)
 	{
+		if (grabbedShot.capacity <= 0)
+		{
+			// failed
+			return;
+		}
 		_grabbedFrames.push_back(grabbedShot);
 // TODO: Add camera move
 		_shotCounter++;
@@ -142,11 +154,16 @@ namespace IGCS
 
 	void ScreenshotController::saveGrabbedShots()
 	{
+		if (_grabbedFrames.size() <= 0)
+		{
+			return;
+		}
+		string destinationFolder = createScreenshotFolder();
 		int frameNumber = 0;
 		for (std::vector<uint8_t> frame : _grabbedFrames) 
 		{
-			saveShotToFile(frame, frameNumber);
-			++frameNumber;
+			saveShotToFile(destinationFolder, frame, frameNumber);
+			frameNumber++;
 		}
 		// done
 		_grabbedFrames.clear();
@@ -154,24 +171,24 @@ namespace IGCS
 	}
 
 
-	void ScreenshotController::saveShotToFile(std::vector<uint8_t> data, int frameNumber)
+	void ScreenshotController::saveShotToFile(std::string destinationFolder, std::vector<uint8_t> data, int frameNumber)
 	{
 		bool saveSuccessful = false;
 		string filename = "";
 		switch (_filetype)
 		{
-		case ScreenshotFiletype::Bmp:
-			filename = Utils::formatString("%s\\%d.bmp", _rootFolder, frameNumber);
-			saveSuccessful = stbi_write_bmp(filename.c_str(), _framebufferWidth, _framebufferHeight, 0, data.data()) != 0;
-			break;
-		case ScreenshotFiletype::Jpeg:
-			filename = Utils::formatString("%s\\%d.jpg", _rootFolder, frameNumber);
-			saveSuccessful = stbi_write_jpg(filename.c_str(), _framebufferWidth, _framebufferHeight, 0, data.data(), IGCS_JPG_SCREENSHOT_QUALITY) != 0;
-			break;
-		case ScreenshotFiletype::Png:
-			filename = Utils::formatString("%s\\%d.png", _rootFolder, frameNumber);
-			saveSuccessful = stbi_write_png(filename.c_str(), _framebufferWidth, _framebufferHeight, 8, data.data(), 4 * _framebufferWidth) != 0;
-			break;
+			case ScreenshotFiletype::Bmp:
+				filename = Utils::formatString("%s\\%d.bmp", destinationFolder, frameNumber);
+				saveSuccessful = stbi_write_bmp(filename.c_str(), _framebufferWidth, _framebufferHeight, 0, data.data()) != 0;
+				break;
+			case ScreenshotFiletype::Jpeg:
+				filename = Utils::formatString("%s\\%d.jpg", destinationFolder, frameNumber);
+				saveSuccessful = stbi_write_jpg(filename.c_str(), _framebufferWidth, _framebufferHeight, 0, data.data(), IGCS_JPG_SCREENSHOT_QUALITY) != 0;
+				break;
+			case ScreenshotFiletype::Png:
+				filename = Utils::formatString("%s\\%d.png", destinationFolder, frameNumber);
+				saveSuccessful = stbi_write_png(filename.c_str(), _framebufferWidth, _framebufferHeight, 8, data.data(), 4 * _framebufferWidth) != 0;
+				break;
 		}
 		if (saveSuccessful)
 		{
@@ -181,6 +198,25 @@ namespace IGCS
 		{
 			OverlayConsole::instance().logDebug("Failed to write screenshot of dimensions %dx%d to... %s", _framebufferWidth, _framebufferHeight, filename);
 		}
+	}
+
+
+	string ScreenshotController::createScreenshotFolder()
+	{
+		time_t t = time(nullptr);
+		tm tm;
+		localtime_s(&tm, &t);
+		int year = tm.tm_year + 1900;
+		int month = tm.tm_mon + 1;
+		int day = tm.tm_mday;
+		int hour = tm.tm_hour * 3600 + tm.tm_min * 60 + tm.tm_sec;
+		hour = hour / 3600;
+		int minute = (hour - (hour * 3600)) / 60;
+		int seconds = hour - (hour * 3600) - (minute * 60);
+		string optionalBackslash = (_rootFolder.ends_with('\\')) ? "" : "\\";
+		string folderName = Utils::formatString("%s%s%.4d-%.2d-%.2d-%.2d-%.2d-%.2d", _rootFolder, optionalBackslash, year, month, day, hour, minute, seconds);
+		mkdir(folderName.c_str());
+		return folderName;
 	}
 
 
@@ -205,11 +241,45 @@ namespace IGCS
 		_amountOfShotsToTake = 0;
 		_amountOfColumns = 0;
 		_amountOfRows = 0;
-		_framebufferWidth = 0;
-		_framebufferHeight = 0;
 		_convolutionFrameCounter = 0;
 		_shotCounter = 0;
 		_amountOfFramesToWaitbetweenSteps = 0;
+		_movementSpeed = 0.0f;
+		_rotationSpeed = 0.0f;
+
 		_grabbedFrames.clear();
+
+		// don't reset framebuffer width/height!
 	}
+
+
+	void ScreenshotController::moveLightfield(int direction, bool end)
+	{
+		moveLightfield(direction, end, true);
+	}
+
+
+	void ScreenshotController::moveLightfield(int direction, bool end, bool log)
+	{
+		_camera.resetMovement();
+		float dist = direction * _distancePerStep;
+		if (end) 
+		{
+			if (log) 
+			{
+				//OverlayConsole::instance().logLine((direction > 0) ? "Move to end." : "Move to start.");
+				OverlayControl::addNotification((direction > 0) ? "Move to end." : "Move to start.");
+			}
+			dist *= 0.5f * _amountOfShotsToTake;
+			_camera.moveRight(dist / _movementSpeed); // scale to be independent of camera movement speed
+			return;
+		}
+		if (log) 
+		{
+			//OverlayConsole::instance().logLine((direction > 0) ? "Move to next." : "Move to previous.");
+			OverlayControl::addNotification((direction > 0) ? "Move to next." : "Move to previous.");
+		}
+		_camera.moveRight(dist / _movementSpeed); // scale to be independent of camera movement speed
+	}
+
 }

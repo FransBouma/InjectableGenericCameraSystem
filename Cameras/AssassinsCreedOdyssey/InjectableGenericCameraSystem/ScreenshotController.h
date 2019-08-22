@@ -31,6 +31,7 @@
 #include <vector>
 #include <condition_variable>
 #include <mutex>
+#include "Camera.h"
 
 namespace IGCS
 {
@@ -64,11 +65,11 @@ namespace IGCS
 		ScreenshotController();
 		~ScreenshotController();
 
-		void initialize(std::string rootFolder, int amountOfFramesToWaitbetweenSteps);
+		void initialize(std::string rootFolder, int amountOfFramesToWaitbetweenSteps, float movementSpeed, float rotationSpeed);
 		void startSingleShot();
-		void startHorizontalPanoramaShot(float totalFoVInDegrees, int amountOfShots, float currentFoVInDegrees);
-		void startLightfieldShot(float distancePerStep, int amountOfShots);
-		void startTiledGridShot(int amountOfColumns, int amountOfRows, float currentFoVInDegrees);
+		void startHorizontalPanoramaShot(Camera camera, float totalFoVInDegrees, int amountOfShots, float currentFoVInDegrees);
+		void startLightfieldShot(Camera camera, float distancePerStep, int amountOfShots);
+		void startTiledGridShot(Camera camera, int amountOfColumns, int amountOfRows, float currentFoVInDegrees);
 		void storeGrabbedShot(std::vector<uint8_t>);
 		void setBufferSize(int width, int height);
 		ScreenshotControllerState getState() { return _state; }
@@ -79,11 +80,16 @@ namespace IGCS
 	private:
 		void waitForShots();
 		void saveGrabbedShots();
-		void saveShotToFile(std::vector<uint8_t> data, int frameNumber);
+		void saveShotToFile(std::string destinationFolder, std::vector<uint8_t> data, int frameNumber);
+		std::string createScreenshotFolder();
+		void moveLightfield(int direction, bool end);
+		void moveLightfield(int direction, bool end, bool log);
 
 		float _totalFoVInDegrees = 0.0f;
 		float _currentFoVInDegrees = 0.0f;
 		float _distancePerStep = 0.0f;
+		float _movementSpeed = 0.0f;
+		float _rotationSpeed = 0.0f;
 		int _amountOfShotsToTake = 0;
 		int _amountOfColumns = 0;
 		int _amountOfRows = 0;
@@ -94,7 +100,8 @@ namespace IGCS
 		int _framebufferHeight = 0;
 		ScreenshotType _typeOfShot = ScreenshotType::Undefined;
 		ScreenshotControllerState _state = ScreenshotControllerState::Off;
-		ScreenshotFiletype _filetype = ScreenshotFiletype::Png;
+		ScreenshotFiletype _filetype = ScreenshotFiletype::Jpeg;
+		Camera _camera;
 
 		std::string _rootFolder;
 		std::vector<std::vector<uint8_t>> _grabbedFrames;
