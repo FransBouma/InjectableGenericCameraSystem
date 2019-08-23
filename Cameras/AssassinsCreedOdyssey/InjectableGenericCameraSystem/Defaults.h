@@ -62,10 +62,8 @@ namespace IGCS
 	#define IGCS_KEY_BLOCK_INPUT					VK_DECIMAL
 	#define IGCS_KEY_TIMESTOP						VK_NUMPAD0
 	#define IGCS_KEY_HUD_TOGGLE						VK_DELETE
-	#define IGCS_KEY_LIGHTFIELD_PHOTO				VK_END
-	#define IGCS_KEY_LIGHTFIELD_LEFT				VK_PRIOR
-	#define IGCS_KEY_LIGHTFIELD_RIGHT				VK_NEXT
-	#define IGCS_KEY_SINGLE_SCREENSHOT				VK_PAUSE
+	#define IGCS_KEY_TEST_SHOT_SETUP				VK_END
+	#define IGCS_KEY_TAKE_SCREENSHOT				VK_PAUSE
 
 	#define IGCS_BUTTON_FOV_DECREASE	Gamepad::button_t::UP
 	#define IGCS_BUTTON_FOV_INCREASE	Gamepad::button_t::DOWN
@@ -82,4 +80,25 @@ namespace IGCS
 	#define DEVICE_ID_KEYBOARD_MOUSE			0
 	#define DEVICE_ID_GAMEPAD					1
 	#define DEVICE_ID_ALL						2
+	
+	enum class ScreenshotType : short
+	{
+		HorizontalPanorama,
+		Lightfield,
+		TiledGrid,
+		SingleShot,
+
+		// Add more above
+		Amount,
+	};
+
+	enum class ScreenshotFiletype : short
+	{
+		Bmp,
+		Jpeg,
+		Png,
+
+		// Add more above
+		Amount,
+	};
 }

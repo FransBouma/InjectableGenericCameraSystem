@@ -34,12 +34,13 @@
 #include "OverlayConsole.h"
 #include "OverlayControl.h"
 #include <direct.h>
+#include "CameraManipulator.h"
 
 using namespace std;
 
 namespace IGCS
 {
-	ScreenshotController::ScreenshotController()
+	ScreenshotController::ScreenshotController() : _camera {Camera()}
 	{
 	}
 
@@ -47,7 +48,7 @@ namespace IGCS
 	{}
 
 
-	void ScreenshotController::initialize(string rootFolder, int amountOfFramesToWaitbetweenSteps, float movementSpeed, float rotationSpeed)
+	void ScreenshotController::configure(string rootFolder, int numberOfFramesToWaitBetweenSteps, float movementSpeed, float rotationSpeed)
 	{
 		if (_state != ScreenshotControllerState::Off)
 		{
@@ -55,7 +56,7 @@ namespace IGCS
 			return;
 		}
 		_rootFolder = rootFolder;
-		_amountOfFramesToWaitbetweenSteps = amountOfFramesToWaitbetweenSteps;
+		_numberOfFramesToWaitBetweenSteps = numberOfFramesToWaitBetweenSteps;
 		_movementSpeed = movementSpeed;
 		_rotationSpeed = rotationSpeed;
 	}
@@ -63,13 +64,21 @@ namespace IGCS
 
 	bool ScreenshotController::shouldTakeShot()
 	{
+		if (_convolutionFrameCounter > 0)
+		{
+			// always false
+			return false;
+		}
 		return _state == ScreenshotControllerState::Grabbing;
 	}
 
 
 	void ScreenshotController::presentCalled()
 	{
-// TODO: add convolution counter handling
+		if (_convolutionFrameCounter > 0)
+		{
+			_convolutionFrameCounter--;
+		}
 	}
 
 
@@ -96,7 +105,7 @@ namespace IGCS
 		// done
 	}
 
-	void ScreenshotController::startHorizontalPanoramaShot(Camera camera, float totalFoVInDegrees, int amountOfShots, float currentFoVInDegrees)
+	void ScreenshotController::startHorizontalPanoramaShot(Camera& camera, float totalFoVInDegrees, int amountOfShots, float currentFoVInDegrees)
 	{
 		reset();
 		_camera = camera;
@@ -107,22 +116,29 @@ namespace IGCS
 	}
 
 
-	void ScreenshotController::startLightfieldShot(Camera camera, float distancePerStep, int amountOfShots)
+	void ScreenshotController::startLightfieldShot(Camera& camera, float distancePerStep, int amountOfShots, bool isTestRun)
 	{
+		OverlayConsole::instance().logDebug("startLightfield shot start. isTestRun: %d", isTestRun);
 		reset();
+		_isTestRun = isTestRun;
 		_camera = camera;
 		_distancePerStep = distancePerStep;
 		_amountOfShotsToTake = amountOfShots;
 		_typeOfShot = ScreenshotType::Lightfield;
+		// move to start
+		moveCameraForLightfield(-1, true);
+		// set convolution counter to its initial value
+		_convolutionFrameCounter = _numberOfFramesToWaitBetweenSteps;
 		_state = ScreenshotControllerState::Grabbing;
 		// we'll wait now till all the shots are taken. 
 		waitForShots();
 		saveGrabbedShots();
 		// done
+		OverlayConsole::instance().logDebug("startLightfield shot end. isTestRun: %d", isTestRun);
 	}
 
 
-	void ScreenshotController::startTiledGridShot(Camera camera, int amountOfColumns, int amountOfRows, float currentFoVInDegrees)
+	void ScreenshotController::startTiledGridShot(Camera& camera, int amountOfColumns, int amountOfRows, float currentFoVInDegrees)
 	{
 		reset();
 		_camera = camera;
@@ -134,20 +150,25 @@ namespace IGCS
 
 	void ScreenshotController::storeGrabbedShot(std::vector<uint8_t> grabbedShot)
 	{
-		if (grabbedShot.capacity <= 0)
+		if (grabbedShot.size() <= 0)
 		{
 			// failed
 			return;
 		}
 		_grabbedFrames.push_back(grabbedShot);
-// TODO: Add camera move
 		_shotCounter++;
 		if (_shotCounter > _amountOfShotsToTake)
 		{
 			// we're done. Move to the next state, which is saving shots. 
+			unique_lock<mutex> lock(_waitCompletionMutex);
 			_state = ScreenshotControllerState::SavingShots;
 			// tell the waiting thread to wake up so the system can proceed as normal.
 			_waitCompletionHandle.notify_all();
+		}
+		else
+		{
+			modifyCamera();
+			_convolutionFrameCounter = _numberOfFramesToWaitBetweenSteps;
 		}
 	}
 
@@ -158,12 +179,15 @@ namespace IGCS
 		{
 			return;
 		}
-		string destinationFolder = createScreenshotFolder();
-		int frameNumber = 0;
-		for (std::vector<uint8_t> frame : _grabbedFrames) 
+		if (!_isTestRun)
 		{
-			saveShotToFile(destinationFolder, frame, frameNumber);
-			frameNumber++;
+			string destinationFolder = createScreenshotFolder();
+			int frameNumber = 0;
+			for (std::vector<uint8_t> frame : _grabbedFrames)
+			{
+				saveShotToFile(destinationFolder, frame, frameNumber);
+				frameNumber++;
+			}
 		}
 		// done
 		_grabbedFrames.clear();
@@ -206,15 +230,8 @@ namespace IGCS
 		time_t t = time(nullptr);
 		tm tm;
 		localtime_s(&tm, &t);
-		int year = tm.tm_year + 1900;
-		int month = tm.tm_mon + 1;
-		int day = tm.tm_mday;
-		int hour = tm.tm_hour * 3600 + tm.tm_min * 60 + tm.tm_sec;
-		hour = hour / 3600;
-		int minute = (hour - (hour * 3600)) / 60;
-		int seconds = hour - (hour * 3600) - (minute * 60);
 		string optionalBackslash = (_rootFolder.ends_with('\\')) ? "" : "\\";
-		string folderName = Utils::formatString("%s%s%.4d-%.2d-%.2d-%.2d-%.2d-%.2d", _rootFolder, optionalBackslash, year, month, day, hour, minute, seconds);
+		string folderName = Utils::formatString("%s%s%.4d-%.2d-%.2d-%.2d-%.2d-%.2d", _rootFolder, optionalBackslash, tm.tm_year, tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 		mkdir(folderName.c_str());
 		return folderName;
 	}
@@ -231,9 +248,46 @@ namespace IGCS
 	}
 
 
+	void ScreenshotController::modifyCamera()
+	{
+		// based on the type of the shot, we'll either rotate or move.
+		switch (_typeOfShot)
+		{
+			case ScreenshotType::HorizontalPanorama:
+// TODO: IMPLEMENT
+				break;
+			case ScreenshotType::Lightfield:
+				moveCameraForLightfield(1, false);
+				break;
+			case ScreenshotType::SingleShot:
+				// nothing
+				break;
+			case ScreenshotType::TiledGrid:
+				break;
+
+		}
+	}
+
+
+	void ScreenshotController::moveCameraForLightfield(int direction, bool end)
+	{
+		OverlayConsole::instance().logDebug("moveCameraForLightfield. Direction: %d", direction);
+		_camera.resetMovement();
+		float dist = direction * _distancePerStep;
+		if (end) 
+		{
+			dist *= 0.5f * _amountOfShotsToTake;
+			_camera.moveRight(dist / _movementSpeed); // scale to be independent of camera movement speed
+			return;
+		}
+		_camera.moveRight(dist / _movementSpeed); // scale to be independent of camera movement speed
+		GameSpecific::CameraManipulator::updateCameraDataInGameData(_camera);
+	}
+
+
 	void ScreenshotController::reset()
 	{
-		_typeOfShot = ScreenshotType::Undefined;
+		_typeOfShot = ScreenshotType::Lightfield;
 		_state = ScreenshotControllerState::Off;
 		_totalFoVInDegrees = 0.0f;
 		_currentFoVInDegrees = 0.0f;
@@ -243,43 +297,12 @@ namespace IGCS
 		_amountOfRows = 0;
 		_convolutionFrameCounter = 0;
 		_shotCounter = 0;
-		_amountOfFramesToWaitbetweenSteps = 0;
 		_movementSpeed = 0.0f;
 		_rotationSpeed = 0.0f;
+		_isTestRun = false;
 
 		_grabbedFrames.clear();
 
-		// don't reset framebuffer width/height!
+		// don't reset framebuffer width/height, numberOfFramesToWaitBetweenSteps as those are set through configure!
 	}
-
-
-	void ScreenshotController::moveLightfield(int direction, bool end)
-	{
-		moveLightfield(direction, end, true);
-	}
-
-
-	void ScreenshotController::moveLightfield(int direction, bool end, bool log)
-	{
-		_camera.resetMovement();
-		float dist = direction * _distancePerStep;
-		if (end) 
-		{
-			if (log) 
-			{
-				//OverlayConsole::instance().logLine((direction > 0) ? "Move to end." : "Move to start.");
-				OverlayControl::addNotification((direction > 0) ? "Move to end." : "Move to start.");
-			}
-			dist *= 0.5f * _amountOfShotsToTake;
-			_camera.moveRight(dist / _movementSpeed); // scale to be independent of camera movement speed
-			return;
-		}
-		if (log) 
-		{
-			//OverlayConsole::instance().logLine((direction > 0) ? "Move to next." : "Move to previous.");
-			OverlayControl::addNotification((direction > 0) ? "Move to next." : "Move to previous.");
-		}
-		_camera.moveRight(dist / _movementSpeed); // scale to be independent of camera movement speed
-	}
-
 }

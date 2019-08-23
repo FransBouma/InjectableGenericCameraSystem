@@ -44,6 +44,7 @@ namespace IGCS
 		initializeKeyBindings();
 		_settings.init(false);
 		_settings.loadFromFile(_keyBindingPerActionType);
+		_screenshotController.configure(_settings.screenshotFolder, _settings.numberOfFramesToWaitBetweenSteps, _settings.movementSpeed, _settings.rotationSpeed);
 	}
 
 
@@ -104,8 +105,7 @@ namespace IGCS
 
 	void Globals::reinitializeScreenshotController()
 	{
-// TODO: add convolution frame count.
-		_screenshotController.initialize(_settings.screenshotDirectory, 0);
+		_screenshotController.configure(_settings.screenshotFolder, _settings.numberOfFramesToWaitBetweenSteps, _settings.movementSpeed, _settings.rotationSpeed);
 	}
 
 
@@ -117,8 +117,7 @@ namespace IGCS
 		}
 		return _keyBindingPerActionType.at(type);
 	}
-
-
+	
 
 	void Globals::initializeKeyBindings()
 	{
@@ -142,10 +141,8 @@ namespace IGCS
 		_keyBindingPerActionType[ActionType::TiltLeft] = new ActionData("TiltLeft", "Tilt camera left", IGCS_KEY_TILT_LEFT, false, false, false);
 		_keyBindingPerActionType[ActionType::TiltRight] = new ActionData("TiltRight", "Tilt camera right", IGCS_KEY_TILT_RIGHT, false, false, false);
 		_keyBindingPerActionType[ActionType::ToggleOverlay] = new ActionData("ToggleOverlay", "Show / hide camera tools main window", IGCS_KEY_TOGGLE_OVERLAY, false, true, false);
-		_keyBindingPerActionType[ActionType::LightfieldPhoto] = new ActionData("LightfieldPhoto", "Lightfield capture start", IGCS_KEY_LIGHTFIELD_PHOTO, false, true, false);
-		_keyBindingPerActionType[ActionType::LightfieldLeft] = new ActionData("LightfieldLeft", "Move View Left", IGCS_KEY_LIGHTFIELD_LEFT, false, false, false);
-		_keyBindingPerActionType[ActionType::LightfieldRight] = new ActionData("LightfieldRight", "Move View Right", IGCS_KEY_LIGHTFIELD_RIGHT, false, false, false);
-		_keyBindingPerActionType[ActionType::SingleScreenshot] = new ActionData("SingleScreenshot", "Take single screenshot", IGCS_KEY_SINGLE_SCREENSHOT, false, false, false);
+		_keyBindingPerActionType[ActionType::TestMultiShotSetup] = new ActionData("TestMultiShotSetup", "Test multi-shot setup", IGCS_KEY_TEST_SHOT_SETUP, false, true, false);
+		_keyBindingPerActionType[ActionType::TakeScreenshots] = new ActionData("TakeScreenshots", "Take screenshot(s)", IGCS_KEY_TAKE_SCREENSHOT, false, false, false);
 
 		// Bindings which are often optional. Specify 'false' for available to disable it if the binding should be hidden. 
 		_keyBindingPerActionType[ActionType::HudToggle] = new ActionData("HudToggle", "Toggle HUD", IGCS_KEY_HUD_TOGGLE, false, false, false);

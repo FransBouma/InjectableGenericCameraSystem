@@ -55,9 +55,8 @@ namespace IGCS::Utils
 		return value < min ? default : value;
 	}
 	
-	template<typename ... Args>
-	std::string formatString(const std::string& format, Args ... args);
-	std::string formatString(const char* fmt, va_list args);
+	std::string formatString(const char* fmt, ...);
+	std::string formatStringVa(const char* fmt, va_list args);
 
 	HWND findMainWindow(unsigned long process_id);
 	MODULEINFO getModuleInfoOfContainingProcess();

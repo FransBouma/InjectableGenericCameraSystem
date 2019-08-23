@@ -32,30 +32,15 @@
 #include <condition_variable>
 #include <mutex>
 #include "Camera.h"
+#include "Defaults.h"
 
 namespace IGCS
 {
-	enum class ScreenshotType : short
-	{
-		Undefined,
-		HorizontalPanorama,
-		Lightfield,
-		TiledGrid,
-		SingleShot,
-	};
-
 	enum class ScreenshotControllerState : short
 	{
 		Off,
 		Grabbing,
 		SavingShots,
-	};
-
-	enum class ScreenshotFiletype : short
-	{
-		Bmp,
-		Jpeg,
-		Png,
 	};
 
 	// Simple controller class which 
@@ -65,11 +50,11 @@ namespace IGCS
 		ScreenshotController();
 		~ScreenshotController();
 
-		void initialize(std::string rootFolder, int amountOfFramesToWaitbetweenSteps, float movementSpeed, float rotationSpeed);
+		void configure(std::string rootFolder, int numberOfFramesToWaitBetweenSteps, float movementSpeed, float rotationSpeed);
 		void startSingleShot();
-		void startHorizontalPanoramaShot(Camera camera, float totalFoVInDegrees, int amountOfShots, float currentFoVInDegrees);
-		void startLightfieldShot(Camera camera, float distancePerStep, int amountOfShots);
-		void startTiledGridShot(Camera camera, int amountOfColumns, int amountOfRows, float currentFoVInDegrees);
+		void startHorizontalPanoramaShot(Camera& camera, float totalFoVInDegrees, int amountOfShots, float currentFoVInDegrees);
+		void startLightfieldShot(Camera& camera, float distancePerStep, int amountOfShots, bool isTestRun);
+		void startTiledGridShot(Camera& camera, int amountOfColumns, int amountOfRows, float currentFoVInDegrees);
 		void storeGrabbedShot(std::vector<uint8_t>);
 		void setBufferSize(int width, int height);
 		ScreenshotControllerState getState() { return _state; }
@@ -82,8 +67,8 @@ namespace IGCS
 		void saveGrabbedShots();
 		void saveShotToFile(std::string destinationFolder, std::vector<uint8_t> data, int frameNumber);
 		std::string createScreenshotFolder();
-		void moveLightfield(int direction, bool end);
-		void moveLightfield(int direction, bool end, bool log);
+		void moveCameraForLightfield(int direction, bool end);
+		void modifyCamera();
 
 		float _totalFoVInDegrees = 0.0f;
 		float _currentFoVInDegrees = 0.0f;
@@ -93,15 +78,16 @@ namespace IGCS
 		int _amountOfShotsToTake = 0;
 		int _amountOfColumns = 0;
 		int _amountOfRows = 0;
-		int _convolutionFrameCounter = 0;
+		int _convolutionFrameCounter = 0;		// counts down to 0 from _amountOfFramesToWaitBetweenSteps
 		int _shotCounter = 0;
-		int _amountOfFramesToWaitbetweenSteps = 0;
+		int _numberOfFramesToWaitBetweenSteps = 1;
 		int _framebufferWidth = 0;
 		int _framebufferHeight = 0;
-		ScreenshotType _typeOfShot = ScreenshotType::Undefined;
+		ScreenshotType _typeOfShot = ScreenshotType::Lightfield;
 		ScreenshotControllerState _state = ScreenshotControllerState::Off;
 		ScreenshotFiletype _filetype = ScreenshotFiletype::Jpeg;
-		Camera _camera;
+		Camera& _camera;
+		bool _isTestRun = false;
 
 		std::string _rootFolder;
 		std::vector<std::vector<uint8_t>> _grabbedFrames;

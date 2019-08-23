@@ -59,7 +59,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static UnpauseGameFunction _unpauseGameFunc = nullptr;
 
 	   
-	void updateCameraDataInGameData(Camera camera)
+	void updateCameraDataInGameData(Camera& camera)
 	{
 		if (!g_cameraEnabled)
 		{

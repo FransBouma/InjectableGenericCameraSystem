@@ -236,12 +236,8 @@ Special thanks to:
 			ImGui::Text("Block input to game                  : %s", Globals::instance().getActionData(ActionType::BlockInput)->toString().c_str());
 			ImGui::Text("Toggle game pause                    : %s", Globals::instance().getActionData(ActionType::Timestop)->toString().c_str());
 
-			ImGui::Text("Previous view                        : %s", Globals::instance().getActionData(ActionType::LightfieldLeft)->toString().c_str());
-			ImGui::Text("Next view                            : %s", Globals::instance().getActionData(ActionType::LightfieldRight)->toString().c_str());
-			ImGui::Text("First view                           : Alt + %s", Globals::instance().getActionData(ActionType::LightfieldLeft)->toString().c_str());
-			ImGui::Text("Last view                            : Alt + %s", Globals::instance().getActionData(ActionType::LightfieldRight)->toString().c_str());
-			ImGui::Text("Lightfield capture                   : Ctrl + %s", Globals::instance().getActionData(ActionType::LightfieldPhoto)->toString().c_str());
-			ImGui::Text("Single screenshot                    : %s", Globals::instance().getActionData(ActionType::SingleScreenshot)->toString().c_str());
+			ImGui::Text("Test multi-shot setup                : %s", Globals::instance().getActionData(ActionType::TestMultiShotSetup)->toString().c_str());
+			ImGui::Text("Take screenshot(s)                   : %s", Globals::instance().getActionData(ActionType::TakeScreenshots)->toString().c_str());
 		}
 
 		if (ImGui::CollapsingHeader("Settings editor help"))
@@ -325,9 +321,11 @@ Special thanks to:
 		if (ImGui::CollapsingHeader("Screenshot options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			bool screenshotSettingsChanged = false;
-			screenshotSettingsChanged |= ImGui::SliderFloat("LKG view distance", &currentSettings.lkgViewDistance, 0.0f, 100.0f, "%.3f");
-			screenshotSettingsChanged |= ImGui::SliderInt("LKG view count", &currentSettings.lkgViewCount, 0, 60);
-			screenshotSettingsChanged |= ImGui::InputText("Screenshot output directory", currentSettings.screenshotDirectory, 500);
+			screenshotSettingsChanged |= ImGui::SliderFloat("Distance between lightfield shots", &currentSettings.distanceBetweenLightfieldShots, 0.0f, 100.0f, "%.3f");
+			screenshotSettingsChanged |= ImGui::SliderInt("Number of shots to take", &currentSettings.numberOfShotsToTake, 0, 60);
+			screenshotSettingsChanged |= ImGui::SliderInt("Number of frames to wait between steps", &currentSettings.numberOfFramesToWaitBetweenSteps, 1, 100);
+			screenshotSettingsChanged |= ImGui::Combo("Screenshot type", &currentSettings.typeOfScreenshot, "HorizontalPanorama\0Lightfield\0TiledGrid\0SingleShot\0\0");
+			screenshotSettingsChanged |= ImGui::InputText("Screenshot output directory", currentSettings.screenshotFolder, 256);
 			if (screenshotSettingsChanged)
 			{
 				Globals::instance().reinitializeScreenshotController();

@@ -33,6 +33,8 @@
 #include <comdef.h>
 #include <codecvt>
 
+#pragma warning(disable : 4996)
+
 using namespace std;
 
 namespace IGCS::Utils
@@ -241,26 +243,24 @@ namespace IGCS::Utils
 		return  ripRelativeValueAddress + nextOpCodeOffset + *((__int32*)ripRelativeValueAddress);
 	}
 
-
-	// From: https://stackoverflow.com/a/26221725
-	template<typename ... Args>
-	std::string formatString(const std::string& format, Args ... args)
+	string formatString(const char *fmt, ...)
 	{
-		size_t size = snprintf(nullptr, 0, format.c_str(), args ...) + 1; // Extra space for '\0'
-		std::unique_ptr<char[]> buf(new char[size]);
-		snprintf(buf.get(), size, format.c_str(), args ...);
-		return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0' inside
+		va_list args;
+		va_start(args, fmt);
+		string formattedArgs = formatStringVa(fmt, args);
+		va_end(args);
+		return formattedArgs;
 	}
 
-	string formatString(const char *fmt, va_list args)
+	string formatStringVa(const char* fmt, va_list args)
 	{
 		va_list args_copy;
 		va_copy(args_copy, args);
 
 		int len = vsnprintf(NULL, 0, fmt, args_copy);
 		char* buffer = new char[len + 2];
-		vsnprintf(buffer, len+1, fmt, args_copy);
-		string toReturn(buffer, len+1);
+		vsnprintf(buffer, len + 1, fmt, args_copy);
+		string toReturn(buffer, len + 1);
 		return toReturn;
 	}
 
@@ -279,7 +279,7 @@ namespace IGCS::Utils
 		return keyDown(VK_LMENU) || keyDown(VK_RMENU);
 	}
 
-	std::string vkCodeToString(int vkCode)
+	string vkCodeToString(int vkCode)
 	{
 		if (vkCode > 255 || vkCode < 0)
 		{

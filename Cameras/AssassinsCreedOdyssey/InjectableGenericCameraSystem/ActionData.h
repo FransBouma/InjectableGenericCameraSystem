@@ -53,10 +53,8 @@ namespace IGCS
 		TiltRight,
 		Timestop,
 		ToggleOverlay,
-		LightfieldPhoto,
-		LightfieldLeft,
-		LightfieldRight,
-		SingleScreenshot,
+		TestMultiShotSetup,
+		TakeScreenshots,
 
 		// add new values above this line
 		Amount,

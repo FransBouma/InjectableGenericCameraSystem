@@ -203,6 +203,19 @@ namespace IGCS
 			// camera is disabled. We simply disable all input to the camera movement, by returning now.
 			return;
 		}
+		if (Input::isActionActivated(ActionType::TakeScreenshots))
+		{
+			takeScreenshots(false);
+			_applyHammerPrevention = true;
+			return;
+		}
+		if (Input::isActionActivated(ActionType::TestMultiShotSetup))
+		{
+			takeScreenshots(true);
+			_applyHammerPrevention = true;
+			return;
+		}
+
 		if (Input::isActionActivated(ActionType::BlockInput))
 		{
 			toggleInputBlockState(!Globals::instance().inputBlocked());
@@ -223,20 +236,6 @@ namespace IGCS
 
 		bool altPressed = Utils::altPressed();
 		bool rcontrolPressed = Utils::keyDown(VK_RCONTROL);
-		if (Input::isActionActivated(ActionType::LightfieldLeft, true))
-		{
-			moveLightfield(-1, altPressed);
-			_applyHammerPrevention = true;
-		}
-		else
-		{
-			if (Input::isActionActivated(ActionType::LightfieldRight, true))
-			{
-				moveLightfield(1, altPressed);
-				_applyHammerPrevention = true;
-			}
-		}
-
 		float multiplier = altPressed ? settings.fastMovementMultiplier : rcontrolPressed ? settings.slowMovementMultiplier : 1.0f;
 		handleKeyboardCameraMovement(multiplier);
 		handleMouseCameraMovement(multiplier);
@@ -448,9 +447,30 @@ namespace IGCS
 		CameraManipulator::setTimeStopValue(_timeStopped);
 	}
 
+
 	void System::toggleHudRenderState()
 	{
 		_hudToggled = !_hudToggled;
 		InterceptorHelper::toggleHudRenderState(_aobBlocks, _hudToggled);
+	}
+
+
+	void System::takeScreenshots(bool isTestRun)
+	{
+		Settings& settings = Globals::instance().settings();
+		// calls won't return till the process has been completed. 
+		switch (static_cast<ScreenshotType>(settings.typeOfScreenshot))
+		{
+			case ScreenshotType::HorizontalPanorama:
+				break;
+			case ScreenshotType::Lightfield:
+				Globals::instance().getScreenshotController().startLightfieldShot(_camera, settings.distanceBetweenLightfieldShots, settings.numberOfShotsToTake, isTestRun);
+				break;
+			case ScreenshotType::SingleShot:
+				Globals::instance().getScreenshotController().startSingleShot();
+				break;
+			case ScreenshotType::TiledGrid:
+				break;
+		}
 	}
 }

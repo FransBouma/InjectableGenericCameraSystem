@@ -46,7 +46,6 @@ namespace IGCS
 		void initialize();
 		void updateFrame();
 		void handleUserInput();
-		void writeNewCameraValuesToCameraStructs();
 		void displayCameraState();
 		void toggleCameraMovementLockState(bool newValue);
 		void handleKeyboardCameraMovement(float multiplier);
@@ -56,9 +55,7 @@ namespace IGCS
 		void toggleInputBlockState(bool newValue);
 		void toggleTimestopState();
 		void toggleHudRenderState();
-		// looking glass methods
-		void moveLightfield(int direction, bool end);
-		void moveLightfield(int direction, bool end, bool log);
+		void takeScreenshots(bool isTestRun);
 
 		Camera _camera;
 		LPBYTE _hostImageAddress;
