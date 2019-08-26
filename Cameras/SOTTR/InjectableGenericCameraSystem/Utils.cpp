@@ -241,9 +241,18 @@ namespace IGCS::Utils
 		LPBYTE ripRelativeValueAddress = locationData->locationInImage() + locationData->customOffset();
 		return  ripRelativeValueAddress + nextOpCodeOffset + *((__int32*)ripRelativeValueAddress);
 	}
+	   
+	string formatString(const char* fmt, ...)
+	{
+		va_list args;
+		va_start(args, fmt);
+		string formattedArgs = formatStringVa(fmt, args);
+		va_end(args);
+		return formattedArgs;
+	}
 
 
-	string formatString(const char *fmt, va_list args)
+	string formatStringVa(const char* fmt, va_list args)
 	{
 		va_list args_copy;
 		va_copy(args_copy, args);
@@ -254,6 +263,7 @@ namespace IGCS::Utils
 		string toReturn(buffer, len + 1);
 		return toReturn;
 	}
+
 
 	bool stringStartsWith(const char *a, const char *b)
 	{

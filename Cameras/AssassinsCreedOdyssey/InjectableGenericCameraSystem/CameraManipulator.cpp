@@ -288,8 +288,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 
 	XMFLOAT3 getCurrentCameraCoords()
 	{
-		// we write to both cameras at once, so we just grab one of the coords, it always works. Photomode does inherit its coords from the 
-		// gameplay / current cam anyway. 
 		float* coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET);
 		XMFLOAT3 currentCoords = XMFLOAT3(coordsInMemory[0], coordsInMemory[1], coordsInMemory[2]);
 		return currentCoords;

@@ -114,7 +114,7 @@ namespace IGCS::D3D11Hooker
 		}
 		HRESULT toReturn = hookedDXGIPresent(pSwapChain, SyncInterval, flagsToPass);
 		// if we have to grab the frame, do it now.
-		if(grabFrame)
+		if (grabFrame)
 		{
 			screenshotController.storeGrabbedShot(capture_frame(pSwapChain));
 		}

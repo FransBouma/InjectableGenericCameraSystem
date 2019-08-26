@@ -29,7 +29,7 @@ namespace IGCS
 		float distanceBetweenLightfieldShots;
 		int numberOfShotsToTake;
 		int typeOfScreenshot;
-		char screenshotFolder[_MAX_PATH];
+		char screenshotFolder[_MAX_PATH+1] = { 0 };
 
 		// settings not persisted to config file.
 		// add settings to edit here.
@@ -63,7 +63,8 @@ namespace IGCS
 			numberOfShotsToTake = Utils::clamp(iniFile.GetInt("numberOfShotsToTake", "ScreenshotSettings"), 0, 45);
 			typeOfScreenshot = Utils::clamp(iniFile.GetInt("typeOfScreenshot", "ScreenshotSettings"), 0, ((int)ScreenshotType::Amount)-1);
 			std::string folder = iniFile.GetValue("screenshotFolder", "ScreenshotSettings");
-			folder.copy(screenshotFolder, folder.length() + 1);
+			folder.copy(screenshotFolder, folder.length());
+			screenshotFolder[folder.length()] = '\0';
 
 			// load keybindings. They might not be there, or incomplete. 
 			for (std::pair<ActionType, ActionData*> kvp : keyBindingPerActionType)
@@ -97,7 +98,7 @@ namespace IGCS
 			iniFile.SetFloat("distanceBetweenLightfieldShots", distanceBetweenLightfieldShots, "", "ScreenshotSettings");
 			iniFile.SetInt("numberOfShotsToTake", numberOfShotsToTake, "", "ScreenshotSettings");
 			iniFile.SetInt("typeOfScreenshot", typeOfScreenshot, "", "ScreenshotSettings");
-			iniFile.SetValue("screenshotDirectory", screenshotFolder, "", "ScreenshotSettings");
+			iniFile.SetValue("screenshotFolder", screenshotFolder, "", "ScreenshotSettings");
 
 			// save keybindings
 			if (!keyBindingPerActionType.empty())

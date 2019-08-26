@@ -459,18 +459,25 @@ namespace IGCS
 	{
 		Settings& settings = Globals::instance().settings();
 		// calls won't return till the process has been completed. 
+		bool taskPerformed = false;
 		switch (static_cast<ScreenshotType>(settings.typeOfScreenshot))
 		{
 			case ScreenshotType::HorizontalPanorama:
 				break;
 			case ScreenshotType::Lightfield:
 				Globals::instance().getScreenshotController().startLightfieldShot(_camera, settings.distanceBetweenLightfieldShots, settings.numberOfShotsToTake, isTestRun);
+				taskPerformed = true;
 				break;
 			case ScreenshotType::SingleShot:
 				Globals::instance().getScreenshotController().startSingleShot();
+				taskPerformed = true;
 				break;
 			case ScreenshotType::TiledGrid:
 				break;
+		}
+		if (taskPerformed)
+		{
+			OverlayControl::addNotification("Screenshot(s) taken.");
 		}
 	}
 }

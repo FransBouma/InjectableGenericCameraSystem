@@ -28,7 +28,7 @@ namespace IGCS
 #ifdef _DEBUG
 		va_list args;
 		va_start(args, fmt);
-		string formattedArgs = Utils::formatString(fmt, args);
+		string formattedArgs = Utils::formatStringVa(fmt, args);
 		va_end(args);
 #ifdef _DX12_
 		Console::WriteLine(formattedArgs);
@@ -43,7 +43,7 @@ namespace IGCS
 	{
 		va_list args;
 		va_start(args, fmt);
-		string formattedArgs = Utils::formatString(fmt, args);
+		string formattedArgs = Utils::formatStringVa(fmt, args);
 		va_end(args);
 		logLine("%s %s", CONSOLE_ERROR_PREFIX, formattedArgs.c_str());
 	}
@@ -56,7 +56,7 @@ namespace IGCS
 		string format(fmt);
 		format += '\n';
 #ifdef _DX12_
-		string formattedArgs = Utils::formatString(fmt, args);
+		string formattedArgs = Utils::formatStringVa(fmt, args);
 		va_end(args);
 		Console::WriteLine(formattedArgs);
 #else

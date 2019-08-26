@@ -105,7 +105,7 @@ namespace IGCS
 		// done
 	}
 
-	void ScreenshotController::startHorizontalPanoramaShot(Camera& camera, float totalFoVInDegrees, int amountOfShots, float currentFoVInDegrees)
+	void ScreenshotController::startHorizontalPanoramaShot(Camera camera, float totalFoVInDegrees, int amountOfShots, float currentFoVInDegrees)
 	{
 		reset();
 		_camera = camera;
@@ -116,7 +116,7 @@ namespace IGCS
 	}
 
 
-	void ScreenshotController::startLightfieldShot(Camera& camera, float distancePerStep, int amountOfShots, bool isTestRun)
+	void ScreenshotController::startLightfieldShot(Camera camera, float distancePerStep, int amountOfShots, bool isTestRun)
 	{
 		OverlayConsole::instance().logDebug("startLightfield shot start. isTestRun: %d", isTestRun);
 		reset();
@@ -138,7 +138,7 @@ namespace IGCS
 	}
 
 
-	void ScreenshotController::startTiledGridShot(Camera& camera, int amountOfColumns, int amountOfRows, float currentFoVInDegrees)
+	void ScreenshotController::startTiledGridShot(Camera camera, int amountOfColumns, int amountOfRows, float currentFoVInDegrees)
 	{
 		reset();
 		_camera = camera;
@@ -202,15 +202,15 @@ namespace IGCS
 		switch (_filetype)
 		{
 			case ScreenshotFiletype::Bmp:
-				filename = Utils::formatString("%s\\%d.bmp", destinationFolder, frameNumber);
+				filename = Utils::formatString("%s\\%d.bmp", destinationFolder.c_str(), frameNumber);
 				saveSuccessful = stbi_write_bmp(filename.c_str(), _framebufferWidth, _framebufferHeight, 0, data.data()) != 0;
 				break;
 			case ScreenshotFiletype::Jpeg:
-				filename = Utils::formatString("%s\\%d.jpg", destinationFolder, frameNumber);
+				filename = Utils::formatString("%s\\%d.jpg", destinationFolder.c_str(), frameNumber);
 				saveSuccessful = stbi_write_jpg(filename.c_str(), _framebufferWidth, _framebufferHeight, 0, data.data(), IGCS_JPG_SCREENSHOT_QUALITY) != 0;
 				break;
 			case ScreenshotFiletype::Png:
-				filename = Utils::formatString("%s\\%d.png", destinationFolder, frameNumber);
+				filename = Utils::formatString("%s\\%d.png", destinationFolder.c_str(), frameNumber);
 				saveSuccessful = stbi_write_png(filename.c_str(), _framebufferWidth, _framebufferHeight, 8, data.data(), 4 * _framebufferWidth) != 0;
 				break;
 		}
@@ -231,7 +231,8 @@ namespace IGCS
 		tm tm;
 		localtime_s(&tm, &t);
 		string optionalBackslash = (_rootFolder.ends_with('\\')) ? "" : "\\";
-		string folderName = Utils::formatString("%s%s%.4d-%.2d-%.2d-%.2d-%.2d-%.2d", _rootFolder, optionalBackslash, tm.tm_year, tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+		string folderName = Utils::formatString("%s%s%.4d-%.2d-%.2d-%.2d-%.2d-%.2d", _rootFolder.c_str(), optionalBackslash.c_str(), tm.tm_year, tm.tm_mon, tm.tm_mday, 
+																					 tm.tm_hour, tm.tm_min, tm.tm_sec);
 		mkdir(folderName.c_str());
 		return folderName;
 	}
@@ -264,7 +265,6 @@ namespace IGCS
 				break;
 			case ScreenshotType::TiledGrid:
 				break;
-
 		}
 	}
 
@@ -277,10 +277,10 @@ namespace IGCS
 		if (end) 
 		{
 			dist *= 0.5f * _amountOfShotsToTake;
-			_camera.moveRight(dist / _movementSpeed); // scale to be independent of camera movement speed
-			return;
 		}
-		_camera.moveRight(dist / _movementSpeed); // scale to be independent of camera movement speed
+		float stepSize = dist / _movementSpeed; // scale to be independent of camera movement speed
+		OverlayConsole::instance().logDebug("stepSize: %.4f", stepSize);
+		_camera.moveRight(stepSize);
 		GameSpecific::CameraManipulator::updateCameraDataInGameData(_camera);
 	}
 

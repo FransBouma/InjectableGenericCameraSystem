@@ -52,9 +52,9 @@ namespace IGCS
 
 		void configure(std::string rootFolder, int numberOfFramesToWaitBetweenSteps, float movementSpeed, float rotationSpeed);
 		void startSingleShot();
-		void startHorizontalPanoramaShot(Camera& camera, float totalFoVInDegrees, int amountOfShots, float currentFoVInDegrees);
-		void startLightfieldShot(Camera& camera, float distancePerStep, int amountOfShots, bool isTestRun);
-		void startTiledGridShot(Camera& camera, int amountOfColumns, int amountOfRows, float currentFoVInDegrees);
+		void startHorizontalPanoramaShot(Camera camera, float totalFoVInDegrees, int amountOfShots, float currentFoVInDegrees);
+		void startLightfieldShot(Camera camera, float distancePerStep, int amountOfShots, bool isTestRun);
+		void startTiledGridShot(Camera camera, int amountOfColumns, int amountOfRows, float currentFoVInDegrees);
 		void storeGrabbedShot(std::vector<uint8_t>);
 		void setBufferSize(int width, int height);
 		ScreenshotControllerState getState() { return _state; }
@@ -86,7 +86,7 @@ namespace IGCS
 		ScreenshotType _typeOfShot = ScreenshotType::Lightfield;
 		ScreenshotControllerState _state = ScreenshotControllerState::Off;
 		ScreenshotFiletype _filetype = ScreenshotFiletype::Jpeg;
-		Camera& _camera;
+		Camera _camera;				// use local copy of the camera, passed in by the start*shot methods, passed by value. This frees us from caching the old state when manipulating the camera.
 		bool _isTestRun = false;
 
 		std::string _rootFolder;
