@@ -86,7 +86,6 @@ namespace IGCS
 	{
 		HorizontalPanorama,
 		Lightfield,
-		TiledGrid,
 
 		// Add more above
 		SingleShot,

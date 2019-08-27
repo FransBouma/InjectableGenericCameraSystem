@@ -27,24 +27,47 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "stdafx.h"
-#include "Camera.h"
 
-namespace IGCS::GameSpecific::CameraManipulator
+namespace IGCS
 {
-	void updateCameraDataInGameData(Camera& camera);
-	void writeNewCameraValuesToGameData(DirectX::XMFLOAT3 newCoords, DirectX::XMVECTOR newLookQuaternion);
-	void restoreOriginalValuesAfterCameraDisable();
-	void restoreOriginalValuesAfterMultiShot();
-	void cacheOriginalValuesBeforeCameraEnable();
-	void cacheOriginalValuesBeforeMultiShot();
-	bool setTimeStopValue(BYTE newValue);
-	DirectX::XMFLOAT3 getCurrentCameraCoords();
-	void resetFoV();
-	void changeFoV(float amount);
-	bool isCameraFound();
-	void displayCameraStructAddress();
-	void getSettingsFromGameState();
-	void applySettingsToGameState();
-	void killInGameDofIfNeeded();
-	void setPauseUnpauseGameFunctionPointers(LPBYTE pauseFunctionAddress, LPBYTE unpauseFunctionAddress);
+	// Simple struct which is used to cache game data. 
+	struct GameCameraData
+	{
+		float _coords[3];
+		float _quaternion[4];
+		float _fov;
+
+
+		void CacheData(float* quaternionInMemory, float* coordsInMemory, float* fovInMemory)
+		{
+			if (nullptr != quaternionInMemory)
+			{
+				memcpy(_quaternion, quaternionInMemory, 4 * sizeof(float));
+			}
+			if (nullptr != coordsInMemory)
+			{
+				memcpy(_coords, coordsInMemory, 3 * sizeof(float));
+			}
+			if (nullptr != fovInMemory)
+			{
+				_fov = *fovInMemory;
+			}
+		}
+
+		void RestoreData(float* quaternionInMemory, float* coordsInMemory, float* fovInMemory)
+		{
+			if (nullptr != quaternionInMemory)
+			{
+				memcpy(quaternionInMemory, _quaternion, 4 * sizeof(float));
+			}
+			if (nullptr != coordsInMemory)
+			{
+				memcpy(coordsInMemory, _coords, 3 * sizeof(float));
+			}
+			if (nullptr != fovInMemory)
+			{
+				*fovInMemory = _fov;
+			}
+		}
+	};
 }

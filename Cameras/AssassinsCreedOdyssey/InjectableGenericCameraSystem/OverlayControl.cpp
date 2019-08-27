@@ -322,10 +322,10 @@ Special thanks to:
 		if (ImGui::CollapsingHeader("Screenshot options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			bool screenshotSettingsChanged = false;
-			screenshotSettingsChanged |= ImGui::SliderFloat("Distance between Lightfield shots", &currentSettings.distanceBetweenLightfieldShots, 0.0f, 100.0f, "%.3f");
+			screenshotSettingsChanged |= ImGui::SliderFloat("Distance between Lightfield shots", &currentSettings.distanceBetweenLightfieldShots, 0.0f, 5.0f, "%.3f");
 			screenshotSettingsChanged |= ImGui::SliderInt("Number of shots to take", &currentSettings.numberOfShotsToTake, 0, 60);
 			screenshotSettingsChanged |= ImGui::SliderInt("Number of frames to wait between steps", &currentSettings.numberOfFramesToWaitBetweenSteps, 1, 100);
-			screenshotSettingsChanged |= ImGui::Combo("Multi-screenshot type", &currentSettings.typeOfScreenshot, "HorizontalPanorama\0Lightfield\0TiledGrid\0\0");
+			screenshotSettingsChanged |= ImGui::Combo("Multi-screenshot type", &currentSettings.typeOfScreenshot, "HorizontalPanorama\0Lightfield\0\0");
 			screenshotSettingsChanged |= ImGui::InputText("Screenshot output directory", currentSettings.screenshotFolder, 256);
 			if (screenshotSettingsChanged)
 			{

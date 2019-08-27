@@ -32,6 +32,7 @@
 #include "Globals.h"
 #include "OverlayConsole.h"
 #include "Camera.h"
+#include "GameCameraData.h"
 
 using namespace DirectX;
 using namespace std;
@@ -46,9 +47,9 @@ extern "C" {
 
 namespace IGCS::GameSpecific::CameraManipulator
 {
-	static float _originalCoords[3];
-	static float _originalQuaternion[4];
-	static float _originalFoV;
+	static GameCameraData _originalData;
+	static GameCameraData _preMultiShotData;
+
 	static LPBYTE g_resolutionScaleMenuValueAddress = nullptr;
 
 	// typedef of signatures of two functions we'll call from our own code to pause/unpause the game properly. 
@@ -264,7 +265,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 			return;
 		}
 		float* fovAddress = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
-		*fovAddress = _originalFoV;
+		*fovAddress = _originalData._fov;
 	}
 
 
@@ -333,28 +334,17 @@ namespace IGCS::GameSpecific::CameraManipulator
 	{
 		OverlayConsole::instance().logDebug("Camera struct address: %p", (void*)g_cameraStructAddress);
 	}
-	
 
-	// should restore the camera values in the camera structures to the cached values. This assures the free camera is always enabled at the original camera location.
-	void restoreOriginalValuesAfterCameraDisable()
+
+	void restoreGameCameraDataWithCachedData(GameCameraData& source)
 	{
-		float* quaternionInMemory = nullptr;
-		float* coordsInMemory = nullptr;
-		float *fovInMemory = nullptr;
-
 		if (!isCameraFound())
 		{
 			return;
 		}
-		// gameplay / cutscene cam
-		quaternionInMemory = reinterpret_cast<float*>(g_cameraStructAddress + QUATERNION_IN_STRUCT_OFFSET);
-		coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET);
-		memcpy(quaternionInMemory, _originalQuaternion, 4 * sizeof(float));
-		memcpy(coordsInMemory, _originalCoords, 3 * sizeof(float));
-
-		fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
-		*fovInMemory = _originalFoV;
-		if (nullptr != g_resolutionScaleMenuValueAddress && nullptr!=g_resolutionScaleAddress)
+		source.RestoreData(reinterpret_cast<float*>(g_cameraStructAddress + QUATERNION_IN_STRUCT_OFFSET), reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET),
+						   reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET));
+		if (nullptr != g_resolutionScaleMenuValueAddress && nullptr != g_resolutionScaleAddress)
 		{
 			float* resolutionScaleInMemory = reinterpret_cast<float*>(g_resolutionScaleAddress + RESOLUTION_SCALE_IN_STRUCT_OFFSET);
 			float* resolutionScaleMenuInMemory = reinterpret_cast<float*>(g_resolutionScaleMenuValueAddress);
@@ -363,23 +353,39 @@ namespace IGCS::GameSpecific::CameraManipulator
 	}
 
 
-	void cacheOriginalValuesBeforeCameraEnable()
+	void cacheGameCameraDataInCache(GameCameraData& destination)
 	{
-		float* quaternionInMemory = nullptr;
-		float* coordsInMemory = nullptr;
-		float *fovInMemory = nullptr;
-
 		if (!isCameraFound())
 		{
 			return;
 		}
-		// gameplay/cutscene cam
-		quaternionInMemory = reinterpret_cast<float*>(g_cameraStructAddress + QUATERNION_IN_STRUCT_OFFSET);
-		coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET);
-		memcpy(_originalQuaternion, quaternionInMemory, 4 * sizeof(float));
-		memcpy(_originalCoords, coordsInMemory, 3 * sizeof(float));
-
-		fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
-		_originalFoV = *fovInMemory;
+		destination.CacheData(reinterpret_cast<float*>(g_cameraStructAddress + QUATERNION_IN_STRUCT_OFFSET), reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET),
+							  reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET));
 	}
+
+
+	void restoreOriginalValuesAfterCameraDisable()
+	{
+		restoreGameCameraDataWithCachedData(_originalData);
+	}
+
+
+	void cacheOriginalValuesBeforeCameraEnable()
+	{
+		cacheGameCameraDataInCache(_originalData);
+	}
+
+
+	void restoreOriginalValuesAfterMultiShot()
+	{
+		restoreGameCameraDataWithCachedData(_preMultiShotData);
+	}
+
+
+	void cacheOriginalValuesBeforeMultiShot()
+	{
+		cacheGameCameraDataInCache(_preMultiShotData);
+	}
+
+
 }

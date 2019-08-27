@@ -54,7 +54,6 @@ namespace IGCS
 		void startSingleShot();
 		void startHorizontalPanoramaShot(Camera camera, float totalFoVInDegrees, int amountOfShots, float currentFoVInDegrees);
 		void startLightfieldShot(Camera camera, float distancePerStep, int amountOfShots, bool isTestRun);
-		void startTiledGridShot(Camera camera, int amountOfColumns, int amountOfRows, float currentFoVInDegrees);
 		void storeGrabbedShot(std::vector<uint8_t>);
 		void setBufferSize(int width, int height);
 		ScreenshotControllerState getState() { return _state; }

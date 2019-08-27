@@ -406,11 +406,10 @@ namespace IGCS
 		switch (static_cast<ScreenshotType>(settings.typeOfScreenshot))
 		{
 			case ScreenshotType::HorizontalPanorama:
+				OverlayControl::addNotification("Not Yet Implemented (tm)");
 				break;
 			case ScreenshotType::Lightfield:
 				Globals::instance().getScreenshotController().startLightfieldShot(_camera, settings.distanceBetweenLightfieldShots, settings.numberOfShotsToTake, isTestRun);
-				break;
-			case ScreenshotType::TiledGrid:
 				break;
 		}
 		// restore camera state

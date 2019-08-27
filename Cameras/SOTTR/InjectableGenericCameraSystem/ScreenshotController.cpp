@@ -142,16 +142,6 @@ namespace IGCS
 	}
 
 
-	void ScreenshotController::startTiledGridShot(Camera camera, int amountOfColumns, int amountOfRows, float currentFoVInDegrees)
-	{
-		reset();
-		_camera = camera;
-		_amountOfColumns = amountOfColumns;
-		_amountOfRows = amountOfRows;
-		_currentFoVInDegrees = currentFoVInDegrees;
-	}
-
-
 	void ScreenshotController::storeGrabbedShot(std::vector<uint8_t> grabbedShot)
 	{
 		if (grabbedShot.size() <= 0)
@@ -266,8 +256,6 @@ namespace IGCS
 				break;
 			case ScreenshotType::SingleShot:
 				// nothing
-				break;
-			case ScreenshotType::TiledGrid:
 				break;
 		}
 	}
