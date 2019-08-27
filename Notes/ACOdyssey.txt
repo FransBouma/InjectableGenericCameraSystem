@@ -329,6 +329,46 @@ ACOdyssey.exe+B2079A5 - 4C 23 30              - and r14,[rax]
 // Easy to find as there's a 'not rax' statement, which is rare. 
 // This can be in a different segment as the other code, so be sure to search in different segments!
 
+// 1.5.0
+00007FF7A7646AC | 48:89E0             mov rax,rsp                          
+00007FF7A7646AC | 48:8958 08          mov qword ptr ds:[rax+8],rbx         
+00007FF7A7646AC | 55                  push rbp                             
+00007FF7A7646AC | 56                  push rsi                             
+00007FF7A7646AC | 57                  push rdi                             
+00007FF7A7646AC | 41:54               push r12                             
+00007FF7A7646AC | 41:55               push r13                             
+00007FF7A7646AC | 41:56               push r14                             r14:"minkernel\\ntdll\\ldrinit.c"
+00007FF7A7646AD | 41:57               push r15                             
+00007FF7A7646AD | 48:8D6C24 B0        lea rbp,qword ptr ss:[rsp-50]        
+00007FF7A7646AD | 48:81EC 50010000    sub rsp,150                          
+00007FF7A7646AD | 0F2970 B8           movaps xmmword ptr ds:[rax-48],xmm6  
+00007FF7A7646AE | 0F2978 A8           movaps xmmword ptr ds:[rax-58],xmm7  
+00007FF7A7646AE | 44:0F2940 98        movaps xmmword ptr ds:[rax-68],xmm8  
+00007FF7A7646AE | 48:8B05 1E999FF9    mov rax,qword ptr ds:[7FF7A1040410]  
+00007FF7A7646AF | 48:31E0             xor rax,rsp                          
+00007FF7A7646AF | 48:8945 10          mov qword ptr ss:[rbp+10],rax        
+00007FF7A7646AF | 4C:8B62 18          mov r12,qword ptr ds:[rdx+18]        
+00007FF7A7646AF | 48:89D3             mov rbx,rdx                          
+00007FF7A7646B0 | 48:8B32             mov rsi,qword ptr ds:[rdx]           
+00007FF7A7646B0 | 45:89C6             mov r14d,r8d                         
+00007FF7A7646B0 | 48:8B15 E3DAAAF9    mov rdx,qword ptr ds:[7FF7A10F45F0]  
+00007FF7A7646B0 | 49:89CD             mov r13,rcx                          
+00007FF7A7646B1 | 48:894C24 60        mov qword ptr ss:[rsp+60],rcx        
+00007FF7A7646B1 | 45:31C0             xor r8d,r8d                          
+00007FF7A7646B1 | 49:8B8424 B8010000  mov rax,qword ptr ds:[r12+1B8]       
+00007FF7A7646B2 | 48:89D9             mov rcx,rbx                          
+00007FF7A7646B2 | 4C:8BB8 B84D0000    mov r15,qword ptr ds:[rax+4DB8]      
+00007FF7A7646B2 | 48:8B05 E7D6D5F9    mov rax,qword ptr ds:[7FF7A13A4218]  
+00007FF7A7646B3 | 8BB8 90000000       mov edi,dword ptr ds:[rax+90]        
+00007FF7A7646B3 | C1EF 02             shr edi,2                            
+00007FF7A7646B3 | 40:F6D7             not dil                              
+00007FF7A7646B3 | 40:80E7 01          and dil,1                            
+00007FF7A7646B4 | E8 CA1D12F5         call acodyssey_dump.7FF79C768910     
+00007FF7A7646B4 | 48:8B43 28          mov rax,qword ptr ds:[rbx+28]        
+00007FF7A7646B4 | 31C9                xor ecx,ecx                          
+00007FF7A7646B4 | 3848 14             cmp byte ptr ds:[rax+14],cl          
+00007FF7A7646B4 | 74 47               je acodyssey_dump.7FF7A7646B98       
+
 // v1.4.0
 ACOdyssey.exe+C97520 - 48 8B C4              - mov rax,rsp
 ACOdyssey.exe+C97523 - 48 89 58 08           - mov [rax+08],rbx
