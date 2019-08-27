@@ -55,7 +55,8 @@ namespace IGCS
 		void toggleInputBlockState(bool newValue);
 		void toggleTimestopState();
 		void toggleHudRenderState();
-		void takeScreenshots(bool isTestRun);
+		void takeMultiShot(bool isTestRun);
+		void takeSingleScreenshot();
 
 		Camera _camera;
 		LPBYTE _hostImageAddress;

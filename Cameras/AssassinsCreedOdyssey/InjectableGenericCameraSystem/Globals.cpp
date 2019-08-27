@@ -142,7 +142,8 @@ namespace IGCS
 		_keyBindingPerActionType[ActionType::TiltRight] = new ActionData("TiltRight", "Tilt camera right", IGCS_KEY_TILT_RIGHT, false, false, false);
 		_keyBindingPerActionType[ActionType::ToggleOverlay] = new ActionData("ToggleOverlay", "Show / hide camera tools main window", IGCS_KEY_TOGGLE_OVERLAY, false, true, false);
 		_keyBindingPerActionType[ActionType::TestMultiShotSetup] = new ActionData("TestMultiShotSetup", "Test multi-shot setup", IGCS_KEY_TEST_SHOT_SETUP, false, true, false);
-		_keyBindingPerActionType[ActionType::TakeScreenshots] = new ActionData("TakeScreenshots", "Take screenshot(s)", IGCS_KEY_TAKE_SCREENSHOT, false, false, false);
+		_keyBindingPerActionType[ActionType::TakeScreenshot] = new ActionData("TakeScreenshot", "Take screenshot", IGCS_KEY_TAKE_SCREENSHOT, false, false, false);
+		_keyBindingPerActionType[ActionType::TakeMultiShot] = new ActionData("TakeMultiShot", "Take multi-screenshot", IGCS_KEY_TAKE_MULTISHOT, false, true, false);
 
 		// Bindings which are often optional. Specify 'false' for available to disable it if the binding should be hidden. 
 		_keyBindingPerActionType[ActionType::HudToggle] = new ActionData("HudToggle", "Toggle HUD", IGCS_KEY_HUD_TOGGLE, false, false, false);

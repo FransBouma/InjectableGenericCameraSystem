@@ -54,7 +54,8 @@ namespace IGCS
 		Timestop,
 		ToggleOverlay,
 		TestMultiShotSetup,
-		TakeScreenshots,
+		TakeScreenshot,
+		TakeMultiShot,
 
 		// add new values above this line
 		Amount,

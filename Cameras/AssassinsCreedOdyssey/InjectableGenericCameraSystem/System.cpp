@@ -203,19 +203,24 @@ namespace IGCS
 			// camera is disabled. We simply disable all input to the camera movement, by returning now.
 			return;
 		}
-		if (Input::isActionActivated(ActionType::TakeScreenshots))
+		if (Input::isActionActivated(ActionType::TakeScreenshot))
 		{
-			takeScreenshots(false);
+			takeSingleScreenshot();
 			_applyHammerPrevention = true;
 			return;
 		}
 		if (Input::isActionActivated(ActionType::TestMultiShotSetup))
 		{
-			takeScreenshots(true);
+			takeMultiShot(true);
 			_applyHammerPrevention = true;
 			return;
 		}
-
+		if (Input::isActionActivated(ActionType::TakeMultiShot))
+		{
+			takeMultiShot(false);
+			_applyHammerPrevention = true;
+			return;
+		}
 		if (Input::isActionActivated(ActionType::BlockInput))
 		{
 			toggleInputBlockState(!Globals::instance().inputBlocked());
@@ -455,7 +460,7 @@ namespace IGCS
 	}
 
 
-	void System::takeScreenshots(bool isTestRun)
+	void System::takeMultiShot(bool isTestRun)
 	{
 		Settings& settings = Globals::instance().settings();
 		// calls won't return till the process has been completed. 
@@ -468,16 +473,20 @@ namespace IGCS
 				Globals::instance().getScreenshotController().startLightfieldShot(_camera, settings.distanceBetweenLightfieldShots, settings.numberOfShotsToTake, isTestRun);
 				taskPerformed = true;
 				break;
-			case ScreenshotType::SingleShot:
-				Globals::instance().getScreenshotController().startSingleShot();
-				taskPerformed = true;
-				break;
 			case ScreenshotType::TiledGrid:
 				break;
 		}
 		if (taskPerformed)
 		{
-			OverlayControl::addNotification("Screenshot(s) taken.");
+			OverlayControl::addNotification("Multi-screenshot taken.");
 		}
+	}
+
+
+	void System::takeSingleScreenshot()
+	{
+		// calls won't return till the process has been completed. 
+		Globals::instance().getScreenshotController().startSingleShot();
+		OverlayControl::addNotification("Single screenshot taken.");
 	}
 }
