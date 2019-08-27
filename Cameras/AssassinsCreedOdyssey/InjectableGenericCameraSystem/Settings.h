@@ -130,7 +130,7 @@ namespace IGCS
 			allowCameraMovementWhenMenuIsUp = false;
 			disableInGameDofWhenCameraIsEnabled = false;
 			numberOfFramesToWaitBetweenSteps = 1;
-			// Looking glass settings
+			// Screenshot settings
 			distanceBetweenLightfieldShots = 1.0f;
 			numberOfShotsToTake= 45;
 			typeOfScreenshot = (int)ScreenshotType::Lightfield;

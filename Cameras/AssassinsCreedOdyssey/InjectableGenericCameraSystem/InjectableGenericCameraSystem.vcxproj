@@ -163,6 +163,7 @@
     <ClInclude Include="Console.h" />
     <ClInclude Include="Defaults.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="GameCameraData.h" />
     <ClInclude Include="GameImageHooker.h" />
     <ClInclude Include="Gamepad.h" />
     <ClInclude Include="Globals.h" />

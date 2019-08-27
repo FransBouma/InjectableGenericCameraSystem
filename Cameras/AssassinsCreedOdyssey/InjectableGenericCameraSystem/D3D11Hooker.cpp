@@ -25,6 +25,7 @@ namespace IGCS::D3D11Hooker
 	// Forward declarations
 	void createRenderTarget(IDXGISwapChain* pSwapChain);
 	void cleanupRenderTarget();
+	std::vector<uint8_t> capture_frame(IDXGISwapChain* pSwapChain);
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Typedefs of functions to hook
@@ -215,7 +216,7 @@ namespace IGCS::D3D11Hooker
 
 	std::vector<uint8_t> capture_frame(IDXGISwapChain* pSwapChain)
 	{
-		OverlayConsole::instance().logLine("capture_frame()");
+		OverlayConsole::instance().logDebug("capture_frame()");
 
 		D3D11_TEXTURE2D_DESC StagingDesc;
 		ID3D11Texture2D* pBackBuffer = NULL;

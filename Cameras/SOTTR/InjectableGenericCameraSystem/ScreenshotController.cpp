@@ -40,7 +40,7 @@ using namespace std;
 
 namespace IGCS
 {
-	ScreenshotController::ScreenshotController() : _camera{ Camera() }
+	ScreenshotController::ScreenshotController() : _camera {Camera()}
 	{
 	}
 
@@ -195,24 +195,24 @@ namespace IGCS
 		string filename = "";
 		switch (_filetype)
 		{
-		case ScreenshotFiletype::Bmp:
-			filename = Utils::formatString("%s\\%d.bmp", destinationFolder.c_str(), frameNumber);
-			saveSuccessful = stbi_write_bmp(filename.c_str(), _framebufferWidth, _framebufferHeight, 4, data.data()) != 0;
-			break;
-		case ScreenshotFiletype::Jpeg:
-			filename = Utils::formatString("%s\\%d.jpg", destinationFolder.c_str(), frameNumber);
-			saveSuccessful = stbi_write_jpg(filename.c_str(), _framebufferWidth, _framebufferHeight, 4, data.data(), IGCS_JPG_SCREENSHOT_QUALITY) != 0;
-			break;
-		case ScreenshotFiletype::Png:
-			filename = Utils::formatString("%s\\%d.png", destinationFolder.c_str(), frameNumber);
-			saveSuccessful = stbi_write_png(filename.c_str(), _framebufferWidth, _framebufferHeight, 8, data.data(), 4 * _framebufferWidth) != 0;
-			break;
+			case ScreenshotFiletype::Bmp:
+				filename = Utils::formatString("%s\\%d.bmp", destinationFolder.c_str(), frameNumber);
+				saveSuccessful = stbi_write_bmp(filename.c_str(), _framebufferWidth, _framebufferHeight, 4, data.data()) != 0;
+				break;
+			case ScreenshotFiletype::Jpeg:
+				filename = Utils::formatString("%s\\%d.jpg", destinationFolder.c_str(), frameNumber);
+				saveSuccessful = stbi_write_jpg(filename.c_str(), _framebufferWidth, _framebufferHeight, 4, data.data(), IGCS_JPG_SCREENSHOT_QUALITY) != 0;
+				break;
+			case ScreenshotFiletype::Png:
+				filename = Utils::formatString("%s\\%d.png", destinationFolder.c_str(), frameNumber);
+				saveSuccessful = stbi_write_png(filename.c_str(), _framebufferWidth, _framebufferHeight, 8, data.data(), 4 * _framebufferWidth) != 0;
+				break;
 		}
 		if (saveSuccessful)
 		{
 			OverlayConsole::instance().logDebug("Successfully wrote screenshot of dimensions %dx%d to... %s", _framebufferWidth, _framebufferHeight, filename.c_str());
 		}
-		else
+		else 
 		{
 			OverlayConsole::instance().logDebug("Failed to write screenshot of dimensions %dx%d to... %s", _framebufferWidth, _framebufferHeight, filename.c_str());
 		}
@@ -225,8 +225,8 @@ namespace IGCS
 		tm tm;
 		localtime_s(&tm, &t);
 		string optionalBackslash = (_rootFolder.ends_with('\\')) ? "" : "\\";
-		string folderName = Utils::formatString("%s%s%.4d-%.2d-%.2d-%.2d-%.2d-%.2d", _rootFolder.c_str(), optionalBackslash.c_str(), (tm.tm_year + 1900), (tm.tm_mon + 1), tm.tm_mday,
-			tm.tm_hour, tm.tm_min, tm.tm_sec);
+		string folderName = Utils::formatString("%s%s%.4d-%.2d-%.2d-%.2d-%.2d-%.2d", _rootFolder.c_str(), optionalBackslash.c_str(), (tm.tm_year + 1900), (tm.tm_mon+1), tm.tm_mday, 
+																					 tm.tm_hour, tm.tm_min, tm.tm_sec);
 		mkdir(folderName.c_str());
 		return folderName;
 	}
@@ -248,15 +248,15 @@ namespace IGCS
 		// based on the type of the shot, we'll either rotate or move.
 		switch (_typeOfShot)
 		{
-		case ScreenshotType::HorizontalPanorama:
-			// TODO: IMPLEMENT
-			break;
-		case ScreenshotType::Lightfield:
-			moveCameraForLightfield(1, false);
-			break;
-		case ScreenshotType::SingleShot:
-			// nothing
-			break;
+			case ScreenshotType::HorizontalPanorama:
+// TODO: IMPLEMENT
+				break;
+			case ScreenshotType::Lightfield:
+				moveCameraForLightfield(1, false);
+				break;
+			case ScreenshotType::SingleShot:
+				// nothing
+				break;
 		}
 	}
 
@@ -265,7 +265,7 @@ namespace IGCS
 	{
 		_camera.resetMovement();
 		float dist = direction * _distancePerStep;
-		if (end)
+		if (end) 
 		{
 			dist *= 0.5f * _amountOfShotsToTake;
 		}

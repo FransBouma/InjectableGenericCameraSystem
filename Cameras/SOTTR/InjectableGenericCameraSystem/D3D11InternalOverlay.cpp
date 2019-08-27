@@ -28,6 +28,7 @@ namespace IGCS::D3D11InternalOverlay
 	// Forward declarations
 	void createRenderTarget(IDXGISwapChain* pSwapChain);
 	void cleanupRenderTarget();
+	std::vector<uint8_t> capture_frame(IDXGISwapChain* pSwapChain);
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Typedefs of functions to hook
@@ -68,6 +69,10 @@ namespace IGCS::D3D11InternalOverlay
 			return S_OK;
 		}
 		_presentInProgress = true;
+		bool validFrame = false;
+		UINT flagsToPass = Flags;
+		ScreenshotController& screenshotController = Globals::instance().getScreenshotController();
+
 		if (_tmpSwapChainInitialized)
 		{
 			if (!(Flags & DXGI_PRESENT_TEST) && !_imGuiInitializing)
@@ -95,6 +100,7 @@ namespace IGCS::D3D11InternalOverlay
 					ImGui_ImplDX11_Init(_device, _context);
 					_initializeDeviceAndContext = false;
 				}
+				validFrame = true;
 				// render our own stuff
 				OverlayControl::renderOverlay();
 				_context->OMSetRenderTargets(1, &_mainRenderTargetView, NULL);
@@ -103,10 +109,24 @@ namespace IGCS::D3D11InternalOverlay
 				Input::resetMouseState();
 			}
 		}
-		HRESULT toReturn = hookedDXGIPresent(pSwapChain, SyncInterval, Flags);
+		bool grabFrame = false;
+		if (validFrame && screenshotController.shouldTakeShot())
+		{
+			// make sure the Present call doesn't synchronize, so it's waiting for the VBL and doesn't unbind the backbuffer. 
+			flagsToPass |= DXGI_PRESENT_DO_NOT_SEQUENCE;
+			grabFrame = true;
+		}
+		HRESULT toReturn = hookedDXGIPresent(pSwapChain, SyncInterval, flagsToPass);
+		// if we have to grab the frame, do it now.
+		if (grabFrame)
+		{
+			screenshotController.storeGrabbedShot(capture_frame(pSwapChain));
+		}
+		screenshotController.presentCalled();
 		_presentInProgress = false;
 		return toReturn;
 	}
+
 
 	void initializeHook()
 	{
@@ -179,6 +199,10 @@ namespace IGCS::D3D11InternalOverlay
 		render_target_view_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 		pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
 		_device->CreateRenderTargetView(pBackBuffer, &render_target_view_desc, &_mainRenderTargetView);
+		// get the width/height of the back buffer. 
+		D3D11_TEXTURE2D_DESC StagingDesc;
+		pBackBuffer->GetDesc(&StagingDesc);
+		Globals::instance().getScreenshotController().setBufferSize(StagingDesc.Width, StagingDesc.Height);
 		pBackBuffer->Release();
 	}
 
@@ -190,5 +214,52 @@ namespace IGCS::D3D11InternalOverlay
 			_mainRenderTargetView->Release();
 			_mainRenderTargetView = nullptr;
 		}
+	}
+	
+
+	std::vector<uint8_t> capture_frame(IDXGISwapChain* pSwapChain)
+	{
+		OverlayConsole::instance().logDebug("capture_frame()");
+
+		D3D11_TEXTURE2D_DESC StagingDesc;
+		ID3D11Texture2D* pBackBuffer = NULL;
+		pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)& pBackBuffer);
+		pBackBuffer->GetDesc(&StagingDesc);
+		StagingDesc.Usage = D3D11_USAGE_STAGING;
+		StagingDesc.BindFlags = 0;
+		StagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+		ID3D11Texture2D* pBackBufferStaging = NULL;
+		HRESULT hr = _device->CreateTexture2D(&StagingDesc, NULL, &pBackBufferStaging);
+		_context->CopyResource(pBackBufferStaging, pBackBuffer);
+		D3D11_MAPPED_SUBRESOURCE mapped;
+		hr = _context->Map(pBackBufferStaging, 0, D3D11_MAP_READ, 0, &mapped);
+		if (FAILED(hr))
+		{
+			IGCS::Console::WriteError("Failed to map staging resource with screenshot capture!");
+			std::vector<uint8_t> failed;
+			return failed;
+		}
+		std::vector<uint8_t> fbdata(StagingDesc.Width * StagingDesc.Height * 4);
+		uint8_t* buffer = fbdata.data();
+		auto mapped_data = static_cast<BYTE*>(mapped.pData);
+		const UINT pitch = StagingDesc.Width * 4;
+		for (UINT y = 0; y < StagingDesc.Height; y++)
+		{
+			memcpy(buffer, mapped_data, min(pitch, static_cast<UINT>(mapped.RowPitch)));
+
+			for (UINT x = 0; x < pitch; x += 4)
+			{
+				buffer[x + 3] = 0xFF;
+
+				if (StagingDesc.Format == DXGI_FORMAT_B8G8R8A8_UNORM || StagingDesc.Format == DXGI_FORMAT_B8G8R8A8_UNORM_SRGB)
+				{
+					std::swap(buffer[x + 0], buffer[x + 2]);
+				}
+			}
+			buffer += pitch;
+			mapped_data += mapped.RowPitch;
+		}
+		_context->Unmap(pBackBufferStaging, 0);
+		return fbdata;
 	}
 }

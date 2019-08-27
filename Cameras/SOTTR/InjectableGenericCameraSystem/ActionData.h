@@ -53,6 +53,9 @@ namespace IGCS
 		TiltRight,
 		Timestop,
 		ToggleOverlay,
+		TestMultiShotSetup,
+		TakeScreenshot,
+		TakeMultiShot,
 
 		Amount,
 	};

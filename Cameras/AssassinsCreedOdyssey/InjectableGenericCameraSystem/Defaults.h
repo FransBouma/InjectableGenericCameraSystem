@@ -64,7 +64,7 @@ namespace IGCS
 	#define IGCS_KEY_HUD_TOGGLE						VK_DELETE
 	#define IGCS_KEY_TEST_SHOT_SETUP				VK_END
 	#define IGCS_KEY_TAKE_SCREENSHOT				VK_PAUSE
-	#define IGCS_KEY_TAKE_MULTISHOT					VK_PAUSE
+	#define IGCS_KEY_TAKE_MULTISHOT					VK_END			// With control
 
 	#define IGCS_BUTTON_FOV_DECREASE	Gamepad::button_t::UP
 	#define IGCS_BUTTON_FOV_INCREASE	Gamepad::button_t::DOWN
@@ -86,7 +86,6 @@ namespace IGCS
 	{
 		HorizontalPanorama,
 		Lightfield,
-		TiledGrid,
 
 		// Add more above
 		SingleShot,

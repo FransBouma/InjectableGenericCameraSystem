@@ -27,12 +27,17 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "stdafx.h"
+#include "Camera.h"
+#include "GameCameraData.h"
 
 namespace IGCS::GameSpecific::CameraManipulator
 {
+	void updateCameraDataInGameData(Camera& camera);
 	void writeNewCameraValuesToGameData(DirectX::XMFLOAT3 newCoords, DirectX::XMVECTOR newLookQuaternion);
 	void restoreOriginalValuesAfterCameraDisable();
+	void restoreOriginalValuesAfterMultiShot();
 	void cacheOriginalValuesBeforeCameraEnable();
+	void cacheOriginalValuesBeforeMultiShot();
 	DirectX::XMFLOAT3 getCurrentCameraCoords();
 	void resetFoV();
 	void changeFoV(float amount);
@@ -40,4 +45,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void displayCameraStructAddress();
 	void getSettingsFromGameState();
 	void applySettingsToGameState();
+	void restoreGameCameraDataWithCachedData(GameCameraData& source);
+	void cacheGameCameraDataInCache(GameCameraData& destination);
 }

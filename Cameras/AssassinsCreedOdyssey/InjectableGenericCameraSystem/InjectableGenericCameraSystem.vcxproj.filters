@@ -121,6 +121,9 @@
     <ClInclude Include="ScreenshotController.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="GameCameraData.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InterceptorHelper.cpp">

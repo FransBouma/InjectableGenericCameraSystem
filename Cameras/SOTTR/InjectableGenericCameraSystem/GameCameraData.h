@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2019, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -27,43 +27,47 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "stdafx.h"
-#include "Camera.h"
-#include "InputHooker.h"
-#include "Gamepad.h"
-#include <map>
-#include "AOBBlock.h"
 
 namespace IGCS
 {
-	class System
+	// Simple struct which is used to cache game data. 
+	struct GameCameraData
 	{
-	public:
-		System();
-		~System();
-		void start(LPBYTE hostBaseAddress, DWORD hostImageSize);
+		float _coords[3];
+		float _quaternion[4];
+		float _fov;
 
-	private:
-		void mainLoop();
-		void initialize();
-		void updateFrame();
-		void handleUserInput();
-		void displayCameraState();
-		void toggleCameraMovementLockState(bool newValue);
-		void handleKeyboardCameraMovement(float multiplier);
-		void handleMouseCameraMovement(float multiplier);
-		void handleGamePadMovement(float multiplierBase);
-		void waitForCameraStructAddresses();
-		void toggleInputBlockState(bool newValue);
-		void takeMultiShot(bool isTestRun);
-		void takeSingleScreenshot();
 
-		Camera _camera;
-		LPBYTE _hostImageAddress;
-		DWORD _hostImageSize;
-		bool _cameraMovementLocked = false;
-		bool _cameraStructFound = false;
-		map<string, AOBBlock*> _aobBlocks;
-		bool _applyHammerPrevention = false;	// set to true by a keyboard action and which triggers a sleep before keyboard handling is performed.
+		void CacheData(float* quaternionInMemory, float* coordsInMemory, float* fovInMemory)
+		{
+			if (nullptr != quaternionInMemory)
+			{
+				memcpy(_quaternion, quaternionInMemory, 4 * sizeof(float));
+			}
+			if (nullptr != coordsInMemory)
+			{
+				memcpy(_coords, coordsInMemory, 3 * sizeof(float));
+			}
+			if (nullptr != fovInMemory)
+			{
+				_fov = *fovInMemory;
+			}
+		}
+
+		void RestoreData(float* quaternionInMemory, float* coordsInMemory, float* fovInMemory)
+		{
+			if (nullptr != quaternionInMemory)
+			{
+				memcpy(quaternionInMemory, _quaternion, 4 * sizeof(float));
+			}
+			if (nullptr != coordsInMemory)
+			{
+				memcpy(coordsInMemory, _coords, 3 * sizeof(float));
+			}
+			if (nullptr != fovInMemory)
+			{
+				*fovInMemory = _fov;
+			}
+		}
 	};
 }
-

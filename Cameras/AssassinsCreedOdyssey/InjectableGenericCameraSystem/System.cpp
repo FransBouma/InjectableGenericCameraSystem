@@ -85,42 +85,6 @@ namespace IGCS
 	// updates the data and camera for a frame 
 	void System::updateFrame()
 	{
-		//if (!_isLightfieldCapturing)
-		//{
-		//	handleUserInput();
-		//}
-		//else 
-		//{
-		//	_camera.resetMovement();
-		//	if (_framesToGrab == 0) 
-		//	{ 
-		//		// all framebuffers grabbed
-		//		_isLightfieldCapturing = false;
-		//		moveLightfield(-1, true, false);
-		//		OverlayControl::addNotification("Lightfield photo end. Saving files...");
-		//		//CameraManipulator::setTimeStopValue(_timeStopped);
-		//		//InterceptorHelper::toggleHudRenderState(_aobBlocks, _hudToggled);
-		//	}
-		//	else 
-		//	{
-		//		// synchronize camera position with lightfield capture
-		//		/*char buf[100];
-		//		sprintf(buf, "[main] main: %d hook: %d", framesToGrab, DX11Hooker::framesRemaining());
-		//		OverlayControl::addNotification(buf);*/
-		//		if (!_lightfieldHookInited) 
-		//		{
-		//			OverlayControl::addNotification("Lightfield photo begin.");
-		//			startCapture(_framesToGrab);
-		//			_lightfieldHookInited = true;
-		//		}
-		//		else if (D3D11Hooker::framesRemaining() == _framesToGrab) 
-		//		{
-		//			--_framesToGrab;
-		//			moveLightfield(1, false, false);
-		//			D3D11Hooker::syncFramesToGrab(_framesToGrab);
-		//		}
-		//	}
-		//}
 		handleUserInput();
 		CameraManipulator::updateCameraDataInGameData(_camera);
 	}
@@ -462,24 +426,22 @@ namespace IGCS
 
 	void System::takeMultiShot(bool isTestRun)
 	{
+		// first cache the camera state
+		GameSpecific::CameraManipulator::cacheOriginalValuesBeforeMultiShot();
+
 		Settings& settings = Globals::instance().settings();
 		// calls won't return till the process has been completed. 
-		bool taskPerformed = false;
 		switch (static_cast<ScreenshotType>(settings.typeOfScreenshot))
 		{
-			case ScreenshotType::HorizontalPanorama:
-				break;
-			case ScreenshotType::Lightfield:
-				Globals::instance().getScreenshotController().startLightfieldShot(_camera, settings.distanceBetweenLightfieldShots, settings.numberOfShotsToTake, isTestRun);
-				taskPerformed = true;
-				break;
-			case ScreenshotType::TiledGrid:
-				break;
+		case ScreenshotType::HorizontalPanorama:
+			OverlayControl::addNotification("Not Yet Implemented (tm)");
+			break;
+		case ScreenshotType::Lightfield:
+			Globals::instance().getScreenshotController().startLightfieldShot(_camera, settings.distanceBetweenLightfieldShots, settings.numberOfShotsToTake, isTestRun);
+			break;
 		}
-		if (taskPerformed)
-		{
-			OverlayControl::addNotification("Multi-screenshot taken.");
-		}
+		// restore camera state
+		GameSpecific::CameraManipulator::restoreOriginalValuesAfterMultiShot();
 	}
 
 
@@ -487,6 +449,5 @@ namespace IGCS
 	{
 		// calls won't return till the process has been completed. 
 		Globals::instance().getScreenshotController().startSingleShot();
-		OverlayControl::addNotification("Single screenshot taken.");
 	}
 }
