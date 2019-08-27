@@ -85,27 +85,7 @@ namespace IGCS
 	void System::updateFrame()
 	{
 		handleUserInput();
-		writeNewCameraValuesToCameraStructs();
-	}
-	
-
-	void System::writeNewCameraValuesToCameraStructs()
-	{
-		if (!g_cameraEnabled)
-		{
-			return;
-		}
-
-		// calculate new camera values. We have two cameras, but they might not be available both, so we have to test before we do anything. 
-		DirectX::XMVECTOR newLookQuaternion = _camera.calculateLookQuaternion();
-		DirectX::XMFLOAT3 currentCoords;
-		DirectX::XMFLOAT3 newCoords;
-		if (GameSpecific::CameraManipulator::isCameraFound())
-		{
-			currentCoords = GameSpecific::CameraManipulator::getCurrentCameraCoords();
-			newCoords = _camera.calculateNewCoords(currentCoords, newLookQuaternion);
-			GameSpecific::CameraManipulator::writeNewCameraValuesToGameData(newCoords, newLookQuaternion);
-		}
+		CameraManipulator::updateCameraDataInGameData(_camera);
 	}
 
 
@@ -141,6 +121,8 @@ namespace IGCS
 				// it's going to be disabled, make sure things are alright when we give it back to the host
 				CameraManipulator::restoreOriginalValuesAfterCameraDisable();
 				toggleCameraMovementLockState(false);
+				// disable screenshot action
+				Globals::instance().getScreenshotController().reset();
 			}
 			else
 			{
@@ -169,6 +151,24 @@ namespace IGCS
 		if (!g_cameraEnabled)
 		{
 			// camera is disabled. We simply disable all input to the camera movement, by returning now.
+			return;
+		}
+		if (Input::isActionActivated(ActionType::TakeScreenshot))
+		{
+			takeSingleScreenshot();
+			_applyHammerPrevention = true;
+			return;
+		}
+		if (Input::isActionActivated(ActionType::TestMultiShotSetup))
+		{
+			takeMultiShot(true);
+			_applyHammerPrevention = true;
+			return;
+		}
+		if (Input::isActionActivated(ActionType::TakeMultiShot))
+		{
+			takeMultiShot(false);
+			_applyHammerPrevention = true;
 			return;
 		}
 		if (Input::isActionActivated(ActionType::BlockInput))
@@ -393,5 +393,34 @@ namespace IGCS
 	void System::displayCameraState()
 	{
 		OverlayControl::addNotification(g_cameraEnabled ? "Camera enabled" : "Camera disabled");
+	}
+
+
+	void System::takeMultiShot(bool isTestRun)
+	{
+		// first cache the camera state
+		GameSpecific::CameraManipulator::cacheOriginalValuesBeforeMultiShot();
+
+		Settings& settings = Globals::instance().settings();
+		// calls won't return till the process has been completed. 
+		switch (static_cast<ScreenshotType>(settings.typeOfScreenshot))
+		{
+			case ScreenshotType::HorizontalPanorama:
+				break;
+			case ScreenshotType::Lightfield:
+				Globals::instance().getScreenshotController().startLightfieldShot(_camera, settings.distanceBetweenLightfieldShots, settings.numberOfShotsToTake, isTestRun);
+				break;
+			case ScreenshotType::TiledGrid:
+				break;
+		}
+		// restore camera state
+		GameSpecific::CameraManipulator::restoreOriginalValuesAfterMultiShot();
+	}
+
+
+	void System::takeSingleScreenshot()
+	{
+		// calls won't return till the process has been completed. 
+		Globals::instance().getScreenshotController().startSingleShot();
 	}
 }

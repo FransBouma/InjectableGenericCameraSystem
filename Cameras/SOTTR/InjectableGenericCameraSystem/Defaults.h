@@ -62,6 +62,9 @@ namespace IGCS
 	#define IGCS_KEY_BLOCK_INPUT					VK_DECIMAL
 	#define IGCS_KEY_HUD_TOGGLE						VK_DELETE
 	#define IGCS_KEY_TIMESTOP						VK_NUMPAD0
+	#define IGCS_KEY_TEST_SHOT_SETUP				VK_END
+	#define IGCS_KEY_TAKE_SCREENSHOT				VK_PAUSE
+	#define IGCS_KEY_TAKE_MULTISHOT					VK_END		// With control
 
 	#define IGCS_BUTTON_FOV_DECREASE	Gamepad::button_t::UP
 	#define IGCS_BUTTON_FOV_INCREASE	Gamepad::button_t::DOWN
@@ -71,9 +74,32 @@ namespace IGCS
 	#define IGCS_BUTTON_FASTER			Gamepad::button_t::Y
 	#define IGCS_BUTTON_SLOWER			Gamepad::button_t::X
 
+	#define IGCS_JPG_SCREENSHOT_QUALITY				98
+
 	static const BYTE jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]
 
 	#define DEVICE_ID_KEYBOARD_MOUSE			0
 	#define DEVICE_ID_GAMEPAD					1
 	#define DEVICE_ID_ALL						2
+
+	enum class ScreenshotType : short
+	{
+		HorizontalPanorama,
+		Lightfield,
+		TiledGrid,
+
+		// Add more above
+		SingleShot,
+		Amount,
+	};
+
+	enum class ScreenshotFiletype : short
+	{
+		Bmp,
+		Jpeg,
+		Png,
+
+		// Add more above
+		Amount,
+	};
 }

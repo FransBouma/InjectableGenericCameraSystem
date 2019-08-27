@@ -22,6 +22,12 @@ namespace IGCS
 		float fovChangeSpeed;
 		int cameraControlDevice;		// 0==keyboard/mouse, 1 == gamepad, 2 == both, see Defaults.h
 		bool allowCameraMovementWhenMenuIsUp;
+		// screenshot settings
+		int numberOfFramesToWaitBetweenSteps;
+		float distanceBetweenLightfieldShots;
+		int numberOfShotsToTake;
+		int typeOfScreenshot;
+		char screenshotFolder[_MAX_PATH + 1] = { 0 };
 
 		void loadFromFile(map<ActionType, ActionData*> keyBindingPerActionType)
 		{
@@ -40,6 +46,12 @@ namespace IGCS
 			rotationSpeed = Utils::clamp(iniFile.GetFloat("rotationSpeed", "CameraSettings"), 0.0f, DEFAULT_ROTATION_SPEED);
 			fovChangeSpeed = Utils::clamp(iniFile.GetFloat("fovChangeSpeed", "CameraSettings"), 0.0f, DEFAULT_FOV_SPEED);
 			cameraControlDevice = Utils::clamp(iniFile.GetInt("cameraControlDevice", "CameraSettings"), 0, DEVICE_ID_ALL, DEVICE_ID_ALL);
+			numberOfShotsToTake = Utils::clamp(iniFile.GetInt("numberOfShotsToTake", "ScreenshotSettings"), 0, 45);
+			distanceBetweenLightfieldShots = Utils::clamp(iniFile.GetFloat("distanceBetweenLightfieldShots", "ScreenshotSettings"), 0.0f, 100.0f);
+			typeOfScreenshot = Utils::clamp(iniFile.GetInt("typeOfScreenshot", "ScreenshotSettings"), 0, ((int)ScreenshotType::Amount) - 1);
+			std::string folder = iniFile.GetValue("screenshotFolder", "ScreenshotSettings");
+			folder.copy(screenshotFolder, folder.length());
+			screenshotFolder[folder.length()] = '\0';
 
 			// load keybindings. They might not be there, or incomplete. 
 			for (std::pair<ActionType, ActionData*> kvp : keyBindingPerActionType)
@@ -67,6 +79,12 @@ namespace IGCS
 			iniFile.SetFloat("rotationSpeed", rotationSpeed, "", "CameraSettings");
 			iniFile.SetFloat("fovChangeSpeed", fovChangeSpeed, "", "CameraSettings");
 			iniFile.SetInt("cameraControlDevice", cameraControlDevice, "", "CameraSettings");
+			// screenshot settings
+			iniFile.SetInt("numberOfFramesToWaitBetweenSteps", numberOfFramesToWaitBetweenSteps, "", "ScreenshotSettings");
+			iniFile.SetFloat("distanceBetweenLightfieldShots", distanceBetweenLightfieldShots, "", "ScreenshotSettings");
+			iniFile.SetInt("numberOfShotsToTake", numberOfShotsToTake, "", "ScreenshotSettings");
+			iniFile.SetInt("typeOfScreenshot", typeOfScreenshot, "", "ScreenshotSettings");
+			iniFile.SetValue("screenshotFolder", screenshotFolder, "", "ScreenshotSettings");
 
 			// save keybindings
 			if (!keyBindingPerActionType.empty())
@@ -96,6 +114,12 @@ namespace IGCS
 			fovChangeSpeed = DEFAULT_FOV_SPEED;
 			cameraControlDevice = DEVICE_ID_ALL;
 			allowCameraMovementWhenMenuIsUp = false;
+			// Screenshot settings
+			numberOfFramesToWaitBetweenSteps = 5;
+			distanceBetweenLightfieldShots = 1.0f;
+			numberOfShotsToTake = 45;
+			typeOfScreenshot = (int)ScreenshotType::Lightfield;
+			strcpy(screenshotFolder, "c:\\");
 
 			if (!persistedOnly)
 			{

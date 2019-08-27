@@ -31,6 +31,8 @@
 #include "InterceptorHelper.h"
 #include "Globals.h"
 #include "OverlayConsole.h"
+#include "Camera.h"
+#include "GameCameraData.h"
 
 using namespace DirectX;
 using namespace std;
@@ -41,9 +43,27 @@ extern "C" {
 
 namespace IGCS::GameSpecific::CameraManipulator
 {
-	static float _originalCoords[3];
-	static float _originalQuaternion[4];
-	static float _originalFoV;
+	static GameCameraData _originalData;
+	static GameCameraData _preMultiShotData;
+
+	void updateCameraDataInGameData(Camera& camera)
+	{
+		if (!g_cameraEnabled)
+		{
+			return;
+		}
+
+		// calculate new camera values. We have two cameras, but they might not be available both, so we have to test before we do anything. 
+		DirectX::XMVECTOR newLookQuaternion = camera.calculateLookQuaternion();
+		DirectX::XMFLOAT3 currentCoords;
+		DirectX::XMFLOAT3 newCoords;
+		if (isCameraFound())
+		{
+			currentCoords = getCurrentCameraCoords();
+			newCoords = camera.calculateNewCoords(currentCoords, newLookQuaternion);
+			writeNewCameraValuesToGameData(newCoords, newLookQuaternion);
+		}
+	}
 
 
 	void getSettingsFromGameState()
@@ -68,7 +88,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 			return;
 		}
 		float* fovAddress = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
-		*fovAddress = _originalFoV;
+		*fovAddress = _originalData._fov;
 	}
 
 
@@ -132,43 +152,51 @@ namespace IGCS::GameSpecific::CameraManipulator
 	{
 		OverlayConsole::instance().logDebug("Camera struct address: %p", (void*)g_cameraStructAddress);
 	}
-	
 
-	// should restore the camera values in the camera structures to the cached values. This assures the free camera is always enabled at the original camera location.
-	void restoreOriginalValuesAfterCameraDisable()
+
+	void restoreGameCameraDataWithCachedData(GameCameraData& source)
 	{
-		float* quaternionInMemory = nullptr;
-		float* coordsInMemory = nullptr;
-		float *fovInMemory = nullptr;
-
 		if (!isCameraFound())
 		{
 			return;
 		}
-		quaternionInMemory = reinterpret_cast<float*>(g_cameraStructAddress + QUATERNION_IN_STRUCT_OFFSET);
-		coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET);
-		memcpy(quaternionInMemory, _originalQuaternion, 4 * sizeof(float));
-		memcpy(coordsInMemory, _originalCoords, 3 * sizeof(float));
-		fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
-		*fovInMemory = _originalFoV;
+		source.RestoreData(reinterpret_cast<float*>(g_cameraStructAddress + QUATERNION_IN_STRUCT_OFFSET), reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET), 
+						   reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET));
+	}
+
+
+	void cacheGameCameraDataInCache(GameCameraData& destination)
+	{
+		if (!isCameraFound())
+		{
+			return;
+		}
+		destination.CacheData(reinterpret_cast<float*>(g_cameraStructAddress + QUATERNION_IN_STRUCT_OFFSET), reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET),
+							  reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET));
+	}
+
+
+	void restoreOriginalValuesAfterCameraDisable()
+	{
+		restoreGameCameraDataWithCachedData(_originalData);
 	}
 
 
 	void cacheOriginalValuesBeforeCameraEnable()
 	{
-		float* quaternionInMemory = nullptr;
-		float* coordsInMemory = nullptr;
-		float *fovInMemory = nullptr;
-
-		if (!isCameraFound())
-		{
-			return;
-		}
-		quaternionInMemory = reinterpret_cast<float*>(g_cameraStructAddress + QUATERNION_IN_STRUCT_OFFSET);
-		coordsInMemory = reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET);
-		memcpy(_originalQuaternion, quaternionInMemory, 4 * sizeof(float));
-		memcpy(_originalCoords, coordsInMemory, 3 * sizeof(float));
-		fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
-		_originalFoV = *fovInMemory;
+		cacheGameCameraDataInCache(_originalData);
 	}
+
+
+	void restoreOriginalValuesAfterMultiShot()
+	{
+		restoreGameCameraDataWithCachedData(_preMultiShotData);
+	}
+
+
+	void cacheOriginalValuesBeforeMultiShot()
+	{
+		cacheGameCameraDataInCache(_preMultiShotData);
+	}
+
 }

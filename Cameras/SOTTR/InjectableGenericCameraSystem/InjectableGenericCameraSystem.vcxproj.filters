@@ -115,6 +115,12 @@
     <ClInclude Include="D3D11InternalOverlay.h">
       <Filter>Overlay</Filter>
     </ClInclude>
+    <ClInclude Include="ScreenshotController.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCameraData.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InterceptorHelper.cpp">
@@ -191,6 +197,9 @@
     </ClCompile>
     <ClCompile Include="D3D11InternalOverlay.cpp">
       <Filter>Overlay</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenshotController.cpp">
+      <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
