@@ -1,0 +1,187 @@
+Control
+=========
+
+// inputManager getInstance:
+// input_rmdwin10_f.input::InputManager::getInstance()
+input_rmdwin10_f.dll+1140 - 48 8B 05 49460100     - mov rax,[input_rmdwin10_f.dll+15790] { (2001A9DF970) }
+input_rmdwin10_f.dll+1147 - C3                    - ret 
+input_rmdwin10_f.dll+1148 - CC                    - int 3 
+
+// pass 1 as bool to enable camera
+//input_rmdwin10_f.input::InputManager::setFreeCameraWithoutPlayerControls(inputManager*, bool)
+input_rmdwin10_f.dll+8850 - 88 91 8B000000        - mov [rcx+0000008B],dl
+input_rmdwin10_f.dll+8856 - C3                    - ret 
+input_rmdwin10_f.dll+8857 - CC                    - int 3 
+
+// enable free camera in main game:
+Control_DX12.exe+32777C - FF 15 6E599B00        - call qword ptr [Control_DX12.exe+CDD0F0] { ->physics_rmdwin10_f.physics::updateApexCamera }
+Control_DX12.exe+327782 - 48 63 0D 8FF8E300     - movsxd  rcx,dword ptr [Control_DX12.exe+1167018]		>>> Address for free camera: set to 1 to enable.
+Control_DX12.exe+327789 - 48 8D 15 3089A200     - lea rdx,[Control_DX12.exe+D500C0] { ("Current camera") }
+Control_DX12.exe+327790 - 48 8B 0C CF           - mov rcx,[rdi+rcx*8]
+Control_DX12.exe+327794 - E8 370D0000           - call Control_DX12.exe+3284D0
+Control_DX12.exe+327799 - 48 8D 15 D888A200     - lea rdx,[Control_DX12.exe+D50078] { ("Free camera") }
+Control_DX12.exe+3277A0 - 48 8B 0D 89F8E300     - mov rcx,[Control_DX12.exe+1167030] { (200279193B0) }
+Control_DX12.exe+3277A7 - E8 240D0000           - call Control_DX12.exe+3284D0
+Control_DX12.exe+3277AC - 48 8D 15 D588A200     - lea rdx,[Control_DX12.exe+D50088] { ("Player camera") }
+Control_DX12.exe+3277B3 - 48 8B 0D 36F8E300     - mov rcx,[Control_DX12.exe+1166FF0] { (20027B24A30) }
+Control_DX12.exe+3277BA - E8 110D0000           - call Control_DX12.exe+3284D0
+Control_DX12.exe+3277BF - 80 3D FABCE500 00     - cmp byte ptr [Control_DX12.exe+11834C0],00 { (0),0 }
+Control_DX12.exe+3277C6 - 0F84 54010000         - je Control_DX12.exe+327920
+Control_DX12.exe+3277CC - 45 33 E4              - xor r12d,r12d
+
+// Game camera.
+// writes. Generic transform function. This function is called always. Intercept it, block writes
+// and write our own quaternion / coords data to the location in rsi, instead of the values in xmm0/xmm1.
+// so basically instead of the read using rdi, use a read into our own structs. 
+// the getPosition / getRotation functions return a different set of values, but using this will end up returning our values
+// so they don't need interception.
+coregame_rmdwin10_f.dll+1BFC30 - 74 30                 - je coregame_rmdwin10_f.dll+1BFC62
+coregame_rmdwin10_f.dll+1BFC32 - 48 8B 05 27F03C00     - mov rax,[coregame_rmdwin10_f.dll+58EC60] { (7FFE1F2F20F0) }
+coregame_rmdwin10_f.dll+1BFC39 - 0F10 07               - movups xmm0,[rdi]
+coregame_rmdwin10_f.dll+1BFC3C - 0F10 4F 10            - movups xmm1,[rdi+10]
+coregame_rmdwin10_f.dll+1BFC40 - 0F11 86 C0000000      - movups [rsi+000000C0],xmm0					<< Write quaternion
+coregame_rmdwin10_f.dll+1BFC47 - 0F11 8E D0000000      - movups [rsi+000000D0],xmm1					<< Write coords
+coregame_rmdwin10_f.dll+1BFC4E - 48 8B 08              - mov rcx,[rax]
+coregame_rmdwin10_f.dll+1BFC51 - 48 85 C9              - test rcx,rcx
+coregame_rmdwin10_f.dll+1BFC54 - 74 0C                 - je coregame_rmdwin10_f.dll+1BFC62
+coregame_rmdwin10_f.dll+1BFC56 - 48 8D 96 C0000000     - lea rdx,[rsi+000000C0]
+coregame_rmdwin10_f.dll+1BFC5D - E8 FEA1E6FF           - call coregame_rmdwin10_f.dll+29E60
+coregame_rmdwin10_f.dll+1BFC62 - 48 8B CE              - mov rcx,rsi
+coregame_rmdwin10_f.dll+1BFC65 - E8 A6050000           - call coregame_rmdwin10_f.dll+1C0210
+
+// Fov
+// No writes to it to block. Radians. Default 1.13446
+Control_DX12.exe+1FA383 - 74 1B                 - je Control_DX12.exe+1FA3A0
+Control_DX12.exe+1FA385 - F3 0F11 03            - movss [rbx],xmm0
+Control_DX12.exe+1FA389 - 48 8B 05 E867AE00     - mov rax,[Control_DX12.exe+CE0B78] { (7FFE1F2F20F0) }
+Control_DX12.exe+1FA390 - 48 8B 08              - mov rcx,[rax]
+Control_DX12.exe+1FA393 - 48 85 C9              - test rcx,rcx
+Control_DX12.exe+1FA396 - 74 08                 - je Control_DX12.exe+1FA3A0
+Control_DX12.exe+1FA398 - 48 8B D3              - mov rdx,rbx
+Control_DX12.exe+1FA39B - E8 D03FE6FF           - call Control_DX12.exe+5E370
+Control_DX12.exe+1FA3A0 - F3 0F10 03            - movss xmm0,[rbx]
+Control_DX12.exe+1FA3A4 - 48 8D 93 20010000     - lea rdx,[rbx+00000120]
+Control_DX12.exe+1FA3AB - 0F28 CE               - movaps xmm1,xmm6
+Control_DX12.exe+1FA3AE - F3 0F5C C8            - subss xmm1,xmm0
+Control_DX12.exe+1FA3B2 - F3 0F59 43 10         - mulss xmm0,[rbx+10]					<< READ FOV
+Control_DX12.exe+1FA3B7 - F3 0F59 8B 98000000   - mulss xmm1,[rbx+00000098]
+Control_DX12.exe+1FA3BF - F3 0F58 C8            - addss xmm1,xmm0
+Control_DX12.exe+1FA3C3 - F3 0F10 02            - movss xmm0,[rdx]
+Control_DX12.exe+1FA3C7 - 0F2E C1               - ucomiss xmm0,xmm1
+Control_DX12.exe+1FA3CA - 7A 02                 - jp Control_DX12.exe+1FA3CE
+Control_DX12.exe+1FA3CC - 74 18                 - je Control_DX12.exe+1FA3E6
+Control_DX12.exe+1FA3CE - 48 8B 05 A367AE00     - mov rax,[Control_DX12.exe+CE0B78] { (7FFE1F2F20F0) }
+Control_DX12.exe+1FA3D5 - F3 0F11 0A            - movss [rdx],xmm1
+Control_DX12.exe+1FA3D9 - 48 8B 08              - mov rcx,[rax]
+
+// Pause
+// this object is needed, the gameSession:
+// coregame_rmdwin10_f.coregame::GameClientBase::getGameSession
+coregame_rmdwin10_f.dll+135600 - 48 8B 81 B0010000     - mov rax,[rcx+000001B0]	 >> read the game session, which is what we need to pass to the pause function
+coregame_rmdwin10_f.dll+135607 - C3                    - ret 
+coregame_rmdwin10_f.dll+135608 - CC                    - int 3 
+
+// Pause function
+// coregame_rmdwin10_f.coregame::ClientGameSessionRPCBase::pauseGameStubInvoker(gameSession*)
+coregame_rmdwin10_f.dll+3C520 - 48 8B 89 80040000     - mov rcx,[rcx+00000480]
+coregame_rmdwin10_f.dll+3C527 - 48 8D 15 DA298200     - lea rdx,[coregame_rmdwin10_f.dll+85EF08] { (567542165) }
+coregame_rmdwin10_f.dll+3C52E - 48 81 C1 98000000     - add rcx,00000098 { 152 }
+coregame_rmdwin10_f.dll+3C535 - 45 33 C9              - xor r9d,r9d
+coregame_rmdwin10_f.dll+3C538 - 45 33 C0              - xor r8d,r8d
+coregame_rmdwin10_f.dll+3C53B - 48 FF 25 F61F5500     - jmp qword ptr [coregame_rmdwin10_f.dll+58E538] { ->rl_rmdwin10_f.dll+151200 }
+coregame_rmdwin10_f.dll+3C542 - CC                    - int 3 
+coregame_rmdwin10_f.dll+3C543 - CC                    - int 3 
+
+// Unpause function
+coregame_rmdwin10_f.coregame::ClientGameSessionRPCBase::unpauseGameStub(gameSession*)
+coregame_rmdwin10_f.dll+3C600 - 48 8B 89 80040000     - mov rcx,[rcx+00000480]
+coregame_rmdwin10_f.dll+3C607 - 48 8D 15 FE288200     - lea rdx,[coregame_rmdwin10_f.dll+85EF0C] { (1520318608) }
+coregame_rmdwin10_f.dll+3C60E - 48 81 C1 98000000     - add rcx,00000098 { 152 }
+coregame_rmdwin10_f.dll+3C615 - 45 33 C9              - xor r9d,r9d
+coregame_rmdwin10_f.dll+3C618 - 45 33 C0              - xor r8d,r8d
+coregame_rmdwin10_f.dll+3C61B - 48 FF 25 161F5500     - jmp qword ptr [coregame_rmdwin10_f.dll+58E538] { ->rl_rmdwin10_f.dll+151200 }
+coregame_rmdwin10_f.dll+3C622 - CC                    - int 3 
+
+// Hotsampling
+coregame_rmdwin10_f.dll+AA105 - 48 8D 55 58           - lea rdx,[rbp+58]
+coregame_rmdwin10_f.dll+AA109 - FF 90 A8000000        - call qword ptr [rax+000000A8]
+coregame_rmdwin10_f.dll+AA10F - 44 8B A6 00010000     - mov r12d,[rsi+00000100]
+coregame_rmdwin10_f.dll+AA116 - 44 3B 65 5C           - cmp r12d,[rbp+5C]
+coregame_rmdwin10_f.dll+AA11A - 7C 29                 - jl coregame_rmdwin10_f.dll+AA145		>> change to JMP, no window resize if resized > desktop
+coregame_rmdwin10_f.dll+AA11C - 48 8B 4E 70           - mov rcx,[rsi+70]
+coregame_rmdwin10_f.dll+AA120 - 48 8B 01              - mov rax,[rcx]
+coregame_rmdwin10_f.dll+AA123 - FF 90 88000000        - call qword ptr [rax+00000088]
+coregame_rmdwin10_f.dll+AA129 - 48 8B C8              - mov rcx,rax
+coregame_rmdwin10_f.dll+AA12C - BA 03000000           - mov edx,00000003 { 3 }
+coregame_rmdwin10_f.dll+AA131 - FF 15 99204E00        - call qword ptr [coregame_rmdwin10_f.dll+58C1D0] { ->->win32u.dll+1B70 } >> User32.SetWindow(hwd, 3)
+coregame_rmdwin10_f.dll+AA137 - B2 01                 - mov dl,01 { 1 }
+coregame_rmdwin10_f.dll+AA139 - 88 55 48              - mov [rbp+48],dl
+coregame_rmdwin10_f.dll+AA13C - 44 8B A6 00010000     - mov r12d,[rsi+00000100]
+coregame_rmdwin10_f.dll+AA143 - EB 04                 - jmp coregame_rmdwin10_f.dll+AA149
+
+// Allow any resolution (SRWE)
+coregame_rmdwin10_f.dll+A9CE2 - 0F85 90000000         - jne coregame_rmdwin10_f.dll+A9D78
+coregame_rmdwin10_f.dll+A9CE8 - 0F10 8B B0000000      - movups xmm1,[rbx+000000B0]
+coregame_rmdwin10_f.dll+A9CEF - 41 B8 00000001        - mov r8d,00000001					>> Change to mov r8d, 0. 
+coregame_rmdwin10_f.dll+A9CF5 - 48 8D 54 24 20        - lea rdx,[rsp+20]
+coregame_rmdwin10_f.dll+A9CFA - F3 0F2C 47 04         - cvttss2si eax,[rdi+04]
+coregame_rmdwin10_f.dll+A9CFF - 48 8B CB              - mov rcx,rbx
+coregame_rmdwin10_f.dll+A9D02 - 0F10 83 A0000000      - movups xmm0,[rbx+000000A0]
+coregame_rmdwin10_f.dll+A9D09 - 0F29 4C 24 30         - movaps [rsp+30],xmm1
+coregame_rmdwin10_f.dll+A9D0E - 0F10 8B D0000000      - movups xmm1,[rbx+000000D0]
+coregame_rmdwin10_f.dll+A9D15 - 0F29 44 24 20         - movaps [rsp+20],xmm0
+
+// Autoadjust AR:
+coregame_rmdwin10_f.dll+AA761 - 89 99 80000000        - mov [rcx+00000080],ebx
+coregame_rmdwin10_f.dll+AA767 - 44 8B 4A 04           - mov r9d,[rdx+04]
+coregame_rmdwin10_f.dll+AA76B - 45 8B C1              - mov r8d,r9d
+coregame_rmdwin10_f.dll+AA76E - 44 89 89 84000000     - mov [rcx+00000084],r9d
+coregame_rmdwin10_f.dll+AA775 - 89 99 88000000        - mov [rcx+00000088],ebx
+coregame_rmdwin10_f.dll+AA77B - 44 89 89 8C000000     - mov [rcx+0000008C],r9d
+coregame_rmdwin10_f.dll+AA782 - 0F85 C6000000         - jne coregame_rmdwin10_f.dll+AA84E			<< Change to JMP + nop
+coregame_rmdwin10_f.dll+AA788 - 66 0F6E CB            - movd xmm1,ebx
+coregame_rmdwin10_f.dll+AA78C - 66 41 0F6E C1         - movd xmm0,r9d
+coregame_rmdwin10_f.dll+AA791 - 0F5B C0               - cvtdq2ps xmm0,xmm0
+coregame_rmdwin10_f.dll+AA794 - C7 81 28010000 FFFFFFFF - mov [rcx+00000128],FFFFFFFF { -1 }
+
+// Change render resolution
+coregame_rmdwin10_f.dll+A9CE8 - 0F10 8B B0000000      - movups xmm1,[rbx+000000B0]
+coregame_rmdwin10_f.dll+A9CEF - 41 B8 00000000        - mov r8d,00000000 { 0 }
+coregame_rmdwin10_f.dll+A9CF5 - 48 8D 54 24 20        - lea rdx,[rsp+20]
+coregame_rmdwin10_f.dll+A9CFA - F3 0F2C 47 04         - cvttss2si eax,[rdi+04]				>> New width
+coregame_rmdwin10_f.dll+A9CFF - 48 8B CB              - mov rcx,rbx
+coregame_rmdwin10_f.dll+A9D02 - 0F10 83 A0000000      - movups xmm0,[rbx+000000A0]
+coregame_rmdwin10_f.dll+A9D09 - 0F29 4C 24 30         - movaps [rsp+30],xmm1
+coregame_rmdwin10_f.dll+A9D0E - 0F10 8B D0000000      - movups xmm1,[rbx+000000D0]
+coregame_rmdwin10_f.dll+A9D15 - 0F29 44 24 20         - movaps [rsp+20],xmm0
+coregame_rmdwin10_f.dll+A9D1A - 0F10 83 C0000000      - movups xmm0,[rbx+000000C0]
+
+coregame_rmdwin10_f.dll+A9D3E - F2 0F10 8B 10010000   - movsd xmm1,[rbx+00000110]
+coregame_rmdwin10_f.dll+A9D46 - 89 44 24 7C           - mov [rsp+7C],eax
+coregame_rmdwin10_f.dll+A9D4A - F3 0F2C 47 08         - cvttss2si eax,[rdi+08]				>> New height
+coregame_rmdwin10_f.dll+A9D4F - 0F29 44 24 60         - movaps [rsp+60],xmm0				>> Write render width/height (rsp+60, rsp+64). 
+coregame_rmdwin10_f.dll+A9D54 - 0F10 83 00010000      - movups xmm0,[rbx+00000100]
+coregame_rmdwin10_f.dll+A9D5B - F2 0F11 8C 24 90000000  - movsd [rsp+00000090],xmm1
+coregame_rmdwin10_f.dll+A9D64 - 0F29 84 24 80000000   - movaps [rsp+00000080],xmm0
+coregame_rmdwin10_f.dll+A9D6C - 89 84 24 80000000     - mov [rsp+00000080],eax
+
+// End up at: 
+[coregame_rmdwin10_f.dll+85A978] -> +0x104 // Width
+[coregame_rmdwin10_f.dll+85A978] -> +0x108 // Height
+
+// HUD toggle
+Control_DX12.exe+508CFF - 48 8B C8              - mov rcx,rax
+Control_DX12.exe+508D02 - 8B D3                 - mov edx,ebx
+Control_DX12.exe+508D04 - FF 15 E6497D00        - call qword ptr [Control_DX12.exe+CDD6F0] { ->renderer_rmdwin10_f.rend::ShapeEngine::pushToRenderer }
+Control_DX12.exe+508D0A - FF C3                 - inc ebx
+Control_DX12.exe+508D0C - 48 81 C6 F0000000     - add rsi,000000F0 { 240 }
+Control_DX12.exe+508D13 - 83 FB 16              - cmp ebx,16 { 22 }
+Control_DX12.exe+508D16 - 7C D5                 - jl Control_DX12.exe+508CED
+Control_DX12.exe+508D18 - 48 8B 4F 18           - mov rcx,[rdi+18]
+Control_DX12.exe+508D1C - FF 15 DE497D00        - call qword ptr [Control_DX12.exe+CDD700] >>>>>>> NOP CALL. { ->renderer_rmdwin10_f.rend::RendererInterfaceWrapper::renderHUD }
+Control_DX12.exe+508D22 - 48 8B 4F 18           - mov rcx,[rdi+18]
+Control_DX12.exe+508D26 - FF 15 94497D00        - call qword ptr [Control_DX12.exe+CDD6C0] { ->renderer_rmdwin10_f.rend::RendererInterfaceWrapper::end }
+Control_DX12.exe+508D2C - 48 8B 0D 45547D00     - mov rcx,[Control_DX12.exe+CDE178] { (7FFE1FB05A08) }
+Control_DX12.exe+508D33 - 0FB6 54 24 20         - movzx edx,byte ptr [rsp+20]
+Control_DX12.exe+508D38 - 48 8B 09              - mov rcx,[rcx]
+Control_DX12.exe+508D3B - E8 30160000           - call Control_DX12.exe+50A370
