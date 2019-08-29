@@ -29,6 +29,36 @@ Control_DX12.exe+3277BF - 80 3D FABCE500 00     - cmp byte ptr [Control_DX12.exe
 Control_DX12.exe+3277C6 - 0F84 54010000         - je Control_DX12.exe+327920
 Control_DX12.exe+3277CC - 45 33 E4              - xor r12d,r12d
 
+// how to obtain the cameracomponentstate base address: 
+Control_DX12.exe+53804E - 0F82 C9FEFFFF         - jb Control_DX12.exe+537F1D
+Control_DX12.exe+538054 - 48 8B 44 24 50        - mov rax,[rsp+50]
+Control_DX12.exe+538059 - C6 00 00              - mov byte ptr [rax],00 { 0 }
+Control_DX12.exe+53805C - 41 BE 08000000        - mov r14d,00000008 { 8 }
+Control_DX12.exe+538062 - C7 87 90000000 00000000 - mov [rdi+00000090],00000000 { 0 }
+Control_DX12.exe+53806C - 48 63 05 A5EFC200     - movsxd  rax,dword ptr [Control_DX12.exe+1167018] << is 1 if freecam is on, see above
+Control_DX12.exe+538073 - 48 8D 35 867FACFF     - lea rsi,[Control_DX12.exe] { (9460301) }
+Control_DX12.exe+53807A - 48 8B 8C C6 28701601  - mov rcx,[rsi+rax*8+01167028]				<< hardcoded static address
+Control_DX12.exe+538082 - 45 33 C9              - xor r9d,r9d
+Control_DX12.exe+538085 - 48 85 C9              - test rcx,rcx
+Control_DX12.exe+538088 - 74 20                 - je Control_DX12.exe+5380AA
+Control_DX12.exe+53808A - 48 8D 55 C0           - lea rdx,[rbp-40]
+
+// freecam coords:
+Control_DX12.exe+308A06 - F3 0F11 BB 84000000   - movss [rbx+00000084],xmm7
+Control_DX12.exe+308A0E - F3 44 0F58 C9         - addss xmm9,xmm1
+Control_DX12.exe+308A13 - F3 44 0F11 8B 80000000  - movss [rbx+00000080],xmm9
+Control_DX12.exe+308A1C - 0F10 43 70            - movups xmm0,[rbx+70]				>> READ of freecam coords. Are writable at will. 
+Control_DX12.exe+308A20 - 0F58 C3               - addps xmm0,xmm3
+Control_DX12.exe+308A23 - 0F11 43 70            - movups [rbx+70],xmm0
+Control_DX12.exe+308A27 - 7A 24                 - jp Control_DX12.exe+308A4D
+Control_DX12.exe+308A29 - 75 22                 - jne Control_DX12.exe+308A4D
+Control_DX12.exe+308A2B - 41 0F2E D0            - ucomiss xmm2,xmm8
+Control_DX12.exe+308A2F - 7A 1C                 - jp Control_DX12.exe+308A4D
+Control_DX12.exe+308A31 - 75 1A                 - jne Control_DX12.exe+308A4D
+Control_DX12.exe+308A33 - 66 0F3A40 ED 7F       - dpps xmm5,xmm5,7F
+
+// Freecam fov is then at rbx-20. Freely writable. 
+
 // Game camera.
 // writes. Generic transform function. This function is called always. Intercept it, block writes
 // and write our own quaternion / coords data to the location in rsi, instead of the values in xmm0/xmm1.
@@ -74,12 +104,36 @@ Control_DX12.exe+1FA3CE - 48 8B 05 A367AE00     - mov rax,[Control_DX12.exe+CE0B
 Control_DX12.exe+1FA3D5 - F3 0F11 0A            - movss [rdx],xmm1
 Control_DX12.exe+1FA3D9 - 48 8B 08              - mov rcx,[rax]
 
+// or
+rl_rmdwin10_f.m::PerspectiveView::PerspectiveView+31 - E8 CA8E0500           - call rl_rmdwin10_f.m::View::View
+rl_rmdwin10_f.m::PerspectiveView::PerspectiveView+36 - 48 8D 4F 10           - lea rcx,[rdi+10]
+rl_rmdwin10_f.m::PerspectiveView::PerspectiveView+3A - 48 8D 05 7F951300     - lea rax,[rl_rmdwin10_f.m::PerspectiveView::`vftable'] { (7FFE1EC4B680) }
+rl_rmdwin10_f.m::PerspectiveView::PerspectiveView+41 - 48 89 07              - mov [rdi],rax
+rl_rmdwin10_f.m::PerspectiveView::PerspectiveView+44 - 8B 83 E0020000        - mov eax,[rbx+000002E0]  >>>>>> READ FOV
+rl_rmdwin10_f.m::PerspectiveView::PerspectiveView+4A - 89 87 E0020000        - mov [rdi+000002E0],eax
+rl_rmdwin10_f.m::PerspectiveView::PerspectiveView+50 - 8B 83 E4020000        - mov eax,[rbx+000002E4]
+rl_rmdwin10_f.m::PerspectiveView::PerspectiveView+56 - 89 87 E4020000        - mov [rdi+000002E4],eax
+rl_rmdwin10_f.m::PerspectiveView::PerspectiveView+5C - 8B 83 E8020000        - mov eax,[rbx+000002E8]
+rl_rmdwin10_f.m::PerspectiveView::PerspectiveView+62 - 89 87 E8020000        - mov [rdi+000002E8],eax
+rl_rmdwin10_f.m::PerspectiveView::PerspectiveView+68 - 8B 83 EC020000        - mov eax,[rbx+000002EC]
+rl_rmdwin10_f.m::PerspectiveView::PerspectiveView+6E - 89 87 EC020000        - mov [rdi+000002EC],eax
+
 // Pause
 // this object is needed, the gameSession:
 // coregame_rmdwin10_f.coregame::GameClientBase::getGameSession
 coregame_rmdwin10_f.dll+135600 - 48 8B 81 B0010000     - mov rax,[rcx+000001B0]	 >> read the game session, which is what we need to pass to the pause function
 coregame_rmdwin10_f.dll+135607 - C3                    - ret 
 coregame_rmdwin10_f.dll+135608 - CC                    - int 3 
+
+// pass in gameclientbase address, obtained via:
+Control_DX12.exe+5EC58D - 48 8B 05 7C4AB200     - mov rax,[Control_DX12.exe+1111010] { (1373655760) }
+Control_DX12.exe+5EC594 - 48 33 C4              - xor rax,rsp
+Control_DX12.exe+5EC597 - 48 89 85 60040000     - mov [rbp+00000460],rax
+Control_DX12.exe+5EC59E - 4C 8B E9              - mov r13,rcx
+Control_DX12.exe+5EC5A1 - 33 F6                 - xor esi,esi
+Control_DX12.exe+5EC5A3 - 8B FE                 - mov edi,esi
+Control_DX12.exe+5EC5A5 - 48 8B 05 1CAAB700     - mov rax,[Control_DX12.exe+1166FC8] { (56D31EE2E0) } >>> 
+Control_DX12.exe+5EC5AC - 48 8B 48 30           - mov rcx,[rax+30]									  >>> gameclientbase 
 
 // Pause function
 // coregame_rmdwin10_f.coregame::ClientGameSessionRPCBase::pauseGameStubInvoker(gameSession*)
@@ -159,7 +213,7 @@ coregame_rmdwin10_f.dll+A9D1A - 0F10 83 C0000000      - movups xmm0,[rbx+000000C
 coregame_rmdwin10_f.dll+A9D3E - F2 0F10 8B 10010000   - movsd xmm1,[rbx+00000110]
 coregame_rmdwin10_f.dll+A9D46 - 89 44 24 7C           - mov [rsp+7C],eax
 coregame_rmdwin10_f.dll+A9D4A - F3 0F2C 47 08         - cvttss2si eax,[rdi+08]				>> New height
-coregame_rmdwin10_f.dll+A9D4F - 0F29 44 24 60         - movaps [rsp+60],xmm0				>> Write render width/height (rsp+60, rsp+64). 
+coregame_rmdwin10_f.dll+A9D4F - 0F29 44 24 60         - movaps [rsp+60],xmm0				>> Write render width/height (rsp+60, rsp+64). << NOT CORRECT!
 coregame_rmdwin10_f.dll+A9D54 - 0F10 83 00010000      - movups xmm0,[rbx+00000100]
 coregame_rmdwin10_f.dll+A9D5B - F2 0F11 8C 24 90000000  - movsd [rsp+00000090],xmm1
 coregame_rmdwin10_f.dll+A9D64 - 0F29 84 24 80000000   - movaps [rsp+00000080],xmm0
@@ -185,3 +239,55 @@ Control_DX12.exe+508D2C - 48 8B 0D 45547D00     - mov rcx,[Control_DX12.exe+CDE1
 Control_DX12.exe+508D33 - 0FB6 54 24 20         - movzx edx,byte ptr [rsp+20]
 Control_DX12.exe+508D38 - 48 8B 09              - mov rcx,[rcx]
 Control_DX12.exe+508D3B - E8 30160000           - call Control_DX12.exe+50A370
+
+Better:
+CoherentGTCore.WebCore::GraphicsLayer::setOpacity:
+xorps the value in xmm1 and then do the regular instruction:   movss [rcx+00000168],xmm1
+this will reset the opacity for all elements. 
+Only problem: it runs only when the layer changes, so menu on/off. A way to trigger it is needed. 
+
+// Alternative timestop
+// Pausing r::Timer. 
+Control_DX12.exe+30C838 - FF 15 1A2D9D00        - call qword ptr [Control_DX12.exe+CDF558] { ->rl_rmdwin10_f.r::ScratchPad::garbageCollection }
+Control_DX12.exe+30C83E - FF 15 1C2D9D00        - call qword ptr [Control_DX12.exe+CDF560] { ->rl_rmdwin10_f.r::ScratchPad::freeAll }
+Control_DX12.exe+30C844 - BA 02000000           - mov edx,00000002 { 2 }
+Control_DX12.exe+30C849 - 48 8B 0D 38A8E500     - mov rcx,[Control_DX12.exe+1167088]          <<<<<<< Read r::Timer global instance. 
+Control_DX12.exe+30C850 - E8 DBB50900           - call Control_DX12.exe+3A7E30
+Control_DX12.exe+30C855 - BA 01000000           - mov edx,00000001 { 1 }
+Control_DX12.exe+30C85A - 48 8B 0D 27A8E500     - mov rcx,[Control_DX12.exe+1167088] { (247C8D659D0) }
+Control_DX12.exe+30C861 - E8 CAB50900           - call Control_DX12.exe+3A7E30
+Control_DX12.exe+30C866 - 48 8B 05 73449D00     - mov rax,[Control_DX12.exe+CE0CE0] { (7FFE1EEC5388) }
+Control_DX12.exe+30C86D - 48 8B 08              - mov rcx,[rax]
+Control_DX12.exe+30C870 - F3 0F10 71 10         - movss xmm6,[rcx+10]
+Control_DX12.exe+30C875 - 0F5A F6               - vcvtps2pd xmm6,xmm6
+
+Control_DX12.exe+3A7E68 - 4C 89 68 D0           - mov [rax-30],r13
+Control_DX12.exe+3A7E6C - FF 15 C6729300        - call qword ptr [Control_DX12.exe+CDF138] { ->rl_rmdwin10_f.r::Timer::getAppAge }
+Control_DX12.exe+3A7E72 - 44 0F28 D0            - movaps xmm10,xmm0
+Control_DX12.exe+3A7E76 - 83 FE 01              - cmp esi,01 { 1 }
+Control_DX12.exe+3A7E79 - 75 19                 - jne Control_DX12.exe+3A7E94
+Control_DX12.exe+3A7E7B - 0FB6 53 39            - movzx edx,byte ptr [rbx+39]					<< Timer enable byte read. 
+Control_DX12.exe+3A7E7F - 38 53 38              - cmp [rbx+38],dl
+Control_DX12.exe+3A7E82 - 74 10                 - je Control_DX12.exe+3A7E94
+Control_DX12.exe+3A7E84 - 48 8B 0D F5F1DB00     - mov rcx,[Control_DX12.exe+1167080] { (247C618A750) }
+Control_DX12.exe+3A7E8B - 44 8D 46 7F           - lea r8d,[rsi+7F]
+Control_DX12.exe+3A7E8F - E8 6CCDFFFF           - call Control_DX12.exe+3A4C00
+Control_DX12.exe+3A7E94 - 83 FE 01              - cmp esi,01 { 1 }
+Control_DX12.exe+3A7E97 - 4C 89 BC 24 80000000  - mov [rsp+00000080],r15
+Control_DX12.exe+3A7E9F - B8 68000000           - mov eax,00000068 { 104 }						<< 68 ofset
+Control_DX12.exe+3A7EA4 - 41 BC 38000000        - mov r12d,00000038 { 56 }
+Control_DX12.exe+3A7EAA - 44 0F45 E0            - cmovne r12d,eax
+Control_DX12.exe+3A7EAE - B9 69000000           - mov ecx,00000069 { 105 }						<< 69 offset
+Control_DX12.exe+3A7EB3 - B8 39000000           - mov eax,00000039 { 57 }
+Control_DX12.exe+3A7EB8 - 41 BE 10000000        - mov r14d,00000010 { 16 }
+Control_DX12.exe+3A7EBE - 0F45 C1               - cmovne eax,ecx
+Control_DX12.exe+3A7EC1 - 41 8B FE              - mov edi,r14d
+Control_DX12.exe+3A7EC4 - 41 BD 40000000        - mov r13d,00000040 { 64 }
+Control_DX12.exe+3A7ECA - 41 0F45 FD            - cmovne edi,r13d
+Control_DX12.exe+3A7ECE - 0FB6 04 18            - movzx eax,byte ptr [rax+rbx]
+Control_DX12.exe+3A7ED2 - 41 88 04 1C           - mov [r12+rbx],al
+Control_DX12.exe+3A7ED6 - F3 0F10 43 04         - movss xmm0,[rbx+04]
+Control_DX12.exe+3A7EDB - 0F5A C0               - vcvtps2pd xmm0,xmm0
+
+// to enable timestop: set offset 39 and 69 to 1
+// to disable timestop: set 38-3b and 68-6b to 0
