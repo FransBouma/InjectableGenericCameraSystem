@@ -59,6 +59,7 @@ Control_DX12.exe+308A31 - 75 1A                 - jne Control_DX12.exe+308A4D
 Control_DX12.exe+308A33 - 66 0F3A40 ED 7F       - dpps xmm5,xmm5,7F
 
 // Freecam fov is then at rbx-20. Freely writable. 
+// Rotation speed is at offset 8C (float)
 
 // Game camera.
 // writes. Generic transform function. This function is called always. Intercept it, block writes
