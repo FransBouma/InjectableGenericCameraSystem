@@ -14,8 +14,9 @@ input_rmdwin10_f.dll+8856 - C3                    - ret
 input_rmdwin10_f.dll+8857 - CC                    - int 3 
 
 // enable free camera in main game:
+// Search for 'Free camera' in string references. 
 Control_DX12.exe+32777C - FF 15 6E599B00        - call qword ptr [Control_DX12.exe+CDD0F0] { ->physics_rmdwin10_f.physics::updateApexCamera }
-Control_DX12.exe+327782 - 48 63 0D 8FF8E300     - movsxd  rcx,dword ptr [Control_DX12.exe+1167018]		>>> Address for free camera: set to 1 to enable.
+Control_DX12.exe+327782 - 48 63 0D 8FF8E300     - movsxd  rcx,dword ptr [Control_DX12.exe+1167018]		>>> Address for free camera: set to 1 to enable. DX11: 1166F18
 Control_DX12.exe+327789 - 48 8D 15 3089A200     - lea rdx,[Control_DX12.exe+D500C0] { ("Current camera") }
 Control_DX12.exe+327790 - 48 8B 0C CF           - mov rcx,[rdi+rcx*8]
 Control_DX12.exe+327794 - E8 370D0000           - call Control_DX12.exe+3284D0
@@ -37,7 +38,7 @@ Control_DX12.exe+53805C - 41 BE 08000000        - mov r14d,00000008 { 8 }
 Control_DX12.exe+538062 - C7 87 90000000 00000000 - mov [rdi+00000090],00000000 { 0 }
 Control_DX12.exe+53806C - 48 63 05 A5EFC200     - movsxd  rax,dword ptr [Control_DX12.exe+1167018] << is 1 if freecam is on, see above
 Control_DX12.exe+538073 - 48 8D 35 867FACFF     - lea rsi,[Control_DX12.exe] { (9460301) }
-Control_DX12.exe+53807A - 48 8B 8C C6 28701601  - mov rcx,[rsi+rax*8+01167028]				<< hardcoded static address
+Control_DX12.exe+53807A - 48 8B 8C C6 28701601  - mov rcx,[rsi+rax*8+01167028]				<< hardcoded static address. DX11: Control_DX11.exe+53803A - 48 8B 8C C6 286F1601  - mov rcx,[rsi+rax*8+01166F28]
 Control_DX12.exe+538082 - 45 33 C9              - xor r9d,r9d
 Control_DX12.exe+538085 - 48 85 C9              - test rcx,rcx
 Control_DX12.exe+538088 - 74 20                 - je Control_DX12.exe+5380AA
@@ -246,12 +247,19 @@ xorps the value in xmm1 and then do the regular instruction:   movss [rcx+000001
 this will reset the opacity for all elements. 
 Only problem: it runs only when the layer changes, so menu on/off. A way to trigger it is needed. 
 
+// Alternative:
+rend::RenderOptions::PaintUI:
+    db 0
+
+This has the downside that it isn't picked up immediately, you have to enable/disable the menu again.
+
+
 // Alternative timestop
 // Pausing r::Timer. 
 Control_DX12.exe+30C838 - FF 15 1A2D9D00        - call qword ptr [Control_DX12.exe+CDF558] { ->rl_rmdwin10_f.r::ScratchPad::garbageCollection }
 Control_DX12.exe+30C83E - FF 15 1C2D9D00        - call qword ptr [Control_DX12.exe+CDF560] { ->rl_rmdwin10_f.r::ScratchPad::freeAll }
 Control_DX12.exe+30C844 - BA 02000000           - mov edx,00000002 { 2 }
-Control_DX12.exe+30C849 - 48 8B 0D 38A8E500     - mov rcx,[Control_DX12.exe+1167088]          <<<<<<< Read r::Timer global instance. 
+Control_DX12.exe+30C849 - 48 8B 0D 38A8E500     - mov rcx,[Control_DX12.exe+1167088]          <<<<<<< Read r::Timer global instance. DX11: same location, offset is 1166F88
 Control_DX12.exe+30C850 - E8 DBB50900           - call Control_DX12.exe+3A7E30
 Control_DX12.exe+30C855 - BA 01000000           - mov edx,00000001 { 1 }
 Control_DX12.exe+30C85A - 48 8B 0D 27A8E500     - mov rcx,[Control_DX12.exe+1167088] { (247C8D659D0) }
@@ -291,3 +299,27 @@ Control_DX12.exe+3A7EDB - 0F5A C0               - vcvtps2pd xmm0,xmm0
 
 // to enable timestop: set offset 39 and 69 to 1
 // to disable timestop: set 38-3b and 68-6b to 0
+
+// Noteworthy Renderoptions:
+rend::RenderOptions::RenderBloom     (bool)  -> setting to 0 switches off Bloom
+rend::RenderOptions::RenderDepthOfField (bool)
+rend::RenderOptions::RenderVectorBlur   (bool)  -> setting to 0 switches off motion blur
+rend::RenderOptions::ScreenSpaceAntialiasing (bool) -> 0 -> no AA
+
+// Don't pause when focus loss
+coregame_rmdwin10_f.dll+A9A9A - 57                    - push rdi
+coregame_rmdwin10_f.dll+A9A9B - 48 83 EC 40           - sub rsp,40 { 64 }
+coregame_rmdwin10_f.dll+A9A9F - 44 0FB6 42 04         - movzx r8d,byte ptr [rdx+04]
+coregame_rmdwin10_f.dll+A9AA4 - 48 8B D9              - mov rbx,rcx
+coregame_rmdwin10_f.dll+A9AA7 - 48 8B 05 222B4E00     - mov rax,[coregame_rmdwin10_f.dll+58C5D0] { (7FFBD0045790) }
+coregame_rmdwin10_f.dll+A9AAE - 44 88 81 9B000000     - mov [rcx+0000009B],r8l					<< Always write 1 here.
+coregame_rmdwin10_f.dll+A9AB5 - 48 8B 10              - mov rdx,[rax]
+coregame_rmdwin10_f.dll+A9AB8 - 44 88 42 39           - mov [rdx+39],r8l
+coregame_rmdwin10_f.dll+A9ABC - 48 8B 49 70           - mov rcx,[rcx+70]
+coregame_rmdwin10_f.dll+A9AC0 - 48 8B 01              - mov rax,[rcx]
+coregame_rmdwin10_f.dll+A9AC3 - FF 90 88000000        - call qword ptr [rax+00000088]
+coregame_rmdwin10_f.dll+A9AC9 - 0FB6 8B 9B000000      - movzx ecx,byte ptr [rbx+0000009B]
+
+
+
+
