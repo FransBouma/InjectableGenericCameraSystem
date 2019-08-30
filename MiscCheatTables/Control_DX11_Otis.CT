@@ -4,7 +4,7 @@
     <CheatEntry>
       <ID>11</ID>
       <Description>"Enable Hotsampling support (Windowed mode). Leave enabled"</Description>
-      <LastState/>
+      <LastState Activated="1"/>
       <VariableType>Auto Assembler Script</VariableType>
       <AssemblerScript>// By Otis_Inf and Hattiwatti
 // See for info about locations/data:
@@ -86,7 +86,7 @@ dealloc(newmem)
     <CheatEntry>
       <ID>6</ID>
       <Description>"Toggle pause (NUMPAD 0)"</Description>
-      <LastState/>
+      <LastState Activated="1"/>
       <VariableType>Auto Assembler Script</VariableType>
       <AssemblerScript>// By Otis_Inf and Hattiwatti
 // See for info about locations/data:
@@ -152,11 +152,20 @@ CoherentGTCore.WebCore::GraphicsLayer::setOpacity:
   ret
 
 </AssemblerScript>
+      <Hotkeys>
+        <Hotkey>
+          <Action>Toggle Activation</Action>
+          <Keys>
+            <Key>46</Key>
+          </Keys>
+          <ID>0</ID>
+        </Hotkey>
+      </Hotkeys>
     </CheatEntry>
     <CheatEntry>
       <ID>5</ID>
       <Description>"Toggle debug camera (INS)"</Description>
-      <LastState/>
+      <LastState Activated="1"/>
       <VariableType>Auto Assembler Script</VariableType>
       <AssemblerScript>// By Otis_Inf and Hattiwatti
 // See for info about locations/data:
@@ -291,6 +300,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>24</ID>
           <Description>"Freecam FoV (NUMPAD-/+ Speed: +CTRL. Reset: CRTL-ALT-NUMPAD)"</Description>
+          <LastState Value="1.134464025" RealAddress="2E06BBB0750"/>
           <VariableType>Float</VariableType>
           <Address>freeCameraStructAddress</Address>
           <Offsets>
@@ -346,6 +356,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>41</ID>
           <Description>"Rotation speed (F9: 0.04, for mouse. CTRL-F9: 0.7, for controller)"</Description>
+          <LastState Value="1" RealAddress="2E06BBB07FC"/>
           <VariableType>Float</VariableType>
           <Address>freeCameraStructAddress</Address>
           <Offsets>
@@ -495,6 +506,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>36</ID>
           <Description>"Depth of Field (F3: Off, CTRL-F3: On)"</Description>
+          <LastState Value="1" RealAddress="7FFB7A6CC13C"/>
           <VariableType>Byte</VariableType>
           <Address>rend::RenderOptions::RenderDepthOfField</Address>
           <Hotkeys>
@@ -520,6 +532,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>37</ID>
           <Description>"Motion Blur (F4: Off, CTRL-F4: On)"</Description>
+          <LastState Value="1" RealAddress="7FFB7A6CC13D"/>
           <VariableType>Byte</VariableType>
           <Address>rend::RenderOptions::RenderVectorBlur</Address>
           <Hotkeys>
@@ -545,6 +558,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>35</ID>
           <Description>"Bloom (F5: Off, CTRL-F5: On)"</Description>
+          <LastState Value="1" RealAddress="7FFB7A6CC17B"/>
           <VariableType>Byte</VariableType>
           <Address>rend::RenderOptions::RenderBloom</Address>
           <Hotkeys>
@@ -570,6 +584,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>38</ID>
           <Description>"Screenspace AA (F6: Off, CTRL-F6: On)"</Description>
+          <LastState Value="1" RealAddress="7FFB7A6CC14E"/>
           <VariableType>Byte</VariableType>
           <Address>rend::RenderOptions::ScreenSpaceAntialiasing</Address>
           <Hotkeys>
@@ -595,6 +610,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>42</ID>
           <Description>"Object highlights (F7: Off, CTRL-F7: On)"</Description>
+          <LastState Value="1" RealAddress="7FFB7A6CC13F"/>
           <VariableType>Byte</VariableType>
           <Address>rend::RenderOptions::RenderObjectHighlight</Address>
           <Hotkeys>
