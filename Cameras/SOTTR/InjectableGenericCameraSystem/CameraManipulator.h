@@ -41,6 +41,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 	DirectX::XMFLOAT3 getCurrentCameraCoords();
 	void resetFoV();
 	void changeFoV(float amount);
+	float getCurrentFoV();
 	bool isCameraFound();
 	void displayCameraStructAddress();
 	void getSettingsFromGameState();

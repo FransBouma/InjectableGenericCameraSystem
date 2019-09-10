@@ -108,6 +108,17 @@ namespace IGCS::GameSpecific::CameraManipulator
 		}
 		*fovAddress = newValue;
 	}
+
+
+	float getCurrentFoV()
+	{
+		if (nullptr == g_cameraStructAddress)
+		{
+			return 1.2f;
+		}
+		float* fovAddress = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_STRUCT_OFFSET);
+		return *fovAddress;
+	}
 	
 
 	XMFLOAT3 getCurrentCameraCoords()

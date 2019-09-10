@@ -52,7 +52,7 @@ namespace IGCS
 
 		void configure(std::string rootFolder, int numberOfFramesToWaitBetweenSteps, float movementSpeed, float rotationSpeed);
 		void startSingleShot();
-		void startHorizontalPanoramaShot(Camera camera, float totalFoVInDegrees, int amountOfShots, float currentFoVInDegrees);
+		void startHorizontalPanoramaShot(Camera camera, float totalFoVInDegrees, float overlapPercentagePerPanoShot, float currentFoVInDegrees, bool isTestRun);
 		void startLightfieldShot(Camera camera, float distancePerStep, int amountOfShots, bool isTestRun);
 		void storeGrabbedShot(std::vector<uint8_t>);
 		void setBufferSize(int width, int height);
@@ -72,8 +72,10 @@ namespace IGCS
 		float _totalFoVInDegrees = 0.0f;
 		float _currentFoVInDegrees = 0.0f;
 		float _distancePerStep = 0.0f;
+		float _anglePerStep = 0.0f;
 		float _movementSpeed = 0.0f;
 		float _rotationSpeed = 0.0f;
+		float _overlapPercentagePerPanoShot = 30.0f;
 		int _amountOfShotsToTake = 0;
 		int _amountOfColumns = 0;
 		int _amountOfRows = 0;

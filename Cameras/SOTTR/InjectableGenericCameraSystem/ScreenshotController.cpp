@@ -108,14 +108,21 @@ namespace IGCS
 		// done
 	}
 
-	void ScreenshotController::startHorizontalPanoramaShot(Camera camera, float totalFoVInDegrees, int amountOfShots, float currentFoVInDegrees)
+	void ScreenshotController::startHorizontalPanoramaShot(Camera camera, float totalFoVInDegrees, float overlapPercentagePerPanoShot, float currentFoVInDegrees, bool isTestRun)
 	{
 		reset();
 		_camera = camera;
 		_totalFoVInDegrees = totalFoVInDegrees;
-		_amountOfShotsToTake = amountOfShots;
+		_overlapPercentagePerPanoShot = overlapPercentagePerPanoShot;
 		_currentFoVInDegrees = currentFoVInDegrees;
 		_typeOfShot = ScreenshotType::HorizontalPanorama;
+		_isTestRun = isTestRun;
+
+		// calculate the angle to step
+		// calculate the # of shots to take
+		// move to start
+
+		// switch state and wait.
 	}
 
 
@@ -284,11 +291,13 @@ namespace IGCS
 		_totalFoVInDegrees = 0.0f;
 		_currentFoVInDegrees = 0.0f;
 		_distancePerStep = 0.0f;
+		_anglePerStep = 0.0f;
 		_amountOfShotsToTake = 0;
 		_amountOfColumns = 0;
 		_amountOfRows = 0;
 		_convolutionFrameCounter = 0;
 		_shotCounter = 0;
+		_overlapPercentagePerPanoShot = 30.0f;
 		_isTestRun = false;
 
 		_grabbedFrames.clear();
