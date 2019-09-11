@@ -122,7 +122,7 @@ namespace IGCS
 		// on either side is preferable.
 		
 		// calculate the angle to step
-		_anglePerStep = currentFoV * (overlapPercentagePerPanoShot / 100.0f);
+		_anglePerStep = currentFoV * ((100.0f - overlapPercentagePerPanoShot) / 100.0f);
 		// calculate the # of shots to take
 		_amountOfShotsToTake = ((_totalFoV / _anglePerStep) + 1);
 

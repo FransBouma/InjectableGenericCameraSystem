@@ -29,6 +29,8 @@ namespace IGCS
 		float distanceBetweenLightfieldShots;
 		int numberOfShotsToTake;
 		int typeOfScreenshot;
+		float totalPanoAngleDegrees;
+		float overlapPercentagePerPanoShot;
 		char screenshotFolder[_MAX_PATH+1] = { 0 };
 
 		// settings not persisted to config file.
@@ -62,6 +64,8 @@ namespace IGCS
 			distanceBetweenLightfieldShots = Utils::clamp(iniFile.GetFloat("distanceBetweenLightfieldShots", "ScreenshotSettings"), 0.0f, 100.0f);
 			numberOfShotsToTake = Utils::clamp(iniFile.GetInt("numberOfShotsToTake", "ScreenshotSettings"), 0, 45);
 			typeOfScreenshot = Utils::clamp(iniFile.GetInt("typeOfScreenshot", "ScreenshotSettings"), 0, ((int)ScreenshotType::Amount)-1);
+			totalPanoAngleDegrees = Utils::clamp(iniFile.GetFloat("totalPanoAngleDegrees", "ScreenshotSettings"), 30.0f, 360.0f, 110.0f);
+			overlapPercentagePerPanoShot = Utils::clamp(iniFile.GetFloat("overlapPercentagePerPanoShot", "ScreenshotSettings"), 0.1f, 99.0f, 80.0f);
 			std::string folder = iniFile.GetValue("screenshotFolder", "ScreenshotSettings");
 			folder.copy(screenshotFolder, folder.length());
 			screenshotFolder[folder.length()] = '\0';
@@ -98,6 +102,8 @@ namespace IGCS
 			iniFile.SetFloat("distanceBetweenLightfieldShots", distanceBetweenLightfieldShots, "", "ScreenshotSettings");
 			iniFile.SetInt("numberOfShotsToTake", numberOfShotsToTake, "", "ScreenshotSettings");
 			iniFile.SetInt("typeOfScreenshot", typeOfScreenshot, "", "ScreenshotSettings");
+			iniFile.SetFloat("totalPanoAngleDegrees", totalPanoAngleDegrees, "", "ScreenshotSettings");
+			iniFile.SetFloat("overlapPercentagePerPanoShot", overlapPercentagePerPanoShot, "", "ScreenshotSettings");
 			iniFile.SetValue("screenshotFolder", screenshotFolder, "", "ScreenshotSettings");
 
 			// save keybindings
@@ -134,6 +140,8 @@ namespace IGCS
 			distanceBetweenLightfieldShots = 1.0f;
 			numberOfShotsToTake= 45;
 			typeOfScreenshot = (int)ScreenshotType::Lightfield;
+			totalPanoAngleDegrees = 110.0f;
+			overlapPercentagePerPanoShot = 80.0f;
 			strcpy(screenshotFolder, "c:\\");
 
 			if (!persistedOnly)

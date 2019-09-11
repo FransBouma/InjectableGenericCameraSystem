@@ -108,14 +108,37 @@ namespace IGCS
 		// done
 	}
 
-	void ScreenshotController::startHorizontalPanoramaShot(Camera camera, float totalFoVInDegrees, int amountOfShots, float currentFoVInDegrees)
+	void ScreenshotController::startHorizontalPanoramaShot(Camera camera, float totalFoV, float overlapPercentagePerPanoShot, float currentFoV, bool isTestRun)
 	{
 		reset();
 		_camera = camera;
-		_totalFoVInDegrees = totalFoVInDegrees;
-		_amountOfShotsToTake = amountOfShots;
-		_currentFoVInDegrees = currentFoVInDegrees;
+		_totalFoV = totalFoV;
+		_overlapPercentagePerPanoShot = overlapPercentagePerPanoShot;
+		_currentFoV = currentFoV;
 		_typeOfShot = ScreenshotType::HorizontalPanorama;
+		_isTestRun = isTestRun;
+		// panos are rotated from the far left to the far right of the total fov, where at the start, the center of the screen is rotated to the far left of the total fov, 
+		// till the center of the screen hits the far right of the total fov. This is done because panorama stitching can often lead to corners not being used, so an overlap
+		// on either side is preferable.
+
+		// calculate the angle to step
+		_anglePerStep = currentFoV * ((100.0f-overlapPercentagePerPanoShot) / 100.0f);
+		// calculate the # of shots to take
+		_amountOfShotsToTake = ((_totalFoV / _anglePerStep) + 1);
+
+		// move to start
+		moveCameraForPanorama(-1, true);
+
+		// set convolution counter to its initial value
+		_convolutionFrameCounter = _numberOfFramesToWaitBetweenSteps;
+		_state = ScreenshotControllerState::Grabbing;
+		// we'll wait now till all the shots are taken. 
+		waitForShots();
+		OverlayControl::addNotification("All Panorama shots have been taken. Writing shots to disk...");
+		saveGrabbedShots();
+		OverlayControl::addNotification("Panorama done.");
+		// done
+
 	}
 
 
@@ -135,7 +158,7 @@ namespace IGCS
 		_state = ScreenshotControllerState::Grabbing;
 		// we'll wait now till all the shots are taken. 
 		waitForShots();
-		OverlayControl::addNotification("All Lightfield shots taken. Writing shots to disk...");
+		OverlayControl::addNotification("All Lightfield have been shots taken. Writing shots to disk...");
 		saveGrabbedShots();
 		OverlayControl::addNotification("Lightfield done.");
 		// done
@@ -249,7 +272,7 @@ namespace IGCS
 		switch (_typeOfShot)
 		{
 		case ScreenshotType::HorizontalPanorama:
-			// TODO: IMPLEMENT
+			moveCameraForPanorama(1, false);
 			break;
 		case ScreenshotType::Lightfield:
 			moveCameraForLightfield(1, false);
@@ -275,20 +298,36 @@ namespace IGCS
 	}
 
 
+	void ScreenshotController::moveCameraForPanorama(int direction, bool end)
+	{
+		_camera.resetMovement();
+		float dist = direction * _anglePerStep;
+		if (end)
+		{
+			dist *= 0.5f * _amountOfShotsToTake;
+		}
+		float stepSize = dist / _rotationSpeed; // scale to be independent of camera rotation speed
+		_camera.yaw(stepSize);
+		GameSpecific::CameraManipulator::updateCameraDataInGameData(_camera);
+	}
+
+
 	void ScreenshotController::reset()
 	{
 		// don't reset framebuffer width/height, numberOfFramesToWaitBetweenSteps, movementSpeed, 
 		// rotationSpeed, rootFolder as those are set through configure!
 		_typeOfShot = ScreenshotType::Lightfield;
 		_state = ScreenshotControllerState::Off;
-		_totalFoVInDegrees = 0.0f;
-		_currentFoVInDegrees = 0.0f;
+		_totalFoV = 0.0f;
+		_currentFoV = 0.0f;
 		_distancePerStep = 0.0f;
+		_anglePerStep = 0.0f;
 		_amountOfShotsToTake = 0;
 		_amountOfColumns = 0;
 		_amountOfRows = 0;
 		_convolutionFrameCounter = 0;
 		_shotCounter = 0;
+		_overlapPercentagePerPanoShot = 30.0f;
 		_isTestRun = false;
 
 		_grabbedFrames.clear();

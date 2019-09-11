@@ -322,11 +322,21 @@ Special thanks to:
 		if (ImGui::CollapsingHeader("Screenshot options", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			bool screenshotSettingsChanged = false;
-			screenshotSettingsChanged |= ImGui::SliderFloat("Distance between Lightfield shots", &currentSettings.distanceBetweenLightfieldShots, 0.0f, 5.0f, "%.3f");
-			screenshotSettingsChanged |= ImGui::SliderInt("Number of shots to take", &currentSettings.numberOfShotsToTake, 0, 60);
+			screenshotSettingsChanged |= ImGui::InputText("Screenshot output directory", currentSettings.screenshotFolder, 256);
 			screenshotSettingsChanged |= ImGui::SliderInt("Number of frames to wait between steps", &currentSettings.numberOfFramesToWaitBetweenSteps, 1, 100);
 			screenshotSettingsChanged |= ImGui::Combo("Multi-screenshot type", &currentSettings.typeOfScreenshot, "HorizontalPanorama\0Lightfield\0\0");
-			screenshotSettingsChanged |= ImGui::InputText("Screenshot output directory", currentSettings.screenshotFolder, 256);
+			switch (currentSettings.typeOfScreenshot)
+			{
+				case (int)ScreenshotType::HorizontalPanorama:
+					screenshotSettingsChanged |= ImGui::SliderFloat("Total field of view in panorama (in degrees)", &currentSettings.totalPanoAngleDegrees, 30.0f, 360.0f, "%.1f");
+					screenshotSettingsChanged |= ImGui::SliderFloat("Percentage of overlap between shots", &currentSettings.overlapPercentagePerPanoShot, 0.1f, 99.0f, "%.1f");
+					break;
+				case (int)ScreenshotType::Lightfield:
+					screenshotSettingsChanged |= ImGui::SliderFloat("Distance between Lightfield shots", &currentSettings.distanceBetweenLightfieldShots, 0.0f, 5.0f, "%.3f");
+					screenshotSettingsChanged |= ImGui::SliderInt("Number of shots to take", &currentSettings.numberOfShotsToTake, 0, 60);
+					break;
+					// others: ignore.
+			}
 			if (screenshotSettingsChanged)
 			{
 				Globals::instance().reinitializeScreenshotController();
