@@ -67,10 +67,11 @@ namespace IGCS
 		void saveShotToFile(std::string destinationFolder, std::vector<uint8_t> data, int frameNumber);
 		std::string createScreenshotFolder();
 		void moveCameraForLightfield(int direction, bool end);
+		void moveCameraForPanorama(int direction, bool end);
 		void modifyCamera();
 
-		float _totalFoVInDegrees = 0.0f;
-		float _currentFoVInDegrees = 0.0f;
+		float _totalFoV = 0.0f;
+		float _currentFoV = 0.0f;
 		float _distancePerStep = 0.0f;
 		float _anglePerStep = 0.0f;
 		float _movementSpeed = 0.0f;

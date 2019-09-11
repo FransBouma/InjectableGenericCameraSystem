@@ -398,6 +398,9 @@ namespace IGCS
 
 	void System::takeMultiShot(bool isTestRun)
 	{
+#ifdef _DX12_
+		Console::WriteError("Taking multi-screenshots isn't supported in the DX12 version of these tools.");
+#else
 		// first cache the camera state
 		GameSpecific::CameraManipulator::cacheOriginalValuesBeforeMultiShot();
 
@@ -406,18 +409,32 @@ namespace IGCS
 		switch (static_cast<ScreenshotType>(settings.typeOfScreenshot))
 		{
 			case ScreenshotType::HorizontalPanorama:
-				// get the current fov, and convert it to degrees. 
-				float currentFoVInDegrees = CameraManipulator::getCurrentFoV() * (180.0f / DirectX::XM_PI);
-				// take the shots
-				Globals::instance().getScreenshotController().startHorizontalPanoramaShot(_camera, settings.totalPanoAngleDegrees, settings.overlapPercentagePerPanoShot,
-																						  currentFoVInDegrees, isTestRun);
-					break;
+				{
+					// The total fov of the pano is always given in degrees. So we have to calculate that back to radians for usage with our camera.
+					float totalPanoAngleInDegrees = Utils::clamp(settings.totalPanoAngleDegrees, 30.0f, 360.0f, 110.0f);
+					float totalPanoAngleInRadians = (totalPanoAngleInDegrees / 180.0f) * DirectX::XM_PI;
+					float currentFoVInRadians = Utils::clamp(CameraManipulator::getCurrentFoV(), 0.01f, 3.1f, 1.34f);		// clamp it to max 180degrees. 
+					// if total fov is < than current fov, why bother with a pano?
+					if (currentFoVInRadians > 0.0f && currentFoVInRadians < totalPanoAngleInRadians)
+					{
+						// take the shots
+						Globals::instance().getScreenshotController().startHorizontalPanoramaShot(_camera, totalPanoAngleInRadians,
+																									Utils::clamp(settings.overlapPercentagePerPanoShot, 0.1f, 99.0f, 70.0f),
+																									currentFoVInRadians, isTestRun);
+					}
+					else
+					{
+						OverlayControl::addNotification("The total panorama angle is smaller than the current field of view, so just take a single screenshot instead.");
+					}
+				}
+				break;
 			case ScreenshotType::Lightfield:
 				Globals::instance().getScreenshotController().startLightfieldShot(_camera, settings.distanceBetweenLightfieldShots, settings.numberOfShotsToTake, isTestRun);
 				break;
 		}
 		// restore camera state
 		GameSpecific::CameraManipulator::restoreOriginalValuesAfterMultiShot();
+#endif
 	}
 
 
