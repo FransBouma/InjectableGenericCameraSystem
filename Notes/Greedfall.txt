@@ -1,0 +1,268 @@
+Greedfall
+==============
+HUD toggle is done via 3dmigoto
+
+Camera:
+// Central camera 4x4 matrix to which matrices are copied to, so for cutscenes different code copies a matrix to this
+// location than gameplay.
+// Camera struct: 
+// First row matrix: 0xB0
+// Coords          : 0xE0
+// FoV             : 0x1F0
+
+// Camera intercept:
+// Is also a write blocker for the coords
+Engine.dll+365363 - 74 2D                 - je Engine.dll+365392
+Engine.dll+365365 - 48 8B CF              - mov rcx,rdi
+Engine.dll+365368 - E8 A903CCFF           - call Engine.Spider::danAnimationManager::findAnimationSet+C3
+Engine.dll+36536D - 4C 8D 87 F0000000     - lea r8,[rdi+000000F0]
+Engine.dll+365374 - 48 8B CB              - mov rcx,rbx
+Engine.dll+365377 - 48 8D 54 24 60        - lea rdx,[rsp+60]
+Engine.dll+36537C - E8 008ACBFF           - call Engine.CommonCore::spCircuitTLVElement::getCircuitName+127
+Engine.dll+365381 - 48 8B 9C 24 B0000000  - mov rbx,[rsp+000000B0]
+Engine.dll+365389 - 48 81 C4 A0000000     - add rsp,000000A0 { 160 }
+Engine.dll+365390 - 5F                    - pop rdi
+Engine.dll+365391 - C3                    - ret 
+Engine.dll+365392 - 66 0F7F 83 B0000000   - movdqa [rbx+000000B0],xmm0			<< row 1
+Engine.dll+36539A - 66 0F7F 8B C0000000   - movdqa [rbx+000000C0],xmm1			<< row 2
+Engine.dll+3653A2 - 66 0F7F 93 D0000000   - movdqa [rbx+000000D0],xmm2			<< row 3
+Engine.dll+3653AA - 66 0F7F 9B E0000000   - movdqa [rbx+000000E0],xmm3			<< row 4
+Engine.dll+3653B2 - 48 8B 9C 24 B0000000  - mov rbx,[rsp+000000B0]
+Engine.dll+3653BA - 48 81 C4 A0000000     - add rsp,000000A0 { 160 }
+Engine.dll+3653C1 - 5F                    - pop rdi
+Engine.dll+3653C2 - C3                    - ret 
+
+// Gameplay write 1:
+Engine.dll+2F213E - EB 2F                 - jmp Engine.dll+2F216F
+Engine.dll+2F2140 - 0F28 02               - movaps xmm0,[rdx]
+Engine.dll+2F2143 - 0F28 4A 10            - movaps xmm1,[rdx+10]
+Engine.dll+2F2147 - 0F28 52 20            - movaps xmm2,[rdx+20]
+Engine.dll+2F214B - 0F28 5A 30            - movaps xmm3,[rdx+30]
+Engine.dll+2F214F - 66 0F7F 81 B0000000   - movdqa [rcx+000000B0],xmm0			<< row 1
+Engine.dll+2F2157 - 66 0F7F 89 C0000000   - movdqa [rcx+000000C0],xmm1			<< row 2
+Engine.dll+2F215F - 66 0F7F 91 D0000000   - movdqa [rcx+000000D0],xmm2			<< row 3
+Engine.dll+2F2167 - 66 0F7F 99 E0000000   - movdqa [rcx+000000E0],xmm3			<< row 4
+Engine.dll+2F216F - 0F28 07               - movaps xmm0,[rdi]
+Engine.dll+2F2172 - 0F28 4F 10            - movaps xmm1,[rdi+10]
+Engine.dll+2F2176 - 0F28 57 20            - movaps xmm2,[rdi+20]
+Engine.dll+2F217A - 0F28 5F 30            - movaps xmm3,[rdi+30]
+Engine.dll+2F217E - 66 0F7F 83 F0000000   - movdqa [rbx+000000F0],xmm0
+Engine.dll+2F2186 - 66 0F7F 8B 00010000   - movdqa [rbx+00000100],xmm1
+Engine.dll+2F218E - 66 0F7F 93 10010000   - movdqa [rbx+00000110],xmm2
+Engine.dll+2F2196 - 66 0F7F 9B 20010000   - movdqa [rbx+00000120],xmm3
+Engine.dll+2F219E - 48 8B 9C 24 30010000  - mov rbx,[rsp+00000130]
+Engine.dll+2F21A6 - 48 81 C4 20010000     - add rsp,00000120 { 288 }
+Engine.dll+2F21AD - 5F                    - pop rdi
+Engine.dll+2F21AE - C3                    - ret 
+
+// Gameplay write 2:
+// Only rotation
+Engine.dll+7121A7 - 0FC6 F0 C4            - shufps xmm6,xmm0,-3C { 196 }
+Engine.dll+7121AB - 0F28 C4               - movaps xmm0,xmm4
+Engine.dll+7121AE - 0F29 B7 B0000000      - movaps [rdi+000000B0],xmm6		<< WRITE row 1
+Engine.dll+7121B5 - 0FC6 87 C0000000 FA   - shufps xmm0,[rdi+000000C0],-06 { 250 }
+Engine.dll+7121BD - 41 0F28 73 F0         - movaps xmm6,[r11-10]
+Engine.dll+7121C2 - 0FC6 E0 C4            - shufps xmm4,xmm0,-3C { 196 }
+Engine.dll+7121C6 - 0F28 C5               - movaps xmm0,xmm5
+Engine.dll+7121C9 - 0F29 A7 C0000000      - movaps [rdi+000000C0],xmm4		<< WRITE row 2
+Engine.dll+7121D0 - 0FC6 87 D0000000 FA   - shufps xmm0,[rdi+000000D0],-06 { 250 }
+Engine.dll+7121D8 - 0FC6 E8 C4            - shufps xmm5,xmm0,-3C { 196 }
+Engine.dll+7121DC - 0F29 AF D0000000      - movaps [rdi+000000D0],xmm5		<< WRITE row 3
+Engine.dll+7121E3 - 49 8B 7B 18           - mov rdi,[r11+18]
+Engine.dll+7121E7 - 49 8B E3              - mov rsp,r11
+Engine.dll+7121EA - 5D                    - pop rbp
+Engine.dll+7121EB - C3                    - ret 
+
+//Cutscene write (Write 3):
+Engine.dll+383400 - 48 8B 41 10           - mov rax,[rcx+10]
+Engine.dll+383404 - 48 85 C0              - test rax,rax
+Engine.dll+383407 - 74 38                 - je Engine.dll+383441
+Engine.dll+383409 - 0F28 02               - movaps xmm0,[rdx]
+Engine.dll+38340C - 0F28 4A 10            - movaps xmm1,[rdx+10]
+Engine.dll+383410 - 0F28 52 20            - movaps xmm2,[rdx+20]
+Engine.dll+383414 - 0F28 5A 30            - movaps xmm3,[rdx+30]
+Engine.dll+383418 - 66 0F7F 80 B0000000   - movdqa [rax+000000B0],xmm0			<< row 1
+Engine.dll+383420 - 66 0F7F 88 C0000000   - movdqa [rax+000000C0],xmm1			<< row 2
+Engine.dll+383428 - 66 0F7F 90 D0000000   - movdqa [rax+000000D0],xmm2			<< row 3
+Engine.dll+383430 - 66 0F7F 98 E0000000   - movdqa [rax+000000E0],xmm3			<< row 4
+Engine.dll+383438 - 48 8B 49 10           - mov rcx,[rcx+10]
+Engine.dll+38343C - E9 D522CAFF           - jmp Engine.Spider::danAnimationManager::findAnimationSet+C3
+Engine.dll+383441 - C3                    - ret 
+
+Fov:
+Engine.dll+5665D0 - 48 81 C1 E0010000     - add rcx,000001E0 { 480 }
+Engine.dll+5665D7 - F3 0F10 41 10         - movss xmm0,[rcx+10]
+Engine.dll+5665DC - 0F2E C1               - ucomiss xmm0,xmm1
+Engine.dll+5665DF - 7A 02                 - jp Engine.dll+5665E3			
+Engine.dll+5665E1 - 74 0A                 - je Engine.dll+5665ED
+Engine.dll+5665E3 - F3 0F11 49 10         - movss [rcx+10],xmm1				<< Write FoV. Nop this when camera is enabled. Game checks difference and then triggers update in the jmp below.
+Engine.dll+5665E8 - E9 2088AAFF           - jmp Engine.CommonCore::spStringUtil::toUpper+B4
+Engine.dll+5665ED - C3                    - ret 
+
+Timestop
+Engine.dll+4E5E1F - EB 03                 - jmp Engine.dll+4E5E24
+Engine.dll+4E5E21 - 0F57 C9               - xorps xmm1,xmm1
+Engine.dll+4E5E24 - F3 0F10 47 24         - movss xmm0,[rdi+24]				<< Read gamespeed. 1 is normal, 0 is pause.
+Engine.dll+4E5E29 - F3 0F59 47 20         - mulss xmm0,[rdi+20]
+Engine.dll+4E5E2E - F3 0F59 C1            - mulss xmm0,xmm1
+Engine.dll+4E5E32 - F3 0F5D 05 26A74500   - minss xmm0,[Engine.Spider::danPooledAnimTreeDesc::`vftable'+1AE8] { (1.00) }
+Engine.dll+4E5E3A - F3 0F11 83 90000000   - movss [rbx+00000090],xmm0
+Engine.dll+4E5E42 - 48 8B 5C 24 40        - mov rbx,[rsp+40]
+Engine.dll+4E5E47 - 0F28 7C 24 20         - movaps xmm7,[rsp+20]
+Engine.dll+4E5E4C - 48 83 C4 30           - add rsp,30 { 48 }
+Engine.dll+4E5E50 - 5F                    - pop rdi
+Engine.dll+4E5E51 - C3                    - ret 
+
+Time of Day:
+Game.dll+5C1885 - 72 19                 - jb Game.dll+5C18A0
+Game.dll+5C1887 - 8B 43 28              - mov eax,[rbx+28]
+Game.dll+5C188A - 66 0F1F 44 00 00      - nop [rax+rax+00]
+Game.dll+5C1890 - F3 41 0F58 C2         - addss xmm0,xmm10
+Game.dll+5C1895 - FF C0                 - inc eax
+Game.dll+5C1897 - 41 0F2F C0            - comiss xmm0,xmm8
+Game.dll+5C189B - 73 F3                 - jae Game.dll+5C1890
+Game.dll+5C189D - 89 43 28              - mov [rbx+28],eax
+Game.dll+5C18A0 - F3 0F10 4B 34         - movss xmm1,[rbx+34]				<< First address of non-jmp targets. 
+Game.dll+5C18A5 - 41 0F2F C9            - comiss xmm1,xmm9
+Game.dll+5C18A9 - 44 0F28 54 24 50      - movaps xmm10,[rsp+50]
+Game.dll+5C18AF - 44 0F28 44 24 70      - movaps xmm8,[rsp+70]
+Game.dll+5C18B5 - F3 0F11 43 2C         - movss [rbx+2C],xmm0				<< WRITE ToD. No need to block it as it is read above.
+Game.dll+5C18BA - 76 43                 - jna Game.dll+5C18FF
+Game.dll+5C18BC - F3 0F58 CA            - addss xmm1,xmm2
+Game.dll+5C18C0 - 44 89 6B 34           - mov [rbx+34],r13d
+Game.dll+5C18C4 - C7 44 24 20 05000000  - mov [rsp+20],00000005 { 5 }
+Game.dll+5C18CC - C7 44 24 24 15000000  - mov [rsp+24],00000015 { 21 }
+Game.dll+5C18D4 - 4C 89 6C 24 28        - mov [rsp+28],r13
+Game.dll+5C18D9 - 44 89 6C 24 30        - mov [rsp+30],r13d
+Game.dll+5C18DE - F3 0F11 4B 30         - movss [rbx+30],xmm1
+Game.dll+5C18E3 - 4C 89 6C 24 38        - mov [rsp+38],r13
+Game.dll+5C18E8 - E8 DADDA5FF           - call Game.Spider::spiGetSpiderInterface
+Game.dll+5C18ED - 48 8D 54 24 20        - lea rdx,[rsp+20]
+Game.dll+5C18F2 - 48 8B C8              - mov rcx,rax
+Game.dll+5C18F5 - 4C 8B 00              - mov r8,[rax]
+Game.dll+5C18F8 - 41 FF 90 98020000     - call qword ptr [r8+00000298]
+Game.dll+5C18FF - 80 7B 42 00           - cmp byte ptr [rbx+42],00 { 0 }
+
+
+Fog:
+
+Engine.dll+377E91 - 66 0F7F 83 60010000   - movdqa [rbx+00000160],xmm0
+Engine.dll+377E99 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
+Engine.dll+377EA0 - 8B 47 40              - mov eax,[rdi+40]
+Engine.dll+377EA3 - 89 83 70010000        - mov [rbx+00000170],eax
+Engine.dll+377EA9 - C6 83 A4020000 01     - mov byte ptr [rbx+000002A4],01 { 1 }
+Engine.dll+377EB0 - 8B 47 44              - mov eax,[rdi+44]
+Engine.dll+377EB3 - 89 83 74010000        - mov [rbx+00000174],eax
+Engine.dll+377EB9 - C6 83 A5020000 01     - mov byte ptr [rbx+000002A5],01 { 1 }
+Engine.dll+377EC0 - 8B 47 48              - mov eax,[rdi+48]
+Engine.dll+377EC3 - 89 83 80010000        - mov [rbx+00000180],eax
+Engine.dll+377EC9 - C6 83 A6020000 01     - mov byte ptr [rbx+000002A6],01 { 1 }
+Engine.dll+377ED0 - 8B 47 4C              - mov eax,[rdi+4C]
+Engine.dll+377ED3 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
+Engine.dll+377EDA - 89 83 78010000        - mov [rbx+00000178],eax							<< WRITE Fog. Block to overrule it.
+Engine.dll+377EE0 - 8B 47 50              - mov eax,[rdi+50]
+Engine.dll+377EE3 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
+Engine.dll+377EEA - 89 83 7C010000        - mov [rbx+0000017C],eax
+Engine.dll+377EF0 - 8B 47 54              - mov eax,[rdi+54]
+Engine.dll+377EF3 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
+Engine.dll+377EFA - 89 83 A8010000        - mov [rbx+000001A8],eax
+Engine.dll+377F00 - 8B 47 58              - mov eax,[rdi+58]
+Engine.dll+377F03 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
+Engine.dll+377F0A - 89 83 AC010000        - mov [rbx+000001AC],eax
+Engine.dll+377F10 - 8B 47 5C              - mov eax,[rdi+5C]
+Engine.dll+377F13 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
+Engine.dll+377F1A - 89 83 B0010000        - mov [rbx+000001B0],eax
+Engine.dll+377F20 - 0FB6 47 60            - movzx eax,byte ptr [rdi+60]
+Engine.dll+377F24 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
+Engine.dll+377F2B - 88 83 98020000        - mov [rbx+00000298],al
+Engine.dll+377F31 - 0FB6 47 61            - movzx eax,byte ptr [rdi+61]
+Engine.dll+377F35 - 88 83 9A020000        - mov [rbx+0000029A],al
+Engine.dll+377F3B - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
+Engine.dll+377F42 - 0FB6 47 62            - movzx eax,byte ptr [rdi+62]
+Engine.dll+377F46 - 88 83 99020000        - mov [rbx+00000299],al
+Engine.dll+377F4C - 48 8B 5C 24 30        - mov rbx,[rsp+30]
+Engine.dll+377F51 - 48 83 C4 20           - add rsp,20 { 32 }
+Engine.dll+377F55 - 5F                    - pop rdi
+Engine.dll+377F56 - C3                    - ret 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+HUD check call per frame originates from:
+Game.dll+6EFFFD - E8 7E9194FF           - call Game.dll+39180
+
+// which ends up in:
+// This is called every frame, but only when we bring up the menu it will dig into the hud element change.
+Game.dll+6D7310 - 48 89 5C 24 08        - mov [rsp+08],rbx
+Game.dll+6D7315 - 48 89 74 24 10        - mov [rsp+10],rsi
+Game.dll+6D731A - 57                    - push rdi
+Game.dll+6D731B - 48 83 EC 20           - sub rsp,20 { 32 }
+Game.dll+6D731F - 48 8B D9              - mov rbx,rcx
+Game.dll+6D7322 - 48 8B 09              - mov rcx,[rcx]
+Game.dll+6D7325 - E8 281393FF           - call Game.Spider::spiAnimTree::~spiAnimTree+104
+Game.dll+6D732A - 84 C0                 - test al,al
+Game.dll+6D732C - 75 57                 - jne Game.dll+6D7385
+Game.dll+6D732E - 48 8B 03              - mov rax,[rbx]
+Game.dll+6D7331 - 33 FF                 - xor edi,edi
+Game.dll+6D7333 - 48 8B 48 10           - mov rcx,[rax+10]
+Game.dll+6D7337 - 48 8B 71 10           - mov rsi,[rcx+10]
+Game.dll+6D733B - E8 803F94FF           - call Game.CommonCore::spCircuitTextLine::getHandle+82
+Game.dll+6D7340 - 48 85 C0              - test rax,rax
+Game.dll+6D7343 - 74 10                 - je Game.dll+6D7355
+Game.dll+6D7345 - 48 8B 03              - mov rax,[rbx]
+Game.dll+6D7348 - 48 8B 48 10           - mov rcx,[rax+10]
+Game.dll+6D734C - E8 6F3F94FF           - call Game.CommonCore::spCircuitTextLine::getHandle+82
+Game.dll+6D7351 - 48 8B 78 10           - mov rdi,[rax+10]
+Game.dll+6D7355 - 83 7E 74 00           - cmp dword ptr [rsi+74],00 { 0 }
+Game.dll+6D7359 - 75 2A                 - jne Game.dll+6D7385
+Game.dll+6D735B - 48 85 FF              - test rdi,rdi
+Game.dll+6D735E - 74 1D                 - je Game.dll+6D737D
+Game.dll+6D7360 - 80 BF 9A000000 00     - cmp byte ptr [rdi+0000009A],00 { 0 }
+Game.dll+6D7367 - 75 1C                 - jne Game.dll+6D7385
+Game.dll+6D7369 - 48 8B 0B              - mov rcx,[rbx]
+Game.dll+6D736C - E8 0C8B95FF           - call Game.CommonCore::spTrackEdCutSceneEditorDocument::SetResourceContextId+30C
+Game.dll+6D7371 - 33 D2                 - xor edx,edx
+Game.dll+6D7373 - 48 8B CF              - mov rcx,rdi
+Game.dll+6D7376 - E8 9F3193FF           - call Game.CommonCore::spFileName::~spFileName+15E
+Game.dll+6D737B - EB 08                 - jmp Game.dll+6D7385
+Game.dll+6D737D - 48 8B 0B              - mov rcx,[rbx]
+Game.dll+6D7380 - E8 F88A95FF           - call Game.CommonCore::spTrackEdCutSceneEditorDocument::SetResourceContextId+30C
+Game.dll+6D7385 - 8B 7B 08              - mov edi,[rbx+08]
+Game.dll+6D7388 - 85 FF                 - test edi,edi
+Game.dll+6D738A - 7E 2C                 - jle Game.dll+6D73B8
+Game.dll+6D738C - 48 8B 73 10           - mov rsi,[rbx+10]
+Game.dll+6D7390 - 8B D7                 - mov edx,edi
+Game.dll+6D7392 - 48 8B CE              - mov rcx,rsi
+Game.dll+6D7395 - E8 CF7C94FF           - call Game.CommonCore::spStringUtil::normalizeDirectoryNoLowercase+64
+Game.dll+6D739A - 48 85 C0              - test rax,rax
+Game.dll+6D739D - 75 04                 - jne Game.dll+6D73A3
+Game.dll+6D739F - 85 FF                 - test edi,edi
+Game.dll+6D73A1 - 7F 0E                 - jg Game.dll+6D73B1
+Game.dll+6D73A3 - 4C 8B C0              - mov r8,rax
+Game.dll+6D73A6 - 48 8B D6              - mov rdx,rsi
+Game.dll+6D73A9 - 48 8B CB              - mov rcx,rbx
+Game.dll+6D73AC - E8 B63C95FF           - call Game.CommonCore::spCircuitTLVConfigColumn::getText+505
+Game.dll+6D73B1 - C7 43 08 FFFFFFFF     - mov [rbx+08],FFFFFFFF { -1 }
+Game.dll+6D73B8 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
+Game.dll+6D73BD - 48 8B 74 24 38        - mov rsi,[rsp+38]
+Game.dll+6D73C2 - 48 83 C4 20           - add rsp,20 { 32 }
+Game.dll+6D73C6 - 5F                    - pop rdi
+Game.dll+6D73C7 - C3                    - ret 
