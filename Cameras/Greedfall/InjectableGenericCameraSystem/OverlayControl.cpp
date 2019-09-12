@@ -285,7 +285,7 @@ Special thanks to:
 			settingsChanged |= ImGui::SliderFloat("Fast movement multiplier", &currentSettings.fastMovementMultiplier, 0.1f, 100.0f, "%.3f");
 			settingsChanged |= ImGui::SliderFloat("Slow movement multiplier", &currentSettings.slowMovementMultiplier, 0.001f, 1.0f, "%.3f");
 			settingsChanged |= ImGui::SliderFloat("Up movement multiplier", &currentSettings.movementUpMultiplier, 0.1f, 10.0f, "%.3f");
-			settingsChanged |= ImGui::SliderFloat("Movement speed", &currentSettings.movementSpeed, 0.01f, 0.2f, "%.3f");
+			settingsChanged |= ImGui::SliderFloat("Movement speed", &currentSettings.movementSpeed, 0.01f, 10.0f, "%.1f");
 			settingsChanged |= ImGui::Combo("Camera control device", &currentSettings.cameraControlDevice, "Keyboard & Mouse\0Gamepad\0Both\0\0");
 			ImGui::SameLine(); showHelpMarker("The camera control device chosen will be blocked for game input.\n");
 			ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.3f) - 11.0f);

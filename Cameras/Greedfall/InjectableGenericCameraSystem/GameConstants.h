@@ -34,19 +34,17 @@ namespace IGCS::GameSpecific
 	#define CAMERA_VERSION								"1.0.0"
 	#define CAMERA_CREDITS								"Jim2Point0. Additional coding by Otis_Inf."
 	#define GAME_WINDOW_TITLE							"GreedFall"
-	#define INITIAL_PITCH_RADIANS						0.0f	// around Y axis (to the right)
-	#define INITIAL_YAW_RADIANS							0.0f	// around Z axis (up)
-	#define INITIAL_ROLL_RADIANS						0.0f	// around X axis (out of the screen).
+	#define INITIAL_PITCH_RADIANS						(0.5f * DirectX::XM_PI)
+	#define INITIAL_YAW_RADIANS							0.0f
+	#define INITIAL_ROLL_RADIANS						0.0f
 	#define CONTROLLER_Y_INVERT							false
 	#define FASTER_MULTIPLIER							5.0f
 	#define SLOWER_MULTIPLIER							0.1f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
-	#define DEFAULT_MOVEMENT_SPEED						0.07f
+	#define DEFAULT_MOVEMENT_SPEED						2.5f
 	#define DEFAULT_ROTATION_SPEED						0.01f
 	#define DEFAULT_FOV_SPEED							0.1f
 	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f
-	#define RESOLUTION_SCALE_MAX						4.0f
-	#define RESOLUTION_SCALE_MIN						0.5f
 	// End Mandatory constants
 
 	// AOB Keys for interceptor's AOB scanner

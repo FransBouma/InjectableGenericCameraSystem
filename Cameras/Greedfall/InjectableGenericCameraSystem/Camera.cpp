@@ -48,8 +48,8 @@ namespace IGCS
 	XMVECTOR Camera::calculateLookQuaternion()
 	{
 		XMVECTOR xQ = XMQuaternionRotationNormal(XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f), _pitch);
-		XMVECTOR yQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), _yaw);
-		XMVECTOR zQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), _roll);
+		XMVECTOR yQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f), _roll);
+		XMVECTOR zQ = XMQuaternionRotationNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f), -_yaw);
 
 		XMVECTOR tmpQ = XMQuaternionMultiply(yQ, zQ);
 		XMVECTOR qToReturn = XMQuaternionMultiply(xQ, tmpQ);
@@ -95,19 +95,19 @@ namespace IGCS
 
 	void Camera::moveForward(float amount)
 	{
-		_direction.x -= (Globals::instance().settings().movementSpeed * amount);		// x out of the screen, z up
+		_direction.z -= (Globals::instance().settings().movementSpeed * amount);		// z out of the screen
 		_movementOccurred = true;
 	}
 
 	void Camera::moveRight(float amount)
 	{
-		_direction.y += (Globals::instance().settings().movementSpeed * amount);		// y is right
+		_direction.x += (Globals::instance().settings().movementSpeed * amount);		// x is right
 		_movementOccurred = true;
 	}
 
 	void Camera::moveUp(float amount)
 	{
-		_direction.z += (Globals::instance().settings().movementSpeed * amount * Globals::instance().settings().movementUpMultiplier);		// z is up
+		_direction.y += (Globals::instance().settings().movementSpeed * amount * Globals::instance().settings().movementUpMultiplier);		// y is up
 		_movementOccurred = true;
 	}
 

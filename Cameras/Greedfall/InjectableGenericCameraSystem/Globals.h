@@ -73,7 +73,7 @@ namespace IGCS
 	private:
 		void initializeKeyBindings();
 
-		bool _inputBlocked = false;
+		bool _inputBlocked = true;
 		atomic_bool _systemActive = false;
 		Gamepad _gamePad;
 		HWND _mainWindowHandle;

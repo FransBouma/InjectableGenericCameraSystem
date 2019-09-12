@@ -140,7 +140,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		{
 			// nop range
 			//Engine.dll+5665E3 - F3 0F11 49 10         - movss [rcx+10],xmm1
-			GameImageHooker::nopRange(aobBlocks[FOV_WRITE_INTERCEPT_KEY], 6);
+			GameImageHooker::nopRange(aobBlocks[FOV_WRITE_INTERCEPT_KEY], 5);
 		}
 		else
 		{

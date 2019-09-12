@@ -151,16 +151,17 @@ namespace IGCS::InputHooker
 
 	void processMessage(LPMSG lpMsg, bool removeIfRequired)
 	{
-		EnterCriticalSection(&_messageProcessCriticalSection);
-		if (lpMsg != nullptr && Input::handleMessage(lpMsg))
+		if (OverlayControl::isMainMenuVisible() || g_cameraEnabled)
 		{
-			// message was handled by our code. This means it's a message we want to block if input blocking is enabled or the overlay / menu is shown
-			if ((Globals::instance().inputBlocked() && Globals::instance().keyboardMouseControlCamera()) || OverlayControl::isMainMenuVisible())
+			if (lpMsg != nullptr && Input::handleMessage(lpMsg))
 			{
-				lpMsg->message = WM_NULL;	// reset to WM_NULL so the host will receive a dummy message instead.
+				// message was handled by our code. This means it's a message we want to block if input blocking is enabled or the overlay / menu is shown
+				if ((Globals::instance().inputBlocked() && Globals::instance().keyboardMouseControlCamera()) || OverlayControl::isMainMenuVisible())
+				{
+					lpMsg->message = WM_NULL;	// reset to WM_NULL so the host will receive a dummy message instead.
+				}
 			}
 		}
-		LeaveCriticalSection(&_messageProcessCriticalSection);
 	}
 	   
 
