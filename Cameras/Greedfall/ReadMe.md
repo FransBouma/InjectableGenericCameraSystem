@@ -3,7 +3,7 @@ Injectable camera for Greedfall
 
 Current supported game version: v1.0.0+
 Camera version: 1.0.0  
-Camera release binaries: NOT YET DONE
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/GF_100  
 Credits: Jim2Point0. Additional coding by Otis_Inf. 
 
 ### Features
@@ -20,7 +20,13 @@ Experimental:
 - Lightfield multi-shot
 - Single screenshot
 
+### HUD toggle
+
+The hud toggle is a 3D migoto based toggle by Otis_Inf, and can be found here:
+https://mega.nz/#!JQ5HkQBZ!XStm7bRtpK6_angVkrqxOidq9KjhPt57GGAKytcz0cQ
+
 ### Change log:
+v1.0.0: (13-sep-2019) First release
 
 ### How to use
 Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.

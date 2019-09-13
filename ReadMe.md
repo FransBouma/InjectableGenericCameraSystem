@@ -37,6 +37,7 @@ automatically when you clone the repo. The camera uses DirectXMath for the 3D ma
 * Dishonored 2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Dishonored2
 * DOOM x64: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/DOOM
 * Dying Light: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/DyingLight
+* GreedFall: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Greedfall
 * Hellblade: Senua's Sacrifice: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Hellblade
 * Hitman 2016: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Hitman2016
 * Homefront: The Revolution: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/HomefrontTheRevolution
