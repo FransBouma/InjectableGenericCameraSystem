@@ -345,7 +345,8 @@ namespace IGCS
 		// then initialize imgui and the rest.
 		OverlayControl::initImGui();
 		InputHooker::setInputHooks();
-		Input::registerRawInput();
+		// This particular game doesn't work with rawinput: it bugs with the mouse when it's registered. 
+		//Input::registerRawInput();
 		D3D11Hooker::initializeHook();
 
 		GameSpecific::InterceptorHelper::initializeAOBBlocks(_aobBlocks);

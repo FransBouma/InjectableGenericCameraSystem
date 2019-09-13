@@ -13,7 +13,7 @@ Credits: Jim2Point0. Additional coding by Otis_Inf.
 	- Free unlimited camera movement and rotation 
 - Game pause / unpause, also in cut scenes. 
 - Time of Day control
-- Fog control (much higher than photomode allows)
+- Fog control
 
 Experimental:
 - Panorama multi-shot
