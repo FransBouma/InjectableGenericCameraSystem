@@ -23,7 +23,7 @@ Experimental:
 ### HUD toggle
 
 The hud toggle is a 3D migoto based toggle by Otis_Inf, and can be found here:
-https://mega.nz/#!JQ5HkQBZ!XStm7bRtpK6_angVkrqxOidq9KjhPt57GGAKytcz0cQ
+https://mega.nz/#!BQ5jCQwK!gYFR0sdHCmS19IQ2mvVicK0fI9QAmEEOkWubvz08Q6c
 
 ### Change log:
 v1.0.0: (13-sep-2019) First release
