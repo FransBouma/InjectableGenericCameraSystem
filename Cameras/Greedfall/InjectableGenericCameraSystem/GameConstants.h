@@ -63,5 +63,9 @@ namespace IGCS::GameSpecific
 	#define FOV_IN_STRUCT_OFFSET						0x1F0
 	#define GAMESPEED_IN_STRUCT_OFFSET					0x24
 	#define TOD_IN_STRUCT_OFFSET						0x2C
-	#define FOG_IN_STRUCT_OFFSET						0x178
+	#define FOG1_IN_STRUCT_OFFSET						0x174
+	#define FOG2_IN_STRUCT_OFFSET						0x178
+	#define FOG3_IN_STRUCT_OFFSET						0x180
+	#define FOG_BLEND_FACTOR_OFFSET						0x17C
+	#define FOG_COLOR_OFFSET							0x160
 }

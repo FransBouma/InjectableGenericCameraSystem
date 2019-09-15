@@ -8,6 +8,7 @@
 #include <map>
 #include "ActionData.h"
 #include <string>
+#include "imgui.h";
 
 namespace IGCS
 {
@@ -36,7 +37,11 @@ namespace IGCS
 		// add settings to edit here.
 		int todHour;					// 0-23
 		int todMinute;					// 0-59
-		float fogStrength;				// 0-200. 0 is no fog (ugly), 200 is thick fog all around you. Can go higher if one wants.
+		float fogFactor1;
+		float fogFactor2;
+		float fogFactor3;
+		float fogBlendFactor;
+		float fogColor[3]= { 0.45f, 0.4f, 0.4f };
 
 		void loadFromFile(map<ActionType, ActionData*> keyBindingPerActionType)
 		{
@@ -142,7 +147,11 @@ namespace IGCS
 			{
 				todHour = 12;
 				todMinute = 0;
-				fogStrength = 1.0f;
+				fogFactor1 = 2500.0f;
+				fogFactor2 = 160.0f;
+				fogFactor3 = 300.0f;
+				fogBlendFactor = 1.0f;
+				// fogColor is set at declaration
 			}
 		}
 	};

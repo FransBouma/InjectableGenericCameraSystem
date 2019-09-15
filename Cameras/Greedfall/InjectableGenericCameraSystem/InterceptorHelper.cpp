@@ -82,7 +82,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE3_INTERCEPT_KEY, "66 0F 7F 80 B0 00 00 00 66 0F 7F 88 C0 00 00 00 66 0F 7F 90 D0 00 00 00 66 0F 7F 98 E0 00 00 00 48 8B 49 10", 1);
 		aobBlocks[FOV_WRITE_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE_INTERCEPT_KEY, "48 81 C1 E0 01 00 00 F3 0F 10 41 10 0F 2E C1 7A 02 74 0A | F3 0F 11 49 10", 1);
 		aobBlocks[GAMESPEED_READ_INTERCEPT_KEY] = new AOBBlock(GAMESPEED_READ_INTERCEPT_KEY, "F3 0F 10 47 24 F3 0F 59 47 20 F3 0F 59 C1 F3 0F 5D", 1);
-		aobBlocks[FOG_WRITE_INTERCEPT_KEY] = new AOBBlock(FOG_WRITE_INTERCEPT_KEY, "89 83 78 01 00 00 8B 47 50 C6 83 A3 02 00 00 01", 1);
+		aobBlocks[FOG_WRITE_INTERCEPT_KEY] = new AOBBlock(FOG_WRITE_INTERCEPT_KEY, "66 0F 7F 83 60 01 00 00 C6 83 A3 02 00 00 01", 1);
 		aobBlocks[TOD_WRITE_INTERCEPT_KEY] = new AOBBlock(TOD_WRITE_INTERCEPT_KEY, "44 0F 28 54 24 50 44 0F 28 44 24 70 F3 0F 11 43 2C", 1);
 
 		map<string, AOBBlock*>::iterator it;
@@ -121,7 +121,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY], 0x20, &_cameraWrite3InterceptionContinue, &cameraWrite3Interceptor);
 		GameImageHooker::setHook(aobBlocks[TOD_WRITE_INTERCEPT_KEY], 0x11, &_todWriteInterceptionContinue, &todWriteInterceptor);
 		GameImageHooker::setHook(aobBlocks[GAMESPEED_READ_INTERCEPT_KEY], 0x0E, &_gamespeedReadInterceptionContinue, &gamespeedReadInterceptor);
-		GameImageHooker::setHook(aobBlocks[FOG_WRITE_INTERCEPT_KEY], 0x10, &_fogWriteInterceptionContinue, &fogWriteInterceptor);
+		GameImageHooker::setHook(aobBlocks[FOG_WRITE_INTERCEPT_KEY], 0x5F, &_fogWriteInterceptionContinue, &fogWriteInterceptor);
 	}
 
 

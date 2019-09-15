@@ -97,8 +97,18 @@ namespace IGCS::GameSpecific::CameraManipulator
 		}
 		if (nullptr != g_fogStructAddress)
 		{
-			float* fogStrengthInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG_IN_STRUCT_OFFSET);
-			currentSettings.fogStrength = *fogStrengthInMemory;
+			float* floatValueInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG1_IN_STRUCT_OFFSET);
+			currentSettings.fogFactor1 = *floatValueInMemory;
+			floatValueInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG2_IN_STRUCT_OFFSET);
+			currentSettings.fogFactor2 = *floatValueInMemory;
+			floatValueInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG3_IN_STRUCT_OFFSET);
+			currentSettings.fogFactor3 = *floatValueInMemory;
+			floatValueInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG_BLEND_FACTOR_OFFSET);
+			currentSettings.fogBlendFactor = *floatValueInMemory;
+			floatValueInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG_COLOR_OFFSET);
+			currentSettings.fogColor[0] = floatValueInMemory[0];
+			currentSettings.fogColor[1] = floatValueInMemory[1];
+			currentSettings.fogColor[2] = floatValueInMemory[2];
 		}
 	}
 
@@ -115,8 +125,18 @@ namespace IGCS::GameSpecific::CameraManipulator
 		}
 		if (nullptr != g_fogStructAddress)
 		{
-			float* fogStrengthInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG_IN_STRUCT_OFFSET);
-			*fogStrengthInMemory = currentSettings.fogStrength;
+			float* floatValueInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG1_IN_STRUCT_OFFSET);
+			*floatValueInMemory = currentSettings.fogFactor1;
+			floatValueInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG2_IN_STRUCT_OFFSET);
+			*floatValueInMemory = currentSettings.fogFactor2;
+			floatValueInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG3_IN_STRUCT_OFFSET);
+			*floatValueInMemory = currentSettings.fogFactor3;
+			floatValueInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG_BLEND_FACTOR_OFFSET);
+			*floatValueInMemory = currentSettings.fogBlendFactor;
+			floatValueInMemory = reinterpret_cast<float*>(g_fogStructAddress + FOG_COLOR_OFFSET);
+			floatValueInMemory[0] = currentSettings.fogColor[0];
+			floatValueInMemory[1] = currentSettings.fogColor[1];
+			floatValueInMemory[2] = currentSettings.fogColor[2];
 		}
 	}
 

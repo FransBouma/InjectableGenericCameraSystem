@@ -304,10 +304,14 @@ Special thanks to:
 			// Time of Day
 			ImGui::SliderInt("Time of Day (Hour)", &currentSettings.todHour, 0, 23);
 			ImGui::SliderInt("Time of Day (Minute)", &currentSettings.todMinute, 0, 59);
-
-			// Fog
-			ImGui::SliderFloat("Fog strength", &currentSettings.fogStrength, 0.1f, 10000.0f, "%.1f");
-			ImGui::SameLine(); showHelpMarker("The strength of the fog. The higher the value, the thicker the fog volume.\nThe game fog is normally between 1 and 10.");
+		}
+		if (ImGui::CollapsingHeader("Fog options", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::ColorEdit3("Fog color", currentSettings.fogColor);
+			ImGui::SliderFloat("Fog factor 1", &currentSettings.fogFactor1, 0.1f, 10000.0f, "%.1f");
+			ImGui::SliderFloat("Fog factor 2", &currentSettings.fogFactor2, 0.1f, 10000.0f, "%.1f");
+			ImGui::SliderFloat("Fog factor 3", &currentSettings.fogFactor3, 0.1f, 1000.0f, "%.1f");
+			ImGui::SliderFloat("Fog blend factor", &currentSettings.fogBlendFactor, 0.0f, 1.0f, "%.3f");
 		}
 		if (ImGui::CollapsingHeader("Screenshot options", ImGuiTreeNodeFlags_DefaultOpen))
 		{

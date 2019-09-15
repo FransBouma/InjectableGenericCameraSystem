@@ -201,40 +201,66 @@ cameraWrite3Interceptor ENDP
 
 
 fogWriteInterceptor PROC
-;Engine.dll+377E91 - 66 0F7F 83 60010000   - movdqa [rbx+00000160],xmm0
+;Engine.dll+377E91 - 66 0F7F 83 60010000   - movdqa [rbx+00000160],xmm0						<< FOG Color		<< INTERCEPT HERE
 ;Engine.dll+377E99 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
 ;Engine.dll+377EA0 - 8B 47 40              - mov eax,[rdi+40]
 ;Engine.dll+377EA3 - 89 83 70010000        - mov [rbx+00000170],eax
 ;Engine.dll+377EA9 - C6 83 A4020000 01     - mov byte ptr [rbx+000002A4],01 { 1 }
 ;Engine.dll+377EB0 - 8B 47 44              - mov eax,[rdi+44]
-;Engine.dll+377EB3 - 89 83 74010000        - mov [rbx+00000174],eax
-;Engine.dll+377EB9 - C6 83 A5020000 01     - mov byte ptr [rbx+000002A5],01 { 1 }
-;Engine.dll+377EC0 - 8B 47 48              - mov eax,[rdi+48]
-;Engine.dll+377EC3 - 89 83 80010000        - mov [rbx+00000180],eax
-;Engine.dll+377EC9 - C6 83 A6020000 01     - mov byte ptr [rbx+000002A6],01 { 1 }
-;Engine.dll+377ED0 - 8B 47 4C              - mov eax,[rdi+4C]
-;Engine.dll+377ED3 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
-;Engine.dll+377EDA - 89 83 78010000        - mov [rbx+00000178],eax							<< WRITE Fog. Block to overrule it. << INTERCEPT HERE
+;Engine.dll+377EB3 - 89 83 74010000        - mov [rbx+00000174],eax							<< FOG Factor 2
+;Engine.dll+377EB9 - C6 83 A5020000 01     - mov byte ptr [rbx+000002A5],01 { 1 }        
+;Engine.dll+377EC0 - 8B 47 48              - mov eax,[rdi+48]                            
+;Engine.dll+377EC3 - 89 83 80010000        - mov [rbx+00000180],eax                      	<< FOG Factor 1
+;Engine.dll+377EC9 - C6 83 A6020000 01     - mov byte ptr [rbx+000002A6],01 { 1 }        
+;Engine.dll+377ED0 - 8B 47 4C              - mov eax,[rdi+4C]                            
+;Engine.dll+377ED3 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }        
+;Engine.dll+377EDA - 89 83 78010000        - mov [rbx+00000178],eax							<< FOG Factor 3
 ;Engine.dll+377EE0 - 8B 47 50              - mov eax,[rdi+50]
 ;Engine.dll+377EE3 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
-;Engine.dll+377EEA - 89 83 7C010000        - mov [rbx+0000017C],eax							<< CONTINUE HERE
-;Engine.dll+377EF0 - 8B 47 54              - mov eax,[rdi+54]
+;Engine.dll+377EEA - 89 83 7C010000        - mov [rbx+0000017C],eax                      	<< FOG Blend factor
+;Engine.dll+377EF0 - 8B 47 54              - mov eax,[rdi+54]								<< CONTINUE HERE
 ;Engine.dll+377EF3 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
-;Engine.dll+377EFA - 89 83 A8010000        - mov [rbx+000001A8],eax
+;Engine.dll+377EFA - 89 83 A8010000        - mov [rbx+000001A8],eax							<< Ring around the sun factor 1
 ;Engine.dll+377F00 - 8B 47 58              - mov eax,[rdi+58]
 ;Engine.dll+377F03 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
-;Engine.dll+377F0A - 89 83 AC010000        - mov [rbx+000001AC],eax
+;Engine.dll+377F0A - 89 83 AC010000        - mov [rbx+000001AC],eax							<< Ring around the sun factor 2
 ;Engine.dll+377F10 - 8B 47 5C              - mov eax,[rdi+5C]
-;Engine.dll+377F13 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
-;Engine.dll+377F1A - 89 83 B0010000        - mov [rbx+000001B0],eax
 	mov [g_fogStructAddress], rbx
 	cmp byte ptr [g_cameraEnabled], 1
-	je exit
-originalCode:
-	mov [rbx+00000178h],eax
-exit:
+	jne originalCode
+noWrites:
+	mov byte ptr [rbx+000002A3h],01h
+	mov eax,[rdi+40h]
+	mov [rbx+00000170h],eax
+	mov byte ptr [rbx+000002A4h],01h
+	mov eax,[rdi+44h]
+	mov byte ptr [rbx+000002A5h],01h
+	mov eax,[rdi+48h]              
+	mov byte ptr [rbx+000002A6h],01h
+	mov eax,[rdi+4Ch]              
+	mov byte ptr [rbx+000002A3h],01h
 	mov eax,[rdi+50h]
 	mov byte ptr [rbx+000002A3h],01h
+	jmp exit
+originalCode:
+	movdqa xmmword ptr [rbx+00000160h],xmm0
+	mov byte ptr [rbx+000002A3h],01h
+	mov eax,[rdi+40h]
+	mov [rbx+00000170h],eax
+	mov byte ptr [rbx+000002A4h],01h
+	mov eax,[rdi+44h]
+	mov [rbx+00000174h],eax			
+	mov byte ptr [rbx+000002A5h],01h
+	mov eax,[rdi+48h]              
+	mov [rbx+00000180h],eax        
+	mov byte ptr [rbx+000002A6h],01h
+	mov eax,[rdi+4Ch]              
+	mov byte ptr [rbx+000002A3h],01h
+	mov [rbx+00000178h],eax			
+	mov eax,[rdi+50h]
+	mov byte ptr [rbx+000002A3h],01h
+	mov [rbx+0000017Ch],eax
+exit:
 	jmp qword ptr [_fogWriteInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 fogWriteInterceptor ENDP
 

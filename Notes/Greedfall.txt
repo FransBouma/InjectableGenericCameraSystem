@@ -145,30 +145,47 @@ Game.dll+5C18FF - 80 7B 42 00           - cmp byte ptr [rbx+42],00 { 0 }
 
 
 Fog:
-
-Engine.dll+377E91 - 66 0F7F 83 60010000   - movdqa [rbx+00000160],xmm0
+Engine.dll+377E2E - 66 0F7F 83 30010000   - movdqa [rbx+00000130],xmm0
+Engine.dll+377E36 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
+Engine.dll+377E3D - 8B 47 10              - mov eax,[rdi+10]
+Engine.dll+377E40 - C6 83 A4020000 01     - mov byte ptr [rbx+000002A4],01 { 1 }
+Engine.dll+377E47 - 89 83 40010000        - mov [rbx+00000140],eax
+Engine.dll+377E4D - 8B 47 14              - mov eax,[rdi+14]
+Engine.dll+377E50 - C6 83 A5020000 01     - mov byte ptr [rbx+000002A5],01 { 1 }
+Engine.dll+377E57 - 89 83 44010000        - mov [rbx+00000144],eax
+Engine.dll+377E5D - 8B 47 18              - mov eax,[rdi+18]
+Engine.dll+377E60 - C6 83 A6020000 01     - mov byte ptr [rbx+000002A6],01 { 1 }
+Engine.dll+377E67 - 89 83 50010000        - mov [rbx+00000150],eax
+Engine.dll+377E6D - 8B 47 1C              - mov eax,[rdi+1C]
+Engine.dll+377E70 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
+Engine.dll+377E77 - 89 83 48010000        - mov [rbx+00000148],eax
+Engine.dll+377E7D - 8B 47 20              - mov eax,[rdi+20]
+Engine.dll+377E80 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
+Engine.dll+377E87 - 89 83 4C010000        - mov [rbx+0000014C],eax
+Engine.dll+377E8D - 0F28 47 30            - movaps xmm0,[rdi+30]
+Engine.dll+377E91 - 66 0F7F 83 60010000   - movdqa [rbx+00000160],xmm0						<< FOG Color
 Engine.dll+377E99 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
 Engine.dll+377EA0 - 8B 47 40              - mov eax,[rdi+40]
 Engine.dll+377EA3 - 89 83 70010000        - mov [rbx+00000170],eax
 Engine.dll+377EA9 - C6 83 A4020000 01     - mov byte ptr [rbx+000002A4],01 { 1 }
 Engine.dll+377EB0 - 8B 47 44              - mov eax,[rdi+44]
-Engine.dll+377EB3 - 89 83 74010000        - mov [rbx+00000174],eax
-Engine.dll+377EB9 - C6 83 A5020000 01     - mov byte ptr [rbx+000002A5],01 { 1 }
-Engine.dll+377EC0 - 8B 47 48              - mov eax,[rdi+48]
-Engine.dll+377EC3 - 89 83 80010000        - mov [rbx+00000180],eax
-Engine.dll+377EC9 - C6 83 A6020000 01     - mov byte ptr [rbx+000002A6],01 { 1 }
-Engine.dll+377ED0 - 8B 47 4C              - mov eax,[rdi+4C]
-Engine.dll+377ED3 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
-Engine.dll+377EDA - 89 83 78010000        - mov [rbx+00000178],eax							<< WRITE Fog. Block to overrule it.
+Engine.dll+377EB3 - 89 83 74010000        - mov [rbx+00000174],eax							<< FOG Factor 1
+Engine.dll+377EB9 - C6 83 A5020000 01     - mov byte ptr [rbx+000002A5],01 { 1 }        
+Engine.dll+377EC0 - 8B 47 48              - mov eax,[rdi+48]                            
+Engine.dll+377EC3 - 89 83 80010000        - mov [rbx+00000180],eax                      	<< FOG Factor 3
+Engine.dll+377EC9 - C6 83 A6020000 01     - mov byte ptr [rbx+000002A6],01 { 1 }        
+Engine.dll+377ED0 - 8B 47 4C              - mov eax,[rdi+4C]                            
+Engine.dll+377ED3 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }        
+Engine.dll+377EDA - 89 83 78010000        - mov [rbx+00000178],eax							<< FOG Factor 2.
 Engine.dll+377EE0 - 8B 47 50              - mov eax,[rdi+50]
 Engine.dll+377EE3 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
-Engine.dll+377EEA - 89 83 7C010000        - mov [rbx+0000017C],eax
+Engine.dll+377EEA - 89 83 7C010000        - mov [rbx+0000017C],eax                      	<< FOG Blend factor
 Engine.dll+377EF0 - 8B 47 54              - mov eax,[rdi+54]
 Engine.dll+377EF3 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
-Engine.dll+377EFA - 89 83 A8010000        - mov [rbx+000001A8],eax
+Engine.dll+377EFA - 89 83 A8010000        - mov [rbx+000001A8],eax							<< Ring around the sun factor 1
 Engine.dll+377F00 - 8B 47 58              - mov eax,[rdi+58]
 Engine.dll+377F03 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
-Engine.dll+377F0A - 89 83 AC010000        - mov [rbx+000001AC],eax
+Engine.dll+377F0A - 89 83 AC010000        - mov [rbx+000001AC],eax							<< Ring around the sun factor 2
 Engine.dll+377F10 - 8B 47 5C              - mov eax,[rdi+5C]
 Engine.dll+377F13 - C6 83 A3020000 01     - mov byte ptr [rbx+000002A3],01 { 1 }
 Engine.dll+377F1A - 89 83 B0010000        - mov [rbx+000001B0],eax
@@ -185,84 +202,3 @@ Engine.dll+377F51 - 48 83 C4 20           - add rsp,20 { 32 }
 Engine.dll+377F55 - 5F                    - pop rdi
 Engine.dll+377F56 - C3                    - ret 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-HUD check call per frame originates from:
-Game.dll+6EFFFD - E8 7E9194FF           - call Game.dll+39180
-
-// which ends up in:
-// This is called every frame, but only when we bring up the menu it will dig into the hud element change.
-Game.dll+6D7310 - 48 89 5C 24 08        - mov [rsp+08],rbx
-Game.dll+6D7315 - 48 89 74 24 10        - mov [rsp+10],rsi
-Game.dll+6D731A - 57                    - push rdi
-Game.dll+6D731B - 48 83 EC 20           - sub rsp,20 { 32 }
-Game.dll+6D731F - 48 8B D9              - mov rbx,rcx
-Game.dll+6D7322 - 48 8B 09              - mov rcx,[rcx]
-Game.dll+6D7325 - E8 281393FF           - call Game.Spider::spiAnimTree::~spiAnimTree+104
-Game.dll+6D732A - 84 C0                 - test al,al
-Game.dll+6D732C - 75 57                 - jne Game.dll+6D7385
-Game.dll+6D732E - 48 8B 03              - mov rax,[rbx]
-Game.dll+6D7331 - 33 FF                 - xor edi,edi
-Game.dll+6D7333 - 48 8B 48 10           - mov rcx,[rax+10]
-Game.dll+6D7337 - 48 8B 71 10           - mov rsi,[rcx+10]
-Game.dll+6D733B - E8 803F94FF           - call Game.CommonCore::spCircuitTextLine::getHandle+82
-Game.dll+6D7340 - 48 85 C0              - test rax,rax
-Game.dll+6D7343 - 74 10                 - je Game.dll+6D7355
-Game.dll+6D7345 - 48 8B 03              - mov rax,[rbx]
-Game.dll+6D7348 - 48 8B 48 10           - mov rcx,[rax+10]
-Game.dll+6D734C - E8 6F3F94FF           - call Game.CommonCore::spCircuitTextLine::getHandle+82
-Game.dll+6D7351 - 48 8B 78 10           - mov rdi,[rax+10]
-Game.dll+6D7355 - 83 7E 74 00           - cmp dword ptr [rsi+74],00 { 0 }
-Game.dll+6D7359 - 75 2A                 - jne Game.dll+6D7385
-Game.dll+6D735B - 48 85 FF              - test rdi,rdi
-Game.dll+6D735E - 74 1D                 - je Game.dll+6D737D
-Game.dll+6D7360 - 80 BF 9A000000 00     - cmp byte ptr [rdi+0000009A],00 { 0 }
-Game.dll+6D7367 - 75 1C                 - jne Game.dll+6D7385
-Game.dll+6D7369 - 48 8B 0B              - mov rcx,[rbx]
-Game.dll+6D736C - E8 0C8B95FF           - call Game.CommonCore::spTrackEdCutSceneEditorDocument::SetResourceContextId+30C
-Game.dll+6D7371 - 33 D2                 - xor edx,edx
-Game.dll+6D7373 - 48 8B CF              - mov rcx,rdi
-Game.dll+6D7376 - E8 9F3193FF           - call Game.CommonCore::spFileName::~spFileName+15E
-Game.dll+6D737B - EB 08                 - jmp Game.dll+6D7385
-Game.dll+6D737D - 48 8B 0B              - mov rcx,[rbx]
-Game.dll+6D7380 - E8 F88A95FF           - call Game.CommonCore::spTrackEdCutSceneEditorDocument::SetResourceContextId+30C
-Game.dll+6D7385 - 8B 7B 08              - mov edi,[rbx+08]
-Game.dll+6D7388 - 85 FF                 - test edi,edi
-Game.dll+6D738A - 7E 2C                 - jle Game.dll+6D73B8
-Game.dll+6D738C - 48 8B 73 10           - mov rsi,[rbx+10]
-Game.dll+6D7390 - 8B D7                 - mov edx,edi
-Game.dll+6D7392 - 48 8B CE              - mov rcx,rsi
-Game.dll+6D7395 - E8 CF7C94FF           - call Game.CommonCore::spStringUtil::normalizeDirectoryNoLowercase+64
-Game.dll+6D739A - 48 85 C0              - test rax,rax
-Game.dll+6D739D - 75 04                 - jne Game.dll+6D73A3
-Game.dll+6D739F - 85 FF                 - test edi,edi
-Game.dll+6D73A1 - 7F 0E                 - jg Game.dll+6D73B1
-Game.dll+6D73A3 - 4C 8B C0              - mov r8,rax
-Game.dll+6D73A6 - 48 8B D6              - mov rdx,rsi
-Game.dll+6D73A9 - 48 8B CB              - mov rcx,rbx
-Game.dll+6D73AC - E8 B63C95FF           - call Game.CommonCore::spCircuitTLVConfigColumn::getText+505
-Game.dll+6D73B1 - C7 43 08 FFFFFFFF     - mov [rbx+08],FFFFFFFF { -1 }
-Game.dll+6D73B8 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
-Game.dll+6D73BD - 48 8B 74 24 38        - mov rsi,[rsp+38]
-Game.dll+6D73C2 - 48 83 C4 20           - add rsp,20 { 32 }
-Game.dll+6D73C6 - 5F                    - pop rdi
-Game.dll+6D73C7 - C3                    - ret 
