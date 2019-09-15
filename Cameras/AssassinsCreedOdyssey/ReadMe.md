@@ -3,7 +3,7 @@ Injectable camera for Assassin's Creed Odyssey
 
 Current supported game version: v1.5.0+ (UPlay version)  
 Camera version: 1.0.10  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/ACOD_1010  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/ACOD_1011  
 Credits: Otis_Inf. 
 
 ### Features
@@ -26,6 +26,7 @@ Experimental:
 - Single screenshot
 
 ### Change log:
+v1.0.11: Fixed bug in multi-shot functionality and hotsampling where a backbuffer wasn't released properly
 v1.0.10: Added Panorama multi-shot functionality.
 v1.0.9: Update for v1.5.0 of the game. Merge of Lightfield/single shot screenshot functionality.
 v1.0.8: Better AOB scanner added which can deal better with DRM driven block moves. When enabling the camera, in-game DOF is now properly disabled, 

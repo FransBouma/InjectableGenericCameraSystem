@@ -306,7 +306,7 @@ Special thanks to:
 			ImGui::SliderInt("Time of Day (Minute)", &currentSettings.todMinute, 0, 59);
 
 			// Fog
-			ImGui::SliderFloat("Fog strength", &currentSettings.fogStrength, 0.1f, 200.0f, "%.1f");
+			ImGui::SliderFloat("Fog strength", &currentSettings.fogStrength, 0.1f, 10000.0f, "%.1f");
 			ImGui::SameLine(); showHelpMarker("The strength of the fog. The higher the value, the thicker the fog volume.\nThe game fog is normally between 1 and 10.");
 		}
 		if (ImGui::CollapsingHeader("Screenshot options", ImGuiTreeNodeFlags_DefaultOpen))

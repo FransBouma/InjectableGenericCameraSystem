@@ -52,7 +52,9 @@ namespace IGCS::D3D11Hooker
 		_imGuiInitializing = true;
 		ImGui_ImplDX11_InvalidateDeviceObjects();
 		cleanupRenderTarget();
+		OverlayConsole::instance().logDebug("Resizing buffers to %d x %d", width, height);
 		HRESULT toReturn = hookedDXGIResizeBuffers(pSwapChain, bufferCount, width, height, newFormat, swapChainFlags);
+		OverlayConsole::instance().logDebug("Resized buffers to %d x %d", width, height);
 		createRenderTarget(pSwapChain);
 		ImGui_ImplDX11_CreateDeviceObjects();
 		_imGuiInitializing = false;
@@ -257,6 +259,8 @@ namespace IGCS::D3D11Hooker
 			mapped_data += mapped.RowPitch;
 		}
 		_context->Unmap(pBackBufferStaging, 0);
+		pBackBufferStaging->Release();
+		pBackBuffer->Release();
 		return fbdata;
 	}
 }

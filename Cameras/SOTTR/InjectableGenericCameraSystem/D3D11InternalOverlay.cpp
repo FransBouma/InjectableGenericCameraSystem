@@ -260,6 +260,8 @@ namespace IGCS::D3D11InternalOverlay
 			mapped_data += mapped.RowPitch;
 		}
 		_context->Unmap(pBackBufferStaging, 0);
+		pBackBufferStaging->Release();
+		pBackBuffer->Release();
 		return fbdata;
 	}
 }
