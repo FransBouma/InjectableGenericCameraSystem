@@ -21,16 +21,13 @@ Experimental:
 - Lightfield multi-shot
 - Single screenshot
 
-### Important
-When running the game in fullscreen mode, injecting the camera tools will likely crash the game. Switch to windowed mode
-first, then inject the tools.
-
 ### HUD toggle
 
 The hud toggle is a 3D migoto based toggle by Otis_Inf, and can be found here:
 https://mega.nz/#!ZYZ0RApB!NBhLBq6--OB-cbvyT4a2sigTuioLUSLs3Fz35liic6o
 
 ### Change log:
+v1.0.2: (16-sep-2019) Fix for crash when injecting into a minimized, full screen game instance. Added a 'No headbob' feature.
 v1.0.1: (15-sep-2019) Fix for multi-shot not freeing the backbuffer in some situations. Added more fog options.
 v1.0.0: (13-sep-2019) First release
 
