@@ -2,8 +2,8 @@ Injectable camera for Greedfall
 ============================
 
 Current supported game version: v1.0.0+
-Camera version: 1.0.1  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/GF_101  
+Camera version: 1.0.2  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/GF_102  
 Credits: Jim2Point0. Additional coding by Otis_Inf. 
 
 ### Features
@@ -14,6 +14,7 @@ Credits: Jim2Point0. Additional coding by Otis_Inf.
 - Game pause / unpause, also in cut scenes. 
 - Time of Day control
 - Fog control
+- No head bob
 
 Experimental:
 - Panorama multi-shot

@@ -32,6 +32,7 @@ namespace IGCS
 		float totalPanoAngleDegrees;
 		float overlapPercentagePerPanoShot;
 		char screenshotFolder[_MAX_PATH+1] = { 0 };
+		bool noHeadBob;
 
 		// settings not persisted to config file.
 		// add settings to edit here.
@@ -60,6 +61,7 @@ namespace IGCS
 			rotationSpeed = Utils::clamp(iniFile.GetFloat("rotationSpeed", "CameraSettings"), 0.0f, DEFAULT_ROTATION_SPEED);
 			fovChangeSpeed = Utils::clamp(iniFile.GetFloat("fovChangeSpeed", "CameraSettings"), 0.0f, DEFAULT_FOV_SPEED);
 			cameraControlDevice = Utils::clamp(iniFile.GetInt("cameraControlDevice", "CameraSettings"), 0, DEVICE_ID_ALL, DEVICE_ID_ALL);
+			noHeadBob = iniFile.GetBool("noHeadBob", "CameraSettings");
 			// screenshot settings
 			numberOfFramesToWaitBetweenSteps = Utils::clamp(iniFile.GetInt("numberOfFramesToWaitBetweenSteps", "ScreenshotSettings"), 1, 100);
 			distanceBetweenLightfieldShots = Utils::clamp(iniFile.GetFloat("distanceBetweenLightfieldShots", "ScreenshotSettings"), 0.0f, 100.0f);
@@ -97,6 +99,7 @@ namespace IGCS
 			iniFile.SetFloat("rotationSpeed", rotationSpeed, "", "CameraSettings");
 			iniFile.SetFloat("fovChangeSpeed", fovChangeSpeed, "", "CameraSettings");
 			iniFile.SetInt("cameraControlDevice", cameraControlDevice, "", "CameraSettings");
+			iniFile.SetBool("noHeadBob", noHeadBob, "", "CameraSettings");
 			// screenshot settings
 			iniFile.SetInt("numberOfFramesToWaitBetweenSteps", numberOfFramesToWaitBetweenSteps, "", "ScreenshotSettings");
 			iniFile.SetFloat("distanceBetweenLightfieldShots", distanceBetweenLightfieldShots, "", "ScreenshotSettings");
@@ -134,8 +137,9 @@ namespace IGCS
 			fovChangeSpeed = DEFAULT_FOV_SPEED;
 			cameraControlDevice = DEVICE_ID_ALL;
 			allowCameraMovementWhenMenuIsUp = false;
-			numberOfFramesToWaitBetweenSteps = 1;
+			noHeadBob = false;
 			// Screenshot settings
+			numberOfFramesToWaitBetweenSteps = 1;
 			distanceBetweenLightfieldShots = 1.0f;
 			numberOfShotsToTake= 45;
 			typeOfScreenshot = (int)ScreenshotType::Lightfield;

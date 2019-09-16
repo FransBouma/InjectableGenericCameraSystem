@@ -44,6 +44,7 @@ namespace IGCS::D3D11Hooker
 	static bool _tmpSwapChainInitialized = false;
 	static atomic_bool _imGuiInitializing = false;
 	static atomic_bool _initializeDeviceAndContext = true;
+	static atomic_bool _imGuiDeviceObjectsCreated = false;
 	static atomic_bool _presentInProgress = false;
 
 	HRESULT __stdcall detourDXGIResizeBuffers(IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags)
@@ -56,7 +57,7 @@ namespace IGCS::D3D11Hooker
 		HRESULT toReturn = hookedDXGIResizeBuffers(pSwapChain, bufferCount, width, height, newFormat, swapChainFlags);
 		OverlayConsole::instance().logDebug("Resized buffers to %d x %d", width, height);
 		createRenderTarget(pSwapChain);
-		ImGui_ImplDX11_CreateDeviceObjects();
+		_imGuiDeviceObjectsCreated = ImGui_ImplDX11_CreateDeviceObjects();
 		_imGuiInitializing = false;
 		return toReturn;
 	}
@@ -97,6 +98,10 @@ namespace IGCS::D3D11Hooker
 					}
 					createRenderTarget(pSwapChain);
 					ImGui_ImplDX11_Init(_device, _context);
+					if (!_imGuiDeviceObjectsCreated)
+					{
+						_imGuiDeviceObjectsCreated = ImGui_ImplDX11_CreateDeviceObjects();
+					}
 					_initializeDeviceAndContext = false;
 				}
 				validFrame = true;
@@ -189,6 +194,11 @@ namespace IGCS::D3D11Hooker
 
 	void createRenderTarget(IDXGISwapChain* pSwapChain)
 	{
+		if (nullptr == _device)
+		{
+			// not yet initialized, skip
+			return;
+		}
 		DXGI_SWAP_CHAIN_DESC sd;
 		pSwapChain->GetDesc(&sd);
 		ID3D11Texture2D* pBackBuffer;

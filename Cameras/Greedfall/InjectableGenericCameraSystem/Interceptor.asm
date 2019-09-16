@@ -45,6 +45,7 @@ PUBLIC gamespeedReadInterceptor
 ; Externs which are used and set by the system. Read / write these
 ; values in asm to communicate with the system
 EXTERN g_cameraEnabled: byte
+EXTERN g_noHeadBob: byte
 EXTERN g_cameraStructAddress: qword
 EXTERN g_todStructAddress: qword
 EXTERN g_gamespeedStructAddress: qword
@@ -149,6 +150,8 @@ cameraWrite2Interceptor PROC
 ;Engine.dll+7121EA - 5D                    - pop rbp
 ;Engine.dll+7121EB - C3                    - ret 
 	cmp byte ptr [g_cameraEnabled], 1
+	je noWrites
+	cmp byte ptr [g_noHeadBob], 1
 	jne originalCode
 noWrites:
 	shufps xmm0,xmmword ptr [rdi+000000C0h],-06h 

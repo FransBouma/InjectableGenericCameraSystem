@@ -87,6 +87,8 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void getSettingsFromGameState()
 	{
 		Settings& currentSettings = Globals::instance().settings();
+		currentSettings.noHeadBob = g_noHeadBob;
+
 		if (nullptr != g_todStructAddress)
 		{
 			float* todInMemory = reinterpret_cast<float*>(g_todStructAddress + TOD_IN_STRUCT_OFFSET);
@@ -116,6 +118,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void applySettingsToGameState()
 	{
 		Settings& currentSettings = Globals::instance().settings();
+		g_noHeadBob = currentSettings.noHeadBob;
 		if (nullptr != g_todStructAddress)
 		{
 			float* todInMemory = reinterpret_cast<float*>(g_todStructAddress + TOD_IN_STRUCT_OFFSET);

@@ -290,6 +290,8 @@ Special thanks to:
 			ImGui::SameLine(); showHelpMarker("The camera control device chosen will be blocked for game input.\n");
 			ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.3f) - 11.0f);
 			settingsChanged |= ImGui::Checkbox("Allow camera movement when this menu is up", &currentSettings.allowCameraMovementWhenMenuIsUp);
+			ImGui::TextUnformatted("");  ImGui::SameLine((ImGui::GetWindowWidth() * 0.3f) - 11.0f);
+			settingsChanged |= ImGui::Checkbox("Disable in-game head bob", &currentSettings.noHeadBob);
 		}
 		if (ImGui::CollapsingHeader("Camera rotation options", ImGuiTreeNodeFlags_DefaultOpen))
 		{

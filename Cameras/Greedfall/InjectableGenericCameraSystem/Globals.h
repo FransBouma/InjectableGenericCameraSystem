@@ -39,7 +39,7 @@
 #include "ScreenshotController.h"
 
 extern "C" BYTE g_cameraEnabled;
-extern "C" BYTE g_gamePaused;
+extern "C" BYTE g_noHeadBob;
 
 namespace IGCS
 {
