@@ -3,7 +3,6 @@ Injectable camera for Greedfall
 
 Current supported game version: v1.0.0+
 Camera version: 1.0.2  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/GF_102  
 Credits: Jim2Point0. Additional coding by Otis_Inf. 
 
 ### Features

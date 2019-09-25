@@ -18,13 +18,22 @@ configurable ball. Additionally, cameras are often written once and perhaps fixe
 the code for each camera and adapting it makes possible to add new features to future cameras without affecting the older ones. 
 
 ## Requirements to build the code
-To build the code, you need to have VC++ 2015 update 3 or higher, newer cameras need VC++ 2017. 
+To build the code, you need to have VC++ 2017 or higher, newer cameras need VC++ 2019. 
 Additionally you need to have installed the Windows SDK, at least the windows 8 version. The VC++ installer should install this. 
 The SDK is needed for DirectXMath.h
 
 ### External dependencies
 There's an external dependency on [MinHook](https://github.com/TsudaKageyu/minhook) through a git submodule. This should be downloaded
 automatically when you clone the repo. The camera uses DirectXMath for the 3D math, which is a self-contained .h file, from the Windows SDK. 
+
+### No binaries
+This repository contains releases, but there are no binary installments. The main reason is that the cameras were used for profit while I 
+made these to be used for fun and not for profit. If you want a binary, you can contact me and if I know you, I'll give a binary. Creating these
+cameras takes a lot of effort and free time. I share them to let others create beautiful artpieces from games for fun so they have a great time too. 
+When the cameras are used for money-oriented activities, it makes me someone who works for free, which isn't why I made these cameras.
+
+I hate it that money is involved in the growing community of virtual photographers and this is my attempt to stop that. It's likely fruitless, but it's
+all I can do. 
 
 ## Camera's released: 
 * Assassin's Creed 3: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/AssassinsCreed3
@@ -65,6 +74,7 @@ Some camera code uses [MinHook](https://github.com/TsudaKageyu/minhook) by Tsuda
 ## Donations
 I do this for fun, not profit, but can't create cameras for games I don't own. If you want me to make cameras for new games, please donate
 to https://www.paypal.me/FransBouma. Additionally, after I've finished a game I usually uninstall it and it might be a camera gets broken after that date. 
-If you want me to fix that camera, I'll usually asked for a donation to my paypal account for compensation. 
+For that I'm sorry.
+
 
 

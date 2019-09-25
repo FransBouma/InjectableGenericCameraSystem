@@ -3,7 +3,6 @@ Injectable camera for Resident Evil 2
 
 Current supported game version: v1.0+  
 Camera version: 1.0.0  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/RE2_100  
 Credits: Otis_Inf and Jim2Point0.
 
 Brought to you by [FRAMED. Screenshotting community](https://framedsc.github.io). 
@@ -25,9 +24,6 @@ Brought to you by [FRAMED. Screenshotting community](https://framedsc.github.io)
 ### Important: DirectX 11 only
 The tools only work with DirectX11 of the game. Use the in-game setting to switch to DirectX11 if you've opted to use DirectX12
 *before* you inject the tools.
-
-### How to use
-Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.
 
 ### Important
 * Be careful with the resolution scaling factor in the camera tools settings. Using a value of 4-5 or higher with a very 

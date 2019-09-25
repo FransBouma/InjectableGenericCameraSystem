@@ -3,7 +3,6 @@ Injectable camera for Dishonored 2 and Dishonored: Death of the Outsider
 
 Current supported game version: v1.77.9+ (Dishonored 2)  and v1.145+ (Dishonored: death of the outsider)  
 Camera version: 1.0.2  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/DH2_102    
 Credits: Otis_Inf. 
 
 ### Features
@@ -15,9 +14,6 @@ Credits: Otis_Inf.
 - Ansel now works in a windowed game
 
 NOTE: If you enable Ansel using Alt-F2, you shouldn't enable this camera. 
-
-### How to use
-Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.
 
 ### EULA
 To use these camera tools, you have to comply to the following:

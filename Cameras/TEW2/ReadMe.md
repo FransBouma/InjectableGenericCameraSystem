@@ -3,11 +3,8 @@ Injectable camera for The Evil Within 2
 
 Current supported game version: v1.0+  
 Camera version: 1.0.1  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/TEW2_101  
 Credits: Otis_Inf
 
-### How to use
-Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.
 
 ### HUD Toggle
 You need a hud toggle. I made one, here it is:

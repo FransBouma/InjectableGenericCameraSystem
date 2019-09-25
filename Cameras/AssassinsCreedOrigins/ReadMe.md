@@ -3,7 +3,6 @@ Injectable camera for Assassin's Creed Origins
 
 Current supported game version: v1.4+ (UPlay version)  
 Camera version: 1.0.10  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/ACO_1010  
 Credits: Otis_Inf. Thanks to DeadEndThrills for HUD render location.
 
 ### Changes
@@ -17,9 +16,6 @@ Credits: Otis_Inf. Thanks to DeadEndThrills for HUD render location.
 * v1.0.3:  Added timestop 
 * v1.0.2:  Fixed for v1.03 of the game.
 * v1.0.1:  Added: time of day selection in camera menu.
-
-### How to use
-Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.
 
 ### Important
 * It can be that tools like MSI Afterburner and others which create an overlay do **not** work together with the camera tools: 

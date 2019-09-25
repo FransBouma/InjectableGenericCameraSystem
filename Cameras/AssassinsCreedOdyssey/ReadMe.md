@@ -3,7 +3,6 @@ Injectable camera for Assassin's Creed Odyssey
 
 Current supported game version: v1.5.0+ (UPlay version)  
 Camera version: 1.0.10  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/ACOD_1011  
 Credits: Otis_Inf. 
 
 ### Features
@@ -38,9 +37,6 @@ v1.0.4: Multiple actions bound to the same key are now supported.
 v1.0.3: Configurable keybindings added.
 v1.0.2: Fog control added. Photomode goes up to 10, we go up to 200 (manual override is possible: ctrl-click and type a value). 
 v1.0.1: Fix for 1.0.7 of the game: photomode range limit was broken. Added: AR limits removed 
-
-### How to use
-Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.
 
 ### Important
 * Be careful with the resolution scaling factor in the camera tools settings. Using a value of 2 or higher with a very 

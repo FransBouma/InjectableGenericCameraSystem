@@ -3,7 +3,6 @@ Injectable camera for Kingdom Come Deliverance
 
 Current supported game version: v1.9.2+  
 Camera version: 1.0.1  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/KCD_101  
 Credits: Otis_Inf. 
 
 ### Features
@@ -19,9 +18,6 @@ used by Ansel as well.
 
 During cutscenes, it's not possible to move the camera or even pause the game. Also, the black bars in cutscenes
 are still present. 
-
-### How to use
-Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.
 
 ### EULA
 To use these camera tools, you have to comply to the following:

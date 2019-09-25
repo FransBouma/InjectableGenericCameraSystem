@@ -2,7 +2,6 @@ Injectable camera for Watch_Dogs
 ============================
 
 Current supported game version: v1.06.329  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/Watch_Dogs_v102  
 Feedback / Guide: http://www.deadendthrills.com/forum/discussion/221/guide-watch-dogs#latest  
 Credits: Otis_Inf / Jim2Point0  
 

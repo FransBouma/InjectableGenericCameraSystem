@@ -3,11 +3,7 @@ Injectable camera for Shadow of the Tomb Raider
 
 Current supported game version: v1.0+  
 Camera version: 1.0.4  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/SOTTR_104  
 Credits: Otis_Inf.  
-
-### How to use
-Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.
 
 ### EULA
 To use these camera tools, you have to comply to the following:

@@ -3,7 +3,6 @@ Injectable camera for Dying Light
 
 Current supported game version: v1.1.16+  
 Camera version: 1.0.1  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/DL_101  
 Credits: Otis_Inf. Thanks to Jim2Point0 for LoD override.
 
 ### How to use
