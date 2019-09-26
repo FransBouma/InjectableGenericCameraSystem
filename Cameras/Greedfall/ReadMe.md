@@ -1,9 +1,17 @@
 Injectable camera for Greedfall
 ============================
 
-Current supported game version: v1.0.0+
+Current supported game version: v1.0.0+  
+Binary download: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/GF_101  
 Camera version: 1.0.2  
-Credits: Jim2Point0. Additional coding by Otis_Inf. 
+Credits: Jim2Point0. Additional coding by Otis_Inf.  
+
+### Important
+This camera and its system is made by volunteers in their spare time. If you use this camera for commercial activities 
+(e.g. you make money with the shots or videos you produce with this camera), consider a donation. 
+
+There's no support. If the camera breaks because of a game update, you're encouraged to send in a pull request with a fix.
+Read the enclosed readme for details how to use it. 
 
 ### Features
 
@@ -31,12 +39,7 @@ v1.0.1: (15-sep-2019) Fix for multi-shot not freeing the backbuffer in some situ
 v1.0.0: (13-sep-2019) First release
 
 ### How to use
-Read the enclosed readme.txt for details, really! Run the game as **administrator** otherwise it won't work.
-
-### EULA
-To use these camera tools, you have to comply to the following:
-If you ask me a question which is answered in the enclosed readme.txt, so i.o.w. you didn't read it at all, 
-you owe me a new AAA game. Easy, right? 
+Read the enclosed readme.txt for details, really! 
 
 ### Acknowledgements
 This camera uses [MinHook](https://github.com/TsudaKageyu/minhook) by Tsuda Kageyu.

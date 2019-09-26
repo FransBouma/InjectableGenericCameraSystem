@@ -26,14 +26,17 @@ The SDK is needed for DirectXMath.h
 There's an external dependency on [MinHook](https://github.com/TsudaKageyu/minhook) through a git submodule. This should be downloaded
 automatically when you clone the repo. The camera uses DirectXMath for the 3D math, which is a self-contained .h file, from the Windows SDK. 
 
-### No binaries
-This repository contains releases, but there are no binary installments. The main reason is that the cameras were used for profit while I 
-made these to be used for fun and not for profit. If you want a binary, you can contact me and if I know you, I'll give a binary. Creating these
-cameras takes a lot of effort and free time. I share them to let others create beautiful artpieces from games for fun so they have a great time too. 
-When the cameras are used for money-oriented activities, it makes me someone who works for free, which isn't why I made these cameras.
+### Commercial usage 
+These cameras and its system are made by volunteers in their spare time. If you use these camera for commercial activities 
+(e.g. you make money with the shots or videos you produce with this camera), consider a donation. 
 
-I hate it that money is involved in the growing community of virtual photographers and this is my attempt to stop that. It's likely fruitless, but it's
-all I can do. 
+### Support
+There's no support. If a camera breaks because of a game update, you're encouraged to send in a pull request with a fix. Cameras get updated from time to time
+but the older the camera gets, the more likely it's not going to be updated. 
+
+### Binaries with the releases
+Some cameras have binaries with their release, most don't. Only the most recent cameras have binary distributions. If you need a binary for an older game,
+ask, and I might re-upload it. 
 
 ## Camera's released: 
 * Assassin's Creed 3: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/AssassinsCreed3
