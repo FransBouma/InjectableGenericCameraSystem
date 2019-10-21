@@ -467,3 +467,9 @@ Control_DX12.exe+ABAD5 - 8B 90 D0010000        - mov edx,[rax+000001D0]
 Control_DX12.exe+ABADB - 8B C2                 - mov eax,edx
 Control_DX12.exe+ABADD - C1 F8 1F              - sar eax,1F { 31 }
 Control_DX12.exe+ABAE0 - 83 E0 01              - and eax,01 { 1 }
+
+// Light setup is done in:
+coregame_rmdwin10_f.coregame::SpotLightComponent::gameSetup...
+for each light. 
+
+spotlight reversed: https://pastebin.com/Ss1ZCb19
