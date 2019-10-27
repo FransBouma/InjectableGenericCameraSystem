@@ -16,21 +16,21 @@ input_rmdwin10_f.dll+8857 - CC                    - int 3
 // enable free camera in main game:
 // Search for 'Free camera' in string references. 
 // Latest patch:
-Control_DX12.exe+3361BC - 48 8D 55 A0           - lea rdx,[rbp-60]
-Control_DX12.exe+3361C0 - 48 8D 4D E0           - lea rcx,[rbp-20]
-Control_DX12.exe+3361C4 - FF 15 A6DF9C00        - call qword ptr [Control_DX12.exe+D04170] { ->physics_rmdwin10_f.physics::updateApexCamera }
-Control_DX12.exe+3361CA - 48 63 0D 6B23E600     - movsxd  rcx,dword ptr [Control_DX12.exe+119853C]		>>> Address for free camera: set to 1 to enable. DX11: Control_DX11.exe+5487EA - 48 63 05 2BFDC400     - movsxd  rax,dword ptr [Control_DX11.exe+119851C]
-Control_DX12.exe+3361D1 - 48 8D 15 981CA400     - lea rdx,[Control_DX12.exe+D77E70] { ("Current camera") }
-Control_DX12.exe+3361D8 - 48 8B 0C CF           - mov rcx,[rdi+rcx*8]
-Control_DX12.exe+3361DC - E8 CF0D0000           - call Control_DX12.exe+336FB0
-Control_DX12.exe+3361E1 - 48 8D 15 401CA400     - lea rdx,[Control_DX12.exe+D77E28] { ("Free camera") }
-Control_DX12.exe+3361E8 - 48 8B 0D 5923E600     - mov rcx,[Control_DX12.exe+1198548] { (1E4D9EB33B0) }
-Control_DX12.exe+3361EF - E8 BC0D0000           - call Control_DX12.exe+336FB0
-Control_DX12.exe+3361F4 - 48 8D 15 3D1CA400     - lea rdx,[Control_DX12.exe+D77E38] { ("Player camera") }
-Control_DX12.exe+3361FB - 48 8B 0D F622E600     - mov rcx,[Control_DX12.exe+11984F8] { (1E4DA0BCD30) }
-Control_DX12.exe+336202 - E8 A90D0000           - call Control_DX12.exe+336FB0
-Control_DX12.exe+336207 - 80 3D 92EFE700 00     - cmp byte ptr [Control_DX12.exe+11B51A0],00 { (0),0 }
-Control_DX12.exe+33620E - 0F84 54010000         - je Control_DX12.exe+336368
+Control_DX12.exe+336340 - 48 8D 4D E0           - lea rcx,[rbp-20]
+Control_DX12.exe+336344 - FF 15 26DE9C00        - call qword ptr [Control_DX12.exe+D04170] { ->physics_rmdwin10_f.physics::updateApexCamera }
+Control_DX12.exe+33634A - 48 63 0D 2B22E600     - movsxd  rcx,dword ptr [Control_DX12.exe+119857C]		>>> Address for free camera: set to 1 to enable. DX11: Control_DX11.exe+33634A - 48 63 0D 8B21E600     - movsxd  rcx,dword ptr [Control_DX11.exe+11984DC] { (0) }
+Control_DX12.exe+336351 - 48 8D 15 601BA400     - lea rdx,[Control_DX12.exe+D77EB8] { ("Current camera") }
+Control_DX12.exe+336358 - 48 8B 0C CF           - mov rcx,[rdi+rcx*8]
+Control_DX12.exe+33635C - E8 CF0D0000           - call Control_DX12.exe+337130
+Control_DX12.exe+336361 - 48 8D 15 601BA400     - lea rdx,[Control_DX12.exe+D77EC8] { ("Free camera") }
+Control_DX12.exe+336368 - 48 8B 0D 1922E600     - mov rcx,[Control_DX12.exe+1198588] { (1CEE89313B0) }
+Control_DX12.exe+33636F - E8 BC0D0000           - call Control_DX12.exe+337130
+Control_DX12.exe+336374 - 48 8D 15 0D1BA400     - lea rdx,[Control_DX12.exe+D77E88] { ("Player camera") }
+Control_DX12.exe+33637B - 48 8B 0D B621E600     - mov rcx,[Control_DX12.exe+1198538] { (1CEE8B3AD30) }
+Control_DX12.exe+336382 - E8 A90D0000           - call Control_DX12.exe+337130
+Control_DX12.exe+336387 - 80 3D 52EEE700 00     - cmp byte ptr [Control_DX12.exe+11B51E0],00 { (0),0 }
+Control_DX12.exe+33638E - 0F84 54010000         - je Control_DX12.exe+3364E8
+Control_DX12.exe+336394 - 45 33 E4              - xor r12d,r12d
 // RTM Game:
 Control_DX12.exe+32777C - FF 15 6E599B00        - call qword ptr [Control_DX12.exe+CDD0F0] { ->physics_rmdwin10_f.physics::updateApexCamera }
 Control_DX12.exe+327782 - 48 63 0D 8FF8E300     - movsxd  rcx,dword ptr [Control_DX12.exe+1167018]		>>> Address for free camera: set to 1 to enable. DX11: 1166F18
@@ -49,14 +49,18 @@ Control_DX12.exe+3277CC - 45 33 E4              - xor r12d,r12d
 
 // how to obtain the cameracomponentstate base address: 
 // Latest patch:
-Control_DX12.exe+548800 - C6 00 00              - mov byte ptr [rax],00 { 0 }
-Control_DX12.exe+548803 - C7 46 60 00000000     - mov [rsi+60],00000000 { 0 }
-Control_DX12.exe+54880A - 48 63 05 2BFDC400     - movsxd  rax,dword ptr [Control_DX12.exe+119853C] 	<< is 1 if freecam is on, see above
-Control_DX12.exe+548811 - 48 8D 0D E877ABFF     - lea rcx,[Control_DX12.exe] { (9460301) }
-Control_DX12.exe+548818 - 48 8B 8C C1 40851901  - mov rcx,[rcx+rax*8+01198540]				<< hardcoded static address. DX11: Control_DX11.exe+5487F8 - 48 8B 8C C1 20851901  - mov rcx,[rcx+rax*8+01198520]
-Control_DX12.exe+548820 - 33 D2                 - xor edx,edx
-Control_DX12.exe+548822 - 48 85 C9              - test rcx,rcx
-Control_DX12.exe+548825 - 74 19                 - je Control_DX12.exe+548840
+Control_DX12.exe+548975 - 0F82 C7FEFFFF         - jb Control_DX12.exe+548842
+Control_DX12.exe+54897B - 48 8B 44 24 30        - mov rax,[rsp+30]
+Control_DX12.exe+548980 - C6 00 00              - mov byte ptr [rax],00 { 0 }
+Control_DX12.exe+548983 - C7 46 60 00000000     - mov [rsi+60],00000000 { 0 }
+Control_DX12.exe+54898A - 48 63 05 EBFBC400     - movsxd  rax,dword ptr [Control_DX12.exe+119857C] { (0) }
+Control_DX12.exe+548991 - 48 8D 0D 6876ABFF     - lea rcx,[Control_DX12.exe]
+Control_DX12.exe+548998 - 48 8B 8C C1 80851901  - mov rcx,[rcx+rax*8+01198580]				<< hardcoded static address. DX11: Control_DX11.exe+548978 - 48 8B 8C C1 E0841901  - mov rcx,[rcx+rax*8+011984E0]
+Control_DX12.exe+5489A0 - 33 D2                 - xor edx,edx
+Control_DX12.exe+5489A2 - 48 85 C9              - test rcx,rcx
+Control_DX12.exe+5489A5 - 74 19                 - je Control_DX12.exe+5489C0
+Control_DX12.exe+5489A7 - 48 8D 55 C7           - lea rdx,[rbp-39]
+Control_DX12.exe+5489AB - FF 15 7FA77B00        - call qword ptr [Control_DX12.exe+D03130] { ->coregame_rmdwin10_f.coregame::CameraComponentState::getPosition }
 // RTM Game
 Control_DX12.exe+53804E - 0F82 C9FEFFFF         - jb Control_DX12.exe+537F1D
 Control_DX12.exe+538054 - 48 8B 44 24 50        - mov rax,[rsp+50]
@@ -349,16 +353,15 @@ This has the downside that it isn't picked up immediately, you have to enable/di
 // Alternative timestop
 // Pausing r::Timer. 
 // Latest patch:
-Control_DX12.exe+31A378 - FF 15 9AC29E00        - call qword ptr [Control_DX12.exe+D06618] { ->rl_rmdwin10_f.r::ScratchPad::garbageCollection }
-Control_DX12.exe+31A37E - FF 15 9CC29E00        - call qword ptr [Control_DX12.exe+D06620] { ->rl_rmdwin10_f.r::ScratchPad::freeAll }
-Control_DX12.exe+31A384 - BA 02000000           - mov edx,00000002 { 2 }
-Control_DX12.exe+31A389 - 48 8B 0D 28E2E700     - mov rcx,[Control_DX12.exe+11985B8]    <<<<<<< Read r::Timer global instance. DX11: offset 31A389, offset is 1166F88
-Control_DX12.exe+31A390 - E8 7BD70900           - call Control_DX12.exe+3B7B10
-Control_DX12.exe+31A395 - BA 01000000           - mov edx,00000001 { 1 }
-Control_DX12.exe+31A39A - 48 8B 0D 17E2E700     - mov rcx,[Control_DX12.exe+11985B8] { (22B8693C9D0) }
-Control_DX12.exe+31A3A1 - E8 6AD70900           - call Control_DX12.exe+3B7B10
-Control_DX12.exe+31A3A6 - 48 8B 05 23DA9E00     - mov rax,[Control_DX12.exe+D07DD0] { (7FFD620B5398) }
-Control_DX12.exe+31A3AD - 48 8B 08              - mov rcx,[rax]
+Control_DX12.exe+31A4F8 - FF 15 1AC19E00        - call qword ptr [Control_DX12.exe+D06618] { ->rl_rmdwin10_f.r::ScratchPad::garbageCollection }
+Control_DX12.exe+31A4FE - FF 15 1CC19E00        - call qword ptr [Control_DX12.exe+D06620] { ->rl_rmdwin10_f.r::ScratchPad::freeAll }
+Control_DX12.exe+31A504 - BA 02000000           - mov edx,00000002 { 2 }
+Control_DX12.exe+31A509 - 48 8B 0D E8E0E700     - mov rcx,[Control_DX12.exe+11985F8]    <<<<<<< Read r::Timer global instance. DX11: offset 31A389, offset is 1166F88
+Control_DX12.exe+31A510 - E8 7BD70900           - call Control_DX12.exe+3B7C90
+Control_DX12.exe+31A515 - BA 01000000           - mov edx,00000001 { 1 }
+Control_DX12.exe+31A51A - 48 8B 0D D7E0E700     - mov rcx,[Control_DX12.exe+11985F8]
+Control_DX12.exe+31A521 - E8 6AD70900           - call Control_DX12.exe+3B7C90
+Control_DX12.exe+31A526 - 48 8B 05 9BD89E00     - mov rax,[Control_DX12.exe+D07DC8] { (7FFD64BE5398) }
 // RTM Game:
 Control_DX12.exe+30C838 - FF 15 1A2D9D00        - call qword ptr [Control_DX12.exe+CDF558] { ->rl_rmdwin10_f.r::ScratchPad::garbageCollection }
 Control_DX12.exe+30C83E - FF 15 1C2D9D00        - call qword ptr [Control_DX12.exe+CDF560] { ->rl_rmdwin10_f.r::ScratchPad::freeAll }
