@@ -15,6 +15,9 @@ namespace IGCSInjectorUI
 {
     public partial class MainForm : Form
     {
+		private static string RecentlyUsedFilename = "IGCSInjectorRecentlyUsed.txt";
+		private static string IGCSSettingsFolder = "IGCS";
+
 		private Process _selectedProcess;
 		private Dictionary<string, string> _recentProcessesWithDllsUsed;		// key: process name (blabla.exe), value: dll name (full path). 
 		private string _defaultProcessName;
@@ -25,15 +28,81 @@ namespace IGCSInjectorUI
             InitializeComponent();
 			_selectedProcess = null;
 			_recentProcessesWithDllsUsed = new Dictionary<string, string>();
+		}
 
+
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			
 			LoadDefaultNamesFromConfigFile();
 			FindDefaultProcess();
 
-			LoadRecentProcessList();
+			try
+			{
+				LoadRecentProcessList();
+			}
+			catch
+			{
+				// ignore, as we can't do much about it anyway... 
+			}
 
 			DisplayProcessInForm();
 			DisplayVersionInForm();
 		}
+
+
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			base.OnClosing(e);
+			SaveRecentProcessList();
+		}
+
+
+		private void LoadRecentProcessList()
+		{
+			var fileName = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), IGCSSettingsFolder), RecentlyUsedFilename);
+			if(!File.Exists(fileName))
+			{
+				return;
+			}
+			// format: 
+			// processname1|dllname1
+			// processname2|dllname1
+			// processname3|dllname2
+			// ...
+			// example:
+			// mygame.exe|..\..\mygamecameratools.dll
+			// mygame2.exe|unlocker.dll
+			var allLines = File.ReadAllLines(fileName);
+			foreach(var line in allLines)
+			{
+				var parts = line.Split('|');
+				if(parts.Length!=2)
+				{
+					continue;
+				}
+				_recentProcessesWithDllsUsed[parts[0]] = parts[1];
+			}
+		}
+
+
+		private void SaveRecentProcessList()
+		{
+			if(_recentProcessesWithDllsUsed.Count<=0)
+			{
+				return;
+			}
+			var folderName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), IGCSSettingsFolder);
+			if(!Directory.Exists(folderName))
+			{
+				Directory.CreateDirectory(folderName);
+			}
+			var fileName = Path.Combine(folderName, RecentlyUsedFilename);
+			var linesToWrite = _recentProcessesWithDllsUsed.Select(kvp=>kvp.Key + "|" + kvp.Value);
+			File.WriteAllLines(fileName, linesToWrite);
+		}
+
 
 		private void FindDefaultProcess()
 		{
@@ -45,6 +114,7 @@ namespace IGCSInjectorUI
 			_selectedProcess = Process.GetProcesses().FirstOrDefault(p=>p.SessionId == currentProcess.SessionId && !string.IsNullOrEmpty(p.MainWindowTitle) && 
 																		p.MainModule.ModuleName.ToLowerInvariant()==_defaultProcessName);
 		}
+
 
 		private void LoadDefaultNamesFromConfigFile()
 		{
@@ -80,10 +150,12 @@ namespace IGCSInjectorUI
 			_dllFilenameTextBox.Text = _defaultDllName;
 		}
 
+
 		private void DisplayVersionInForm()
 		{
 			this.Text += string.Format(" v{0}", this.GetType().Assembly.GetName().Version.ToString(3));
 		}
+
 
 		private void DisplayProcessInForm()
 		{
@@ -96,6 +168,7 @@ namespace IGCSInjectorUI
 				_processNameTextBox.Text = string.Format("({0}) {1} ({2})", _selectedProcess.Id,  _selectedProcess.MainModule.ModuleName, _selectedProcess.MainWindowTitle);
 			}
 		}
+
 
 		private string GetAbsolutePathForDllName()
 		{
@@ -117,6 +190,7 @@ namespace IGCSInjectorUI
 		{
 			_injectButton.Enabled = IsReadyToInject();
 		}
+
 
 		private bool IsReadyToInject()
 		{
@@ -154,7 +228,7 @@ namespace IGCSInjectorUI
 
 		private void _selectProcessButton_Click(object sender, EventArgs e)
 		{
-			using(var processSelector = new ProcessSelector(_recentProcessesWithDllsUsed))
+			using(var processSelector = new ProcessSelector(_recentProcessesWithDllsUsed.Keys.ToList()))
 			{
 				var result = processSelector.ShowDialog(this);
 				if(result==DialogResult.Cancel)
@@ -163,6 +237,14 @@ namespace IGCSInjectorUI
 				}
 				_selectedProcess = processSelector.SelectedProcess;
 				DisplayProcessInForm();
+				// pre-select the dll if there's no dll selected
+				if(string.IsNullOrEmpty(_dllFilenameTextBox.Text))
+				{
+					if(_recentProcessesWithDllsUsed.TryGetValue(_selectedProcess.MainModule.ModuleName, out string dllName))
+					{
+						_dllFilenameTextBox.Text = dllName;
+					}
+				}
 			}
 		}
 
@@ -178,6 +260,8 @@ namespace IGCSInjectorUI
 			var result = injector.PerformInjection(dllAbsolutePath, _selectedProcess.Id);
 			if(result)
 			{
+				// store dll with process name in recent list
+				_recentProcessesWithDllsUsed[_selectedProcess.MainModule.ModuleName] = _dllFilenameTextBox.Text;
 				MessageBox.Show(this, "Injection succeeded. Enjoy!", "Injection result", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				// we can now exit.
 				this.Close();

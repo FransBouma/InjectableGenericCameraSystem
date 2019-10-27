@@ -241,7 +241,7 @@ namespace IGCSInjectorUI
 			// _creditsPictureBox
 			// 
 			this._creditsPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this._creditsPictureBox.Image = global::IGCSInjectorUI.MainResources.IGCS_Credits;
+			this._creditsPictureBox.Image = ((System.Drawing.Image)(resources.GetObject("_creditsPictureBox.Image")));
 			this._creditsPictureBox.InitialImage = null;
 			this._creditsPictureBox.Location = new System.Drawing.Point(345, 324);
 			this._creditsPictureBox.Name = "_creditsPictureBox";
