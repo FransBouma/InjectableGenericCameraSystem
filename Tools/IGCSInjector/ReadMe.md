@@ -8,7 +8,7 @@ apparently doesn't match Defender's checks so it's left alone. The tool doesn't 
 and loads the dll into that memory, and then starts the dll as if the host process has loaded the dll itself. Nothing nasty, it's actually designed windows
 functionality (e.g. debuggers use this too). 
 
-Release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/IGCSInjector_101   
+Release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/IGCSInjector_102  
 Credits: Otis_Inf
 
 ### How to use
