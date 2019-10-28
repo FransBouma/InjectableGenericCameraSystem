@@ -66,7 +66,7 @@ namespace IGCSInjectorUI
 						row[3] = process.MainWindowTitle;
 						row[4] = process.MainModule.FileName;
 
-						if (IsRecentProcess(process.ProcessName))
+						if (IsRecentProcess(process.MainModule.ModuleName))
 						{
 							_boundProcessList.Rows.InsertAt(row, 0);
 						}

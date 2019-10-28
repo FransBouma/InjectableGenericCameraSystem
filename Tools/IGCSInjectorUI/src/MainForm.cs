@@ -17,9 +17,10 @@ namespace IGCSInjectorUI
     {
 		private static string RecentlyUsedFilename = "IGCSInjectorRecentlyUsed.txt";
 		private static string IGCSSettingsFolder = "IGCS";
+		private static int NumberOfCacheEntriesToKeep = 100;
 
 		private Process _selectedProcess;
-		private Dictionary<string, string> _recentProcessesWithDllsUsed;		// key: process name (blabla.exe), value: dll name (full path). 
+		private Dictionary<string, DllCacheData> _recentProcessesWithDllsUsed;		// key: process name (blabla.exe), value: dll name (full path) & DateTime last used.
 		private string _defaultProcessName;
 		private string _defaultDllName;
 
@@ -27,7 +28,7 @@ namespace IGCSInjectorUI
         {
             InitializeComponent();
 			_selectedProcess = null;
-			_recentProcessesWithDllsUsed = new Dictionary<string, string>();
+			_recentProcessesWithDllsUsed = new Dictionary<string, DllCacheData>();
 		}
 
 
@@ -67,9 +68,9 @@ namespace IGCSInjectorUI
 				return;
 			}
 			// format: 
-			// processname1|dllname1
-			// processname2|dllname1
-			// processname3|dllname2
+			// processname1|dllname1|Ticks
+			// processname2|dllname1|Ticks
+			// processname3|dllname2|Ticks
 			// ...
 			// example:
 			// mygame.exe|..\..\mygamecameratools.dll
@@ -78,11 +79,11 @@ namespace IGCSInjectorUI
 			foreach(var line in allLines)
 			{
 				var parts = line.Split('|');
-				if(parts.Length!=2)
+				if(parts.Length!=3)
 				{
 					continue;
 				}
-				_recentProcessesWithDllsUsed[parts[0]] = parts[1];
+				_recentProcessesWithDllsUsed[parts[0]] = new DllCacheData(parts[1], new DateTime(Convert.ToInt64(parts[2])));
 			}
 		}
 
@@ -93,13 +94,25 @@ namespace IGCSInjectorUI
 			{
 				return;
 			}
+			// trim list if there are more than the max
+			if(_recentProcessesWithDllsUsed.Count > NumberOfCacheEntriesToKeep)
+			{
+				// keep the most recent 100. 
+				var mostRecent = _recentProcessesWithDllsUsed.OrderByDescending(kvp=>kvp.Value.LastUsedDate).Take(NumberOfCacheEntriesToKeep).Select(kvp=>kvp.Key).ToList();
+				// remove the rest. 
+				var toRemove = _recentProcessesWithDllsUsed.Keys.Except(mostRecent).ToList();
+				foreach(var key in toRemove)
+				{
+					_recentProcessesWithDllsUsed.Remove(key);
+				}
+			}
 			var folderName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), IGCSSettingsFolder);
 			if(!Directory.Exists(folderName))
 			{
 				Directory.CreateDirectory(folderName);
 			}
 			var fileName = Path.Combine(folderName, RecentlyUsedFilename);
-			var linesToWrite = _recentProcessesWithDllsUsed.Select(kvp=>kvp.Key + "|" + kvp.Value);
+			var linesToWrite = _recentProcessesWithDllsUsed.Select(kvp=>kvp.Key + "|" + kvp.Value.DllName + "|" + kvp.Value.LastUsedDate.Ticks);
 			File.WriteAllLines(fileName, linesToWrite);
 		}
 
@@ -240,9 +253,9 @@ namespace IGCSInjectorUI
 				// pre-select the dll if there's no dll selected
 				if(string.IsNullOrEmpty(_dllFilenameTextBox.Text))
 				{
-					if(_recentProcessesWithDllsUsed.TryGetValue(_selectedProcess.MainModule.ModuleName, out string dllName))
+					if(_recentProcessesWithDllsUsed.TryGetValue(_selectedProcess.MainModule.ModuleName, out DllCacheData dllData))
 					{
-						_dllFilenameTextBox.Text = dllName;
+						_dllFilenameTextBox.Text = dllData.DllName;
 					}
 				}
 			}
@@ -261,7 +274,7 @@ namespace IGCSInjectorUI
 			if(result)
 			{
 				// store dll with process name in recent list
-				_recentProcessesWithDllsUsed[_selectedProcess.MainModule.ModuleName] = _dllFilenameTextBox.Text;
+				_recentProcessesWithDllsUsed[_selectedProcess.MainModule.ModuleName] = new DllCacheData(_dllFilenameTextBox.Text, DateTime.Now);
 				MessageBox.Show(this, "Injection succeeded. Enjoy!", "Injection result", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				// we can now exit.
 				this.Close();

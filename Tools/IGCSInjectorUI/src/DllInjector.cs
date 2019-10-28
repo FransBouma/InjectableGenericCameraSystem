@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IGCSInjectorUI
@@ -66,9 +67,7 @@ namespace IGCSInjectorUI
 				return false;
 			}
 
-			// cleaning up. No need for error checking. If this fails, it's not really a problem.
-			this.LastActionPerformed = "Cleaning up...";
-			Win32Wrapper.VirtualFreeEx(processHandle, memoryInTargetProcess, dllLengthToPassInBytes, FreeType.Release);
+			// no clean up, we're not going to 'unload' the dll... 
 
 			this.LastActionPerformed = "Done";
 			return true;
