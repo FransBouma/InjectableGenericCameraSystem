@@ -25,7 +25,7 @@ namespace IGCSInjectorUI
 			this.LastActionPerformed = "Opening the host process";
 			IntPtr processHandle = Win32Wrapper.OpenProcess(ProcessAccessFlags.CreateThread | ProcessAccessFlags.QueryInformation | ProcessAccessFlags.VirtualMemoryOperation |
 															ProcessAccessFlags.VirtualMemoryWrite | ProcessAccessFlags.VirtualMemoryRead, 
-															false, processId);
+															false, (uint)processId);
 			if(processHandle==IntPtr.Zero)
 			{
 				// failed, so set the error code and return
@@ -52,12 +52,16 @@ namespace IGCSInjectorUI
 
 			this.LastActionPerformed = "Writing dll filename into memory allocated in host process";
 			IntPtr bytesWritten;
-			bool result = Win32Wrapper.WriteProcessMemory(processHandle, memoryInTargetProcess, Encoding.Default.GetBytes(fullPathOfDllToInject), dllLengthToPassInBytes, out bytesWritten);
+			var bytesToWrite = Encoding.Default.GetBytes(fullPathOfDllToInject);
+			bool result = Win32Wrapper.WriteProcessMemory(processHandle, memoryInTargetProcess, bytesToWrite, dllLengthToPassInBytes, out bytesWritten);
 			if(!result)
 			{
 				this.LastError = Marshal.GetLastWin32Error();
 				return false;
 			}
+			// Wait till the write process has completed... We can't just blast on, as writing into the process memory from .NET requires some time... 
+			// Wait 2.5s to stay on the safe side... 
+			Thread.Sleep(2500);
 
 			this.LastActionPerformed = "Creating a thread in the host process to load the dll";
 			IntPtr remoteThreadHandle = Win32Wrapper.CreateRemoteThread(processHandle, IntPtr.Zero, 0, loadLibraryAddress, memoryInTargetProcess, 0, IntPtr.Zero);
@@ -66,8 +70,13 @@ namespace IGCSInjectorUI
 				this.LastError = Marshal.GetLastWin32Error();
 				return false;
 			}
-
-			// no clean up, we're not going to 'unload' the dll... 
+			// no clean up of the memory, we're not going to 'unload' the dll... 
+			result = Win32Wrapper.CloseHandle(processHandle);
+			if(!result)
+			{
+				this.LastError = Marshal.GetLastWin32Error();
+				return false;
+			}
 
 			this.LastActionPerformed = "Done";
 			return true;

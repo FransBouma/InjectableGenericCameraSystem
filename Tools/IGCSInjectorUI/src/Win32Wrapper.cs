@@ -28,7 +28,7 @@ namespace IGCSInjectorUI
 	}
 
 	[Flags]
-	public enum AllocationType
+	public enum AllocationType : uint
 	{
 			Commit = 0x1000,
 			Reserve = 0x2000,
@@ -42,7 +42,7 @@ namespace IGCSInjectorUI
 	}
 
 	[Flags]
-	public enum MemoryProtection
+	public enum MemoryProtection : uint
 	{
 			Execute = 0x10,
 			ExecuteRead = 0x20,
@@ -58,7 +58,7 @@ namespace IGCSInjectorUI
 	}
 
 	[Flags]
-	public enum FreeType
+	public enum FreeType : uint
 	{
 		 Decommit = 0x4000,
 		 Release = 0x8000,
@@ -67,7 +67,7 @@ namespace IGCSInjectorUI
     public class Win32Wrapper
     {
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError=true)]
-		public static extern IntPtr OpenProcess(ProcessAccessFlags processAccess, bool bInheritHandle, int processId);
+		public static extern IntPtr OpenProcess(ProcessAccessFlags processAccess, bool bInheritHandle, uint processId);
 
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
 		[ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
