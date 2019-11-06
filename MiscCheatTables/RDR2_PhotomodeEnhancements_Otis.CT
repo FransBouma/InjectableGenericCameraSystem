@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="29">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>7</ID>
+      <Description>"Remove photomode freecam range / rotation limits / black bars (leave enabled!)"</Description>
+      <LastState/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+aobscanmodule(RemovePMCoordRange,RDR2.exe,E8 ?? ?? ?? ?? 45 33 C0 48 8D 55 B0 48 8D 4B 20) // should be unique
+aobscanmodule(RemovePMRotationRange,RDR2.exe,E8 ?? ?? ?? ?? F3 0F 10 4D 30 48 8D 55 F0) // should be unique
+aobscanmodule(RemovePMBlackBars,RDR2.exe, E8 ?? ?? ?? ?? 65 48 8B 04 25 58 00 00 00 45 33 C9 8B 1D ?? ?? ?? ?? 45 33 C0 48 83 64 24 20 00 BA B0 13 00 00 48 8B 0C D8)
+
+RemovePMCoordRange:
+  nop
+  nop
+  nop
+  nop
+  nop
+
+RemovePMRotationRange:
+  nop
+  nop
+  nop
+  nop
+  nop
+
+RemovePMBlackBars:
+  nop
+  nop
+  nop
+  nop
+  nop
+
+registersymbol(RemovePMCoordRange)
+registersymbol(RemovePMRotationRange)
+registersymbol(RemovePMBlackBars)
+
+[DISABLE]
+RemovePMCoordRange:
+  db E8 53 F9 FF FF
+
+RemovePMRotationRange:
+  db E8 8C A0 00 00
+
+RemovePMBlackBars:
+  db E8 5C AB C6 FF
+
+unregistersymbol(RemovePMCoordRange)
+unregistersymbol(RemovePMRotationRange)
+unregistersymbol(RemovePMBlackBars)
+
+{
+// Coord range removal
+"RDR2.exe"+1287DE: 48 8B CB                 -  mov rcx,rbx
+"RDR2.exe"+1287E1: 66 0F 70 D6 55           -  pshufd xmm2,xmm655
+"RDR2.exe"+1287E6: 0F 59 55 C0              -  mulps xmm2,[rbp-40]
+"RDR2.exe"+1287EA: 66 0F 70 CE AA           -  pshufd xmm1,xmm6-56
+"RDR2.exe"+1287EF: 0F 59 4D D0              -  mulps xmm1,[rbp-30]
+"RDR2.exe"+1287F3: 0F 58 D0                 -  addps xmm2,xmm0
+"RDR2.exe"+1287F6: 0F 28 45 E0              -  movaps xmm0,[rbp-20]
+"RDR2.exe"+1287FA: 0F 58 D1                 -  addps xmm2,xmm1
+"RDR2.exe"+1287FD: 0F 58 C2                 -  addps xmm0,xmm2
+"RDR2.exe"+128800: 0F 29 45 E0              -  movaps [rbp-20],xmm0
+// ---------- INJECTING HERE ----------
+"RDR2.exe"+128804: E8 53 F9 FF FF           -  call RDR2.exe+12815C      &lt;&lt;&lt;&lt; NOP
+// ---------- DONE INJECTING  ----------
+"RDR2.exe"+128809: 45 33 C0                 -  xor r8d,r8d
+"RDR2.exe"+12880C: 48 8D 55 B0              -  lea rdx,[rbp-50]
+"RDR2.exe"+128810: 48 8D 4B 20              -  lea rcx,[rbx+20]
+"RDR2.exe"+128814: E8 8F E1 FF FF           -  call RDR2.exe+1269A8
+"RDR2.exe"+128819: 0F 28 74 24 70           -  movaps xmm6,[rsp+70]
+"RDR2.exe"+12881E: 4C 8D 9C 24 80 00 00 00  -  lea r11,[rsp+00000080]
+"RDR2.exe"+128826: 49 8B 5B 10              -  mov rbx,[r11+10]
+"RDR2.exe"+12882A: 49 8B 7B 18              -  mov rdi,[r11+18]
+"RDR2.exe"+12882E: 49 8B E3                 -  mov rsp,r11
+"RDR2.exe"+128831: 5D                       -  pop rbp
+
+// rotation range removal
+// Rotation limit removal:
+RDR2.exe+11D7ED - 0F28 C1               - movaps xmm0,xmm1
+RDR2.exe+11D7F0 - F3 0F5C 05 70ED0C03   - subss xmm0,[RDR2.exe+31EC568]
+RDR2.exe+11D7F8 - 48 8D 8B F0050000     - lea rcx,[rbx+000005F0]
+RDR2.exe+11D7FF - F3 0F11 45 48         - movss [rbp+48],xmm0
+RDR2.exe+11D804 - 44 8A C7              - mov r8l,dil
+RDR2.exe+11D807 - 48 8D 55 48           - lea rdx,[rbp+48]
+RDR2.exe+11D80B - E8 8CA00000           - call RDR2.exe+12789C			&lt;&lt; nop: no rotation limit
+RDR2.exe+11D810 - F3 0F10 4D 30         - movss xmm1,[rbp+30]
+RDR2.exe+11D815 - 48 8D 55 F0           - lea rdx,[rbp-10]
+RDR2.exe+11D819 - F3 0F10 45 38         - movss xmm0,[rbp+38]
+RDR2.exe+11D81E - 0F28 D9               - movaps xmm3,xmm1
+RDR2.exe+11D821 - F3 0F10 55 48         - movss xmm2,[rbp+48]
+}
+
+</AssemblerScript>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>13</ID>
+      <Description>"Time of day: Hour. 0-23. Setting the value outside this range crashes the game"</Description>
+      <LastState Value="9" RealAddress="7FF6AC12BA50"/>
+      <VariableType>2 Bytes</VariableType>
+      <Address>RDR2.exe+440BA50</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>8</ID>
+      <Description>"Override photomode freecam FOV (Toggle: F7. Zoom in: Numpad+ Zoom out: Numpad-)"</Description>
+      <LastState/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+
+aobscanmodule(FoVIntercept,RDR2.exe,F3 0F 11 83 80 00 00 00 48 83 C4 20 5B C3 CC) // should be unique
+alloc(newmem,$1000,"RDR2.exe"+128440)
+
+label(code)
+label(return)
+label(fovAddress)
+registersymbol(fovAddress)
+registersymbol(FoVIntercept)
+
+newmem:
+
+code:
+  mov [fovAddress], rbx
+  //movss [rbx+00000080],xmm0
+  jmp return
+
+fovAddress:
+dq 0
+
+FoVIntercept:
+  jmp newmem
+  nop
+  nop
+  nop
+return:
+
+[DISABLE]
+
+FoVIntercept:
+  db F3 0F 11 83 80 00 00 00
+
+unregistersymbol(fovAddress)
+unregistersymbol(FoVIntercept)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "RDR2.exe"+128440
+
+"RDR2.exe"+128417: F3 0F 10 44 24 30        -  movss xmm0,[rsp+30]
+"RDR2.exe"+12841D: F3 0F 10 0D 27 41 0C 03  -  movss xmm1,[RDR2.exe+31EC54C]
+"RDR2.exe"+128425: 0F 2F C1                 -  comiss xmm0,xmm1
+"RDR2.exe"+128428: F3 0F 10 15 84 5D 0C 03  -  movss xmm2,[RDR2.exe+31EE1B4]
+"RDR2.exe"+128430: 72 95                    -  jb RDR2.exe+1283C7
+"RDR2.exe"+128432: 0F 2F C2                 -  comiss xmm0,xmm2
+"RDR2.exe"+128435: 76 09                    -  jna RDR2.exe+128440
+"RDR2.exe"+128437: 0F 2F C1                 -  comiss xmm0,xmm1
+"RDR2.exe"+12843A: 72 8B                    -  jb RDR2.exe+1283C7
+"RDR2.exe"+12843C: F3 0F 5D C2              -  minss xmm0,xmm2
+// ---------- INJECTING HERE ----------
+"RDR2.exe"+128440: F3 0F 11 83 80 00 00 00  -  movss [rbx+00000080],xmm0
+// ---------- DONE INJECTING  ----------
+"RDR2.exe"+128448: 48 83 C4 20              -  add rsp,20
+"RDR2.exe"+12844C: 5B                       -  pop rbx
+"RDR2.exe"+12844D: C3                       -  ret 
+"RDR2.exe"+12844E: CC                       -  int 3 
+"RDR2.exe"+12844F: 4B 48                    -  dec r8
+"RDR2.exe"+128451: 89 5C 24 08              -  mov [rsp+08],ebx
+"RDR2.exe"+128455: 57                       -  push rdi
+"RDR2.exe"+128456: 48 83 EC 20              -  sub rsp,20
+"RDR2.exe"+12845A: 0F B7 81 EC 00 00 00     -  movzx eax,word ptr [rcx+000000EC]
+"RDR2.exe"+128461: 48 8D 99 D0 06 00 00     -  lea rbx,[rcx+000006D0]
+}
+</AssemblerScript>
+      <Hotkeys>
+        <Hotkey>
+          <Action>Toggle Activation</Action>
+          <Keys>
+            <Key>118</Key>
+          </Keys>
+          <ID>0</ID>
+        </Hotkey>
+      </Hotkeys>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>9</ID>
+          <Description>"FoV value"</Description>
+          <VariableType>Float</VariableType>
+          <Address>fovAddress</Address>
+          <Offsets>
+            <Offset>80</Offset>
+          </Offsets>
+          <Hotkeys>
+            <Hotkey>
+              <Action>Increase Value</Action>
+              <Keys>
+                <Key>109</Key>
+              </Keys>
+              <Value>1.0</Value>
+              <ID>0</ID>
+            </Hotkey>
+            <Hotkey>
+              <Action>Decrease Value</Action>
+              <Keys>
+                <Key>107</Key>
+              </Keys>
+              <Value>1.0</Value>
+              <ID>1</ID>
+            </Hotkey>
+          </Hotkeys>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>10</ID>
+      <Description>"---------------------------------------------------------"</Description>
+      <LastState Value="" RealAddress="00000000"/>
+      <Color>FF0000</Color>
+      <GroupHeader>1</GroupHeader>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>11</ID>
+      <Description>"By Otis_Inf. v0.4. 06-nov-2019"</Description>
+      <LastState Value="" RealAddress="00000000"/>
+      <Color>FF0000</Color>
+      <GroupHeader>1</GroupHeader>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>12</ID>
+      <Description>"FRAMED. Screenshot Community. https://framedsc.github.io"</Description>
+      <LastState Value="" RealAddress="00000000"/>
+      <Color>FF0000</Color>
+      <GroupHeader>1</GroupHeader>
+    </CheatEntry>
+  </CheatEntries>
+  <CheatCodes>
+    <CodeEntry>
+      <Description>Change of call RDR2.exe+1879C0</Description>
+      <AddressString>RDR2.exe+25C0D81</AddressString>
+      <Before>
+        <Byte>45</Byte>
+        <Byte>33</Byte>
+        <Byte>C9</Byte>
+        <Byte>33</Byte>
+        <Byte>D2</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>3A</Byte>
+        <Byte>6C</Byte>
+        <Byte>BC</Byte>
+        <Byte>FD</Byte>
+      </Actual>
+      <After>
+        <Byte>65</Byte>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>04</Byte>
+        <Byte>25</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of call RDR2.exe+18CB6C</Description>
+      <AddressString>RDR2.exe+1879E8</AddressString>
+      <Before>
+        <Byte>E8</Byte>
+        <Byte>85</Byte>
+        <Byte>D2</Byte>
+        <Byte>75</Byte>
+        <Byte>41</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>7F</Byte>
+        <Byte>51</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>65</Byte>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>04</Byte>
+        <Byte>25</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of call RDR2.exe+2625784</Description>
+      <AddressString>RDR2.exe+187A22</AddressString>
+      <Before>
+        <Byte>D3</Byte>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>0C</Byte>
+        <Byte>31</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>5D</Byte>
+        <Byte>DD</Byte>
+        <Byte>49</Byte>
+        <Byte>02</Byte>
+      </Actual>
+      <After>
+        <Byte>EB</Byte>
+        <Byte>5D</Byte>
+        <Byte>65</Byte>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of call RDR2.exe+262D69C</Description>
+      <AddressString>RDR2.exe+187A81</AddressString>
+      <Before>
+        <Byte>40</Byte>
+        <Byte>48</Byte>
+        <Byte>4C</Byte>
+        <Byte>8B</Byte>
+        <Byte>C5</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>16</Byte>
+        <Byte>5C</Byte>
+        <Byte>4A</Byte>
+        <Byte>02</Byte>
+      </Actual>
+      <After>
+        <Byte>65</Byte>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>04</Byte>
+        <Byte>25</Byte>
+      </After>
+    </CodeEntry>
+  </CheatCodes>
+  <UserdefinedSymbols/>
+</CheatTable>

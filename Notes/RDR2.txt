@@ -1,0 +1,122 @@
+RDR2
+=============
+
+photomode coords.
+RDR2.exe+126A53 - 75 1B                 - jne RDR2.exe+126A70
+RDR2.exe+126A55 - 0F11 07               - movups [rdi],xmm0
+RDR2.exe+126A58 - 0F10 4B 10            - movups xmm1,[rbx+10]
+RDR2.exe+126A5C - 0F11 4F 10            - movups [rdi+10],xmm1
+RDR2.exe+126A60 - 0F10 43 20            - movups xmm0,[rbx+20]
+RDR2.exe+126A64 - 0F11 47 20            - movups [rdi+20],xmm0
+RDR2.exe+126A68 - 0F10 4B 30            - movups xmm1,[rbx+30]
+RDR2.exe+126A6C - 0F11 4F 30            - movups [rdi+30],xmm1		>> write coords
+RDR2.exe+126A70 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
+RDR2.exe+126A75 - 48 8B 74 24 38        - mov rsi,[rsp+38]
+RDR2.exe+126A7A - 48 83 C4 20           - add rsp,20 { 32 }
+
+
+RDR2.exe+1287F6 - 0F28 45 E0            - movaps xmm0,[rbp-20]
+RDR2.exe+1287FA - 0F58 D1               - addps xmm2,xmm1
+RDR2.exe+1287FD - 0F58 C2               - addps xmm0,xmm2
+RDR2.exe+128800 - 0F29 45 E0            - movaps [rbp-20],xmm0
+RDR2.exe+128804 - E8 53F9FFFF           - call RDR2.exe+12815C		<< NOP: No range limit.
+RDR2.exe+128809 - 45 33 C0              - xor r8d,r8d
+RDR2.exe+12880C - 48 8D 55 B0           - lea rdx,[rbp-50]
+RDR2.exe+128810 - 48 8D 4B 20           - lea rcx,[rbx+20]
+RDR2.exe+128814 - E8 8FE1FFFF           - call RDR2.exe+1269A8
+RDR2.exe+128819 - 0F28 74 24 70         - movaps xmm6,[rsp+70]
+RDR2.exe+12881E - 4C 8D 9C 24 80000000  - lea r11,[rsp+00000080]
+RDR2.exe+128826 - 49 8B 5B 10           - mov rbx,[r11+10]
+
+fov:
+RDR2.exe+128435 - 76 09                 - jna RDR2.exe+128440
+RDR2.exe+128437 - 0F2F C1               - comiss xmm0,xmm1
+RDR2.exe+12843A - 72 8B                 - jb RDR2.exe+1283C7
+RDR2.exe+12843C - F3 0F5D C2            - minss xmm0,xmm2
+RDR2.exe+128440 - F3 0F11 83 80000000   - movss [rbx+00000080],xmm0		<< FOV (degrees).
+RDR2.exe+128448 - 48 83 C4 20           - add rsp,20 { 32 }
+RDR2.exe+12844C - 5B                    - pop rbx
+RDR2.exe+12844D - C3                    - ret 
+RDR2.exe+12844E - CC                    - int 3 
+RDR2.exe+12844F - 4B 48                 - dec r8
+
+// Rotation limit removal:
+RDR2.exe+11D7ED - 0F28 C1               - movaps xmm0,xmm1
+RDR2.exe+11D7F0 - F3 0F5C 05 70ED0C03   - subss xmm0,[RDR2.exe+31EC568] { (6.28) }
+RDR2.exe+11D7F8 - 48 8D 8B F0050000     - lea rcx,[rbx+000005F0]
+RDR2.exe+11D7FF - F3 0F11 45 48         - movss [rbp+48],xmm0
+RDR2.exe+11D804 - 44 8A C7              - mov r8l,dil
+RDR2.exe+11D807 - 48 8D 55 48           - lea rdx,[rbp+48]
+RDR2.exe+11D80B - E8 8CA00000           - call RDR2.exe+12789C			<< nop: no rotation limit
+RDR2.exe+11D810 - F3 0F10 4D 30         - movss xmm1,[rbp+30]
+RDR2.exe+11D815 - 48 8D 55 F0           - lea rdx,[rbp-10]
+RDR2.exe+11D819 - F3 0F10 45 38         - movss xmm0,[rbp+38]
+RDR2.exe+11D81E - 0F28 D9               - movaps xmm3,xmm1
+RDR2.exe+11D821 - F3 0F10 55 48         - movss xmm2,[rbp+48]
+
+// Time of day:
+RDR2.exe+2E14DB1 - E8 9AA267FF           - call RDR2.exe+248F050
+RDR2.exe+2E14DB6 - 66 0F6E 15 966C5F01   - movd xmm2,[RDR2.exe+440BA54] { (23) }	<< Minute
+RDR2.exe+2E14DBE - 45 33 C9              - xor r9d,r9d
+RDR2.exe+2E14DC1 - 66 0F6E 05 876C5F01   - movd xmm0,[RDR2.exe+440BA50] { (6) }		<< Hour
+RDR2.exe+2E14DC9 - BA 70406659           - mov edx,59664070 { "p@fY" }
+
+// minutes are written here: 
+RDR2.exe+6C8464 - 6B CA 3C              - imul ecx,edx,3C
+RDR2.exe+6C8467 - 44 2B C1              - sub r8d,ecx
+RDR2.exe+6C846A - 45 2B C8              - sub r9d,r8d
+RDR2.exe+6C846D - 45 89 42 04           - mov [r10+04],r8d				<< write to minutes. Writes to a lot of addresses, not usable.
+RDR2.exe+6C8471 - 41 F7 E9              - imul r9d
+RDR2.exe+6C8474 - 41 03 D1              - add edx,r9d
+RDR2.exe+6C8477 - 45 8B 0A              - mov r9d,[r10]
+RDR2.exe+6C847A - C1 FA 05              - sar edx,05 { 5 }
+RDR2.exe+6C847D - 8B C2                 - mov eax,edx
+RDR2.exe+6C847F - C1 E8 1F              - shr eax,1F { 31 }
+
+// No black bars in photomode:
+RDR2.exe+51CE41 - 83 64 24 30 00        - and dword ptr [rsp+30],00 { 0 }
+RDR2.exe+51CE46 - 48 8D 0D 3B4B0405     - lea rcx,[RDR2.exe+5561988] { (0) }
+RDR2.exe+51CE4D - 44 88 64 24 28        - mov [rsp+28],r12l
+RDR2.exe+51CE52 - 45 33 C9              - xor r9d,r9d
+RDR2.exe+51CE55 - 83 64 24 20 00        - and dword ptr [rsp+20],00 { 0 }
+RDR2.exe+51CE5A - 4D 8B C6              - mov r8,r14
+RDR2.exe+51CE5D - 33 D2                 - xor edx,edx
+RDR2.exe+51CE5F - E8 5CABC6FF           - call RDR2.exe+1879C0				<< NOP CALL
+RDR2.exe+51CE64 - 65 48 8B 04 25 58000000  - mov rax,gs:[00000058] { 88 }
+RDR2.exe+51CE6D - 45 33 C9              - xor r9d,r9d
+RDR2.exe+51CE70 - 8B 1D D61B4305        - mov ebx,[RDR2.exe+594EA4C] { (0) }
+RDR2.exe+51CE76 - 45 33 C0              - xor r8d,r8d
+RDR2.exe+51CE79 - 48 83 64 24 20 00     - and qword ptr [rsp+20],00 { 0 }
+RDR2.exe+51CE7F - BA B0130000           - mov edx,000013B0 { 5040 }
+RDR2.exe+51CE84 - 48 8B 0C D8           - mov rcx,[rax+rbx*8]
+RDR2.exe+51CE88 - 48 8B 14 0A           - mov rdx,[rdx+rcx]
+
+calls: 
+RDR2.exe+1879C0 - 48 8B C4              - mov rax,rsp
+
+// every frame: 
+RDR2.exe+3CAF07 - FF 90 C8000000        - call qword ptr [rax+000000C8]
+calls camera ->
+// In photomode: 
+freecam: rax==00007FF6AAF0D590
+	RDR2.exe+127C2E - 48 8B CB              - mov rcx,rbx
+	RDR2.exe+127C31 - E8 FA0A0000           - call RDR2.exe+128730
+	RDR2.exe+127C36 - 48 8B CB              - mov rcx,rbx
+orbit:	 rax==00007FF6AAF0D7F8
+	RDR2.exe+127D34 - 48 89 5C 24 08        - mov [rsp+08],rbx
+	RDR2.exe+127D39 - 48 89 74 24 10        - mov [rsp+10],rsi
+	RDR2.exe+127D3E - 57                    - push rdi
+// in gameplay:
+normal:	 rax==00007FF6AAF92AF8
+	RDR2.exe+402D68 - 48 89 5C 24 10        - mov [rsp+10],rbx
+	RDR2.exe+402D6D - 57                    - push rdi
+	RDR2.exe+402D6E - 48 83 EC 20           - sub rsp,20 { 32 }
+	RDR2.exe+402D72 - 48 8B 81 98040000     - mov rax,[rcx+00000498]
+	RDR2.exe+402D79 - 48 8B D9              - mov rbx,rcx
+	RDR2.exe+402D7C - 48 85 C0              - test rax,rax
+1stp:   rax==00007FF6AAF8E7D0
+	RDR2.exe+402548 - 48 8B C4              - mov rax,rsp
+	RDR2.exe+40254B - 48 89 58 20           - mov [rax+20],rbx
+	RDR2.exe+40254F - 55                    - push rbp
+	RDR2.exe+402550 - 56                    - push rsi
+	RDR2.exe+402551 - 57                    - push rdi
