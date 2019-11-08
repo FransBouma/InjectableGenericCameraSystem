@@ -14,6 +14,17 @@ RDR2.exe+126A70 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
 RDR2.exe+126A75 - 48 8B 74 24 38        - mov rsi,[rsp+38]
 RDR2.exe+126A7A - 48 83 C4 20           - add rsp,20 { 32 }
 
+// Part of this function.
+// WHen called, active camera struct is in RCX.
+RDR2.exe+1269A8 - 48 89 5C 24 08        - mov [rsp+08],rbx
+RDR2.exe+1269AD - 48 89 74 24 10        - mov [rsp+10],rsi
+RDR2.exe+1269B2 - 57                    - push rdi
+RDR2.exe+1269B3 - 48 83 EC 20           - sub rsp,20 { 32 }
+RDR2.exe+1269B7 - F3 0F10 0D 495B0C03   - movss xmm1,[RDR2.exe+31EC508] { (0,01) }
+RDR2.exe+1269BF - 48 8B F9              - mov rdi,rcx
+RDR2.exe+1269C2 - 48 8B CA              - mov rcx,rdx
+RDR2.exe+1269C5 - 41 8A F0              - mov sil,r8l
+
 
 RDR2.exe+1287F6 - 0F28 45 E0            - movaps xmm0,[rbp-20]
 RDR2.exe+1287FA - 0F58 D1               - addps xmm2,xmm1
@@ -93,6 +104,123 @@ RDR2.exe+51CE88 - 48 8B 14 0A           - mov rdx,[rdx+rcx]
 
 calls: 
 RDR2.exe+1879C0 - 48 8B C4              - mov rax,rsp
+
+called by: 
+RDR2.exe+56DFC6 - E8 B5EDFAFF           - call RDR2.exe+51CD80
+
+called by:
+RDR2.exe+5376B3 - E8 C8270300           - call RDR2.exe+569E80
+
+// No HUD:
+RDR2.exe+2B6B264 - F3 0F11 44 24 20      - movss [rsp+20],xmm0
+RDR2.exe+2B6B26A - 42 0FB6 14 08         - movzx edx,byte ptr [rax+r9]
+RDR2.exe+2B6B26F - 48 69 C2 F0080000     - imul rax,rdx,000008F0 { 2288 }
+RDR2.exe+2B6B276 - 48 8D 54 24 50        - lea rdx,[rsp+50]
+RDR2.exe+2B6B27B - 48 03 C8              - add rcx,rax
+RDR2.exe+2B6B27E - E8 05000000           - call RDR2.exe+2B6B288			<< NOP, no hud
+RDR2.exe+2B6B283 - 48 83 C4 48           - add rsp,48 { 72 }
+RDR2.exe+2B6B287 - C3                    - ret 
+RDR2.exe+2B6B288 - 48 8B C4              - mov rax,rsp
+RDR2.exe+2B6B28B - 48 89 58 10           - mov [rax+10],rbx
+RDR2.exe+2B6B28F - 48 89 70 18           - mov [rax+18],rsi
+RDR2.exe+2B6B293 - 48 89 78 20           - mov [rax+20],rdi
+RDR2.exe+2B6B297 - 55                    - push rbp
+RDR2.exe+2B6B298 - 41 54                 - push r12
+
+
+// Other approach to black bars in pm:
+// compares current AR with desired AR of 16:9. If current isn't the same as desired, it will draw black bars. 
+RDR2.exe+51CDA5 - F3 0F10 35 DFEA5F03   - movss xmm6,[RDR2.exe+3B1B88C] { (1,60) }			<< current AR
+RDR2.exe+51CDAD - 0F29 78 B8            - movaps [rax-48],xmm7
+RDR2.exe+51CDB1 - 0F28 C6               - movaps xmm0,xmm6
+RDR2.exe+51CDB4 - 44 0F29 40 A8         - movaps [rax-58],xmm8
+RDR2.exe+51CDB9 - F3 44 0F10 05 D213CD02  - movss xmm8,[RDR2.exe+31EE194] { (1,78) }		<< desired AR
+RDR2.exe+51CDC2 - 44 0F29 48 98         - movaps [rax-68],xmm9
+RDR2.exe+51CDC7 - F3 41 0F5C C0         - subss xmm0,xmm8
+RDR2.exe+51CDCC - 44 0F29 50 88         - movaps [rax-78],xmm10
+RDR2.exe+51CDD1 - 44 0F29 98 78FFFFFF   - movaps [rax-00000088],xmm11
+RDR2.exe+51CDD9 - 44 0F29 A0 68FFFFFF   - movaps [rax-00000098],xmm12
+RDR2.exe+51CDE1 - 44 0F29 A8 58FFFFFF   - movaps [rax-000000A8],xmm13
+RDR2.exe+51CDE9 - 44 0F28 E9            - movaps xmm13,xmm1
+RDR2.exe+51CDED - 0F54 05 4CF9CC02      - andps xmm0,[RDR2.exe+31EC740] { (2147483647) }
+RDR2.exe+51CDF4 - 0F2F 05 E9F6CC02      - comiss xmm0,[RDR2.exe+31EC4E4] { (0,00) }
+RDR2.exe+51CDFB - 44 0F29 74 24 70      - movaps [rsp+70],xmm14
+RDR2.exe+51CE01 - 44 0F29 7C 24 60      - movaps [rsp+60],xmm15
+RDR2.exe+51CE07 - 0F86 83040000         - jbe RDR2.exe+51D290								<< change to jmp to avoid having black bars.
+RDR2.exe+51CE0D - 48 8B 0D 4C028703     - mov rcx,[RDR2.exe+3D8D060] { (24B22D34360) }
+RDR2.exe+51CE14 - 40 32 FF              - xor dil,dil
+RDR2.exe+51CE17 - E8 7CC41C00           - call RDR2.exe+6E9298
+RDR2.exe+51CE1C - F3 0F10 3D 28F7CC02   - movss xmm7,[RDR2.exe+31EC54C] { (1,00) }
+RDR2.exe+51CE24 - 40 8A F0              - mov sil,al
+RDR2.exe+51CE27 - 41 BC 01000000        - mov r12d,00000001 { 1 }
+RDR2.exe+51CE2D - 84 C0                 - test al,al
+
+// Black bars in cinematic camera:
+RDR2.exe+2C742A - 40 38 3D 049B5403     - cmp [RDR2.exe+3810F35],dil { (0) }
+RDR2.exe+2C7431 - 0F84 C6000000         - je RDR2.exe+2C74FD
+RDR2.exe+2C7437 - F3 0F10 15 E59A5403   - movss xmm2,[RDR2.exe+3810F24] { (2,35) }			<< 21:9
+RDR2.exe+2C743F - 0F2F D6               - comiss xmm2,xmm6
+RDR2.exe+2C7442 - F3 0F10 0D 4A6DF202   - movss xmm1,[RDR2.exe+31EE194] { (1,78) }			<< current AR
+RDR2.exe+2C744A - 77 03                 - ja RDR2.exe+2C744F
+...
+RDR2.exe+2C74B1 - F3 0F59 15 7750F202   - mulss xmm2,[RDR2.exe+31EC530] { (0,50) }
+RDR2.exe+2C74B9 - F3 0F59 1D 6F50F202   - mulss xmm3,[RDR2.exe+31EC530] { (0,50) }
+RDR2.exe+2C74C1 - F3 0F59 D1            - mulss xmm2,xmm1
+RDR2.exe+2C74C5 - F3 0F59 1D 639A5403   - mulss xmm3,[RDR2.exe+3810F30] { (0,00) }
+RDR2.exe+2C74CD - F3 0F11 15 639A5403   - movss [RDR2.exe+3810F38],xmm2 { (0,00) }	<<< WRITE BAR HEIGHT. NOP and set value in address to 0
+RDR2.exe+2C74D5 - F3 0F11 1D 5F9A5403   - movss [RDR2.exe+3810F3C],xmm3 { (1,00) }
+RDR2.exe+2C74DD - 76 1E                 - jna RDR2.exe+2C74FD
+RDR2.exe+2C74DF - 0F2E D6               - ucomiss xmm2,xmm6
+RDR2.exe+2C74E2 - 75 0A                 - jne RDR2.exe+2C74EE
+RDR2.exe+2C74E4 - C7 05 4A9A5403 0000803F - mov [RDR2.exe+3810F38],3F800000 { (0,01),1,00 }
+RDR2.exe+2C74EE - 0F2E DE               - ucomiss xmm3,xmm6
+RDR2.exe+2C74F1 - 75 0A                 - jne RDR2.exe+2C74FD
+RDR2.exe+2C74F3 - C7 05 3F9A5403 0000803F - mov [RDR2.exe+3810F3C],3F800000 { (1,00),1,00 }
+RDR2.exe+2C74FD - C6 05 309A5403 FF     - mov byte ptr [RDR2.exe+3810F34],-01 { (255),255 }
+RDR2.exe+2C7504 - 48 8B 5C 24 70        - mov rbx,[rsp+70]
+
+Or even simpler:
+RDR2.exe+2C7407 - C6 05 279B5403 00     - mov byte ptr [RDR2.exe+3810F35],01		<< Change into mov byte ptr [RDR2.exe+3810F35],0 -> no bars.
+
+
+// Pause:
+RDR2.exe+2C7241 - 88 05 C26CA803        - mov [RDR2.exe+3D4DF09],al { (0) }
+RDR2.exe+2C7247 - 0F85 B7020000         - jne RDR2.exe+2C7504
+RDR2.exe+2C724D - 40 38 3D 7ED14F05     - cmp [RDR2.exe+57C43D2],dil { (0) }					<< If 1: game paused. 
+RDR2.exe+2C7254 - 74 0D                 - je RDR2.exe+2C7263
+RDR2.exe+2C7256 - 40 38 3D 7DD14F05     - cmp [RDR2.exe+57C43DA],dil { (0) }
+RDR2.exe+2C725D - 0F84 A1020000         - je RDR2.exe+2C7504
+RDR2.exe+2C7263 - 40 38 3D 6AD14F05     - cmp [RDR2.exe+57C43D4],dil { (0) }
+RDR2.exe+2C726A - 0F85 94020000         - jne RDR2.exe+2C7504
+RDR2.exe+2C7270 - 40 38 3D 5FD14F05     - cmp [RDR2.exe+57C43D6],dil { (0) }
+RDR2.exe+2C7277 - 0F85 87020000         - jne RDR2.exe+2C7504
+RDR2.exe+2C727D - 44 0FB7 0D 939C5403   - movzx r9d,word ptr [RDR2.exe+3810F18] { (0) }
+RDR2.exe+2C7285 - 66 44 39 0D BB9C5403  - cmp [RDR2.exe+3810F48],r9w { (0) }
+RDR2.exe+2C728D - 8A 05 C59C5403        - mov al,[RDR2.exe+3810F58] { (0) }
+
+
+// AR/Res read function:
+RDR2.exe+25CA8E2 - 89 1B                 - mov [rbx],ebx
+RDR2.exe+25CA8E4 - 83 61 40 00           - and dword ptr [rcx+40],00 { 0 }
+RDR2.exe+25CA8E8 - 83 61 38 00           - and dword ptr [rcx+38],00 { 0 }
+RDR2.exe+25CA8EC - 8B 05 2E0F5501        - mov eax,[RDR2.exe+3B1B820] 		{ (1440) }  << WIDTH
+RDR2.exe+25CA8F2 - 89 41 3C              - mov [rcx+3C],eax
+RDR2.exe+25CA8F5 - 8B 05 290F5501        - mov eax,[RDR2.exe+3B1B824] 		{ (900) }	<< HEIGHT
+RDR2.exe+25CA8FB - 89 41 44              - mov [rcx+44],eax
+RDR2.exe+25CA8FE - F3 0F10 05 860F5501   - movss xmm0,[RDR2.exe+3B1B88C] { (1,60) }		<< AR
+RDR2.exe+25CA906 - F3 0F11 41 30         - movss [rcx+30],xmm0
+RDR2.exe+25CA90B - F3 0F10 0D 790F5501   - movss xmm1,[RDR2.exe+3B1B88C] { (1,60) }		<< AR
+RDR2.exe+25CA913 - 0F2F 0D 321CC200      - comiss xmm1,[RDR2.exe+31EC54C] { (1,00) }
+RDR2.exe+25CA91A - 0F97 C0               - seta al
+RDR2.exe+25CA91D - 88 41 2C              - mov [rcx+2C],al
+RDR2.exe+25CA920 - C3                    - ret 
+
+
+Menu flags:
+7FF6E644D658: 1: some menu is up
+7FF6E644D67C: 3: menu is up, 8 limited photomode menu is up, 10: full photomode menu is up
+7FF6E644D678: same as above.
+
 
 // every frame: 
 RDR2.exe+3CAF07 - FF 90 C8000000        - call qword ptr [rax+000000C8]
