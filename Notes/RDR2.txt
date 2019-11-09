@@ -25,7 +25,6 @@ RDR2.exe+1269BF - 48 8B F9              - mov rdi,rcx
 RDR2.exe+1269C2 - 48 8B CA              - mov rcx,rdx
 RDR2.exe+1269C5 - 41 8A F0              - mov sil,r8l
 
-
 RDR2.exe+1287F6 - 0F28 45 E0            - movaps xmm0,[rbp-20]
 RDR2.exe+1287FA - 0F58 D1               - addps xmm2,xmm1
 RDR2.exe+1287FD - 0F58 C2               - addps xmm0,xmm2
@@ -127,6 +126,42 @@ RDR2.exe+2B6B293 - 48 89 78 20           - mov [rax+20],rdi
 RDR2.exe+2B6B297 - 55                    - push rbp
 RDR2.exe+2B6B298 - 41 54                 - push r12
 
+// Hotsampling:
+RDR2.exe+25CC1D4 - 88 51 2C              - mov [rcx+2C],dl					<< NOP
+RDR2.exe+25CC1D7 - C3                    - ret 
+
+rdr2.exe+3b1bf14	<< Set to 1.
+
+// reads preferred width and height:
+RDR2.exe+25CC1F0 - 8B 41 20              - mov eax,[rcx+20]			<< Width
+RDR2.exe+25CC1F3 - 89 02                 - mov [rdx],eax
+RDR2.exe+25CC1F5 - 8B 41 24              - mov eax,[rcx+24]			<< Height
+RDR2.exe+25CC1F8 - 41 89 00              - mov [r8],eax
+RDR2.exe+25CC1FB - C3                    - ret 
+
+// 
+RDR2.exe+263166E - FF 50 40              - call qword ptr [rax+40]
+RDR2.exe+2631671 - 48 8B 0D A8434E01     - mov rcx,[RDR2.exe+3B15A20] { (7FF6E61EBEE8) }
+RDR2.exe+2631678 - 48 8B 01              - mov rax,[rcx]
+RDR2.exe+263167B - FF 90 00010000        - call qword ptr [rax+00000100]			<< Get hotsampling bit. Resolution is in RBX (low 2bytes: width, high 2 bytes height).
+RDR2.exe+2631681 - 84 C0                 - test al,al
+RDR2.exe+2631683 - 74 05                 - je RDR2.exe+263168A
+RDR2.exe+2631685 - 4D 85 E4              - test r12,r12
+RDR2.exe+2631688 - 74 1A                 - je RDR2.exe+26316A4
+
+// check for window resizing necessity. 
+RDR2.exe+2631754 - 48 8B 0D C5424E01     - mov rcx,[RDR2.exe+3B15A20] { (7FF6E61EBEE8) }
+RDR2.exe+263175B - 48 8B 01              - mov rax,[rcx]
+RDR2.exe+263175E - FF 50 50              - call qword ptr [rax+50]
+RDR2.exe+2631761 - 8B 45 E0              - mov eax,[rbp-20]
+RDR2.exe+2631764 - 39 05 B6A04E01        - cmp [RDR2.exe+3B1B820],eax { (1920) }
+RDR2.exe+263176A - 75 0F                 - jne RDR2.exe+263177B							<< change into jmp so it always resizes.
+RDR2.exe+263176C - 8B 45 E4              - mov eax,[rbp-1C]
+RDR2.exe+263176F - 39 05 AFA04E01        - cmp [RDR2.exe+3B1B824],eax { (1080) }
+RDR2.exe+2631775 - 0F84 27FEFFFF         - je RDR2.exe+26315A2
+RDR2.exe+263177B - 48 8B 0D 9E424E01     - mov rcx,[RDR2.exe+3B15A20] { (7FF6E61EBEE8) }
+RDR2.exe+2631782 - 48 8B 01              - mov rax,[rcx]
+RDR2.exe+2631785 - FF 90 60010000        - call qword ptr [rax+00000160]
 
 // Other approach to black bars in pm:
 // compares current AR with desired AR of 16:9. If current isn't the same as desired, it will draw black bars. 
@@ -215,11 +250,75 @@ RDR2.exe+25CA91A - 0F97 C0               - seta al
 RDR2.exe+25CA91D - 88 41 2C              - mov [rcx+2C],al
 RDR2.exe+25CA920 - C3                    - ret 
 
+// Weather
+RDR2.exe+43FE52C (4 bytes)
+RDR2.exe+70D2FA - 8B 84 18 20420000     - mov eax,[rax+rbx+00004220]
+RDR2.exe+70D301 - 89 83 183F0000        - mov [rbx+00003F18],eax
+RDR2.exe+70D307 - 8B 83 D8500000        - mov eax,[rbx+000050D8]
+RDR2.exe+70D30D - 48 C1 E0 05           - shl rax,05 { 5 }
+RDR2.exe+70D311 - 8B 84 18 20420000     - mov eax,[rax+rbx+00004220]
+RDR2.exe+70D318 - 89 83 1C3F0000        - mov [rbx+00003F1C],eax
+RDR2.exe+70D31E - 8B 83 5C410000        - mov eax,[rbx+0000415C]					<< Read weather value. 
+RDR2.exe+70D324 - F3 0F10 83 DC500000   - movss xmm0,[rbx+000050DC]
+RDR2.exe+70D32C - 85 C0                 - test eax,eax
+RDR2.exe+70D32E - 78 0C                 - js RDR2.exe+70D33C
+RDR2.exe+70D330 - 89 83 1C3F0000        - mov [rbx+00003F1C],eax
+RDR2.exe+70D336 - 89 83 183F0000        - mov [rbx+00003F18],eax
+RDR2.exe+70D33C - 48 8D 4C 24 40        - lea rcx,[rsp+40]
+RDR2.exe+70D341 - F3 0F11 83 203F0000   - movss [rbx+00003F20],xmm0
 
-Menu flags:
-7FF6E644D658: 1: some menu is up
-7FF6E644D67C: 3: menu is up, 8 limited photomode menu is up, 10: full photomode menu is up
-7FF6E644D678: same as above.
+Set to one of these types:
+// Weather types:
+0	High pressure
+1	Sunny
+2	Misty
+3	Fog
+4	Clouds
+5	Overcast
+6	Overcast dark
+7	Drizzle
+8	Rain
+9	Thunder
+10	Thunderstorm
+11	Hurricane
+12	Shower
+13	Hail
+14	Sleet
+15	Snow clearing
+16	Snow light
+17	Snow
+18	Blizzard
+19	Ground blizzard
+20	Whiteout
+21	Sandstorm
+-1	off
+
+// From - to weather interpolation. values in memory: From, To, Lerp.
+From and To are 4 byte weather values (see above). Lerp is float 0-1. 0: from weather, 1: to weather.
+RDR2.exe+6E16D4 - 8B 81 183F0000        - mov eax,[rcx+00003F18]		<< Read from weather.
+RDR2.exe+6E16DA - 48 69 D0 E0010000     - imul rdx,rax,000001E0 { 480 }
+RDR2.exe+6E16E1 - 48 8D 41 10           - lea rax,[rcx+10]
+RDR2.exe+6E16E5 - 48 03 C2              - add rax,rdx
+RDR2.exe+6E16E8 - C3                    - ret 
+
+// Place ret here to enable interpolation:
+RDR2.exe+70D1EC - 40 53                 - push rbx						<<<< RET
+RDR2.exe+70D1EE - 48 83 EC 50           - sub rsp,50 { 80 }
+RDR2.exe+70D1F2 - 48 8B D9              - mov rbx,rcx
+RDR2.exe+70D1F5 - 48 8D 4C 24 20        - lea rcx,[rsp+20]
+RDR2.exe+70D1FA - E8 0D42A1FF           - call RDR2.exe+12140C
+RDR2.exe+70D1FF - 8B 05 F32D1F04        - mov eax,[RDR2.exe+48FFFF8] { (0) }
+RDR2.exe+70D205 - 83 C0 FE              - add eax,-02 { 254 }
+RDR2.exe+70D208 - 83 F8 03              - cmp eax,03 { 3 }
+RDR2.exe+70D20B - 77 0E                 - ja RDR2.exe+70D21B
+RDR2.exe+70D20D - 0F28 05 2C3F1F04      - movaps xmm0,[RDR2.exe+4901140] { (0) }
+RDR2.exe+70D214 - 0F29 44 24 20         - movaps [rsp+20],xmm0
+RDR2.exe+70D219 - EB 05                 - jmp RDR2.exe+70D220
+RDR2.exe+70D21B - 0F28 44 24 20         - movaps xmm0,[rsp+20]
+RDR2.exe+70D220 - 80 BB 403F0000 00     - cmp byte ptr [rbx+00003F40],00 { 0 }
+RDR2.exe+70D227 - 75 5F                 - jne RDR2.exe+70D288
+RDR2.exe+70D229 - 44 8A 83 18420000     - mov r8l,[rbx+00004218]
+RDR2.exe+70D230 - 48 8D 54 24 30        - lea rdx,[rsp+30]
 
 
 // every frame: 
@@ -248,3 +347,24 @@ normal:	 rax==00007FF6AAF92AF8
 	RDR2.exe+40254F - 55                    - push rbp
 	RDR2.exe+402550 - 56                    - push rsi
 	RDR2.exe+402551 - 57                    - push rdi
+
+
+
+Menu flags:
+7FF6E644D658: 1: some menu is up
+7FF6E644D67C: 3: menu is up, 8 limited photomode menu is up, 10: full photomode menu is up
+7FF6E644D678: same as above.
+
+// written here: 
+RDR2.exe+31F4D9 - 4C 8B 4F 08           - mov r9,[rdi+08]
+RDR2.exe+31F4DD - 42 83 BC 08 2C030000 FF - cmp dword ptr [rax+r9+0000032C],-01 { 255 }
+RDR2.exe+31F4E6 - 74 08                 - je RDR2.exe+31F4F0
+RDR2.exe+31F4E8 - 44 01 6F 18           - add [rdi+18],r13d						<< Write menu flag. 
+RDR2.exe+31F4EC - 8B CA                 - mov ecx,edx
+RDR2.exe+31F4EE - EB 0C                 - jmp RDR2.exe+31F4FC
+RDR2.exe+31F4F0 - 42 C7 84 08 28030000 FFFFFF7F - mov [rax+r9+00000328],7FFFFFFF { 2147483647 }
+RDR2.exe+31F4FC - 41 03 D5              - add edx,r13d
+RDR2.exe+31F4FF - 4D 03 C5              - add r8,r13
+RDR2.exe+31F502 - 49 03 C3              - add rax,r11
+
+

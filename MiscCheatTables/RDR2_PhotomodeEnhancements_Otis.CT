@@ -6,7 +6,14 @@
       <Description>"Remove photomode freecam range / rotation limits / black bars (leave enabled!)"</Description>
       <LastState/>
       <VariableType>Auto Assembler Script</VariableType>
-      <AssemblerScript>[ENABLE]
+      <AssemblerScript>/////////////////////////
+// By Otis_Inf. All rights reserved.
+// Re-using information from this table is prohibited.
+// (c) Otis_Inf.
+// FRAMED. Screenshot Community
+// https://framedsc.github.io
+/////////////////////////
+[ENABLE]
 aobscanmodule(RemovePMCoordRange,RDR2.exe,E8 ?? ?? ?? ?? 45 33 C0 48 8D 55 B0 48 8D 4B 20) // should be unique
 aobscanmodule(RemovePMRotationRange,RDR2.exe,E8 ?? ?? ?? ?? F3 0F 10 4D 30 48 8D 55 F0) // should be unique
 aobscanmodule(RemovePMBlackBars,RDR2.exe, E8 ?? ?? ?? ?? 65 48 8B 04 25 58 00 00 00 45 33 C9 8B 1D ?? ?? ?? ?? 45 33 C0 48 83 64 24 20 00 BA B0 13 00 00 48 8B 0C D8)
@@ -45,6 +52,7 @@ RemovePMRotationRange:
 
 RemovePMBlackBars:
   db E8 5C AB C6 FF
+
 
 unregistersymbol(RemovePMCoordRange)
 unregistersymbol(RemovePMRotationRange)
@@ -95,19 +103,19 @@ RDR2.exe+11D821 - F3 0F10 55 48         - movss xmm2,[rbp+48]
 </AssemblerScript>
     </CheatEntry>
     <CheatEntry>
-      <ID>13</ID>
-      <Description>"Time of day: Hour. 0-23. Setting the value outside this range crashes the game"</Description>
-      <LastState Value="9" RealAddress="7FF6AC12BA50"/>
-      <VariableType>2 Bytes</VariableType>
-      <Address>RDR2.exe+440BA50</Address>
-    </CheatEntry>
-    <CheatEntry>
-      <ID>8</ID>
+      <ID>14</ID>
       <Description>"Override photomode freecam FOV (Toggle: F7. Zoom in: Numpad+ Zoom out: Numpad-)"</Description>
       <LastState/>
       <VariableType>Auto Assembler Script</VariableType>
-      <AssemblerScript>[ENABLE]
+      <AssemblerScript>/////////////////////////
+// By Otis_Inf. All rights reserved.
+// Re-using information from this table is prohibited.
+// (c) Otis_Inf.
+// FRAMED. Screenshot Community
+// https://framedsc.github.io
+/////////////////////////
 
+[ENABLE]
 aobscanmodule(FoVIntercept,RDR2.exe,F3 0F 11 83 80 00 00 00 48 83 C4 20 5B C3 CC) // should be unique
 alloc(newmem,$1000,"RDR2.exe"+128440)
 
@@ -211,17 +219,498 @@ dealloc(newmem)
       </CheatEntries>
     </CheatEntry>
     <CheatEntry>
+      <ID>22</ID>
+      <Description>"Weather control (leave enabled)"</Description>
+      <LastState Activated="1"/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>/////////////////////////
+// By Otis_Inf. All rights reserved.
+// Re-using information from this table is prohibited.
+// (c) Otis_Inf.
+// FRAMED. Screenshot Community
+// https://framedsc.github.io
+/////////////////////////
+
+[ENABLE]
+aobscanmodule(WeatherIntercept,RDR2.exe,8B 83 5C 41 00 00 F3) // should be unique
+aobscanmodule(WeatherFromIntercept,RDR2.exe,8B 81 18 3F 00 00 48 69 D0 E0 01 00 00 48 8D 41 10 48 03 C2 C3)
+alloc(newmem,$1000,"RDR2.exe"+70D31E)
+
+label(code)
+label(return)
+label(weatherAddress)
+label(weatherFromAddress)
+label(interceptWeatherFrom)
+label(returnWeatherFrom)
+registersymbol(weatherAddress)
+registersymbol(weatherFromAddress)
+registersymbol(WeatherIntercept)
+registersymbol(WeatherFromIntercept)
+
+newmem:
+
+code:
+  mov eax,[rbx+0000415C]
+  mov [weatherAddress], rbx
+  jmp return
+
+interceptWeatherFrom:
+  mov eax,[rcx+00003F18]
+  mov [weatherFromAddress], rcx
+  jmp returnWeatherFrom
+
+weatherAddress:
+  dq 0
+weatherFromAddress:
+  dq 0
+
+WeatherFromIntercept:
+  jmp interceptWeatherFrom
+  nop
+returnWeatherFrom:
+
+WeatherIntercept:
+  jmp newmem
+  nop
+return:
+
+[DISABLE]
+
+WeatherIntercept:
+  db 8B 83 5C 41 00 00
+
+unregistersymbol(WeatherIntercept)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "RDR2.exe"+70D31E
+
+"RDR2.exe"+70D2E4: 48 8D 8B 20 42 00 00     -  lea rcx,[rbx+00004220]
+"RDR2.exe"+70D2EB: E8 B4 89 FF FF           -  call RDR2.exe+705CA4
+"RDR2.exe"+70D2F0: 8B 83 D4 50 00 00        -  mov eax,[rbx+000050D4]
+"RDR2.exe"+70D2F6: 48 C1 E0 05              -  shl rax,05
+"RDR2.exe"+70D2FA: 8B 84 18 20 42 00 00     -  mov eax,[rax+rbx+00004220]
+"RDR2.exe"+70D301: 89 83 18 3F 00 00        -  mov [rbx+00003F18],eax
+"RDR2.exe"+70D307: 8B 83 D8 50 00 00        -  mov eax,[rbx+000050D8]
+"RDR2.exe"+70D30D: 48 C1 E0 05              -  shl rax,05
+"RDR2.exe"+70D311: 8B 84 18 20 42 00 00     -  mov eax,[rax+rbx+00004220]
+"RDR2.exe"+70D318: 89 83 1C 3F 00 00        -  mov [rbx+00003F1C],eax
+// ---------- INJECTING HERE ----------
+"RDR2.exe"+70D31E: 8B 83 5C 41 00 00        -  mov eax,[rbx+0000415C]
+// ---------- DONE INJECTING  ----------
+"RDR2.exe"+70D324: F3 0F 10 83 DC 50 00 00  -  movss xmm0,[rbx+000050DC]
+"RDR2.exe"+70D32C: 85 C0                    -  test eax,eax
+"RDR2.exe"+70D32E: 78 0C                    -  js RDR2.exe+70D33C
+"RDR2.exe"+70D330: 89 83 1C 3F 00 00        -  mov [rbx+00003F1C],eax
+"RDR2.exe"+70D336: 89 83 18 3F 00 00        -  mov [rbx+00003F18],eax
+"RDR2.exe"+70D33C: 48 8D 4C 24 40           -  lea rcx,[rsp+40]
+"RDR2.exe"+70D341: F3 0F 11 83 20 3F 00 00  -  movss [rbx+00003F20],xmm0
+"RDR2.exe"+70D349: E8 BE 40 A1 FF           -  call RDR2.exe+12140C
+"RDR2.exe"+70D34E: 48 8D 54 24 30           -  lea rdx,[rsp+30]
+"RDR2.exe"+70D353: 48 8B CB                 -  mov rcx,rbx
+}
+</AssemblerScript>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>23</ID>
+          <Description>"Weather type (0-21: various weather types. -1 (FFFFFFFF): 0ff)"</Description>
+          <LastState Value="FFFFFFFF" RealAddress="7FF7F74AE52C"/>
+          <ShowAsHex>1</ShowAsHex>
+          <VariableType>4 Bytes</VariableType>
+          <Address>weatherAddress</Address>
+          <Offsets>
+            <Offset>415c</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>55</ID>
+          <Description>"Enable weather interpolation"</Description>
+          <LastState/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>/////////////////////////
+// By Otis_Inf. All rights reserved.
+// Re-using information from this table is prohibited.
+// (c) Otis_Inf.
+// FRAMED. Screenshot Community
+// https://framedsc.github.io
+/////////////////////////
+
+[ENABLE]
+aobscanmodule(EnableWeatherInterpolation,RDR2.exe,40 53 48 83 EC 50 48 8B D9 48 8D 4C 24 20 E8 ?? ?? ?? ?? 8B 05 ?? ?? ?? ?? 83) // should be unique
+EnableWeatherInterpolation:
+  ret
+  nop
+registersymbol(EnableWeatherInterpolation)
+
+[DISABLE]
+EnableWeatherInterpolation:
+  push rbx
+
+unregistersymbol(EnableWeatherInterpolation)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "RDR2.exe"+70D1EC
+
+"RDR2.exe"+70D1C0: F3 0F 59 1D 40 F3 AD 02     -  mulss xmm3,[RDR2.exe+31EC508]
+"RDR2.exe"+70D1C8: 0F 28 C3                    -  movaps xmm0,xmm3
+"RDR2.exe"+70D1CB: 0F 57 05 7E F5 AD 02        -  xorps xmm0,[RDR2.exe+31EC750]
+"RDR2.exe"+70D1D2: 0F 2F C8                    -  comiss xmm1,xmm0
+"RDR2.exe"+70D1D5: 72 07                       -  jb RDR2.exe+70D1DE
+"RDR2.exe"+70D1D7: 0F 28 C3                    -  movaps xmm0,xmm3
+"RDR2.exe"+70D1DA: F3 0F 5D C1                 -  minss xmm0,xmm1
+"RDR2.exe"+70D1DE: F3 0F 58 D0                 -  addss xmm2,xmm0
+"RDR2.exe"+70D1E2: F3 41 0F 11 90 68 3F 00 00  -  movss [r8+00003F68],xmm2
+"RDR2.exe"+70D1EB: C3                          -  ret 
+// ---------- INJECTING HERE ----------
+"RDR2.exe"+70D1EC: 40 53                       -  push rbx
+"RDR2.exe"+70D1EE: 48 83 EC 50                 -  sub rsp,50
+// ---------- DONE INJECTING  ----------
+"RDR2.exe"+70D1F2: 48 8B D9                    -  mov rbx,rcx
+"RDR2.exe"+70D1F5: 48 8D 4C 24 20              -  lea rcx,[rsp+20]
+"RDR2.exe"+70D1FA: E8 0D 42 A1 FF              -  call RDR2.exe+12140C
+"RDR2.exe"+70D1FF: 8B 05 F3 2D 1F 04           -  mov eax,[RDR2.exe+48FFFF8]
+"RDR2.exe"+70D205: 83 C0 FE                    -  add eax,-02
+"RDR2.exe"+70D208: 83 F8 03                    -  cmp eax,03
+"RDR2.exe"+70D20B: 77 0E                       -  ja RDR2.exe+70D21B
+"RDR2.exe"+70D20D: 0F 28 05 2C 3F 1F 04        -  movaps xmm0,[RDR2.exe+4901140]
+"RDR2.exe"+70D214: 0F 29 44 24 20              -  movaps [rsp+20],xmm0
+"RDR2.exe"+70D219: EB 05                       -  jmp RDR2.exe+70D220
+}
+</AssemblerScript>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>52</ID>
+              <Description>"From weather"</Description>
+              <LastState Value="4" RealAddress="7FF7F74AE2E8"/>
+              <VariableType>4 Bytes</VariableType>
+              <Address>weatherFromAddress</Address>
+              <Offsets>
+                <Offset>3F18</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>53</ID>
+              <Description>"To weather"</Description>
+              <LastState Value="1" RealAddress="7FF7F74AE2EC"/>
+              <VariableType>4 Bytes</VariableType>
+              <Address>weatherFromAddress</Address>
+              <Offsets>
+                <Offset>3F1C</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>54</ID>
+              <Description>"Interpolation factor (0: from weather, 1: to weather)"</Description>
+              <LastState Value="0,1127799973" RealAddress="7FF7F74AE2F0"/>
+              <VariableType>Float</VariableType>
+              <Address>weatherFromAddress</Address>
+              <Offsets>
+                <Offset>3F20</Offset>
+              </Offsets>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>8</ID>
+      <Description>"Enable hotsampling. Leave enabled. Use Borderless Windowed in settings"</Description>
+      <LastState/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>/////////////////////////
+// By Otis_Inf. All rights reserved.
+// Re-using information from this table is prohibited.
+// (c) Otis_Inf.
+// FRAMED. Screenshot Community
+// https://framedsc.github.io
+/////////////////////////
+
+[ENABLE]
+
+aobscanmodule(EnableHotsampling,RDR2.exe,FF 90 00 01 00 00 84 C0 74 05) // should be unique
+aobscanmodule(AlwaysResize,RDR2.exe,75 0F 8B 45 E4) // should be unique
+aobscanmodule(InterceptPreferredRes, RDR2.exe, 8B 41 20 89 02 8B 41 24 41 89 00 C3)
+alloc(newmem,$1000,"RDR2.exe"+263167B)
+
+label(code)
+label(return)
+label(returnPreferredRes)
+label(storePreferredRes)
+registersymbol(EnableHotsampling)
+registersymbol(AlwaysResize)
+registersymbol(InterceptPreferredRes)
+
+newmem:
+
+code:
+  // call qword ptr [rax+00000100]
+  // always succeed
+  mov al, 01
+  // RBX contains resolution as forced by SRWE. low 2 bytes is width, high 2 bytes of low dword is height.
+  push rcx
+  push rbx
+  push rax
+  mov ecx, ebx
+  shr ecx, 10     // shift the msw in ecx 16 bits to the right so it's now in the lsw of ecx.
+  and ebx, ffff
+  and ecx, ffff
+  mov rax, [PreferredResAddress]
+  test rax, rax
+  je @f     // not set yet.
+  // hardcoded values: mov [rdr2.exe+3b1bf08], ebx
+  // hardcoded values: mov [rdr2.exe+3b1bf0C], ecx
+  mov [rax+20], ebx
+  mov [rax+24], ecx
+@@:
+  pop rax
+  pop rbx
+  pop rcx
+  jmp return
+
+storePreferredRes:
+  mov [PreferredResAddress], rcx
+  jmp returnPreferredRes
+
+PreferredResAddress:
+  dq 0
+
+EnableHotsampling:
+  jmp newmem
+  nop
+return:
+
+InterceptPreferredRes:
+  jmp storePreferredRes
+returnPreferredRes:
+
+AlwaysResize:
+//RDR2.exe+263176A - 75 0F                 - jne RDR2.exe+263177B      &lt;&lt; change to JMP
+  db EB 0F  // jmp
+
+
+[DISABLE]
+
+EnableHotsampling:
+  db FF 90 00 01 00 00
+
+AlwaysResize:
+  db 75 0F
+
+unregistersymbol(EnableHotsampling)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "RDR2.exe"+263167B
+
+"RDR2.exe"+2631654: 49 2B C7              -  sub rax,r15
+"RDR2.exe"+2631657: 0F 84 80 00 00 00     -  je RDR2.exe+26316DD
+"RDR2.exe"+263165D: 49 2B C7              -  sub rax,r15
+"RDR2.exe"+2631660: 75 D1                 -  jne RDR2.exe+2631633
+"RDR2.exe"+2631662: 48 8B 0D B7 43 4E 01  -  mov rcx,[RDR2.exe+3B15A20]
+"RDR2.exe"+2631669: 33 D2                 -  xor edx,edx
+"RDR2.exe"+263166B: 48 8B 01              -  mov rax,[rcx]
+"RDR2.exe"+263166E: FF 50 40              -  call qword ptr [rax+40]
+"RDR2.exe"+2631671: 48 8B 0D A8 43 4E 01  -  mov rcx,[RDR2.exe+3B15A20]
+"RDR2.exe"+2631678: 48 8B 01              -  mov rax,[rcx]
+// ---------- INJECTING HERE ----------
+"RDR2.exe"+263167B: FF 90 00 01 00 00     -  call qword ptr [rax+00000100]
+// ---------- DONE INJECTING  ----------
+"RDR2.exe"+2631681: 84 C0                 -  test al,al
+"RDR2.exe"+2631683: 74 05                 -  je RDR2.exe+263168A
+"RDR2.exe"+2631685: 4D 85 E4              -  test r12,r12
+"RDR2.exe"+2631688: 74 1A                 -  je RDR2.exe+26316A4
+"RDR2.exe"+263168A: 48 8B 0D 8F 43 4E 01  -  mov rcx,[RDR2.exe+3B15A20]
+"RDR2.exe"+2631691: 48 8B 01              -  mov rax,[rcx]
+"RDR2.exe"+2631694: FF 90 00 01 00 00     -  call qword ptr [rax+00000100]
+"RDR2.exe"+263169A: 84 C0                 -  test al,al
+"RDR2.exe"+263169C: 75 95                 -  jne RDR2.exe+2631633
+"RDR2.exe"+263169E: 49 83 FC 02           -  cmp r12,02
+
+// intercept preferred res:
+RDR2.exe+25CC1F0 - 8B 41 20              - mov eax,[rcx+20]
+RDR2.exe+25CC1F3 - 89 02                 - mov [rdx],eax
+RDR2.exe+25CC1F5 - 8B 41 24              - mov eax,[rcx+24]
+RDR2.exe+25CC1F8 - 41 89 00              - mov [r8],eax
+RDR2.exe+25CC1FB - C3                    - ret
+}
+</AssemblerScript>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>16</ID>
+      <Description>"Remove black bars in cinematic parts"</Description>
+      <LastState/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>/////////////////////////
+// By Otis_Inf. All rights reserved.
+// Re-using information from this table is prohibited.
+// (c) Otis_Inf.
+// FRAMED. Screenshot Community
+// https://framedsc.github.io
+/////////////////////////
+
+[ENABLE]
+aobscanmodule(RemoveCutsceneBlackBars,RDR2.exe, C6 05 ?? ?? ?? ?? 01 77 07 40 88 3D ?? ?? ?? ?? 40) // should be unique
+
+RemoveCutsceneBlackBars+6:
+  db 0
+
+registersymbol(RemoveCutsceneBlackBars)
+
+[DISABLE]
+RemoveCutsceneBlackBars+6:
+  db 1
+
+
+unregistersymbol(RemoveCutsceneBlackBars)
+
+{
+RDR2.exe+2C73EF - F3 0F10 0D 2D9B5403   - movss xmm1,[RDR2.exe+3810F24]
+RDR2.exe+2C73F7 - 0F2F CE               - comiss xmm1,xmm6
+RDR2.exe+2C73FA - 76 14                 - jna RDR2.exe+2C7410
+RDR2.exe+2C73FC - F3 0F10 0D 289B5403   - movss xmm1,[RDR2.exe+3810F2C]
+RDR2.exe+2C7404 - 0F2F CE               - comiss xmm1,xmm6
+RDR2.exe+2C7407 - C6 05 279B5403 01     - mov byte ptr [RDR2.exe+3810F35],01
+RDR2.exe+2C740E - 77 07                 - ja RDR2.exe+2C7417
+RDR2.exe+2C7410 - 40 88 3D 1E9B5403     - mov [RDR2.exe+3810F35],dil
+RDR2.exe+2C7417 - 40 38 3D E86AA803     - cmp [RDR2.exe+3D4DF06],dil
+RDR2.exe+2C741E - 0F94 05 1C9B5403      - sete byte ptr [RDR2.exe+3810F41]
+RDR2.exe+2C7425 - E8 C6460000           - call RDR2.exe+2CBAF0
+RDR2.exe+2C742A - 40 38 3D 049B5403     - cmp [RDR2.exe+3810F35],dil
+}
+
+</AssemblerScript>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>13</ID>
+      <Description>"Time of day: Hour. 0-23. Setting the value outside this range crashes the game"</Description>
+      <LastState Value="15" RealAddress="7FF7F74BBA50"/>
+      <VariableType>2 Bytes</VariableType>
+      <Address>RDR2.exe+440BA50</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>17</ID>
+      <Description>"Pause game. Ctrl+Numpad0: set to 1 (paused). Alt-Numpad0: set to 0 (unpaused)"</Description>
+      <LastState Value="0" RealAddress="7FF7F88743D3"/>
+      <VariableType>Byte</VariableType>
+      <Address>RDR2.exe+57C43D3</Address>
+      <Hotkeys>
+        <Hotkey>
+          <Action>Set Value</Action>
+          <Keys>
+            <Key>17</Key>
+            <Key>96</Key>
+          </Keys>
+          <Value>1</Value>
+          <ID>0</ID>
+        </Hotkey>
+        <Hotkey>
+          <Action>Set Value</Action>
+          <Keys>
+            <Key>18</Key>
+            <Key>96</Key>
+          </Keys>
+          <Value>0</Value>
+          <ID>1</ID>
+        </Hotkey>
+      </Hotkeys>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>24</ID>
+      <Description>"Toggle HUD  (Ctrl-Del)"</Description>
+      <LastState/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>/////////////////////////
+// By Otis_Inf. All rights reserved.
+// Re-using information from this table is prohibited.
+// (c) Otis_Inf.
+// FRAMED. Screenshot Community
+// https://framedsc.github.io
+/////////////////////////
+
+[ENABLE]
+aobscanmodule(No_HUD,RDR2.exe,48 03 C8 E8 ?? ?? ?? ?? 48 83 C4 48 C3 48 8B C4) // should be unique
+No_HUD+03:
+  nop
+  nop
+  nop
+  nop
+  nop
+
+registersymbol(No_HUD)
+
+[DISABLE]
+No_HUD+03:
+  db E8 05 00 00 00
+
+unregistersymbol(No_HUD)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "RDR2.exe"+2B6B27E
+
+"RDR2.exe"+2B6B248: F3 0F 11 44 24 30           -  movss [rsp+30],xmm0
+"RDR2.exe"+2B6B24E: F3 0F 10 44 24 70           -  movss xmm0,[rsp+70]
+"RDR2.exe"+2B6B254: 41 B9 AA 13 00 00           -  mov r9d,000013AA
+"RDR2.exe"+2B6B25A: 48 8B 04 C2                 -  mov rax,[rdx+rax*8]
+"RDR2.exe"+2B6B25E: F3 0F 11 4C 24 28           -  movss [rsp+28],xmm1
+"RDR2.exe"+2B6B264: F3 0F 11 44 24 20           -  movss [rsp+20],xmm0
+"RDR2.exe"+2B6B26A: 42 0F B6 14 08              -  movzx edx,byte ptr [rax+r9]
+"RDR2.exe"+2B6B26F: 48 69 C2 F0 08 00 00        -  imul rax,rdx,000008F0
+"RDR2.exe"+2B6B276: 48 8D 54 24 50              -  lea rdx,[rsp+50]
+"RDR2.exe"+2B6B27B: 48 03 C8                    -  add rcx,rax
+// ---------- INJECTING HERE ----------
+"RDR2.exe"+2B6B27E: E8 05 00 00 00              -  call RDR2.exe+2B6B288
+// ---------- DONE INJECTING  ----------
+"RDR2.exe"+2B6B283: 48 83 C4 48                 -  add rsp,48
+"RDR2.exe"+2B6B287: C3                          -  ret 
+"RDR2.exe"+2B6B288: 48 8B C4                    -  mov rax,rsp
+"RDR2.exe"+2B6B28B: 48 89 58 10                 -  mov [rax+10],rbx
+"RDR2.exe"+2B6B28F: 48 89 70 18                 -  mov [rax+18],rsi
+"RDR2.exe"+2B6B293: 48 89 78 20                 -  mov [rax+20],rdi
+"RDR2.exe"+2B6B297: 55                          -  push rbp
+"RDR2.exe"+2B6B298: 41 54                       -  push r12
+"RDR2.exe"+2B6B29A: 41 55                       -  push r13
+"RDR2.exe"+2B6B29C: 41 56                       -  push r14
+}
+</AssemblerScript>
+      <Hotkeys>
+        <Hotkey>
+          <Action>Toggle Activation</Action>
+          <Keys>
+            <Key>17</Key>
+            <Key>46</Key>
+          </Keys>
+          <ID>0</ID>
+        </Hotkey>
+      </Hotkeys>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>50</ID>
+      <Description>"Active aspect ratio"</Description>
+      <LastState Value="1,600000024" RealAddress="7FF7F6BCB88C"/>
+      <VariableType>Float</VariableType>
+      <Address>RDR2.exe+3B1B88C</Address>
+    </CheatEntry>
+    <CheatEntry>
       <ID>10</ID>
-      <Description>"---------------------------------------------------------"</Description>
+      <Description>"--------------------------------------------------------------------------------------"</Description>
       <LastState Value="" RealAddress="00000000"/>
       <Color>FF0000</Color>
       <GroupHeader>1</GroupHeader>
     </CheatEntry>
     <CheatEntry>
       <ID>11</ID>
-      <Description>"By Otis_Inf. v0.4. 06-nov-2019"</Description>
+      <Description>"By Otis_Inf. v0.5. 09-nov-2019. Thanks to Hattiwatti for hotsampling &amp; weather locations"</Description>
       <LastState Value="" RealAddress="00000000"/>
       <Color>FF0000</Color>
+      <GroupHeader>1</GroupHeader>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>48</ID>
+      <Description>"Re-using information from this table is prohibited. (c) All rights reserved"</Description>
+      <LastState Value="" RealAddress="00000000"/>
+      <Color>8000FF</Color>
       <GroupHeader>1</GroupHeader>
     </CheatEntry>
     <CheatEntry>
@@ -231,108 +720,153 @@ dealloc(newmem)
       <Color>FF0000</Color>
       <GroupHeader>1</GroupHeader>
     </CheatEntry>
+    <CheatEntry>
+      <ID>49</ID>
+      <Description>"--------------------------------------------------------------------------------------"</Description>
+      <LastState Value="" RealAddress="00000000"/>
+      <GroupHeader>1</GroupHeader>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>25</ID>
+      <Description>"Available weather types:"</Description>
+      <Options moManualExpandCollapse="1"/>
+      <LastState Value="" RealAddress="00000000"/>
+      <GroupHeader>1</GroupHeader>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>26</ID>
+          <Description>"0:  High pressure"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>27</ID>
+          <Description>"1:  Sunny"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>28</ID>
+          <Description>"2:  Misty"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>29</ID>
+          <Description>"3:  Fog"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>30</ID>
+          <Description>"4: Clouds"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>31</ID>
+          <Description>"5: Overcast"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>32</ID>
+          <Description>"6: Overcast dark"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>33</ID>
+          <Description>"7:  Drizzle"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>34</ID>
+          <Description>"8:  Rain"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>35</ID>
+          <Description>"9:  Thunder"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>36</ID>
+          <Description>"10: Thunderstorm"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>37</ID>
+          <Description>"11: Hurricane"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>38</ID>
+          <Description>"12: Shower"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>39</ID>
+          <Description>"13: Hail"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>40</ID>
+          <Description>"14: Sleet"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>41</ID>
+          <Description>"15: Snow clearing"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>42</ID>
+          <Description>"16: Snow light"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>43</ID>
+          <Description>"17: Snow"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>44</ID>
+          <Description>"18: Blizzard"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>45</ID>
+          <Description>"19: Ground blizzard"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>46</ID>
+          <Description>"20: White-out"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>47</ID>
+          <Description>"21: Sandstorm"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
   </CheatEntries>
-  <CheatCodes>
-    <CodeEntry>
-      <Description>Change of call RDR2.exe+1879C0</Description>
-      <AddressString>RDR2.exe+25C0D81</AddressString>
-      <Before>
-        <Byte>45</Byte>
-        <Byte>33</Byte>
-        <Byte>C9</Byte>
-        <Byte>33</Byte>
-        <Byte>D2</Byte>
-      </Before>
-      <Actual>
-        <Byte>E8</Byte>
-        <Byte>3A</Byte>
-        <Byte>6C</Byte>
-        <Byte>BC</Byte>
-        <Byte>FD</Byte>
-      </Actual>
-      <After>
-        <Byte>65</Byte>
-        <Byte>48</Byte>
-        <Byte>8B</Byte>
-        <Byte>04</Byte>
-        <Byte>25</Byte>
-      </After>
-    </CodeEntry>
-    <CodeEntry>
-      <Description>Change of call RDR2.exe+18CB6C</Description>
-      <AddressString>RDR2.exe+1879E8</AddressString>
-      <Before>
-        <Byte>E8</Byte>
-        <Byte>85</Byte>
-        <Byte>D2</Byte>
-        <Byte>75</Byte>
-        <Byte>41</Byte>
-      </Before>
-      <Actual>
-        <Byte>E8</Byte>
-        <Byte>7F</Byte>
-        <Byte>51</Byte>
-        <Byte>00</Byte>
-        <Byte>00</Byte>
-      </Actual>
-      <After>
-        <Byte>65</Byte>
-        <Byte>48</Byte>
-        <Byte>8B</Byte>
-        <Byte>04</Byte>
-        <Byte>25</Byte>
-      </After>
-    </CodeEntry>
-    <CodeEntry>
-      <Description>Change of call RDR2.exe+2625784</Description>
-      <AddressString>RDR2.exe+187A22</AddressString>
-      <Before>
-        <Byte>D3</Byte>
-        <Byte>48</Byte>
-        <Byte>8B</Byte>
-        <Byte>0C</Byte>
-        <Byte>31</Byte>
-      </Before>
-      <Actual>
-        <Byte>E8</Byte>
-        <Byte>5D</Byte>
-        <Byte>DD</Byte>
-        <Byte>49</Byte>
-        <Byte>02</Byte>
-      </Actual>
-      <After>
-        <Byte>EB</Byte>
-        <Byte>5D</Byte>
-        <Byte>65</Byte>
-        <Byte>48</Byte>
-        <Byte>8B</Byte>
-      </After>
-    </CodeEntry>
-    <CodeEntry>
-      <Description>Change of call RDR2.exe+262D69C</Description>
-      <AddressString>RDR2.exe+187A81</AddressString>
-      <Before>
-        <Byte>40</Byte>
-        <Byte>48</Byte>
-        <Byte>4C</Byte>
-        <Byte>8B</Byte>
-        <Byte>C5</Byte>
-      </Before>
-      <Actual>
-        <Byte>E8</Byte>
-        <Byte>16</Byte>
-        <Byte>5C</Byte>
-        <Byte>4A</Byte>
-        <Byte>02</Byte>
-      </Actual>
-      <After>
-        <Byte>65</Byte>
-        <Byte>48</Byte>
-        <Byte>8B</Byte>
-        <Byte>04</Byte>
-        <Byte>25</Byte>
-      </After>
-    </CodeEntry>
-  </CheatCodes>
   <UserdefinedSymbols/>
 </CheatTable>
