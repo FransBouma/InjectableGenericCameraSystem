@@ -4,7 +4,7 @@
     <CheatEntry>
       <ID>7</ID>
       <Description>"Remove photomode freecam range / rotation limits / black bars (leave enabled!)"</Description>
-      <LastState/>
+      <LastState Activated="1"/>
       <VariableType>Auto Assembler Script</VariableType>
       <AssemblerScript>/////////////////////////
 // By Otis_Inf. All rights reserved.
@@ -16,7 +16,7 @@
 [ENABLE]
 aobscanmodule(RemovePMCoordRange,RDR2.exe,E8 ?? ?? ?? ?? 45 33 C0 48 8D 55 B0 48 8D 4B 20) // should be unique
 aobscanmodule(RemovePMRotationRange,RDR2.exe,E8 ?? ?? ?? ?? F3 0F 10 4D 30 48 8D 55 F0) // should be unique
-aobscanmodule(RemovePMBlackBars,RDR2.exe, E8 ?? ?? ?? ?? 65 48 8B 04 25 58 00 00 00 45 33 C9 8B 1D ?? ?? ?? ?? 45 33 C0 48 83 64 24 20 00 BA B0 13 00 00 48 8B 0C D8)
+aobscanmodule(RemovePMBlackBars,RDR2.exe, 0F 86 83 04 00 00)
 
 RemovePMCoordRange:
   nop
@@ -33,11 +33,7 @@ RemovePMRotationRange:
   nop
 
 RemovePMBlackBars:
-  nop
-  nop
-  nop
-  nop
-  nop
+  db E9 84 04 00 00 90                         // jmp RDR2.exe+51D290 and a NOP
 
 registersymbol(RemovePMCoordRange)
 registersymbol(RemovePMRotationRange)
@@ -51,7 +47,7 @@ RemovePMRotationRange:
   db E8 8C A0 00 00
 
 RemovePMBlackBars:
-  db E8 5C AB C6 FF
+  db 0F 86 83 04 00 00
 
 
 unregistersymbol(RemovePMCoordRange)
@@ -221,7 +217,7 @@ dealloc(newmem)
     <CheatEntry>
       <ID>22</ID>
       <Description>"Weather control (leave enabled)"</Description>
-      <LastState Activated="1"/>
+      <LastState/>
       <VariableType>Auto Assembler Script</VariableType>
       <AssemblerScript>/////////////////////////
 // By Otis_Inf. All rights reserved.
@@ -314,7 +310,6 @@ dealloc(newmem)
         <CheatEntry>
           <ID>23</ID>
           <Description>"Weather type (0-21: various weather types. -1 (FFFFFFFF): 0ff)"</Description>
-          <LastState Value="FFFFFFFF" RealAddress="7FF7F74AE52C"/>
           <ShowAsHex>1</ShowAsHex>
           <VariableType>4 Bytes</VariableType>
           <Address>weatherAddress</Address>
@@ -382,7 +377,6 @@ dealloc(newmem)
             <CheatEntry>
               <ID>52</ID>
               <Description>"From weather"</Description>
-              <LastState Value="4" RealAddress="7FF7F74AE2E8"/>
               <VariableType>4 Bytes</VariableType>
               <Address>weatherFromAddress</Address>
               <Offsets>
@@ -392,7 +386,6 @@ dealloc(newmem)
             <CheatEntry>
               <ID>53</ID>
               <Description>"To weather"</Description>
-              <LastState Value="1" RealAddress="7FF7F74AE2EC"/>
               <VariableType>4 Bytes</VariableType>
               <Address>weatherFromAddress</Address>
               <Offsets>
@@ -402,7 +395,6 @@ dealloc(newmem)
             <CheatEntry>
               <ID>54</ID>
               <Description>"Interpolation factor (0: from weather, 1: to weather)"</Description>
-              <LastState Value="0,1127799973" RealAddress="7FF7F74AE2F0"/>
               <VariableType>Float</VariableType>
               <Address>weatherFromAddress</Address>
               <Offsets>
@@ -584,14 +576,12 @@ RDR2.exe+2C742A - 40 38 3D 049B5403     - cmp [RDR2.exe+3810F35],dil
     <CheatEntry>
       <ID>13</ID>
       <Description>"Time of day: Hour. 0-23. Setting the value outside this range crashes the game"</Description>
-      <LastState Value="15" RealAddress="7FF7F74BBA50"/>
       <VariableType>2 Bytes</VariableType>
       <Address>RDR2.exe+440BA50</Address>
     </CheatEntry>
     <CheatEntry>
       <ID>17</ID>
       <Description>"Pause game. Ctrl+Numpad0: set to 1 (paused). Alt-Numpad0: set to 0 (unpaused)"</Description>
-      <LastState Value="0" RealAddress="7FF7F88743D3"/>
       <VariableType>Byte</VariableType>
       <Address>RDR2.exe+57C43D3</Address>
       <Hotkeys>
@@ -688,7 +678,6 @@ dealloc(newmem)
     <CheatEntry>
       <ID>50</ID>
       <Description>"Active aspect ratio"</Description>
-      <LastState Value="1,600000024" RealAddress="7FF7F6BCB88C"/>
       <VariableType>Float</VariableType>
       <Address>RDR2.exe+3B1B88C</Address>
     </CheatEntry>
@@ -866,6 +855,54 @@ dealloc(newmem)
           <GroupHeader>1</GroupHeader>
         </CheatEntry>
       </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>56</ID>
+      <Description>"Auto Assemble script"</Description>
+      <LastState Activated="1"/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+aobscanmodule(NoBlackBarsInPM,RDR2.exe,0F 86 83 04 00 00) // should be unique
+
+NoBlackBarsInPM:
+  db E9 84 04 00 00 90                         // jmp RDR2.exe+51D290 and a NOP
+
+[DISABLE]
+
+NoBlackBarsInPM:
+  db 0F 86 83 04 00 00
+
+unregistersymbol(NoBlackBarsInPM)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "RDR2.exe"+51CE07
+
+"RDR2.exe"+51CDC7: F3 41 0F 5C C0              -  subss xmm0,xmm8
+"RDR2.exe"+51CDCC: 44 0F 29 50 88              -  movaps [rax-78],xmm10
+"RDR2.exe"+51CDD1: 44 0F 29 98 78 FF FF FF     -  movaps [rax-00000088],xmm11
+"RDR2.exe"+51CDD9: 44 0F 29 A0 68 FF FF FF     -  movaps [rax-00000098],xmm12
+"RDR2.exe"+51CDE1: 44 0F 29 A8 58 FF FF FF     -  movaps [rax-000000A8],xmm13
+"RDR2.exe"+51CDE9: 44 0F 28 E9                 -  movaps xmm13,xmm1
+"RDR2.exe"+51CDED: 0F 54 05 4C F9 CC 02        -  andps xmm0,[RDR2.exe+31EC740]
+"RDR2.exe"+51CDF4: 0F 2F 05 E9 F6 CC 02        -  comiss xmm0,[RDR2.exe+31EC4E4]
+"RDR2.exe"+51CDFB: 44 0F 29 74 24 70           -  movaps [rsp+70],xmm14
+"RDR2.exe"+51CE01: 44 0F 29 7C 24 60           -  movaps [rsp+60],xmm15
+// ---------- INJECTING HERE ----------
+"RDR2.exe"+51CE07: 0F 86 83 04 00 00           -  jbe RDR2.exe+51D290
+// ---------- DONE INJECTING  ----------
+"RDR2.exe"+51CE0D: 48 8B 0D 4C 02 87 03        -  mov rcx,[RDR2.exe+3D8D060]
+"RDR2.exe"+51CE14: 40 32 FF                    -  xor dil,dil
+"RDR2.exe"+51CE17: E8 7C C4 1C 00              -  call RDR2.exe+6E9298
+"RDR2.exe"+51CE1C: F3 0F 10 3D 28 F7 CC 02     -  movss xmm7,[RDR2.exe+31EC54C]
+"RDR2.exe"+51CE24: 40 8A F0                    -  mov sil,al
+"RDR2.exe"+51CE27: 41 BC 01 00 00 00           -  mov r12d,00000001
+"RDR2.exe"+51CE2D: 84 C0                       -  test al,al
+"RDR2.exe"+51CE2F: 74 10                       -  je RDR2.exe+51CE41
+"RDR2.exe"+51CE31: 41 0F 2F F0                 -  comiss xmm6,xmm8
+"RDR2.exe"+51CE35: 40 0F B6 FF                 -  movzx edi,dil
+}
+</AssemblerScript>
     </CheatEntry>
   </CheatEntries>
   <UserdefinedSymbols/>

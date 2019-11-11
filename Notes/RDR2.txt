@@ -101,6 +101,28 @@ RDR2.exe+51CE7F - BA B0130000           - mov edx,000013B0 { 5040 }
 RDR2.exe+51CE84 - 48 8B 0C D8           - mov rcx,[rax+rbx*8]
 RDR2.exe+51CE88 - 48 8B 14 0A           - mov rdx,[rdx+rcx]
 
+// alternatively, as above can cause crashes in some versions:
+RDR2.exe+51CDCC - 44 0F29 50 88         - movaps [rax-78],xmm10
+RDR2.exe+51CDD1 - 44 0F29 98 78FFFFFF   - movaps [rax-00000088],xmm11
+RDR2.exe+51CDD9 - 44 0F29 A0 68FFFFFF   - movaps [rax-00000098],xmm12
+RDR2.exe+51CDE1 - 44 0F29 A8 58FFFFFF   - movaps [rax-000000A8],xmm13
+RDR2.exe+51CDE9 - 44 0F28 E9            - movaps xmm13,xmm1
+RDR2.exe+51CDED - 0F54 05 4CF9CC02      - andps xmm0,[RDR2.exe+31EC740] { (2147483647) }
+RDR2.exe+51CDF4 - 0F2F 05 E9F6CC02      - comiss xmm0,[RDR2.exe+31EC4E4] { (0.00) }
+RDR2.exe+51CDFB - 44 0F29 74 24 70      - movaps [rsp+70],xmm14
+RDR2.exe+51CE01 - 44 0F29 7C 24 60      - movaps [rsp+60],xmm15
+RDR2.exe+51CE07 - 0F86 83040000         - jbe RDR2.exe+51D290					>> Change to JMP
+RDR2.exe+51CE0D - 48 8B 0D 4C028703     - mov rcx,[RDR2.exe+3D8D060] { (1EAAFE509D0) }
+RDR2.exe+51CE14 - 40 32 FF              - xor dil,dil
+RDR2.exe+51CE17 - E8 7CC41C00           - call RDR2.exe+6E9298
+RDR2.exe+51CE1C - F3 0F10 3D 28F7CC02   - movss xmm7,[RDR2.exe+31EC54C] { (1.00) }
+RDR2.exe+51CE24 - 40 8A F0              - mov sil,al
+RDR2.exe+51CE27 - 41 BC 01000000        - mov r12d,00000001 { 1 }
+RDR2.exe+51CE2D - 84 C0                 - test al,al
+RDR2.exe+51CE2F - 74 10                 - je RDR2.exe+51CE41
+
+
+
 calls: 
 RDR2.exe+1879C0 - 48 8B C4              - mov rax,rsp
 
@@ -347,6 +369,30 @@ normal:	 rax==00007FF6AAF92AF8
 	RDR2.exe+40254F - 55                    - push rbp
 	RDR2.exe+402550 - 56                    - push rsi
 	RDR2.exe+402551 - 57                    - push rdi
+	
+// store current camera in struct:
+RDR2.exe+2C81FC - 48 89 1D E55EA803     - mov [RDR2.exe+3D4E0E8],rbx { (0) }
+
+
+// Deny cinematic camera:
+RDR2.exe+1230B0 - 48 3B 05 51B0C203     - cmp rax,[RDR2.exe+3D4E108] { (15042B57950) }
+RDR2.exe+1230B7 - 75 0C                 - jne RDR2.exe+1230C5
+RDR2.exe+1230B9 - 48 83 B8 58050000 00  - cmp qword ptr [rax+00000558],00 { 0 }
+RDR2.exe+1230C1 - 0F95 C0               - setne al
+RDR2.exe+1230C4 - C3                    - ret 
+RDR2.exe+1230C5 - 30 C0                 - xor al,al					<< mov al, 01 -> no cinematic camera enabled when trying to activate it. 
+RDR2.exe+1230C7 - C3                    - ret 
+
+RDR2.exe+1230AC - 85 C0                 - test eax,eax
+RDR2.exe+1230AE - 74 15                 - je RDR2.exe+1230C5
+RDR2.exe+1230B0 - 48 3B 05 51B0C203     - cmp rax,[RDR2.exe+3D4E108] { (15042B57950) }
+RDR2.exe+1230B7 - 75 0C                 - jne RDR2.exe+1230C5
+RDR2.exe+1230B9 - 48 83 B8 58050000 00  - cmp qword ptr [rax+00000558],00 { 0 }	<< If this value is 0D and it's set to 0, photomode works in full in cinematic camera. Not yet in cutscenes!
+RDR2.exe+1230C1 - 0F95 C0               - setne al				 
+RDR2.exe+1230C4 - C3                    - ret 
+RDR2.exe+1230C5 - 30 C0                 - xor al,al
+RDR2.exe+1230C7 - C3                    - ret 
+
 
 
 
@@ -367,4 +413,85 @@ RDR2.exe+31F4FC - 41 03 D5              - add edx,r13d
 RDR2.exe+31F4FF - 4D 03 C5              - add r8,r13
 RDR2.exe+31F502 - 49 03 C3              - add rax,r11
 
+// Photomode pause start.
+RDR2.exe+6F0594 - 40 53                 - push rbx
+RDR2.exe+6F0596 - 48 83 EC 20           - sub rsp,20 { 32 }
+RDR2.exe+6F059A - 83 79 04 00           - cmp dword ptr [rcx+04],00 { 0 }
+RDR2.exe+6F059E - 48 8B D9              - mov rbx,rcx
+RDR2.exe+6F05A1 - C7 01 03000000        - mov [rcx],00000003 { 3 }
+RDR2.exe+6F05A7 - 75 07                 - jne RDR2.exe+6F05B0
+RDR2.exe+6F05A9 - E8 36F33202           - call RDR2.exe+2A1F8E4
+RDR2.exe+6F05AE - EB 07                 - jmp RDR2.exe+6F05B7
+RDR2.exe+6F05B0 - B1 01                 - mov cl,01 { 1 }
+RDR2.exe+6F05B2 - E8 4DF33202           - call RDR2.exe+2A1F904			--> Calls function to set ...3d2 to 2 to start pause
+RDR2.exe+6F05B7 - E8 8C4BE9FF           - call RDR2.exe+585148
+RDR2.exe+6F05BC - B2 01                 - mov dl,01 { 1 }
+RDR2.exe+6F05BE - 48 8B CB              - mov rcx,rbx
+RDR2.exe+6F05C1 - 48 83 C4 20           - add rsp,20 { 32 }
+RDR2.exe+6F05C5 - 5B                    - pop rbx
+RDR2.exe+6F05C6 - E9 F5EC0000           - jmp RDR2.exe+6FF2C0
 
+called from: Generic 'should we pause?' function
+RDR2.exe+6F33E0 - 48 83 EC 28           - sub rsp,28 { 40 }
+RDR2.exe+6F33E4 - 48 8B 0D 759C6903     - mov rcx,[RDR2.exe+3D8D060] { (18D8FC173F0) }
+RDR2.exe+6F33EB - 83 39 01              - cmp dword ptr [rcx],01 { 1 }
+RDR2.exe+6F33EE - 75 0B                 - jne RDR2.exe+6F33FB
+RDR2.exe+6F33F0 - C7 01 02000000        - mov [rcx],00000002 { 2 }
+RDR2.exe+6F33F6 - 48 83 C4 28           - add rsp,28 { 40 }
+RDR2.exe+6F33FA - C3                    - ret 
+RDR2.exe+6F33FB - 83 39 02              - cmp dword ptr [rcx],02 { 2 }
+RDR2.exe+6F33FE - 75 05                 - jne RDR2.exe+6F3405
+RDR2.exe+6F3400 - E8 8FD1FFFF           - call RDR2.exe+6F0594			--> CALLS pm pause start
+RDR2.exe+6F3405 - 48 83 C4 28           - add rsp,28 { 40 }
+RDR2.exe+6F3409 - C3                    - ret 
+
+// function that sets rcx above to 1 when pm is started:
+RDR2.exe+6C6B60 - 48 83 EC 28           - sub rsp,28 { 40 }
+RDR2.exe+6C6B64 - 83 39 00              - cmp dword ptr [rcx],00 { 0 }
+RDR2.exe+6C6B67 - 75 0E                 - jne RDR2.exe+6C6B77
+RDR2.exe+6C6B69 - 89 51 04              - mov [rcx+04],edx
+RDR2.exe+6C6B6C - C7 01 01000000        - mov [rcx],00000001 { 1 }
+RDR2.exe+6C6B72 - E8 39880300           - call RDR2.exe+6FF3B0
+RDR2.exe+6C6B77 - 48 83 C4 28           - add rsp,28 { 40 }
+RDR2.exe+6C6B7B - C3                    - ret 
+
+
+General time ticker. Set RDR2.exe+57C43D7 to 1 to start the 'pause the game' action
+RDR2.exe+2A20056 - 40 7F 48              - jg RDR2.exe+2A200A1
+RDR2.exe+2A20059 - 8B C4                 - mov eax,esp
+RDR2.exe+2A2005B - 53                    - push rbx
+RDR2.exe+2A2005C - 48 83 EC 60           - sub rsp,60 { 96 }
+RDR2.exe+2A20060 - 0F29 70 E8            - movaps [rax-18],xmm6
+RDR2.exe+2A20064 - 33 DB                 - xor ebx,ebx
+RDR2.exe+2A20066 - 38 1D 6B43DA02        - cmp [RDR2.exe+57C43D7],bl { (0) }
+RDR2.exe+2A2006C - 0F29 78 D8            - movaps [rax-28],xmm7
+RDR2.exe+2A20070 - 44 0F29 40 C8         - movaps [rax-38],xmm8
+RDR2.exe+2A20075 - 44 0F29 48 B8         - movaps [rax-48],xmm9
+RDR2.exe+2A2007A - 74 0D                 - je RDR2.exe+2A20089
+RDR2.exe+2A2007C - C6 05 5043DA02 01     - mov byte ptr [RDR2.exe+57C43D3],01 { (1),1 }
+RDR2.exe+2A20083 - 88 1D 4E43DA02        - mov [RDR2.exe+57C43D7],bl { (0) }
+RDR2.exe+2A20089 - 38 1D 4943DA02        - cmp [RDR2.exe+57C43D8],bl { (0) }
+RDR2.exe+2A2008F - 74 0C                 - je RDR2.exe+2A2009D
+RDR2.exe+2A20091 - 88 1D 3C43DA02        - mov [RDR2.exe+57C43D3],bl { (1) }
+RDR2.exe+2A20097 - 88 1D 3B43DA02        - mov [RDR2.exe+57C43D8],bl { (0) }
+RDR2.exe+2A2009D - 38 1D 3643DA02        - cmp [RDR2.exe+57C43D9],bl { (0) }
+RDR2.exe+2A200A3 - 88 1D 3143DA02        - mov [RDR2.exe+57C43DA],bl { (0) }
+RDR2.exe+2A200A9 - 74 1B                 - je RDR2.exe+2A200C6
+RDR2.exe+2A200AB - B1 01                 - mov cl,01 { 1 }
+RDR2.exe+2A200AD - C6 05 1E43DA02 01     - mov byte ptr [RDR2.exe+57C43D2],01 { (0),1 }
+RDR2.exe+2A200B4 - E8 FF65BAFF           - call RDR2.exe+25C66B8
+RDR2.exe+2A200B9 - C6 05 1A43DA02 01     - mov byte ptr [RDR2.exe+57C43DA],01 { (0),1 }
+RDR2.exe+2A200C0 - 88 1D 1343DA02        - mov [RDR2.exe+57C43D9],bl { (0) }
+RDR2.exe+2A200C6 - F3 0F10 35 9AE01301   - movss xmm6,[RDR2.exe+3B5E168] { (1.00) }
+RDR2.exe+2A200CE - 48 8D 05 97E01301     - lea rax,[RDR2.exe+3B5E16C] { (1.00) }
+RDR2.exe+2A200D5 - F3 0F5D 30            - minss xmm6,[rax]
+RDR2.exe+2A200D9 - 48 83 C0 04           - add rax,04 { 4 }
+RDR2.exe+2A200DD - 48 8D 0D 98E01301     - lea rcx,[RDR2.exe+3B5E17C] { (0) }
+RDR2.exe+2A200E4 - 48 3B C1              - cmp rax,rcx
+RDR2.exe+2A200E7 - 7C EC                 - jl RDR2.exe+2A200D5
+RDR2.exe+2A200E9 - F3 0F10 3D 5BC47C00   - movss xmm7,[RDR2.exe+31EC54C] { (1.00) }
+RDR2.exe+2A200F1 - 0F2F F7               - comiss xmm6,xmm7
+RDR2.exe+2A200F4 - 72 08                 - jb RDR2.exe+2A200FE
+RDR2.exe+2A200F6 - F3 0F10 35 1EE01301   - movss xmm6,[RDR2.exe+3B5E11C] { (1.00) }
+RDR2.exe+2A200FE - 48 8D 4C 24 70        - lea rcx,[rsp+70]
+RDR2.exe+2A20103 - F3 0F11 35 11E01301   - movss [RDR2.exe+3B5E11C],xmm6 { (1.00) }
