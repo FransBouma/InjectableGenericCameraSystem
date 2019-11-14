@@ -1,6 +1,90 @@
 RDR2
 =============
 
+Most locations are outdated, since November 14th. They can still be found back tho, as the code structure is the same. 
+
+// nov 14
+photomode coords.
+RDR2.exe+126EEB - 75 1B                 - jne RDR2.exe+126F08
+RDR2.exe+126EED - 0F11 07               - movups [rdi],xmm0
+RDR2.exe+126EF0 - 0F10 4B 10            - movups xmm1,[rbx+10]
+RDR2.exe+126EF4 - 0F11 4F 10            - movups [rdi+10],xmm1
+RDR2.exe+126EF8 - 0F10 43 20            - movups xmm0,[rbx+20]
+RDR2.exe+126EFC - 0F11 47 20            - movups [rdi+20],xmm0
+RDR2.exe+126F00 - 0F10 4B 30            - movups xmm1,[rbx+30]
+RDR2.exe+126F04 - 0F11 4F 30            - movups [rdi+30],xmm1		>> write coords
+RDR2.exe+126F08 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
+RDR2.exe+126F0D - 48 8B 74 24 38        - mov rsi,[rsp+38]
+RDR2.exe+126F12 - 48 83 C4 20           - add rsp,20 { 32 }
+
+// Fov:
+RDR2.exe+1288C8 - 72 95                 - jb RDR2.exe+12885F
+RDR2.exe+1288CA - 0F2F C2               - comiss xmm0,xmm2
+RDR2.exe+1288CD - 76 09                 - jna RDR2.exe+1288D8
+RDR2.exe+1288CF - 0F2F C1               - comiss xmm0,xmm1
+RDR2.exe+1288D2 - 72 8B                 - jb RDR2.exe+12885F
+RDR2.exe+1288D4 - F3 0F5D C2            - minss xmm0,xmm2
+RDR2.exe+1288D8 - F3 0F11 83 80000000   - movss [rbx+00000080],xmm0			<< FOV Write
+RDR2.exe+1288E0 - 48 83 C4 20           - add rsp,20 { 32 }
+RDR2.exe+1288E4 - 5B                    - pop rbx
+RDR2.exe+1288E5 - C3                    - ret 
+
+// Hotsampling
+RDR2.exe+2622AE3 - FF 50 40              - call qword ptr [rax+40]
+RDR2.exe+2622AE6 - 48 8B 0D D39C4F01     - mov rcx,[RDR2.exe+3B1C7C0] { (7FF647EA2CA8) }
+RDR2.exe+2622AED - 48 8B 01              - mov rax,[rcx]
+RDR2.exe+2622AF0 - FF 90 10010000        - call qword ptr [rax+00000110]		<< Get hotsampling bit. Resolution is in RBX (low 2bytes: width, high 2 bytes height).
+RDR2.exe+2622AF6 - 84 C0                 - test al,al
+RDR2.exe+2622AF8 - 74 05                 - je RDR2.exe+2622AFF
+RDR2.exe+2622AFA - 4D 85 E4              - test r12,r12
+RDR2.exe+2622AFD - 74 22                 - je RDR2.exe+2622B21
+RDR2.exe+2622AFF - 48 8B 0D BA9C4F01     - mov rcx,[RDR2.exe+3B1C7C0] { (7FF647EA2CA8) }
+RDR2.exe+2622B06 - 48 8B 01              - mov rax,[rcx]
+RDR2.exe+2622B09 - FF 90 10010000        - call qword ptr [rax+00000110]
+
+// reads preferred width and height:
+RDR2.exe+25BADC0      - 8B 41 20              - mov eax,[rcx+20]
+RDR2.exe+25BADC3      - 89 02                 - mov [rdx],eax
+RDR2.exe+25BADC5      - 8B 41 24              - mov eax,[rcx+24]
+RDR2.exe+25BADC8      - 41 89 00              - mov [r8],eax
+RDR2.exe+25BADCB      - C3                    - ret 
+
+// ToD
+RDR2.exe+2E1AA7D - E8 DE9567FF           - call RDR2.exe+2494060
+RDR2.exe+2E1AA82 - 66 0F6E 15 8A815F01   - movd xmm2,[RDR2.exe+4412C14] { (54) }		<< Minutes
+RDR2.exe+2E1AA8A - 45 33 C9              - xor r9d,r9d
+RDR2.exe+2E1AA8D - 66 0F6E 05 7B815F01   - movd xmm0,[RDR2.exe+4412C10] { (20) }		<< Hours
+RDR2.exe+2E1AA95 - BA 70406659           - mov edx,59664070
+RDR2.exe+2E1AA9A - 66 0F6E 0D 76815F01   - movd xmm1,[RDR2.exe+4412C18] { (53) }		<< Seconds
+RDR2.exe+2E1AAA2 - 48 8B CF              - mov rcx,rdi
+RDR2.exe+2E1AAA5 - 0F5B D2               - cvtdq2ps xmm2,xmm2
+RDR2.exe+2E1AAA8 - 0F5B C0               - cvtdq2ps xmm0,xmm0
+RDR2.exe+2E1AAAB - F3 0F59 15 3D294500   - mulss xmm2,[RDR2.exe+326D3F0] { (0.02) }
+RDR2.exe+2E1AAB3 - 0F5B C9               - cvtdq2ps xmm1,xmm1
+
+// Pause
+RDR2.exe+2C89A5 - 44 0F29 40 C8         - movaps [rax-38],xmm8
+RDR2.exe+2C89AA - 44 0F29 48 B8         - movaps [rax-48],xmm9
+RDR2.exe+2C89AF - 8A 05 83C4A803        - mov al,[RDR2.exe+3D54E38] { (0) }
+RDR2.exe+2C89B5 - 88 05 7EC4A803        - mov [RDR2.exe+3D54E39],al { (0) }
+RDR2.exe+2C89BB - 0F85 B7020000         - jne RDR2.exe+2C8C78
+RDR2.exe+2C89C1 - 40 38 3D EA2D5005     - cmp [RDR2.exe+57CB7B2],dil { (1) }		<< If 1, game pauses. Photomode uses the B3 value next to it tho so we'll use that one in the table
+RDR2.exe+2C89C8 - 74 0D                 - je RDR2.exe+2C89D7
+RDR2.exe+2C89CA - 40 38 3D E92D5005     - cmp [RDR2.exe+57CB7BA],dil { (0) }
+RDR2.exe+2C89D1 - 0F84 A1020000         - je RDR2.exe+2C8C78
+RDR2.exe+2C89D7 - 40 38 3D D62D5005     - cmp [RDR2.exe+57CB7B4],dil { (0) }
+RDR2.exe+2C89DE - 0F85 94020000         - jne RDR2.exe+2C8C78
+RDR2.exe+2C89E4 - 40 38 3D CB2D5005     - cmp [RDR2.exe+57CB7B6],dil { (0) }
+RDR2.exe+2C89EB - 0F85 87020000         - jne RDR2.exe+2C8C78
+RDR2.exe+2C89F1 - 44 0FB7 0D 5FF85403   - movzx r9d,word ptr [RDR2.exe+3818258] { (0) }
+RDR2.exe+2C89F9 - 66 44 39 0D 87F85403  - cmp [RDR2.exe+3818288],r9w { (0) }
+RDR2.exe+2C8A01 - 8A 05 91F85403        - mov al,[RDR2.exe+3818298] { (0) }
+RDR2.exe+2C8A07 - 8A 15 5BF85403        - mov dl,[RDR2.exe+3818268] { (0) }
+RDR2.exe+2C8A0D - 40 88 3D 24C4A803     - mov [RDR2.exe+3D54E38],dil { (0) }
+
+
+
+------------- Original notes of before November 14th.
 photomode coords.
 RDR2.exe+126A53 - 75 1B                 - jne RDR2.exe+126A70
 RDR2.exe+126A55 - 0F11 07               - movups [rdi],xmm0
