@@ -82,6 +82,17 @@ RDR2.exe+2C8A01 - 8A 05 91F85403        - mov al,[RDR2.exe+3818298] { (0) }
 RDR2.exe+2C8A07 - 8A 15 5BF85403        - mov dl,[RDR2.exe+3818268] { (0) }
 RDR2.exe+2C8A0D - 40 88 3D 24C4A803     - mov [RDR2.exe+3D54E38],dil { (0) }
 
+// Res & AR
+RDR2.exe+2638499 - 8B 05 11A14E01        - mov eax,[RDR2.exe+3B225B0] { (1920) }		<< Current Width
+RDR2.exe+263849F - 89 41 3C              - mov [rcx+3C],eax
+RDR2.exe+26384A2 - 8B 05 0CA14E01        - mov eax,[RDR2.exe+3B225B4] { (1200) }		<< Current Height
+RDR2.exe+26384A8 - 89 41 44              - mov [rcx+44],eax
+RDR2.exe+26384AB - F3 0F10 05 69A14E01   - movss xmm0,[RDR2.exe+3B2261C] { (1.60) }		<< Current AR
+RDR2.exe+26384B3 - F3 0F11 41 30         - movss [rcx+30],xmm0
+RDR2.exe+26384B8 - F3 0F10 0D 5CA14E01   - movss xmm1,[RDR2.exe+3B2261C] { (1.60) }
+RDR2.exe+26384C0 - 0F2F 0D 25A2BB00      - comiss xmm1,[RDR2.exe+31F26EC] { (1.00) }
+RDR2.exe+26384C7 - C6 05 3A225001 00     - mov byte ptr [RDR2.exe+3B3A708],00 { (0),0 }
+RDR2.exe+26384CE - 0F97 C0               - seta al
 
 
 ------------- Original notes of before November 14th.
