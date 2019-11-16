@@ -1,0 +1,99 @@
+Star wars Fallen Order
+=========================
+
+// Timestop:
+// There really isn't much else, It's the 
+	virtual float GetEffectiveTimeDilation() const
+	{
+		return TimeDilation * MatineeTimeDilation * DemoPlayTimeDilation;
+	}
+// -> 
+starwarsjedifallenorder.exe+1BD865F0 - F3 0F10 81 F4040000   - movss xmm0,[rcx+000004F4]		<< read time dilation value. 0-> paused, 1.0-> normal.
+starwarsjedifallenorder.exe+1BD865F8 - F3 0F59 81 F0040000   - mulss xmm0,[rcx+000004F0]
+starwarsjedifallenorder.exe+1BD86600 - F3 0F59 81 F8040000   - mulss xmm0,[rcx+000004F8]
+starwarsjedifallenorder.exe+1BD86608 - C3                    - ret 
+
+// It's best to set all 3 values to 0.0 and 1.0 as that cuts cutscenes completely and also removes jitter. 
+
+// called from: 
+starwarsjedifallenorder.exe+1AC1B4CD - 48 89 C1              - mov rcx,rax
+starwarsjedifallenorder.exe+1AC1B4D0 - 48 8B 10              - mov rdx,[rax]
+starwarsjedifallenorder.exe+1AC1B4D3 - FF 92 50060000        - call qword ptr [rdx+00000650]		>> Calls above.
+starwarsjedifallenorder.exe+1AC1B4D9 - EB 08                 - jmp starwarsjedifallenorder.exe+1AC1B4E3
+starwarsjedifallenorder.exe+1AC1B4DB - F3 0F10 05 85ABB9E7   - movss xmm0,[starwarsjedifallenorder.exe+27B6068] { (1,00) }
+starwarsjedifallenorder.exe+1AC1B4E3 - F3 0F11 86 D4000000   - movss [rsi+000000D4],xmm0		<< RCX is still the same here. 
+starwarsjedifallenorder.exe+1AC1B4EB - B9 02000000           - mov ecx,00000002 { 2 }
+starwarsjedifallenorder.exe+1AC1B4F0 - 41 0FB6 44 24 30      - movzx eax,byte ptr [r12+30]
+starwarsjedifallenorder.exe+1AC1B4F6 - 4C 89 E2              - mov rdx,r12
+starwarsjedifallenorder.exe+1AC1B4F9 - 89 86 58020000        - mov [rsi+00000258],eax
+starwarsjedifallenorder.exe+1AC1B4FF - 41 0FB6 44 24 30      - movzx eax,byte ptr [r12+30]
+starwarsjedifallenorder.exe+1AC1B505 - FE C8                 - dec al
+starwarsjedifallenorder.exe+1AC1B507 - 3C 01                 - cmp al,01 { 1 }
+starwarsjedifallenorder.exe+1AC1B509 - 48 8B 06              - mov rax,[rsi]
+starwarsjedifallenorder.exe+1AC1B50C - 0F47 CB               - cmova ecx,ebx
+
+
+// FOV
+starwarsjedifallenorder.exe+1B8614D8 - 0F1F 84 00 00000000   - nop [rax+rax+00000000]
+starwarsjedifallenorder.exe+1B8614E0 - 48 81 EC B8050000     - sub rsp,000005B8 { 1464 }
+starwarsjedifallenorder.exe+1B8614E7 - 0F29 B4 24 A0050000   - movaps [rsp+000005A0],xmm6
+starwarsjedifallenorder.exe+1B8614EF - 48 8B 05 22DCE4E7     - mov rax,[starwarsjedifallenorder.exe+36AF118] { (-0,06) }
+starwarsjedifallenorder.exe+1B8614F6 - 48 31 E0              - xor rax,rsp
+starwarsjedifallenorder.exe+1B8614F9 - 48 89 84 24 90050000  - mov [rsp+00000590],rax
+starwarsjedifallenorder.exe+1B861501 - F3 0F10 B1 7C030000   - movss xmm6,[rcx+0000037C]			<< FOV read
+starwarsjedifallenorder.exe+1B861509 - 31 C0                 - xor eax,eax
+starwarsjedifallenorder.exe+1B86150B - 0F57 C0               - xorps xmm0,xmm0
+starwarsjedifallenorder.exe+1B86150E - 89 44 24 20           - mov [rsp+20],eax
+starwarsjedifallenorder.exe+1B861512 - 0F2F F0               - comiss xmm6,xmm0
+starwarsjedifallenorder.exe+1B861515 - 77 18                 - ja starwarsjedifallenorder.exe+1B86152F
+starwarsjedifallenorder.exe+1B861517 - 48 8B 01              - mov rax,[rcx]
+starwarsjedifallenorder.exe+1B86151A - 48 8D 54 24 30        - lea rdx,[rsp+30]
+starwarsjedifallenorder.exe+1B86151F - FF 90 78060000        - call qword ptr [rax+00000678]
+
+// FOV Write:
+starwarsjedifallenorder.exe+1B88FCE0 - F3 0F11 89 7C030000   - movss [rcx+0000037C],xmm1		<< Write. Not really needed. 
+starwarsjedifallenorder.exe+1B88FCE8 - C3                    - ret 
+
+// Camera:
+// Camera intercept. 
+starwarsjedifallenorder.exe+1B839A60 - 48 89 5C 24 08        - mov [rsp+08],rbx
+starwarsjedifallenorder.exe+1B839A65 - 57                    - push rdi
+starwarsjedifallenorder.exe+1B839A66 - 48 83 EC 20           - sub rsp,20 { 32 }
+starwarsjedifallenorder.exe+1B839A6A - F2 0F10 02            - movsd xmm0,[rdx]				<< Coords read. 
+starwarsjedifallenorder.exe+1B839A6E - 48 89 CF              - mov rdi,rcx
+starwarsjedifallenorder.exe+1B839A71 - F2 0F11 01            - movsd [rcx],xmm0
+starwarsjedifallenorder.exe+1B839A75 - 48 89 D3              - mov rbx,rdx
+starwarsjedifallenorder.exe+1B839A78 - 8B 42 08              - mov eax,[rdx+08]
+starwarsjedifallenorder.exe+1B839A7B - 89 41 08              - mov [rcx+08],eax
+starwarsjedifallenorder.exe+1B839A7E - F2 0F10 42 0C         - movsd xmm0,[rdx+0C]
+starwarsjedifallenorder.exe+1B839A83 - F2 0F11 41 0C         - movsd [rcx+0C],xmm0
+starwarsjedifallenorder.exe+1B839A88 - 8B 42 14              - mov eax,[rdx+14]
+starwarsjedifallenorder.exe+1B839A8B - 89 41 14              - mov [rcx+14],eax
+starwarsjedifallenorder.exe+1B839A8E - 8B 42 18              - mov eax,[rdx+18]
+starwarsjedifallenorder.exe+1B839A91 - 89 41 18              - mov [rcx+18],eax
+starwarsjedifallenorder.exe+1B839A94 - 8B 42 1C              - mov eax,[rdx+1C]
+starwarsjedifallenorder.exe+1B839A97 - 89 41 1C              - mov [rcx+1C],eax
+
+// Camera write
+// This writes to two structs. Only the one which is used in the read above is useful. so 
+// check if that's the same. 
+starwarsjedifallenorder.exe+1B83D53A - F2 0F10 02            - movsd xmm0,[rdx]
+starwarsjedifallenorder.exe+1B83D53E - 48 89 CF              - mov rdi,rcx
+starwarsjedifallenorder.exe+1B83D541 - F2 0F11 01            - movsd [rcx],xmm0				<< Coords write. 
+starwarsjedifallenorder.exe+1B83D545 - 48 89 D3              - mov rbx,rdx
+starwarsjedifallenorder.exe+1B83D548 - 8B 42 08              - mov eax,[rdx+08]
+starwarsjedifallenorder.exe+1B83D54B - 89 41 08              - mov [rcx+08],eax
+starwarsjedifallenorder.exe+1B83D54E - F2 0F10 42 0C         - movsd xmm0,[rdx+0C]
+starwarsjedifallenorder.exe+1B83D553 - F2 0F11 41 0C         - movsd [rcx+0C],xmm0
+starwarsjedifallenorder.exe+1B83D558 - 8B 42 14              - mov eax,[rdx+14]
+starwarsjedifallenorder.exe+1B83D55B - 89 41 14              - mov [rcx+14],eax
+starwarsjedifallenorder.exe+1B83D55E - 8B 42 18              - mov eax,[rdx+18]
+starwarsjedifallenorder.exe+1B83D561 - 89 41 18              - mov [rcx+18],eax
+starwarsjedifallenorder.exe+1B83D564 - 8B 42 1C              - mov eax,[rdx+1C]
+starwarsjedifallenorder.exe+1B83D567 - 89 41 1C              - mov [rcx+1C],eax
+starwarsjedifallenorder.exe+1B83D56A - 8B 42 20              - mov eax,[rdx+20]
+starwarsjedifallenorder.exe+1B83D56D - 89 41 20              - mov [rcx+20],eax
+starwarsjedifallenorder.exe+1B83D570 - 8B 42 24              - mov eax,[rdx+24]
+starwarsjedifallenorder.exe+1B83D573 - 89 41 24              - mov [rcx+24],eax
+starwarsjedifallenorder.exe+1B83D576 - 8B 42 28              - mov eax,[rdx+28]
+starwarsjedifallenorder.exe+1B83D579 - 89 41 28              - mov [rcx+28],eax

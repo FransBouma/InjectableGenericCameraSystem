@@ -49,6 +49,7 @@ namespace IGCSInjectorUI
 				this.LastError = Marshal.GetLastWin32Error();
 				return false;
 			}
+			Thread.Sleep(1000);
 
 			this.LastActionPerformed = "Writing dll filename into memory allocated in host process";
 			IntPtr bytesWritten;
