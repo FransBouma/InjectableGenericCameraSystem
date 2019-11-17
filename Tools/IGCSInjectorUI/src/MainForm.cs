@@ -16,6 +16,11 @@ namespace IGCSInjectorUI
 {
     public partial class MainForm : Form
     {
+		// Use a static string, as we need to read this at injecting time and we can't have the JIT optimizer cleaning up right after the call,
+		// as the value is written to process memory using a P/Invoke which can be handled asynchronously. If the JIT optimizes away the string right after the call
+		// the filename write is insufficient and things fail. 
+		public static string DllPathNameToInject = string.Empty;
+
 		private static string RecentlyUsedFilename = "IGCSInjectorRecentlyUsed.txt";
 		private static string IGCSSettingsFolder = "IGCS";
 		private static int NumberOfCacheEntriesToKeep = 100;
@@ -270,8 +275,8 @@ namespace IGCSInjectorUI
 			}
 			// assume things are OK
 			var injector = new DllInjector();
-			var dllAbsolutePath = GetAbsolutePathForDllName();
-			var result = injector.PerformInjection(dllAbsolutePath, _selectedProcess.Id);
+			MainForm.DllPathNameToInject = GetAbsolutePathForDllName();
+			var result = injector.PerformInjection(_selectedProcess.Id);
 			if(result)
 			{
 				// store dll with process name in recent list

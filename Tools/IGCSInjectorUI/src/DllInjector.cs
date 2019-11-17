@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace IGCSInjectorUI
 {
@@ -16,11 +17,11 @@ namespace IGCSInjectorUI
 		/// <param name="fullPathOfDllToInject">the full path + filename of the dll to inject</param>
 		/// <param name="processId">the PID of the process to inject the dll into.</param>
 		/// <returns>true if succeeded, false otherwise. If false is returned, <see cref="LastError"/> is set with the error code.</returns>
-		public bool PerformInjection(string fullPathOfDllToInject, int processId)
+		public bool PerformInjection(int processId)
 		{
 			this.LastError = 0;
 
-			uint dllLengthToPassInBytes = (uint)((fullPathOfDllToInject.Length + 1) * Marshal.SizeOf(typeof(char)));
+			uint dllLengthToPassInBytes = (uint)((MainForm.DllPathNameToInject.Length + 1) * Marshal.SizeOf(typeof(char)));
 
 			this.LastActionPerformed = "Opening the host process";
 			IntPtr processHandle = Win32Wrapper.OpenProcess(ProcessAccessFlags.CreateThread | ProcessAccessFlags.QueryInformation | ProcessAccessFlags.VirtualMemoryOperation |
@@ -49,20 +50,16 @@ namespace IGCSInjectorUI
 				this.LastError = Marshal.GetLastWin32Error();
 				return false;
 			}
-			Thread.Sleep(1000);
 
 			this.LastActionPerformed = "Writing dll filename into memory allocated in host process";
 			IntPtr bytesWritten;
-			var bytesToWrite = Encoding.Default.GetBytes(fullPathOfDllToInject);
+			var bytesToWrite = Encoding.Default.GetBytes(MainForm.DllPathNameToInject);
 			bool result = Win32Wrapper.WriteProcessMemory(processHandle, memoryInTargetProcess, bytesToWrite, dllLengthToPassInBytes, out bytesWritten);
-			if(!result)
+			if(!result || (bytesWritten.ToInt32()!=bytesToWrite.Length+1))
 			{
 				this.LastError = Marshal.GetLastWin32Error();
 				return false;
 			}
-			// Wait till the write process has completed... We can't just blast on, as writing into the process memory from .NET requires some time... 
-			// Wait 2.5s to stay on the safe side... 
-			Thread.Sleep(2500);
 
 			this.LastActionPerformed = "Creating a thread in the host process to load the dll";
 			IntPtr remoteThreadHandle = Win32Wrapper.CreateRemoteThread(processHandle, IntPtr.Zero, 0, loadLibraryAddress, memoryInTargetProcess, 0, IntPtr.Zero);
