@@ -51,6 +51,8 @@ namespace IGCSInjectorUI
 				return false;
 			}
 
+			Thread.Sleep(500);
+
 			this.LastActionPerformed = "Writing dll filename into memory allocated in host process";
 			IntPtr bytesWritten;
 			var bytesToWrite = Encoding.Default.GetBytes(MainForm.DllPathNameToInject);
@@ -60,6 +62,8 @@ namespace IGCSInjectorUI
 				this.LastError = Marshal.GetLastWin32Error();
 				return false;
 			}
+
+			Thread.Sleep(500);
 
 			this.LastActionPerformed = "Creating a thread in the host process to load the dll";
 			IntPtr remoteThreadHandle = Win32Wrapper.CreateRemoteThread(processHandle, IntPtr.Zero, 0, loadLibraryAddress, memoryInTargetProcess, 0, IntPtr.Zero);
