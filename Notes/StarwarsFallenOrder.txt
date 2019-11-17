@@ -97,3 +97,11 @@ starwarsjedifallenorder.exe+1B83D570 - 8B 42 24              - mov eax,[rdx+24]
 starwarsjedifallenorder.exe+1B83D573 - 89 41 24              - mov [rcx+24],eax
 starwarsjedifallenorder.exe+1B83D576 - 8B 42 28              - mov eax,[rdx+28]
 starwarsjedifallenorder.exe+1B83D579 - 89 41 28              - mov [rcx+28],eax
+starwarsjedifallenorder.exe+1B83D57C - 8B 42 2C              - mov eax,[rdx+2C]
+starwarsjedifallenorder.exe+1B83D57F - 89 41 2C              - mov [rcx+2C],eax
+starwarsjedifallenorder.exe+1B83D582 - 8B 41 30              - mov eax,[rcx+30]
+starwarsjedifallenorder.exe+1B83D585 - 33 42 30              - xor eax,[rdx+30]
+starwarsjedifallenorder.exe+1B83D588 - 83 E0 01              - and eax,01 { 1 }
+starwarsjedifallenorder.exe+1B83D58B - 31 41 30              - xor [rcx+30],eax			<< NOP for no bars.
+starwarsjedifallenorder.exe+1B83D58E - 8B 4A 30              - mov ecx,[rdx+30]
+starwarsjedifallenorder.exe+1B83D591 - 33 4F 30              - xor ecx,[rdi+30]
