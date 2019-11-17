@@ -13,7 +13,7 @@ The injection process is the same as the command line version: it simply allocat
 and loads the dll into that memory, and then starts the dll as if the host process has loaded the dll itself. Nothing nasty, it's actually designed windows
 functionality (e.g. debuggers use this too). 
 
-Release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/IGCSInjectorUI_101  
+Release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/IGCSInjectorUI_102  
 Credits: Otis_Inf
 
 ### How to use
