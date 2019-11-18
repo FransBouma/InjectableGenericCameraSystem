@@ -61,6 +61,7 @@ ask, and I might re-upload it.
 * Resident Evil 2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/ResidentEvil2
 * Ryse: Son of Rome: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/RyseSonOfRome
 * Shadow of the Tomb Raider: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/SOTTR
+* Star Wars Jedi: Fallen Order: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/SWFO
 * The Evil Within 2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/TEW2
 * Titanfall 2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Titanfall2
 * Tomb Raider 2013: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Tombraider
