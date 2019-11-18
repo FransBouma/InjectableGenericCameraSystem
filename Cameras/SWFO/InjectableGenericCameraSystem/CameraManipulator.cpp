@@ -187,6 +187,9 @@ namespace IGCS::GameSpecific::CameraManipulator
 		source.RestoreData(reinterpret_cast<float*>(g_cameraStructAddress + COORDS_IN_STRUCT_OFFSET), 
 						   reinterpret_cast<float*>(g_cameraStructAddress + ANGLES_IN_STRUCT_OFFSET),
 						   g_fovStructAddress==nullptr ? nullptr : reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET));
+		_currentCameraCoords[0] = source._coords[0];		// x
+		_currentCameraCoords[1] = source._coords[1];		// y
+		_currentCameraCoords[2] = source._coords[2];		// z
 	}
 
 

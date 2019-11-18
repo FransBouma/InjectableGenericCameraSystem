@@ -226,15 +226,15 @@ namespace IGCS
 		switch (_filetype)
 		{
 		case ScreenshotFiletype::Bmp:
-			filename = Utils::formatString("%s\\%s%d.bmp", destinationFolder.c_str(), prefix, frameNumber);
+			filename = Utils::formatString("%s\\%s%d.bmp", destinationFolder.c_str(), prefix.c_str(), frameNumber);
 			saveSuccessful = stbi_write_bmp(filename.c_str(), _framebufferWidth, _framebufferHeight, 4, data.data()) != 0;
 			break;
 		case ScreenshotFiletype::Jpeg:
-			filename = Utils::formatString("%s\\%s%d.jpg", destinationFolder.c_str(), prefix, frameNumber);
+			filename = Utils::formatString("%s\\%s%d.jpg", destinationFolder.c_str(), prefix.c_str(), frameNumber);
 			saveSuccessful = stbi_write_jpg(filename.c_str(), _framebufferWidth, _framebufferHeight, 4, data.data(), IGCS_JPG_SCREENSHOT_QUALITY) != 0;
 			break;
 		case ScreenshotFiletype::Png:
-			filename = Utils::formatString("%s\\%s%d.png", destinationFolder.c_str(), prefix, frameNumber);
+			filename = Utils::formatString("%s\\%s%d.png", destinationFolder.c_str(), prefix.c_str(), frameNumber);
 			saveSuccessful = stbi_write_png(filename.c_str(), _framebufferWidth, _framebufferHeight, 8, data.data(), 4 * _framebufferWidth) != 0;
 			break;
 		}

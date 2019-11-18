@@ -249,23 +249,40 @@ namespace IGCS::D3D11Hooker
 			std::vector<uint8_t> failed;
 			return failed;
 		}
+		
 		std::vector<uint8_t> fbdata(StagingDesc.Width * StagingDesc.Height * 4);
 		uint8_t* buffer = fbdata.data();
 		auto mapped_data = static_cast<BYTE*>(mapped.pData);
 		const UINT pitch = StagingDesc.Width * 4;
 		for (UINT y = 0; y < StagingDesc.Height; y++)
 		{
-			memcpy(buffer, mapped_data, min(pitch, static_cast<UINT>(mapped.RowPitch)));
-
-			for (UINT x = 0; x < pitch; x += 4)
+			// From Reshade.
+			if (StagingDesc.Format == DXGI_FORMAT_R10G10B10A2_UNORM || StagingDesc.Format == DXGI_FORMAT_R10G10B10A2_UINT)
 			{
-				buffer[x + 3] = 0xFF;
-
-				if (StagingDesc.Format == DXGI_FORMAT_B8G8R8A8_UNORM || StagingDesc.Format == DXGI_FORMAT_B8G8R8A8_UNORM_SRGB || 
-					StagingDesc.Format == DXGI_FORMAT_B8G8R8X8_UNORM || StagingDesc.Format == DXGI_FORMAT_B8G8R8X8_UNORM_SRGB ||
-					StagingDesc.Format == DXGI_FORMAT_B8G8R8A8_TYPELESS || StagingDesc.Format == DXGI_FORMAT_B8G8R8X8_TYPELESS)
+				for (uint32_t x = 0; x < pitch; x += 4)
 				{
-					std::swap(buffer[x + 0], buffer[x + 2]);
+					const uint32_t rgba = *reinterpret_cast<const uint32_t*>(mapped_data + x);
+					// Divide by 4 to get 10-bit range (0-1023) into 8-bit range (0-255)
+					buffer[x + 0] = ((rgba & 0x3FF) / 4) & 0xFF;
+					buffer[x + 1] = (((rgba & 0xFFC00) >> 10) / 4) & 0xFF;
+					buffer[x + 2] = (((rgba & 0x3FF00000) >> 20) / 4) & 0xFF;
+					buffer[x + 3] = 0xFF;
+				}
+			}
+			else
+			{
+				memcpy(buffer, mapped_data, min(pitch, static_cast<UINT>(mapped.RowPitch)));
+
+				for (UINT x = 0; x < pitch; x += 4)
+				{
+					buffer[x + 3] = 0xFF;
+
+					if (StagingDesc.Format == DXGI_FORMAT_B8G8R8A8_UNORM || StagingDesc.Format == DXGI_FORMAT_B8G8R8A8_UNORM_SRGB ||
+						StagingDesc.Format == DXGI_FORMAT_B8G8R8X8_UNORM || StagingDesc.Format == DXGI_FORMAT_B8G8R8X8_UNORM_SRGB ||
+						StagingDesc.Format == DXGI_FORMAT_B8G8R8A8_TYPELESS || StagingDesc.Format == DXGI_FORMAT_B8G8R8X8_TYPELESS)
+					{
+						std::swap(buffer[x + 0], buffer[x + 2]);
+					}
 				}
 			}
 			buffer += pitch;
