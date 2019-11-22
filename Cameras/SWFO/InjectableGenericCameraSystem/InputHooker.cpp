@@ -171,7 +171,7 @@ namespace IGCS::InputHooker
 		{
 			return;
 		}
-		if (MH_CreateHookApiEx(L"xinput1_3", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
+		if (MH_CreateHookApiEx(L"XINPUT1_3", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
 		{
 			OverlayConsole::instance().logError("Hooking XINPUT failed! Try re-enabling the hook with the button on the settings tab after you've used the controller in-game.");
 		}

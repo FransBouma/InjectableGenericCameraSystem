@@ -104,8 +104,15 @@ namespace IGCS::GameSpecific::CameraManipulator
 		float currentValue = *fovAddress;
 		if (currentValue < 0.01f)
 		{
-			// not set.
-			currentValue = DEFAULT_FOV_DEGREES;
+			// not set. Read fov from camera struct
+			if (nullptr == g_cameraStructAddress)
+			{
+				currentValue = DEFAULT_FOV_DEGREES;
+			}
+			else
+			{
+				currentValue = *(reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_CAMERASTRUCT_OFFSET));
+			}
 		}
 		float newValue = currentValue + amount;
 		if (newValue < 0.001f)
