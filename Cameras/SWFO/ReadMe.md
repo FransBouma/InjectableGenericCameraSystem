@@ -2,8 +2,8 @@ Injectable camera for Star Wars Jedi: Fallen Order
 ============================
 
 Current supported game version: v1.0.0+  
-Binary download: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/SWFO_103  
-Camera version: 1.0.2  
+Binary download: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/SWFO_104  
+Camera version: 1.0.4  
 Credits: Otis_Inf and Skall.  
 
 ### Important

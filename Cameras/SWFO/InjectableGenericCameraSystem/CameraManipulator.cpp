@@ -101,19 +101,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 			return;
 		}
 		float* fovAddress = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
-		float currentValue = *fovAddress;
-		if (currentValue < 0.01f)
-		{
-			// not set. Read fov from camera struct
-			if (nullptr == g_cameraStructAddress)
-			{
-				currentValue = DEFAULT_FOV_DEGREES;
-			}
-			else
-			{
-				currentValue = *(reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_CAMERASTRUCT_OFFSET));
-			}
-		}
+		float currentValue = getCurrentFoV();
 		float newValue = currentValue + amount;
 		if (newValue < 0.001f)
 		{
@@ -134,8 +122,15 @@ namespace IGCS::GameSpecific::CameraManipulator
 		float toReturn = *fovAddress;
 		if (toReturn <= 0.001f)
 		{
-			// not set, 
-			toReturn = DEFAULT_FOV_DEGREES;
+			// not set. Read fov from camera struct
+			if (nullptr == g_cameraStructAddress)
+			{
+				toReturn = DEFAULT_FOV_DEGREES;
+			}
+			else
+			{
+				toReturn = *(reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_CAMERASTRUCT_OFFSET));
+			}
 		}
 		return toReturn;
 	}
@@ -212,6 +207,9 @@ namespace IGCS::GameSpecific::CameraManipulator
 		_currentCameraCoords[0] = destination._coords[0];		// x
 		_currentCameraCoords[1] = destination._coords[1];		// y
 		_currentCameraCoords[2] = destination._coords[2];		// z
+		// reset the fov to 0. This is specific for this game, as the fov here is the 'override' so if it's 0 it's not overriding the fov in the camera struct. 
+		// when the camera is disabled, the fov will be reset to 0, which will mean it's going to use the fov of the camera struct which will make it work in cutscenes etc. again.
+		destination._fov = 0.0f;
 	}
 
 

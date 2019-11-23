@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Star wars Jedi: Fallen Order v1.0"
-	#define CAMERA_VERSION								"1.0.3"
+	#define CAMERA_VERSION								"1.0.4"
 	#define CAMERA_CREDITS								"Otis_Inf and Skall"
 	#define GAME_WINDOW_TITLE							"STAR WARS Jedi"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
