@@ -207,15 +207,19 @@ namespace IGCS::GameSpecific::CameraManipulator
 		_currentCameraCoords[0] = destination._coords[0];		// x
 		_currentCameraCoords[1] = destination._coords[1];		// y
 		_currentCameraCoords[2] = destination._coords[2];		// z
-		// reset the fov to 0. This is specific for this game, as the fov here is the 'override' so if it's 0 it's not overriding the fov in the camera struct. 
-		// when the camera is disabled, the fov will be reset to 0, which will mean it's going to use the fov of the camera struct which will make it work in cutscenes etc. again.
-		destination._fov = 0.0f;
 	}
 
 
 	void restoreOriginalValuesAfterCameraDisable()
 	{
 		restoreGameCameraDataWithCachedData(_originalData);
+		// reset the fov to 0. This is specific for this game, as the fov here is the 'override' so if it's 0 it's not overriding the fov in the camera struct. 
+		// when the camera is disabled, the fov will be reset to 0, which will mean it's going to use the fov of the camera struct which will make it work in cutscenes etc. again.
+		if (nullptr != g_fovStructAddress)
+		{
+			float* fovInMemory = reinterpret_cast<float*>(g_fovStructAddress + FOV_IN_STRUCT_OFFSET);
+			*fovInMemory = 0.0f;
+		}
 	}
 
 
