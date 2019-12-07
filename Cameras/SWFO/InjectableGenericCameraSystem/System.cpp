@@ -35,7 +35,6 @@
 #include "InterceptorHelper.h"
 #include "InputHooker.h"
 #include "input.h"
-#include "CameraManipulator.h"
 #include "GameImageHooker.h"
 #include "D3D11Hooker.h"
 #include "OverlayConsole.h"
@@ -337,7 +336,6 @@ namespace IGCS
 		// then initialize imgui and the rest.
 		OverlayControl::initImGui();
 		InputHooker::setInputHooks();
-		// This particular game doesn't work with rawinput: it bugs with the mouse when it's registered. 
 		Input::registerRawInput();
 		D3D11Hooker::initializeHook();
 

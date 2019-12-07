@@ -3,6 +3,7 @@ Injectable camera for The Evil Within 2
 
 Current supported game version: v1.0+  
 Camera version: 1.0.1  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/TEW2_101  
 Credits: Otis_Inf
 
 

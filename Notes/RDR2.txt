@@ -18,6 +18,20 @@ RDR2.exe+126F0D - 48 8B 74 24 38        - mov rsi,[rsp+38]
 RDR2.exe+126F12 - 48 83 C4 20           - add rsp,20 { 32 }
 
 // Fov:
+// latest patch:
+RDR2.exe+1289D0 - F3 0F10 15 7C090D03   - movss xmm2,[RDR2.exe+31F9354] { (130.00) }
+RDR2.exe+1289D8 - 72 95                 - jb RDR2.exe+12896F
+RDR2.exe+1289DA - 0F2F C2               - comiss xmm0,xmm2
+RDR2.exe+1289DD - 76 09                 - jna RDR2.exe+1289E8
+RDR2.exe+1289DF - 0F2F C1               - comiss xmm0,xmm1
+RDR2.exe+1289E2 - 72 8B                 - jb RDR2.exe+12896F
+RDR2.exe+1289E4 - F3 0F5D C2            - minss xmm0,xmm2
+RDR2.exe+1289E8 - F3 0F11 83 80000000   - movss [rbx+00000080],xmm0			<< FOV Write
+RDR2.exe+1289F0 - 48 83 C4 20           - add rsp,20 { 32 }
+RDR2.exe+1289F4 - 5B                    - pop rbx
+RDR2.exe+1289F5 - C3                    - ret 
+RDR2.exe+1289F6 - 90                    - nop 
+
 RDR2.exe+1288C8 - 72 95                 - jb RDR2.exe+12885F
 RDR2.exe+1288CA - 0F2F C2               - comiss xmm0,xmm2
 RDR2.exe+1288CD - 76 09                 - jna RDR2.exe+1288D8
