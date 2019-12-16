@@ -1,6 +1,28 @@
 RDR2
 =============
 
+// latest patch Dec 15th
+// No black bars in photomode:
+RDR2.exe+523E87 - 0F5B FF               - cvtdq2ps xmm7,xmm7
+RDR2.exe+523E8A - 0F5B C0               - cvtdq2ps xmm0,xmm0
+RDR2.exe+523E8D - F3 0F5E F8            - divss xmm7,xmm0
+RDR2.exe+523E91 - 0F28 CF               - movaps xmm1,xmm7
+RDR2.exe+523E94 - F3 41 0F5C C9         - subss xmm1,xmm9
+RDR2.exe+523E99 - 0F54 0D 905ED102      - andps xmm1,[RDR2.exe+3239D30] { (2147483647) }
+RDR2.exe+523EA0 - 0F2F 0D 2D5CD102      - comiss xmm1,[RDR2.exe+3239AD4] { (0.00) }
+RDR2.exe+523EA7 - 0F86 6E030000         - jbe RDR2.exe+52421B			<< CHANGE INTO JMP
+RDR2.exe+523EAD - 41 0F2F F9            - comiss xmm7,xmm9
+RDR2.exe+523EB1 - 0F92 C0               - setb al
+RDR2.exe+523EB4 - 40 0F97 C6            - seta sil
+RDR2.exe+523EB8 - 84 C0                 - test al,al
+RDR2.exe+523EBA - 74 09                 - je RDR2.exe+523EC5
+RDR2.exe+523EBC - 84 D2                 - test dl,dl
+RDR2.exe+523EBE - 74 05                 - je RDR2.exe+523EC5
+RDR2.exe+523EC0 - 40 B7 01              - mov dil,01 { 1 }
+RDR2.exe+523EC3 - EB 0C                 - jmp RDR2.exe+523ED1
+RDR2.exe+523EC5 - 40 32 FF              - xor dil,dil
+RDR2.exe+523EC8 - 40 84 F6              - test sil,sil
+
 Most locations are outdated, since November 14th. They can still be found back tho, as the code structure is the same. 
 
 // nov 14
