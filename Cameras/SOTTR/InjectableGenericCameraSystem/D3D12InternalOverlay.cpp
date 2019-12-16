@@ -26,28 +26,44 @@ namespace IGCS::D3D12InternalOverlay
 {
 	#define DXGI_PRESENT_INDEX			8
 	#define DXGI_RESIZEBUFFERS_INDEX	13
+	#define NUMBER_OF_FRAMES_IN_FLIGHT	2
+
+	struct FrameContext
+	{
+		ID3D12CommandAllocator* CommandAllocator;
+		UINT64                  FenceValue;
+		ID3D12Fence*			Fence;
+	};
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Forward declarations
 	void createRenderTarget(IDXGISwapChain * pSwapChain);
 	void cleanupRenderTarget();
-	void initD3D12Structures(IDXGISwapChain* pSwapChain);
+	void initD3D12Structures(IDXGISwapChain3* pSwapChain);
 	void setTransitionState(ID3D12Resource* resource, D3D12_RESOURCE_STATES from, D3D12_RESOURCE_STATES to);
+	void WaitForLastSubmittedFrame();
+	FrameContext* WaitForNextFrameResources();
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Typedefs of functions to hook
 	typedef HRESULT(__stdcall* DXGIPresentHook) (IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
 	typedef HRESULT(__stdcall* DXGIResizeBuffersHook) (IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags);
 
-	static ID3D12CommandAllocator* _commandAllocators[10] = {}; // should be enough.
+	//--------------------------------------------------------------------------------------------------------------------------------
+	// DX12 elements
+	static FrameContext _frameContexts[NUMBER_OF_FRAMES_IN_FLIGHT] = {}; // should be enough
+	static UINT _frameIndex = 0;
 	static ID3D12Device* _device = nullptr;
 	static ID3D12DescriptorHeap* _rtvDescHeap = nullptr;
 	static ID3D12DescriptorHeap* _srvDescHeap = nullptr;
 	static ID3D12CommandQueue* _commandQueue = nullptr;
 	static ID3D12GraphicsCommandList* _commandList = nullptr;
-	static D3D12_CPU_DESCRIPTOR_HANDLE  _mainRenderTargetDescriptors[10] = {}; // should be enough.
-	static ID3D12Resource* _mainRenderTargetResources[10] = {};	// should be enough.
-	static UINT _numberOfBuffersInFlight = 10;
+	static D3D12_CPU_DESCRIPTOR_HANDLE  _mainRenderTargetDescriptors[NUMBER_OF_FRAMES_IN_FLIGHT] = {}; // should be enough.
+	static ID3D12Resource* _mainRenderTargetResources[NUMBER_OF_FRAMES_IN_FLIGHT] = {};	// should be enough.
+	static UINT _numberOfBuffersInFlight = NUMBER_OF_FRAMES_IN_FLIGHT;
+	static HANDLE _fenceEvent = NULL;
+	static UINT64 _fenceLastSignaledValue = 0;
+	static HANDLE _hSwapChainWaitableObject = NULL;
 
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Pointers to the original hooked functions
@@ -79,35 +95,54 @@ namespace IGCS::D3D12InternalOverlay
 			return S_OK;
 		}
 		_presentInProgress = true;
+		FrameContext* frameCtxt = nullptr;
 		if (_tmpSwapChainInitialized)
 		{
 			if (!(Flags & DXGI_PRESENT_TEST) && !_imGuiInitializing)
 			{
-				if (_initializeD3D12Structures)
-				{
-					initD3D12Structures(pSwapChain);
-				}
-				// render our own stuff
-				OverlayControl::renderOverlay();
 				// d3d12 rendering code. 
 				IDXGISwapChain3* pSwapChain3 = nullptr;
 				pSwapChain->QueryInterface(IID_PPV_ARGS(&pSwapChain3));
+				size_t* pOffset = (size_t*)((BYTE*)pSwapChain + 216);
+				*(&_commandQueue) = reinterpret_cast<ID3D12CommandQueue*>(*pOffset);
 				UINT backBufferIdx = pSwapChain3->GetCurrentBackBufferIndex();
-				pSwapChain3->Release();
-				_commandAllocators[backBufferIdx]->Reset();
+				if (_initializeD3D12Structures)
+				{
+					initD3D12Structures(pSwapChain3);
+				}
+				// Make sure all commands for this command allocator have finished executing before reseting it
+				frameCtxt = &_frameContexts[backBufferIdx % _numberOfBuffersInFlight];
+				if (frameCtxt->Fence->GetCompletedValue() < frameCtxt->FenceValue)
+				{
+					frameCtxt->Fence->SetEventOnCompletion(frameCtxt->FenceValue, _fenceEvent);
+					WaitForSingleObject(_fenceEvent, INFINITE);
+				}
+				//frameCtxt = WaitForNextFrameResources();
+				frameCtxt->CommandAllocator->Reset();
+
+				OverlayControl::renderOverlay();
+				_commandList->Reset(frameCtxt->CommandAllocator, NULL);
 				setTransitionState(_mainRenderTargetResources[backBufferIdx], D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-				_commandList->Reset(_commandAllocators[backBufferIdx], NULL);
 				_commandList->OMSetRenderTargets(1, &_mainRenderTargetDescriptors[backBufferIdx], FALSE, NULL);
 				_commandList->SetDescriptorHeaps(1, &_srvDescHeap);
+				ImGui::Render();
 				ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), _commandList);
 				setTransitionState(_mainRenderTargetResources[backBufferIdx], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 				_commandList->Close();
-				_commandQueue->ExecuteCommandLists(1, (ID3D12CommandList * const*)& _commandList);
+				_commandQueue->ExecuteCommandLists(1, (ID3D12CommandList * const*)&_commandList);
+				pSwapChain3->Release();
 				Input::resetKeyStates();
 				Input::resetMouseState();
 			}
 		}
 		HRESULT toReturn = hookedDXGIPresent(pSwapChain, SyncInterval, Flags);
+		if (nullptr != frameCtxt)
+		{
+			UINT64 fenceValue = _fenceLastSignaledValue + 1;
+			_commandQueue->Signal(frameCtxt->Fence, fenceValue);
+			_fenceLastSignaledValue = fenceValue;
+			frameCtxt->FenceValue = fenceValue;
+		}
 		_presentInProgress = false;
 		return toReturn;
 	}
@@ -115,7 +150,9 @@ namespace IGCS::D3D12InternalOverlay
 
 	void setTransitionState(ID3D12Resource* resource, D3D12_RESOURCE_STATES from, D3D12_RESOURCE_STATES to)
 	{
-		D3D12_RESOURCE_BARRIER transition = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION };
+		D3D12_RESOURCE_BARRIER transition = { };
+		transition.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		transition.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
 		transition.Transition.pResource = resource;
 		transition.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 		transition.Transition.StateBefore = from;
@@ -128,6 +165,7 @@ namespace IGCS::D3D12InternalOverlay
 	{
 		return DefWindowProc(hWnd, msg, wParam, lParam);
 	}
+
 
 	void initializeHook()
 	{
@@ -230,7 +268,7 @@ namespace IGCS::D3D12InternalOverlay
 	}
 
 
-	void initD3D12Structures(IDXGISwapChain* pSwapChain)
+	void initD3D12Structures(IDXGISwapChain3* pSwapChain)
 	{
 		if (!_initializeD3D12Structures)
 		{
@@ -245,9 +283,9 @@ namespace IGCS::D3D12InternalOverlay
 		DXGI_SWAP_CHAIN_DESC desc;
 		pSwapChain->GetDesc(&desc);
 		_numberOfBuffersInFlight = desc.BufferCount;
-		if (_numberOfBuffersInFlight > 10)
+		if (_numberOfBuffersInFlight > NUMBER_OF_FRAMES_IN_FLIGHT)
 		{
-			_numberOfBuffersInFlight = 10;
+			_numberOfBuffersInFlight = NUMBER_OF_FRAMES_IN_FLIGHT;
 		}
 
 		OverlayConsole::instance().logDebug("DX12 Device: %p", (void*)_device);
@@ -298,18 +336,30 @@ namespace IGCS::D3D12InternalOverlay
 		// create command allocators
 		for (int i = 0; i < _numberOfBuffersInFlight; i++)
 		{
-			if (FAILED(_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_commandAllocators[i]))))
+			if (FAILED(_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_frameContexts[i].CommandAllocator))))
 			{
 				IGCS::Console::WriteError("Failed to create D3D12CommandAllocator");
 			}
-			OverlayConsole::instance().logDebug("ID3D12CommandAllocator %d: %p", i, (void*)_commandAllocators[i]);
+			OverlayConsole::instance().logDebug("ID3D12CommandAllocator %d: %p", i, (void*)_frameContexts[i].CommandAllocator);
+			if (FAILED(_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_frameContexts[i].Fence))))
+			{
+				IGCS::Console::WriteError("Failed to create D3D12Fence");
+			}
+			OverlayConsole::instance().logDebug("ID3D12Fence %d: %p", i, (void*)_frameContexts[i].Fence);
 		}
 		// create command list 
-		if (FAILED(_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _commandAllocators[0], NULL, IID_PPV_ARGS(&_commandList))))
+		if (FAILED(_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _frameContexts[0].CommandAllocator, NULL, IID_PPV_ARGS(&_commandList))))
 		{
 			IGCS::Console::WriteError("Failed to create D3D12CommandList");
 		}
 		OverlayConsole::instance().logDebug("ID3D12CommandList: %p", (void*)_commandList);
+		_fenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+		if (nullptr == _fenceEvent)
+		{
+			IGCS::Console::WriteError("Failed to create fenceEvent");
+		}
+		
+		_hSwapChainWaitableObject = pSwapChain->GetFrameLatencyWaitableObject();
 
 		createRenderTarget(pSwapChain);
 		ImGui_ImplDX12_Init(_device, _numberOfBuffersInFlight, DXGI_FORMAT_R8G8B8A8_UNORM, _srvDescHeap->GetCPUDescriptorHandleForHeapStart(), _srvDescHeap->GetGPUDescriptorHandleForHeapStart());
@@ -337,6 +387,7 @@ namespace IGCS::D3D12InternalOverlay
 
 	void cleanupRenderTarget()
 	{
+		WaitForLastSubmittedFrame();
 		for (int i = 0; i < _numberOfBuffersInFlight; i++)
 		{
 			if (nullptr != _mainRenderTargetResources[i])
@@ -345,5 +396,47 @@ namespace IGCS::D3D12InternalOverlay
 				_mainRenderTargetResources[i] = nullptr;
 			}
 		}
+	}
+	
+
+	void WaitForLastSubmittedFrame()
+	{
+		FrameContext* frameCtxt = &_frameContexts[_frameIndex % _numberOfBuffersInFlight];
+
+		UINT64 fenceValue = frameCtxt->FenceValue;
+		if (fenceValue == 0)
+		{
+			return; // No fence was signaled
+		}
+		frameCtxt->FenceValue = 0;
+		if (frameCtxt->Fence->GetCompletedValue() >= fenceValue)
+		{
+			return;
+		}
+		frameCtxt->Fence->SetEventOnCompletion(fenceValue, _fenceEvent);
+		WaitForSingleObject(_fenceEvent, INFINITE);
+	}
+
+
+	FrameContext* WaitForNextFrameResources()
+	{
+		UINT nextFrameIndex = _frameIndex + 1;
+		_frameIndex = nextFrameIndex;
+
+		HANDLE waitableObjects[] = { _hSwapChainWaitableObject, NULL };
+		DWORD numWaitableObjects = 1;
+
+		FrameContext* frameCtxt = &_frameContexts[nextFrameIndex % _numberOfBuffersInFlight];
+		UINT64 fenceValue = frameCtxt->FenceValue;
+		if (fenceValue != 0) // means no fence was signaled
+		{
+			frameCtxt->FenceValue = 0;
+			frameCtxt->Fence->SetEventOnCompletion(fenceValue, _fenceEvent);
+			waitableObjects[1] = _fenceEvent;
+			numWaitableObjects = 2;
+		}
+
+		WaitForMultipleObjects(numWaitableObjects, waitableObjects, TRUE, INFINITE);
+		return frameCtxt;
 	}
 }

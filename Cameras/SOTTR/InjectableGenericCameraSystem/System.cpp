@@ -76,7 +76,7 @@ namespace IGCS
 		while (Globals::instance().systemActive())
 		{
 			Sleep(FRAME_SLEEP);
-			updateFrame();
+			//updateFrame();
 		}
 	}
 
@@ -334,21 +334,24 @@ namespace IGCS
 		InputHooker::setInputHooks();
 		Input::registerRawInput();
 #ifdef _DX12_
+#ifdef _DEBUG
+		IGCS::Console::WriteLine("DX12 Initializing", 15);
+#endif
 		D3D12InternalOverlay::initializeHook();
 #else
 		D3D11InternalOverlay::initializeHook();
 #endif
 
-		GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
-		GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);
-		waitForCameraStructAddresses();		// blocks till camera is found.
-		GameSpecific::InterceptorHelper::setPostCameraStructHooks(_aobBlocks);
+		//GameSpecific::InterceptorHelper::initializeAOBBlocks(_hostImageAddress, _hostImageSize, _aobBlocks);
+		//GameSpecific::InterceptorHelper::setCameraStructInterceptorHook(_aobBlocks);
+		//waitForCameraStructAddresses();		// blocks till camera is found.
+		//GameSpecific::InterceptorHelper::setPostCameraStructHooks(_aobBlocks);
 
-		// camera struct found, init our own camera object now and hook into game code which uses camera.
-		_cameraStructFound = true;
-		_camera.setPitch(INITIAL_PITCH_RADIANS);
-		_camera.setRoll(INITIAL_ROLL_RADIANS);
-		_camera.setYaw(INITIAL_YAW_RADIANS);
+		//// camera struct found, init our own camera object now and hook into game code which uses camera.
+		//_cameraStructFound = true;
+		//_camera.setPitch(INITIAL_PITCH_RADIANS);
+		//_camera.setRoll(INITIAL_ROLL_RADIANS);
+		//_camera.setYaw(INITIAL_YAW_RADIANS);
 	}
 
 

@@ -92,7 +92,9 @@ namespace IGCS::OverlayControl
 		renderSplash();
 		renderMainWindow();
 		renderNotifications();
+#if !_DX12_
 		ImGui::Render();
+#endif
 	}
 
 

@@ -29,6 +29,9 @@ namespace IGCS
 		string formattedArgs = Utils::formatString(fmt, args);
 		va_end(args);
 		logLine("%s %s", CONSOLE_DEBUG_PREFIX, formattedArgs.c_str());
+#if _DX12_
+		Console::WriteLine(formattedArgs);
+#endif
 #endif
 	}
 

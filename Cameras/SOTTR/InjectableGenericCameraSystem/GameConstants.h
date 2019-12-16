@@ -30,7 +30,7 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Shadow of the Tomb Raider v1.0+"
+	#define GAME_NAME									"Dear ImGui DirectX12 Example"//"Shadow of the Tomb Raider v1.0+"
 	#define CAMERA_VERSION								"1.0.1"
 	#define CAMERA_CREDITS								"Otis_Inf."
 	#define GAME_WINDOW_TITLE							"Shadow of the Tomb Raider"
