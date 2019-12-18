@@ -1,6 +1,20 @@
 Resident Evil 2
 ===========================
+//------------------
+Patch from December 2019: 
+re2.exe+1D1B6EF - 48 8B 43 50           - mov rax,[rbx+50]
+re2.exe+1D1B6F3 - 48 83 78 18 00        - cmp qword ptr [rax+18],00 { 0 }
+re2.exe+1D1B6F8 - 0F85 7F060000         - jne re2.exe+1D1BD7D
+re2.exe+1D1B6FE - 0F10 86 90000000      - movups xmm0,[rsi+00000090]
+re2.exe+1D1B705 - 0F11 87 90000000      - movups [rdi+00000090],xmm0			<< WRITE of quaternion. 
+re2.exe+1D1B70C - 48 8B 43 50           - mov rax,[rbx+50]
+re2.exe+1D1B710 - 48 83 78 18 00        - cmp qword ptr [rax+18],00 { 0 }
+re2.exe+1D1B715 - 0F85 62060000         - jne re2.exe+1D1BD7D
+re2.exe+1D1B71B - 48 8B 86 A8000000     - mov rax,[rsi+000000A8]
+re2.exe+1D1B722 - 48 85 C0              - test rax,rax
+re2.exe+1D1B725 - 0F84 DA050000         - je re2.exe+1D1BD05
 
+//------------------
 Vignette removal:
 re2.exe+FFA7BD8 - 89 83 D4000000        - mov [rbx+000000D4],eax
 re2.exe+FFA7BDE - 8B 87 38010000        - mov eax,[rdi+00000138]

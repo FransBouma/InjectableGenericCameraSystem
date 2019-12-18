@@ -2,8 +2,8 @@ Injectable camera for Resident Evil 2
 ============================
 
 Current supported game version: v1.0+  
-Binary download: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/RE2_100  
-Camera version: 1.0.0  
+Binary download: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/RE2_101  
+Camera version: 1.0.1  
 Credits: Otis_Inf and Jim2Point0.
 
 ### Important

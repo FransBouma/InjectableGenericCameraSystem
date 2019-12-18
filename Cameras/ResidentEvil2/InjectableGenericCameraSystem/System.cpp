@@ -147,6 +147,9 @@ namespace IGCS
 				CameraManipulator::cacheOriginalValuesBeforeCameraEnable();
 				_camera.resetAngles();
 				InterceptorHelper::toggleInGameDoFOff(_aobBlocks, Globals::instance().settings().disableInGameDofWhenCameraIsEnabled);
+#ifdef _DEBUG
+				CameraManipulator::displayCameraStructAddress();
+#endif
 			}
 			g_cameraEnabled = g_cameraEnabled == 0 ? (BYTE)1 : (BYTE)0;
 			displayCameraState();

@@ -36,6 +36,7 @@ PUBLIC cameraWrite1Interceptor
 PUBLIC cameraWrite2Interceptor
 PUBLIC cameraWrite3Interceptor
 PUBLIC cameraWrite4Interceptor
+PUBLIC cameraWrite5Interceptor
 PUBLIC timestopReadInterceptor
 PUBLIC resolutionScaleReadInterceptor
 PUBLIC displayTypeInterceptor
@@ -62,6 +63,7 @@ EXTERN _cameraWrite1InterceptionContinue: qword
 EXTERN _cameraWrite2InterceptionContinue: qword
 EXTERN _cameraWrite3InterceptionContinue: qword
 EXTERN _cameraWrite4InterceptionContinue: qword
+EXTERN _cameraWrite5InterceptionContinue: qword
 EXTERN _timestopReadInterceptionContinue: qword
 EXTERN _resolutionScaleReadInterceptionContinue: qword
 EXTERN _displayTypeInterceptionContinue: qword
@@ -191,6 +193,28 @@ exit:
 	jmp qword ptr [_cameraWrite4InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite4Interceptor ENDP
 
+cameraWrite5Interceptor PROC
+; quaternion write2. Clone of write4.
+; Introduced in December 2019
+;re2.exe+1D1B6EF - 48 8B 43 50           - mov rax,[rbx+50]
+;re2.exe+1D1B6F3 - 48 83 78 18 00        - cmp qword ptr [rax+18],00 { 0 }
+;re2.exe+1D1B6F8 - 0F85 7F060000         - jne re2.exe+1D1BD7D
+;re2.exe+1D1B6FE - 0F10 86 90000000      - movups xmm0,[rsi+00000090]			<< INTERCEPT HERE
+;re2.exe+1D1B705 - 0F11 87 90000000      - movups [rdi+00000090],xmm0			<< WRITE of quaternion. 
+;re2.exe+1D1B70C - 48 8B 43 50           - mov rax,[rbx+50]						<< CONTINUE HERE
+;re2.exe+1D1B710 - 48 83 78 18 00        - cmp qword ptr [rax+18],00 { 0 }
+;re2.exe+1D1B715 - 0F85 62060000         - jne re2.exe+1D1BD7D
+;re2.exe+1D1B71B - 48 8B 86 A8000000     - mov rax,[rsi+000000A8]
+;re2.exe+1D1B722 - 48 85 C0              - test rax,rax
+;re2.exe+1D1B725 - 0F84 DA050000         - je re2.exe+1D1BD05
+	movups xmm0, xmmword ptr [rsi+00000090h]
+	cmp byte ptr [g_cameraEnabled], 1
+	je exit
+originalCode:
+	movups [rdi+00000090h],xmm0
+exit:
+	jmp qword ptr [_cameraWrite5InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+cameraWrite5Interceptor ENDP
 
 resolutionScaleReadInterceptor PROC
 ;re2.exe+10026BCF - E8 BCA92EF2           - call re2.exe+2311590
