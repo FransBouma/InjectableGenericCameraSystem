@@ -43,6 +43,7 @@
 #include "OverlayControl.h"
 #include "MinHook.h"
 #include "Console.h"
+#include "NamedPipeManager.h"
 
 namespace IGCS
 {
@@ -331,6 +332,7 @@ namespace IGCS
 		Globals::instance().mainWindowHandle(Utils::findMainWindow(GetCurrentProcessId()));
 		OverlayControl::initImGui();
 #ifdef _DX12_
+		NamedPipeManager::instance().connect();
 		Console::Init();
 		Console::WriteHeader();
 #else

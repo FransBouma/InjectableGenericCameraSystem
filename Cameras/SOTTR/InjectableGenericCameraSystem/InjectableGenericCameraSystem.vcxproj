@@ -313,6 +313,7 @@
     <ClInclude Include="InputHooker.h" />
     <ClInclude Include="InterceptorHelper.h" />
     <ClInclude Include="GameConstants.h" />
+    <ClInclude Include="NamedPipeManager.h" />
     <ClInclude Include="OverlayConsole.h" />
     <ClInclude Include="OverlayControl.h" />
     <ClInclude Include="Overlay\imconfig.h" />
@@ -370,6 +371,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="InputHooker.cpp" />
     <ClCompile Include="InterceptorHelper.cpp" />
+    <ClCompile Include="NamedPipeManager.cpp" />
     <ClCompile Include="OverlayConsole.cpp" />
     <ClCompile Include="OverlayControl.cpp" />
     <ClCompile Include="Overlay\imgui.cpp" />

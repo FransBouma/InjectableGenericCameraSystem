@@ -28,6 +28,7 @@
 #include "stdafx.h"
 #include "Console.h"
 #include "GameConstants.h"
+#include "NamedPipeManager.h"
 
 using namespace std;
 
@@ -83,6 +84,7 @@ namespace IGCS::Console
 	{
 		EnsureConsole();
 		cout << toWrite << endl;
+		NamedPipeManager::instance().writeMessage(toWrite);
 	}
 
 

@@ -140,7 +140,7 @@ namespace IGCSClient.NamedPipeSubSystem
 		/// <returns></returns>
 		private NamedPipeServerStream CreateNamedPipeServerStream()
 		{
-			return new NamedPipeServerStream(this.PipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous, ConstantsEnums.BufferLength, 0, _pipeSecurity);
+			return new NamedPipeServerStream(this.PipeName, PipeDirection.InOut, -1, PipeTransmissionMode.Message, PipeOptions.Asynchronous, ConstantsEnums.BufferLength, 0, _pipeSecurity);
 		}
 
 

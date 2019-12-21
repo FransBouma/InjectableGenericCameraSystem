@@ -54,6 +54,15 @@
   <ItemGroup>
     <Compile Include="ConstantsEnums.cs" />
     <Compile Include="DataStructures\IGCSMessage.cs" />
+    <Compile Include="Forms\ExceptionViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SimpleExceptionViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SimpleExceptionViewer.Designer.cs">
+      <DependentUpon>SimpleExceptionViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="GeneralUtils.cs" />
     <Compile Include="Interfaces\IIGCSMessage.cs" />
     <Compile Include="NamedPipeSubsystem\NamedPipeClient.cs" />
@@ -68,6 +77,15 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\ExceptionViewer.resx">
+      <DependentUpon>ExceptionViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SimpleExceptionViewer.resx">
+      <DependentUpon>SimpleExceptionViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

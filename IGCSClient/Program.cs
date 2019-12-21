@@ -28,22 +28,69 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using IGCSClient.Forms;
 
 namespace IGCSClient
 {
 	static class Program
 	{
+		private static MainForm _mainWindow;
+
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
 		static void Main()
 		{
+			Application.SetUnhandledExceptionMode(UnhandledExceptionMode.Automatic, true);
+			// wire event handler for unhandled exceptions, so these will be shown in our own exception viewer.
+			Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm());
+			_mainWindow = new MainForm();
+			Application.Run(_mainWindow);
+		}
+		
+		
+		/// <summary>
+		/// Handles the ThreadException event of the Application control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Threading.ThreadExceptionEventArgs"/> instance containing the event data.</param>
+		private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+		{
+			if(_mainWindow == null)
+			{
+				SimpleExceptionViewer.Show(null, e.Exception, "An Unhandled exception occurred.");
+			}
+			else
+			{
+				_mainWindow.Invoke(new Action<Exception>((a) => SimpleExceptionViewer.Show(null, a, "An Unhandled exception occurred.")), new object[] { e.Exception });
+			}
+		}
+
+
+		/// <summary>
+		/// Handles the UnhandledException event of the CurrentDomain control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.UnhandledExceptionEventArgs"/> instance containing the event data.</param>
+		private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			if(_mainWindow == null)
+			{
+				SimpleExceptionViewer.Show(null, (Exception)e.ExceptionObject, "An unhandled exception occurred.");
+			}
+			else
+			{
+				_mainWindow.Invoke(new Action<Exception>((a) => SimpleExceptionViewer.Show(null, a, "An Unhandled exception occurred.")), 
+								   new object[] { (Exception)e.ExceptionObject });
+			}
 		}
 	}
 }

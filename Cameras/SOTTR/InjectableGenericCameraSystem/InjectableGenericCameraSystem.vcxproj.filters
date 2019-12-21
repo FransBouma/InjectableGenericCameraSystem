@@ -23,6 +23,9 @@
     <Filter Include="Overlay\Imgui">
       <UniqueIdentifier>{1ce90968-aa59-4b5e-b177-50793036f663}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NamedPipeSubsystem">
+      <UniqueIdentifier>{f1f58870-e87f-4c31-a7c5-1b664f37bb1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -121,6 +124,9 @@
     <ClInclude Include="GameCameraData.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="NamedPipeManager.h">
+      <Filter>NamedPipeSubsystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InterceptorHelper.cpp">
@@ -200,6 +206,9 @@
     </ClCompile>
     <ClCompile Include="ScreenshotController.cpp">
       <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="NamedPipeManager.cpp">
+      <Filter>NamedPipeSubsystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
