@@ -43,38 +43,10 @@ namespace IGCSClient.Controls
 	{
 		public SettingEditor()
 		{
+			SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
 			InitializeComponent();
 		}
 
 
-		public void BuildUI(List<ISetting> settingsToShow)
-		{
-			var settingsByGroup = settingsToShow.GroupBy(s => s.GroupLabel);
-			foreach(var g in settingsByGroup)
-			{
-				// add a group control
-				var groupControl = new GroupBox() {AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, Dock = DockStyle.Top, Text = g.Key};
-				var table = new TableLayoutPanel() { AutoSizeMode = AutoSizeMode.GrowAndShrink, AutoSize = true, Dock = DockStyle.Fill};
-				table.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-				table.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-				table.ColumnCount = 2;
-				table.RowCount = 1;
-
-				foreach(var s in g)
-				{
-					table.RowCount++;
-					var label = new Label() { Text = s.Label, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Top, AutoSize = true, Anchor = AnchorStyles.None};
-					table.Controls.Add(label);
-					table.Controls.Add(s.InputControl);
-					table.SetCellPosition(label, new TableLayoutPanelCellPosition(0, table.RowCount-1));
-					s.InputControl.Dock = DockStyle.Top;
-					s.InputControl.Anchor = AnchorStyles.Left;
-					table.SetCellPosition(s.InputControl, new TableLayoutPanelCellPosition(1, table.RowCount-1));
-				}
-				groupControl.Controls.Add(table);
-				this.Controls.Add(groupControl);
-			}
-		}
 	}
-
 }

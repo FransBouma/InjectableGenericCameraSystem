@@ -41,7 +41,7 @@
 			this._inputControl.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.FileSystem;
 			this._inputControl.Location = new System.Drawing.Point(0, 0);
 			this._inputControl.Name = "_inputControl";
-			this._inputControl.Size = new System.Drawing.Size(224, 20);
+			this._inputControl.Size = new System.Drawing.Size(231, 20);
 			this._inputControl.TabIndex = 0;
 			this._inputControl.TextChanged += new System.EventHandler(this._inputControl_TextChanged);
 			// 
@@ -49,7 +49,7 @@
 			// 
 			this._browseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this._browseButton.Image = global::IGCSClient.Properties.Resources.Folder_16x;
-			this._browseButton.Location = new System.Drawing.Point(227, 0);
+			this._browseButton.Location = new System.Drawing.Point(231, 0);
 			this._browseButton.Name = "_browseButton";
 			this._browseButton.Size = new System.Drawing.Size(22, 20);
 			this._browseButton.TabIndex = 1;
@@ -67,7 +67,7 @@
 			this.Controls.Add(this._browseButton);
 			this.Controls.Add(this._inputControl);
 			this.Name = "FolderInput";
-			this.Size = new System.Drawing.Size(252, 20);
+			this.Size = new System.Drawing.Size(253, 20);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

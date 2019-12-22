@@ -60,45 +60,10 @@ namespace IGCSClient
 			_pipeServer = new NamedPipeServer(ConstantsEnums.NamedPipeName);
 			_pipeServer.MessageReceived += _pipeServer_MessageReceived;
 			LogHandlerSingleton.Instance().LogLine("Named pipe enabled.", "System");
-			AddDummySettings();
 		}
 
-// TEST CODE BELOW THIS LINE
+		// TEST CODE BELOW THIS LINE
 
-
-		private void AddDummySettings()
-		{
-			var settings = new List<ISetting>();
-			settings.Add(CreateSetting("General camera settings", 1, "Rotation speed", CreateFloatInput(0.0M, 3.0M, 2, 0.1M, 0.1f)));
-			settings.Add(CreateSetting("General camera settings", 2, "Movement speed", CreateFloatInput(0.0M, 15.0M, 3, 0.01M, 0.001f)));
-			settings.Add(CreateSetting("General camera settings", 3, "Slowness factor", CreateFloatInput(0.0M, 3.0M, 2, 0.1M, 0.5f)));
-
-			settings.Add(CreateSetting("Complex settings", 4, "Move camera when this menu is up", CreateBoolInput(true)));
-			_settingsEditor.BuildUI(settings);
-		}
-
-
-		private IInputControl<bool> CreateBoolInput(bool value)
-		{
-			var toReturn = new BoolInput() {Value = value};
-			return toReturn;
-		}
-
-
-		private IInputControl<float> CreateFloatInput(decimal minValue, decimal maxValue, int scale, decimal increment, float value)
-		{
-			var toReturn = new FloatInput();
-			toReturn.Setup(minValue, maxValue, scale, increment);
-			toReturn.Value = value;
-			return toReturn;
-		}
-
-		private Setting<T> CreateSetting<T>(string groupLabel, byte id, string label, IInputControl<T> inputControl)
-		{
-			var toReturn = new Setting<T>() {GroupLabel = groupLabel, ID = id, Label = label};
-			toReturn.Setup(inputControl);
-			return toReturn;
-		}
 
 
 		private void HandleMessageReceived(ContainerEventArgs<byte[]> e)
