@@ -31,31 +31,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using IGCSClient.Classes;
-using IGCSClient.Interfaces;
+using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
 
-namespace IGCSClient.DataStructures
+namespace IGCSClient.Interfaces
 {
 	/// <summary>
-	/// Simple message to wrap a payload in to be send to the other end of our named pipe. 
+	/// Interface which is used with input controls to have a generic interface to work with.
 	/// </summary>
-	/// <typeparam name="T">The type of the payload. Depends on the message type what it is.</typeparam>
-	public class IGCSMessage<T> : IIGCSMessage
+	/// <typeparam name="T">The type of the value edited with this control</typeparam>
+	public interface IInputControl<T>
 	{
 		/// <summary>
-		/// CTor
+		/// Raised when the value in the control changes
 		/// </summary>
-		/// <param name="messageType">The type of the message to send</param>
-		/// <param name="payload">THe value to send</param>
-		public IGCSMessage(byte messageType, T payload)
-		{
-			this.MessageType = messageType;
-			this.Payload = payload;
-		}
+		event EventHandler ValueChanged;
 
-		public byte MessageType {get;set; }
-		public T Payload {get;set;}
-
-		byte[] IIGCSMessage.PayloadAsByteArray => GeneralUtils.ConvertToByteArray(this.Payload);
+		/// <summary>
+		/// The value edited
+		/// </summary>
+		T Value { get; set; }
 	}
 }

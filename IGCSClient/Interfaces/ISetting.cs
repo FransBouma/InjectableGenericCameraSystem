@@ -26,36 +26,17 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IGCSClient.Classes;
-using IGCSClient.Interfaces;
+using System.Windows.Forms;
 
-namespace IGCSClient.DataStructures
+namespace IGCSClient.Interfaces
 {
 	/// <summary>
-	/// Simple message to wrap a payload in to be send to the other end of our named pipe. 
+	/// Interface for a setting instance
 	/// </summary>
-	/// <typeparam name="T">The type of the payload. Depends on the message type what it is.</typeparam>
-	public class IGCSMessage<T> : IIGCSMessage
+	public interface ISetting
 	{
-		/// <summary>
-		/// CTor
-		/// </summary>
-		/// <param name="messageType">The type of the message to send</param>
-		/// <param name="payload">THe value to send</param>
-		public IGCSMessage(byte messageType, T payload)
-		{
-			this.MessageType = messageType;
-			this.Payload = payload;
-		}
-
-		public byte MessageType {get;set; }
-		public T Payload {get;set;}
-
-		byte[] IIGCSMessage.PayloadAsByteArray => GeneralUtils.ConvertToByteArray(this.Payload);
+		Control InputControl { get; }
+		string Label { get; }
+		string GroupLabel { get; }
 	}
 }

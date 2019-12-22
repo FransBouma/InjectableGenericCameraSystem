@@ -28,34 +28,42 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using IGCSClient.Classes;
+using System.Windows.Forms;
 using IGCSClient.Interfaces;
+using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
+using SD.Tools.BCLExtensions.SystemRelated;
 
-namespace IGCSClient.DataStructures
+namespace IGCSClient.Controls
 {
-	/// <summary>
-	/// Simple message to wrap a payload in to be send to the other end of our named pipe. 
-	/// </summary>
-	/// <typeparam name="T">The type of the payload. Depends on the message type what it is.</typeparam>
-	public class IGCSMessage<T> : IIGCSMessage
+	public partial class BoolInput : UserControl, IInputControl<bool>
 	{
-		/// <summary>
-		/// CTor
-		/// </summary>
-		/// <param name="messageType">The type of the message to send</param>
-		/// <param name="payload">THe value to send</param>
-		public IGCSMessage(byte messageType, T payload)
+		public event EventHandler ValueChanged;
+
+		public BoolInput()
 		{
-			this.MessageType = messageType;
-			this.Payload = payload;
+			InitializeComponent();
 		}
 
-		public byte MessageType {get;set; }
-		public T Payload {get;set;}
+		
+		private void _inputControl_CheckedChanged(object sender, EventArgs e)
+		{
+			this.ValueChanged.RaiseEvent(this);
+		}
 
-		byte[] IIGCSMessage.PayloadAsByteArray => GeneralUtils.ConvertToByteArray(this.Payload);
+
+		#region Properties
+		/// <inheritdoc/>
+		public bool Value
+		{
+			get { return _inputControl.Checked; }
+			set { _inputControl.Checked = value; }
+		}
+		#endregion
 	}
 }

@@ -52,7 +52,52 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\ISetting.cs" />
+    <Compile Include="Classes\LogHandler.cs" />
+    <Compile Include="Classes\Setting.cs" />
     <Compile Include="ConstantsEnums.cs" />
+    <Compile Include="Controls\ApplicationOutput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ApplicationOutput.Designer.cs">
+      <DependentUpon>ApplicationOutput.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FolderInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\FolderInput.Designer.cs">
+      <DependentUpon>FolderInput.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DropDownInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\DropDownInput.Designer.cs">
+      <DependentUpon>DropDownInput.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\BoolInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\BoolInput.Designer.cs">
+      <DependentUpon>BoolInput.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\IntInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\IntInput.Designer.cs">
+      <DependentUpon>IntInput.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FloatInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\FloatInput.Designer.cs">
+      <DependentUpon>FloatInput.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SettingEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\SettingEditor.Designer.cs">
+      <DependentUpon>SettingEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="DataStructures\IGCSMessage.cs" />
     <Compile Include="Forms\ExceptionViewer.cs">
       <SubType>Form</SubType>
@@ -63,8 +108,9 @@
     <Compile Include="Forms\SimpleExceptionViewer.Designer.cs">
       <DependentUpon>SimpleExceptionViewer.cs</DependentUpon>
     </Compile>
-    <Compile Include="GeneralUtils.cs" />
+    <Compile Include="Classes\GeneralUtils.cs" />
     <Compile Include="Interfaces\IIGCSMessage.cs" />
+    <Compile Include="Interfaces\IInputControl.cs" />
     <Compile Include="NamedPipeSubsystem\NamedPipeClient.cs" />
     <Compile Include="NamedPipeSubsystem\NamedPipeStreamBase.cs" />
     <Compile Include="NamedPipeSubsystem\NamedPipeStreamConnection.cs" />
@@ -77,6 +123,27 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Controls\ApplicationOutput.resx">
+      <DependentUpon>ApplicationOutput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\FolderInput.resx">
+      <DependentUpon>FolderInput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\DropDownInput.resx">
+      <DependentUpon>DropDownInput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\BoolInput.resx">
+      <DependentUpon>BoolInput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\IntInput.resx">
+      <DependentUpon>IntInput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\FloatInput.resx">
+      <DependentUpon>FloatInput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\SettingEditor.resx">
+      <DependentUpon>SettingEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ExceptionViewer.resx">
       <DependentUpon>ExceptionViewer.cs</DependentUpon>
     </EmbeddedResource>
@@ -94,6 +161,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -108,6 +176,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Folder_16x.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -28,34 +28,75 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using IGCSClient.Classes;
+using System.Windows.Forms;
 using IGCSClient.Interfaces;
+using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
+using SD.Tools.BCLExtensions.SystemRelated;
 
-namespace IGCSClient.DataStructures
+namespace IGCSClient.Controls
 {
-	/// <summary>
-	/// Simple message to wrap a payload in to be send to the other end of our named pipe. 
-	/// </summary>
-	/// <typeparam name="T">The type of the payload. Depends on the message type what it is.</typeparam>
-	public class IGCSMessage<T> : IIGCSMessage
+	public partial class FolderInput : UserControl, IInputControl<string>
 	{
-		/// <summary>
-		/// CTor
-		/// </summary>
-		/// <param name="messageType">The type of the message to send</param>
-		/// <param name="payload">THe value to send</param>
-		public IGCSMessage(byte messageType, T payload)
+		#region Members
+		private string _description;
+		#endregion
+
+
+		public event EventHandler ValueChanged;
+
+		public FolderInput()
 		{
-			this.MessageType = messageType;
-			this.Payload = payload;
+			InitializeComponent();
+			_description = string.Empty;
 		}
 
-		public byte MessageType {get;set; }
-		public T Payload {get;set;}
 
-		byte[] IIGCSMessage.PayloadAsByteArray => GeneralUtils.ConvertToByteArray(this.Payload);
+		public void Setup(string initialFolder, string description)
+		{
+			_inputControl.Text = initialFolder;
+			_description = description;
+		}
+
+		
+		private void _inputControl_TextChanged(object sender, EventArgs e)
+		{
+			this.ValueChanged.RaiseEvent(this);
+		}
+
+
+		private void _browseButton_Click(object sender, EventArgs e)
+		{
+			if(!string.IsNullOrWhiteSpace(_inputControl.Text))
+			{
+				_folderBrowser.SelectedPath = _inputControl.Text;
+			}
+
+			if(!string.IsNullOrWhiteSpace(_description))
+			{
+				_folderBrowser.Description = _description;
+			}
+
+			var result = _folderBrowser.ShowDialog();
+			if(result == DialogResult.OK)
+			{
+				_inputControl.Text = _folderBrowser.SelectedPath;
+			}
+		}
+
+
+		#region Properties
+		/// <inheritdoc/>
+		public string Value
+		{
+			get { return _inputControl.Text; }
+			set { _inputControl.Text = value; }
+		}
+		#endregion
 	}
 }

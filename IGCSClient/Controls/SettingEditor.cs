@@ -28,34 +28,53 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using IGCSClient.Classes;
+using System.Windows.Forms;
 using IGCSClient.Interfaces;
 
-namespace IGCSClient.DataStructures
+namespace IGCSClient.Controls
 {
-	/// <summary>
-	/// Simple message to wrap a payload in to be send to the other end of our named pipe. 
-	/// </summary>
-	/// <typeparam name="T">The type of the payload. Depends on the message type what it is.</typeparam>
-	public class IGCSMessage<T> : IIGCSMessage
+	public partial class SettingEditor : UserControl
 	{
-		/// <summary>
-		/// CTor
-		/// </summary>
-		/// <param name="messageType">The type of the message to send</param>
-		/// <param name="payload">THe value to send</param>
-		public IGCSMessage(byte messageType, T payload)
+		public SettingEditor()
 		{
-			this.MessageType = messageType;
-			this.Payload = payload;
+			InitializeComponent();
 		}
 
-		public byte MessageType {get;set; }
-		public T Payload {get;set;}
 
-		byte[] IIGCSMessage.PayloadAsByteArray => GeneralUtils.ConvertToByteArray(this.Payload);
+		public void BuildUI(List<ISetting> settingsToShow)
+		{
+			var settingsByGroup = settingsToShow.GroupBy(s => s.GroupLabel);
+			foreach(var g in settingsByGroup)
+			{
+				// add a group control
+				var groupControl = new GroupBox() {AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, Dock = DockStyle.Top, Text = g.Key};
+				var table = new TableLayoutPanel() { AutoSizeMode = AutoSizeMode.GrowAndShrink, AutoSize = true, Dock = DockStyle.Fill};
+				table.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+				table.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+				table.ColumnCount = 2;
+				table.RowCount = 1;
+
+				foreach(var s in g)
+				{
+					table.RowCount++;
+					var label = new Label() { Text = s.Label, TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Top, AutoSize = true, Anchor = AnchorStyles.None};
+					table.Controls.Add(label);
+					table.Controls.Add(s.InputControl);
+					table.SetCellPosition(label, new TableLayoutPanelCellPosition(0, table.RowCount-1));
+					s.InputControl.Dock = DockStyle.Top;
+					s.InputControl.Anchor = AnchorStyles.Left;
+					table.SetCellPosition(s.InputControl, new TableLayoutPanelCellPosition(1, table.RowCount-1));
+				}
+				groupControl.Controls.Add(table);
+				this.Controls.Add(groupControl);
+			}
+		}
 	}
+
 }

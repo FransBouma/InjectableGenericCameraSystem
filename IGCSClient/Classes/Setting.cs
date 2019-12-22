@@ -31,31 +31,64 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using IGCSClient.Classes;
+using System.Windows.Forms;
 using IGCSClient.Interfaces;
+using SD.Tools.Algorithmia.UtilityClasses;
 
-namespace IGCSClient.DataStructures
+namespace IGCSClient.Classes
 {
 	/// <summary>
-	/// Simple message to wrap a payload in to be send to the other end of our named pipe. 
+	/// Defines a setting which is edited in the client and used in the system on the other side of the named pipe.
 	/// </summary>
-	/// <typeparam name="T">The type of the payload. Depends on the message type what it is.</typeparam>
-	public class IGCSMessage<T> : IIGCSMessage
+	public class Setting<T> : ISetting
 	{
-		/// <summary>
-		/// CTor
-		/// </summary>
-		/// <param name="messageType">The type of the message to send</param>
-		/// <param name="payload">THe value to send</param>
-		public IGCSMessage(byte messageType, T payload)
+		#region Members
+		public IInputControl<T> _inputControl;
+		#endregion
+
+
+		public void Setup(IInputControl<T> controlToUse)
 		{
-			this.MessageType = messageType;
-			this.Payload = payload;
+			ArgumentVerifier.CantBeNull(controlToUse, nameof(controlToUse));
+			_inputControl = controlToUse;
+			_inputControl.ValueChanged += _inputControl_ValueChanged;
 		}
 
-		public byte MessageType {get;set; }
-		public T Payload {get;set;}
 
-		byte[] IIGCSMessage.PayloadAsByteArray => GeneralUtils.ConvertToByteArray(this.Payload);
+		private void _inputControl_ValueChanged(object sender, EventArgs e)
+		{
+#warning TODO: Implement message passing of new value to the named pipe.
+			LogHandlerSingleton.Instance().LogLine("Value of {0} changed to: {1}", this.Label, false, true, this.ID, this.Value);
+		}
+
+
+		#region Properties
+		/// <summary>
+		/// The ID of the setting which is the same for both the client and the system on the other side of the named pipe.
+		/// </summary>
+		public byte ID { get; set; }
+		/// <summary>
+		/// The label of the group this setting belongs to. Used to group controls in the GUI.
+		/// </summary>
+		public string GroupLabel { get; set; }
+		/// <summary>
+		/// The label to use for editing this setting.
+		/// </summary>
+		public string Label { get; set; }
+		/// <summary>
+		/// The input control to use for this setting. 
+		/// </summary>
+		public Control InputControl
+		{
+			get { return _inputControl as Control; }
+		}
+		/// <summary>
+		/// The current value of the setting as known by this client.
+		/// </summary>
+		public T Value
+		{
+			get { return _inputControl.Value; }
+		}
+		#endregion
 	}
 }
