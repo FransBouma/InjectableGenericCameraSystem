@@ -32,7 +32,7 @@
 			this._mainTabControl = new System.Windows.Forms.TabControl();
 			this._generalTab = new System.Windows.Forms.TabPage();
 			this._settingsTab = new System.Windows.Forms.TabPage();
-			this.settingEditor1 = new IGCSClient.Controls.SettingEditor();
+			this._settingsEditor = new IGCSClient.GameSpecific.Controls.SettingEditor();
 			this._keyBindingsTab = new System.Windows.Forms.TabPage();
 			this._hotsamplingTab = new System.Windows.Forms.TabPage();
 			this._logTab = new System.Windows.Forms.TabPage();
@@ -78,30 +78,28 @@
 			// 
 			// _settingsTab
 			// 
-			this._settingsTab.Controls.Add(this.settingEditor1);
+			this._settingsTab.Controls.Add(this._settingsEditor);
 			this._settingsTab.Location = new System.Drawing.Point(4, 22);
 			this._settingsTab.Name = "_settingsTab";
 			this._settingsTab.Padding = new System.Windows.Forms.Padding(3);
-			this._settingsTab.Size = new System.Drawing.Size(703, 14);
+			this._settingsTab.Size = new System.Drawing.Size(703, 396);
 			this._settingsTab.TabIndex = 1;
 			this._settingsTab.Text = "Settings";
 			this._settingsTab.UseVisualStyleBackColor = true;
 			// 
-			// settingEditor1
+			// _settingsEditor
 			// 
-			this.settingEditor1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.settingEditor1.Location = new System.Drawing.Point(5, 6);
-			this.settingEditor1.Name = "settingEditor1";
-			this.settingEditor1.Size = new System.Drawing.Size(694, 421);
-			this.settingEditor1.TabIndex = 0;
+			this._settingsEditor.Location = new System.Drawing.Point(5, 6);
+			this._settingsEditor.Name = "_settingsEditor";
+			this._settingsEditor.Size = new System.Drawing.Size(694, 421);
+			this._settingsEditor.TabIndex = 0;
 			// 
 			// _keyBindingsTab
 			// 
 			this._keyBindingsTab.Location = new System.Drawing.Point(4, 22);
 			this._keyBindingsTab.Name = "_keyBindingsTab";
 			this._keyBindingsTab.Padding = new System.Windows.Forms.Padding(3);
-			this._keyBindingsTab.Size = new System.Drawing.Size(703, 14);
+			this._keyBindingsTab.Size = new System.Drawing.Size(703, 396);
 			this._keyBindingsTab.TabIndex = 3;
 			this._keyBindingsTab.Text = "Key bindings";
 			this._keyBindingsTab.UseVisualStyleBackColor = true;
@@ -111,7 +109,7 @@
 			this._hotsamplingTab.Location = new System.Drawing.Point(4, 22);
 			this._hotsamplingTab.Name = "_hotsamplingTab";
 			this._hotsamplingTab.Padding = new System.Windows.Forms.Padding(3);
-			this._hotsamplingTab.Size = new System.Drawing.Size(703, 14);
+			this._hotsamplingTab.Size = new System.Drawing.Size(703, 396);
 			this._hotsamplingTab.TabIndex = 4;
 			this._hotsamplingTab.Text = "Hotsampling";
 			this._hotsamplingTab.UseVisualStyleBackColor = true;
@@ -122,7 +120,7 @@
 			this._logTab.Location = new System.Drawing.Point(4, 22);
 			this._logTab.Name = "_logTab";
 			this._logTab.Padding = new System.Windows.Forms.Padding(3);
-			this._logTab.Size = new System.Drawing.Size(703, 14);
+			this._logTab.Size = new System.Drawing.Size(703, 396);
 			this._logTab.TabIndex = 2;
 			this._logTab.Text = "Log";
 			this._logTab.UseVisualStyleBackColor = true;
@@ -132,7 +130,7 @@
 			this._logControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this._logControl.Location = new System.Drawing.Point(3, 3);
 			this._logControl.Name = "_logControl";
-			this._logControl.Size = new System.Drawing.Size(697, 8);
+			this._logControl.Size = new System.Drawing.Size(697, 390);
 			this._logControl.TabIndex = 0;
 			// 
 			// MainForm
@@ -143,6 +141,7 @@
 			this.Controls.Add(this._mainTabControl);
 			this.Controls.Add(this.statusStrip1);
 			this.Name = "MainForm";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Form1";
 			this._mainTabControl.ResumeLayout(false);
 			this._settingsTab.ResumeLayout(false);
@@ -162,7 +161,7 @@
 		private System.Windows.Forms.TabPage _keyBindingsTab;
 		private System.Windows.Forms.TabPage _hotsamplingTab;
 		private Controls.ApplicationOutput _logControl;
-		private Controls.SettingEditor settingEditor1;
+		private GameSpecific.Controls.SettingEditor _settingsEditor;
 	}
 }
 

@@ -38,6 +38,7 @@ namespace IGCSClient
 	{
 		internal static readonly string NamedPipeName = "IgcsIPCPipe";
 		internal static readonly int BufferLength = 1*1024*1024;	// 1MB buffer should be more than enough. We expect to be actively reading whenever things arrive.
+		internal static readonly string IniFilename = "IGCSClientSettings.ini";
 	}
 
 
@@ -55,5 +56,40 @@ namespace IGCSClient
 		Float,			// 4 byte length, IEEE encoded
 		Double,			// 8 byte length, IEEE encoded
 		Bool,			// 1 byte length, 1 == true, 0 == false.
+	}
+
+	public class CameraDeviceType
+	{
+		public const byte KeyboardMouse = 0;
+		public const byte Gamepad = 1;
+		public const byte Both = 2;
+	}
+
+
+	public class ScreenshotType
+	{
+		public const byte HorizontalPanorama = 0;
+		public const byte Lightfield = 1;
+	}
+
+
+	public class SettingType
+	{
+		public const byte FastMovementMultiplier = 0;
+		public const byte SlowMovementMultiplier = 1;
+		public const byte UpMovementMultiplier = 2;
+		public const byte MovementSpeed = 3;
+		public const byte CameraControlDevice = 4;
+		public const byte RotationSpeed = 5;
+		public const byte InvertYLookDirection = 6;
+		public const byte FoVZoomSpeed = 7;
+		public const byte ShotOutputFolder = 8;
+		public const byte ShotFramesToWait = 9;
+		public const byte ShotType = 10;
+		public const byte PanoTotalFoV = 11;
+		public const byte PanoOverlapPercentage = 12;
+		public const byte LightfieldDistance = 13;
+		public const byte LightfieldShotCount = 14;
+		// to add more, derived a type of this class and define the next value one higher than the last one in this class.
 	}
 }

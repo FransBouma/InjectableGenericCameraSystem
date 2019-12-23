@@ -28,64 +28,45 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using IGCSClient.Controls;
 using IGCSClient.Interfaces;
-using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
-using SD.Tools.BCLExtensions.SystemRelated;
 
-namespace IGCSClient.Controls
+namespace IGCSClient.Classes
 {
-	/// <summary>
-	/// Control to specify a selection from a series of string values. 
-	/// </summary>
-	public partial class DropDownInput : UserControl, IInputControl<int>
+	public class FolderSetting : Setting<string>
 	{
-		public event EventHandler ValueChanged;
-
-		public DropDownInput()
-		{
-			InitializeComponent();
-		}
-
-
-		public void Setup(List<string> items)
-		{
-			_inputControl.Items.Clear();
-			_inputControl.Items.AddRange(items.ToArray());
-			_inputControl.SelectedIndex = items.Count > 0 ? 0 : -1;
-			_inputControl.MaxDropDownItems = items.Count > 0 ? Math.Min(15, items.Count) : 1;
-		}
-
-
-		public void SetValueFromString(string valueAsString, int defaultValue)
-		{
-			if(!Int32.TryParse(valueAsString, out var valueToSet))
-			{
-				valueToSet = defaultValue;
-			}
-			this.Value = valueToSet;
-		}
+		#region Members
+		private readonly string _initialFolder;
+		private readonly string _description;
+		#endregion
 
 		
-		private void _inputControl_SelectedIndexChanged(object sender, EventArgs e)
+		public FolderSetting(byte id, string name, string initialFolder, string description)
+			: base(id, name)
 		{
-			this.ValueChanged.RaiseEvent(this);
+			_initialFolder = initialFolder;
+			_description = description;
 		}
 
 
-		#region Properties
-		/// <inheritdoc/>
-		public int Value
+		public override void Setup(IInputControl<string> controlToUse)
 		{
-			get { return _inputControl.SelectedIndex; }
-			set { _inputControl.SelectedIndex = value; }
+			base.Setup(controlToUse);
+			FolderInput controlAsFolderInput = controlToUse as FolderInput;
+			if(controlAsFolderInput == null)
+			{
+				return;
+			}
+			controlAsFolderInput.Setup(_initialFolder, _description);
 		}
-		#endregion
+
+
+		protected override string GetDefaultValue()
+		{
+			return _initialFolder;
+		}
 	}
 }

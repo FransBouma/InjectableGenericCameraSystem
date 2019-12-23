@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,6 +42,9 @@ using SD.Tools.BCLExtensions.SystemRelated;
 
 namespace IGCSClient.Controls
 {
+	/// <summary>
+	/// Input control to specify a floating point value.
+	/// </summary>
 	public partial class FloatInput : UserControl, IInputControl<float>
 	{
 		public event EventHandler ValueChanged;
@@ -57,6 +61,16 @@ namespace IGCSClient.Controls
 			_inputControl.Minimum = minValue;
 			_inputControl.DecimalPlaces = scale;
 			_inputControl.Increment = increment;
+		}
+
+
+		public void SetValueFromString(string valueAsString, float defaultValue)
+		{
+			if(!Single.TryParse(valueAsString, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out var valueToSet))
+			{
+				valueToSet = defaultValue;
+			}
+			this.Value = valueToSet;
 		}
 
 		

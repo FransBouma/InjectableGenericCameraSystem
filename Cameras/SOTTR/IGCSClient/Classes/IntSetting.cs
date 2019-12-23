@@ -28,64 +28,50 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using IGCSClient.Controls;
 using IGCSClient.Interfaces;
-using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
-using SD.Tools.BCLExtensions.SystemRelated;
 
-namespace IGCSClient.Controls
+namespace IGCSClient.Classes
 {
-	/// <summary>
-	/// Control to specify a selection from a series of string values. 
-	/// </summary>
-	public partial class DropDownInput : UserControl, IInputControl<int>
+	public class IntSetting : Setting<int>
 	{
-		public event EventHandler ValueChanged;
-
-		public DropDownInput()
-		{
-			InitializeComponent();
-		}
-
-
-		public void Setup(List<string> items)
-		{
-			_inputControl.Items.Clear();
-			_inputControl.Items.AddRange(items.ToArray());
-			_inputControl.SelectedIndex = items.Count > 0 ? 0 : -1;
-			_inputControl.MaxDropDownItems = items.Count > 0 ? Math.Min(15, items.Count) : 1;
-		}
-
-
-		public void SetValueFromString(string valueAsString, int defaultValue)
-		{
-			if(!Int32.TryParse(valueAsString, out var valueToSet))
-			{
-				valueToSet = defaultValue;
-			}
-			this.Value = valueToSet;
-		}
-
-		
-		private void _inputControl_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			this.ValueChanged.RaiseEvent(this);
-		}
-
-
-		#region Properties
-		/// <inheritdoc/>
-		public int Value
-		{
-			get { return _inputControl.SelectedIndex; }
-			set { _inputControl.SelectedIndex = value; }
-		}
+		#region Members
+		private readonly int _minValue;
+		private readonly int _maxValue;
+		private readonly int _increment;
+		private readonly int _defaultValue;
 		#endregion
+
+
+		public IntSetting(byte id, string name, int minValue, int maxValue, int increment, int defaultValue)
+			: base(id, name)
+		{
+			_minValue = minValue;
+			_maxValue = maxValue;
+			_increment = increment;
+			_defaultValue = defaultValue;
+		}
+
+
+		public override void Setup(IInputControl<int> controlToUse)
+		{
+			base.Setup(controlToUse);
+			IntInput controlAsIntInput = controlToUse as IntInput;
+			if(controlAsIntInput == null)
+			{
+				return;
+			}
+			controlAsIntInput.Setup(_minValue, _maxValue, _increment);
+			controlAsIntInput.Value = _defaultValue;
+		}
+
+
+		protected override int GetDefaultValue()
+		{
+			return _defaultValue;
+		}
 	}
 }

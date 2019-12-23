@@ -45,9 +45,7 @@ namespace IGCSClient.Classes
 		private static LogHandler _instance = new LogHandler();
 		
 		/// <summary>Dummy static constructor to make sure threadsafe initialization is performed.</summary>
-		static LogHandlerSingleton()
-		{
-		}
+		static LogHandlerSingleton() { }
 
 		/// <summary>
 		/// Gets the single instance in use in this application

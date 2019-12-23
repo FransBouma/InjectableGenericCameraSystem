@@ -28,63 +28,79 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using IGCSClient.Interfaces;
-using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
-using SD.Tools.BCLExtensions.SystemRelated;
 
-namespace IGCSClient.Controls
+namespace IGCSClient.Classes
 {
 	/// <summary>
-	/// Control to specify a selection from a series of string values. 
+	/// Singleton class containing the single appstate instance which contains the state of this application at runtime. 
 	/// </summary>
-	public partial class DropDownInput : UserControl, IInputControl<int>
+	public static class AppStateSingleton
 	{
-		public event EventHandler ValueChanged;
+		private static AppState _instance = new AppState();
 
-		public DropDownInput()
+		/// <summary>Dummy static constructor to make sure threadsafe initialization is performed.</summary>
+		static AppStateSingleton() {}
+
+		/// <summary>
+		/// Gets the single instance in use in this application
+		/// </summary>
+		/// <returns></returns>
+		public static AppState Instance() => _instance;
+	}
+
+	/// <summary>
+	/// The class containing the actual application state at runtime.
+	/// </summary>
+	public class AppState
+	{
+		#region Members
+		private readonly List<ISetting> _settings;
+		#endregion
+
+		internal AppState()
 		{
-			InitializeComponent();
+			_settings = new List<ISetting>();
 		}
 
 
-		public void Setup(List<string> items)
+		public void AddSetting(ISetting settingToAdd)
 		{
-			_inputControl.Items.Clear();
-			_inputControl.Items.AddRange(items.ToArray());
-			_inputControl.SelectedIndex = items.Count > 0 ? 0 : -1;
-			_inputControl.MaxDropDownItems = items.Count > 0 ? Math.Min(15, items.Count) : 1;
+			_settings.Add(settingToAdd);
 		}
 
 
-		public void SetValueFromString(string valueAsString, int defaultValue)
+		public void WriteToIni()
 		{
-			if(!Int32.TryParse(valueAsString, out var valueToSet))
+			var iniFile = new IniFileHandler(ConstantsEnums.IniFilename);
+			foreach(var setting in _settings)
 			{
-				valueToSet = defaultValue;
+				iniFile.Write(setting.Name, setting.GetValueAsString(), "CameraSettings");
 			}
-			this.Value = valueToSet;
 		}
 
-		
-		private void _inputControl_SelectedIndexChanged(object sender, EventArgs e)
+
+		public void LoadFromIni()
 		{
-			this.ValueChanged.RaiseEvent(this);
+			var iniFile = new IniFileHandler(ConstantsEnums.IniFilename);
+			if(iniFile.FileExists())
+			{
+				foreach(var setting in _settings)
+				{
+					string valueAsString = iniFile.Read(setting.Name, "CameraSettings");
+					setting.SetValueFromString(valueAsString);
+				}
+			}
 		}
 
 
 		#region Properties
-		/// <inheritdoc/>
-		public int Value
+		public ISetting[] Settings
 		{
-			get { return _inputControl.SelectedIndex; }
-			set { _inputControl.SelectedIndex = value; }
+			get { return _settings.ToArray(); }
 		}
 		#endregion
 	}

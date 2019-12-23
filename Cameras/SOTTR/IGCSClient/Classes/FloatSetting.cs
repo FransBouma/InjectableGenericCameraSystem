@@ -28,25 +28,59 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using IGCSClient.Controls;
 using IGCSClient.Interfaces;
 
-namespace IGCSClient.Controls
+namespace IGCSClient.Classes
 {
-	public partial class SettingEditor : UserControl
+	public class FloatSetting : Setting<float>
 	{
-		public SettingEditor()
+		#region Members
+		private readonly decimal _minValue;
+		private readonly decimal _maxValue;
+		private readonly int _scale;
+		private readonly decimal _increment;
+		private readonly float _defaultValue;
+		#endregion
+
+
+		public FloatSetting(byte id, string name, decimal minValue, decimal maxValue, int scale, decimal increment, float defaultValue)
+			: base(id, name)
 		{
-			SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
-			InitializeComponent();
+			_minValue = minValue;
+			_maxValue = maxValue;
+			_scale = scale;
+			_increment = increment;
+			_defaultValue = defaultValue;
 		}
 
 
+		public override void Setup(IInputControl<float> controlToUse)
+		{
+			base.Setup(controlToUse);
+			FloatInput controlAsFloatInput = controlToUse as FloatInput;
+			if(controlAsFloatInput == null)
+			{
+				return;
+			}
+			controlAsFloatInput.Setup(_minValue, _maxValue, _scale, _increment);
+			controlAsFloatInput.Value = _defaultValue;
+		}
+
+
+		protected override float GetDefaultValue()
+		{
+			return _defaultValue;
+		}
+
+
+		protected override string GetValueAsString()
+		{
+			return this.Value.ToString(CultureInfo.InvariantCulture.NumberFormat);
+		}
 	}
 }

@@ -50,5 +50,13 @@ namespace IGCSClient.Interfaces
 		/// The value edited
 		/// </summary>
 		T Value { get; set; }
+
+
+		/// <summary>
+		/// Sets the value in the control from the value as string specified. 
+		/// </summary>
+		/// <param name="valueAsString"></param>
+		/// <param name="defaultValue">the default value to set if valueAsString is invalid</param>
+		void SetValueFromString(string valueAsString, T defaultValue);
 	}
 }

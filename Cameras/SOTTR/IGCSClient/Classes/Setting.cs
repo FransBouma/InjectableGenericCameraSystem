@@ -46,8 +46,23 @@ namespace IGCSClient.Classes
 		public IInputControl<T> _inputControl;
 		#endregion
 
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="id">the id of the setting</param>
+		/// <param name="name">the name of the setting</param>
+		public Setting(byte id, string name)
+		{
+			this.ID = id;
+			this.Name = name;
+		}
 
-		public void Setup(IInputControl<T> controlToUse)
+
+		/// <summary>
+		/// Sets up the setting with the control specified
+		/// </summary>
+		/// <param name="controlToUse"></param>
+		public virtual void Setup(IInputControl<T> controlToUse)
 		{
 			ArgumentVerifier.CantBeNull(controlToUse, nameof(controlToUse));
 			_inputControl = controlToUse;
@@ -55,40 +70,70 @@ namespace IGCSClient.Classes
 		}
 
 
+		/// <inheritdoc />
+		public void SetValueFromString(string valueAsString)
+		{
+			_inputControl.SetValueFromString(valueAsString, GetDefaultValue());
+		}
+
+
+		protected virtual T GetDefaultValue()
+		{
+			return default(T);
+		}
+		
+
+		protected virtual string GetValueAsString()
+		{
+			if(!(this.Value is object))
+			{
+				// null
+				return string.Empty;
+			}
+
+			return Convert.ToString(this.Value);
+		}
+				
+
 		private void _inputControl_ValueChanged(object sender, EventArgs e)
 		{
 #warning TODO: Implement message passing of new value to the named pipe.
-			LogHandlerSingleton.Instance().LogLine("Value of {0} changed to: {1}", this.Label, false, true, this.ID, this.Value);
+#if DEBUG
+			LogHandlerSingleton.Instance().LogLine("Value of {0} changed to: {1}", "[DEBUG] " + this.Name, true, true, this.ID, this.Value);
+#endif
+		}
+
+
+		/// <inheritdoc />
+		void ISetting.Setup(Control inputControl)
+		{
+			var inputControlTyped = inputControl as IInputControl<T>;
+			if(inputControlTyped == null)
+			{
+				return;
+			}
+			this.Setup(inputControlTyped);
+		}
+
+
+		/// <inheritdoc />
+		string ISetting.GetValueAsString()
+		{
+			return this.GetValueAsString();
 		}
 
 
 		#region Properties
-		/// <summary>
-		/// The ID of the setting which is the same for both the client and the system on the other side of the named pipe.
-		/// </summary>
-		public byte ID { get; set; }
-		/// <summary>
-		/// The label of the group this setting belongs to. Used to group controls in the GUI.
-		/// </summary>
-		public string GroupLabel { get; set; }
-		/// <summary>
-		/// The label to use for editing this setting.
-		/// </summary>
-		public string Label { get; set; }
-		/// <summary>
-		/// The input control to use for this setting. 
-		/// </summary>
-		public Control InputControl
-		{
-			get { return _inputControl as Control; }
-		}
+		/// <inheritdoc />
+		public string Name { get; private set; }
+		/// <inheritdoc />
+		public byte ID { get; private set; }
+		/// <inheritdoc />
+		public Control InputControl => _inputControl as Control;
 		/// <summary>
 		/// The current value of the setting as known by this client.
 		/// </summary>
-		public T Value
-		{
-			get { return _inputControl.Value; }
-		}
+		public T Value => _inputControl.Value;
 		#endregion
 	}
 }

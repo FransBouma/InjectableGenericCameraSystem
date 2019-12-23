@@ -41,6 +41,9 @@ using SD.Tools.BCLExtensions.SystemRelated;
 
 namespace IGCSClient.Controls
 {
+	/// <summary>
+	/// Control to specify an integer value.
+	/// </summary>
 	public partial class IntInput : UserControl, IInputControl<int>
 	{
 		public event EventHandler ValueChanged;
@@ -51,12 +54,22 @@ namespace IGCSClient.Controls
 		}
 
 
-		public void Setup(int minValue, int maxValue, int scale, int increment)
+		public void Setup(int minValue, int maxValue, int increment)
 		{
 			_inputControl.Maximum = maxValue;
 			_inputControl.Minimum = minValue;
-			_inputControl.DecimalPlaces = scale;
+			_inputControl.DecimalPlaces = 0;
 			_inputControl.Increment = increment;
+		}
+		
+		
+		public void SetValueFromString(string valueAsString, int defaultValue)
+		{
+			if(!Int32.TryParse(valueAsString, out var valueToSet))
+			{
+				valueToSet = defaultValue;
+			}
+			this.Value = valueToSet;
 		}
 
 		

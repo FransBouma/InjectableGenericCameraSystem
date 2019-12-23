@@ -26,6 +26,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Windows.Forms;
 
 namespace IGCSClient.Interfaces
@@ -35,8 +36,33 @@ namespace IGCSClient.Interfaces
 	/// </summary>
 	public interface ISetting
 	{
+		/// <summary>
+		/// Sets up the setting with the control specified
+		/// </summary>
+		/// <param name="inputControl"></param>
+		void Setup(Control inputControl);
+
+		/// <summary>
+		/// Gets the control associated with the setting in a generic form
+		/// </summary>
 		Control InputControl { get; }
-		string Label { get; }
-		string GroupLabel { get; }
+		/// <summary>
+		/// Gets the ID of the setting, which is the id used on both client and camera system
+		/// </summary>
+		byte ID { get; }
+		/// <summary>
+		/// Gets the name of the setting
+		/// </summary>
+		string Name { get; }
+		/// <summary>
+		/// Gets the value of the setting as string for persistence purposes
+		/// </summary>
+		/// <returns></returns>
+		string GetValueAsString();
+		/// <summary>
+		/// Sets the value of the setting from the value as string specified. 
+		/// </summary>
+		/// <param name="valueAsString"></param>
+		void SetValueFromString(string valueAsString);
 	}
 }

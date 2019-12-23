@@ -41,14 +41,17 @@ using SD.Tools.BCLExtensions.SystemRelated;
 
 namespace IGCSClient.Controls
 {
+	/// <summary>
+	/// Input control to specify a folder.
+	/// </summary>
 	public partial class FolderInput : UserControl, IInputControl<string>
 	{
 		#region Members
 		private string _description;
 		#endregion
-
-
+		
 		public event EventHandler ValueChanged;
+
 
 		public FolderInput()
 		{
@@ -59,8 +62,14 @@ namespace IGCSClient.Controls
 
 		public void Setup(string initialFolder, string description)
 		{
-			_inputControl.Text = initialFolder;
+			this.Value = initialFolder;
 			_description = description;
+		}
+
+
+		public void SetValueFromString(string valueAsString, string defaultValue)
+		{
+			this.Value = valueAsString ?? defaultValue;
 		}
 
 		
@@ -72,9 +81,9 @@ namespace IGCSClient.Controls
 
 		private void _browseButton_Click(object sender, EventArgs e)
 		{
-			if(!string.IsNullOrWhiteSpace(_inputControl.Text))
+			if(!string.IsNullOrWhiteSpace(this.Value))
 			{
-				_folderBrowser.SelectedPath = _inputControl.Text;
+				_folderBrowser.SelectedPath = this.Value;
 			}
 
 			if(!string.IsNullOrWhiteSpace(_description))
@@ -82,10 +91,10 @@ namespace IGCSClient.Controls
 				_folderBrowser.Description = _description;
 			}
 
-			var result = _folderBrowser.ShowDialog();
+			var result = _folderBrowser.ShowDialog(this);
 			if(result == DialogResult.OK)
 			{
-				_inputControl.Text = _folderBrowser.SelectedPath;
+				this.Value = _folderBrowser.SelectedPath;
 			}
 		}
 

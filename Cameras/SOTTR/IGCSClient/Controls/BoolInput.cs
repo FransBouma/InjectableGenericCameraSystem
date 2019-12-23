@@ -41,6 +41,9 @@ using SD.Tools.BCLExtensions.SystemRelated;
 
 namespace IGCSClient.Controls
 {
+	/// <summary>
+	/// Control to specify a boolean value
+	/// </summary>
 	public partial class BoolInput : UserControl, IInputControl<bool>
 	{
 		public event EventHandler ValueChanged;
@@ -56,6 +59,16 @@ namespace IGCSClient.Controls
 			this.ValueChanged.RaiseEvent(this);
 		}
 
+		
+		public void SetValueFromString(string valueAsString, bool defaultValue)
+		{
+			if(!Boolean.TryParse(valueAsString, out var valueToSet))
+			{
+				valueToSet = defaultValue;
+			}
+			this.Value = valueToSet;
+		}
+		
 
 		#region Properties
 		/// <inheritdoc/>
@@ -64,6 +77,7 @@ namespace IGCSClient.Controls
 			get { return _inputControl.Checked; }
 			set { _inputControl.Checked = value; }
 		}
+
 		#endregion
 	}
 }

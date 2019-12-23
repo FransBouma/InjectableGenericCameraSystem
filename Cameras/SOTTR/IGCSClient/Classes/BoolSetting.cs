@@ -28,64 +28,35 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using IGCSClient.Interfaces;
-using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
-using SD.Tools.BCLExtensions.SystemRelated;
 
-namespace IGCSClient.Controls
+namespace IGCSClient.Classes
 {
-	/// <summary>
-	/// Control to specify a selection from a series of string values. 
-	/// </summary>
-	public partial class DropDownInput : UserControl, IInputControl<int>
+	public class BoolSetting : Setting<bool>
 	{
-		public event EventHandler ValueChanged;
+		private readonly bool _defaultValue;
 
-		public DropDownInput()
+
+		public BoolSetting(byte id, string name, bool defaultValue)
+			: base(id, name)
 		{
-			InitializeComponent();
+			_defaultValue = defaultValue;
 		}
 
 
-		public void Setup(List<string> items)
+		public override void Setup(IInputControl<bool> controlToUse)
 		{
-			_inputControl.Items.Clear();
-			_inputControl.Items.AddRange(items.ToArray());
-			_inputControl.SelectedIndex = items.Count > 0 ? 0 : -1;
-			_inputControl.MaxDropDownItems = items.Count > 0 ? Math.Min(15, items.Count) : 1;
+			base.Setup(controlToUse);
+			controlToUse.Value = _defaultValue;
 		}
 
 
-		public void SetValueFromString(string valueAsString, int defaultValue)
+		protected override bool GetDefaultValue()
 		{
-			if(!Int32.TryParse(valueAsString, out var valueToSet))
-			{
-				valueToSet = defaultValue;
-			}
-			this.Value = valueToSet;
+			return _defaultValue;
 		}
-
-		
-		private void _inputControl_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			this.ValueChanged.RaiseEvent(this);
-		}
-
-
-		#region Properties
-		/// <inheritdoc/>
-		public int Value
-		{
-			get { return _inputControl.SelectedIndex; }
-			set { _inputControl.SelectedIndex = value; }
-		}
-		#endregion
 	}
 }

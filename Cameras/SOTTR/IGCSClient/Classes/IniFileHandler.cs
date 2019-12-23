@@ -28,64 +28,66 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using IGCSClient.Interfaces;
-using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
-using SD.Tools.BCLExtensions.SystemRelated;
 
-namespace IGCSClient.Controls
+namespace IGCSClient.Classes
 {
 	/// <summary>
-	/// Control to specify a selection from a series of string values. 
+	/// Simple ini file handler. From: https://stackoverflow.com/a/14906422
 	/// </summary>
-	public partial class DropDownInput : UserControl, IInputControl<int>
+	public class IniFileHandler
 	{
-		public event EventHandler ValueChanged;
+		private string _path;
+		private string _executableName = Assembly.GetExecutingAssembly().GetName().Name;
 
-		public DropDownInput()
+		[DllImport("kernel32", CharSet = CharSet.Unicode)]
+		static extern long WritePrivateProfileString(string Section, string Key, string Value, string FilePath);
+		[DllImport("kernel32", CharSet = CharSet.Unicode)]
+		static extern int GetPrivateProfileString(string Section, string Key, string Default, StringBuilder RetVal, int Size, string FilePath);
+
+
+		public IniFileHandler(string iniFilename = null)
 		{
-			InitializeComponent();
+			_path = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath) ?? string.Empty, iniFilename);
 		}
 
 
-		public void Setup(List<string> items)
+		public bool FileExists()
 		{
-			_inputControl.Items.Clear();
-			_inputControl.Items.AddRange(items.ToArray());
-			_inputControl.SelectedIndex = items.Count > 0 ? 0 : -1;
-			_inputControl.MaxDropDownItems = items.Count > 0 ? Math.Min(15, items.Count) : 1;
+			return File.Exists(_path);
 		}
 
-
-		public void SetValueFromString(string valueAsString, int defaultValue)
+		public string Read(string key, string section = null)
 		{
-			if(!Int32.TryParse(valueAsString, out var valueToSet))
-			{
-				valueToSet = defaultValue;
-			}
-			this.Value = valueToSet;
+			var retVal = new StringBuilder(1024);
+			GetPrivateProfileString(section ?? _executableName, key, "", retVal, 1024, _path);
+			return retVal.ToString();
 		}
 
-		
-		private void _inputControl_SelectedIndexChanged(object sender, EventArgs e)
+		public void Write(string key, string value, string section = null)
 		{
-			this.ValueChanged.RaiseEvent(this);
+			WritePrivateProfileString(section ?? _executableName, key, value, _path);
 		}
 
-
-		#region Properties
-		/// <inheritdoc/>
-		public int Value
+		public void DeleteKey(string key, string section = null)
 		{
-			get { return _inputControl.SelectedIndex; }
-			set { _inputControl.SelectedIndex = value; }
+			Write(key, null, section ?? _executableName);
 		}
-		#endregion
+
+		public void DeleteSection(string section = null)
+		{
+			Write(null, null, section ?? _executableName);
+		}
+
+		public bool KeyExists(string key, string section = null)
+		{
+			return Read(key, section).Length > 0;
+		}
 	}
 }

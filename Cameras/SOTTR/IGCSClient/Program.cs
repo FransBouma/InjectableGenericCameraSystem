@@ -31,7 +31,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using IGCSClient.Classes;
 using IGCSClient.Forms;
+using IGCSClient.GameSpecific.Classes;
 
 namespace IGCSClient
 {
@@ -53,10 +55,17 @@ namespace IGCSClient
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			_mainWindow = new MainForm();
+			Init();
 			Application.Run(_mainWindow);
 		}
-		
-		
+
+
+		private static void Init()
+		{
+			SettingFactory.InitializeSettings();
+		}
+
+
 		/// <summary>
 		/// Handles the ThreadException event of the Application control.
 		/// </summary>

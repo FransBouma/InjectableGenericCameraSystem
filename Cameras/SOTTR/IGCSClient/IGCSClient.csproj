@@ -52,6 +52,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\AppState.cs" />
+    <Compile Include="Classes\BoolSetting.cs" />
+    <Compile Include="Classes\DropDownSetting.cs" />
+    <Compile Include="Classes\FolderSetting.cs" />
+    <Compile Include="Classes\IniFileHandler.cs" />
+    <Compile Include="Classes\IntSetting.cs" />
+    <Compile Include="Classes\FloatSetting.cs" />
+    <Compile Include="GameSpecific\Classes\SettingFactory.cs" />
     <Compile Include="Interfaces\ISetting.cs" />
     <Compile Include="Classes\LogHandler.cs" />
     <Compile Include="Classes\Setting.cs" />
@@ -92,10 +100,10 @@
     <Compile Include="Controls\FloatInput.Designer.cs">
       <DependentUpon>FloatInput.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\SettingEditor.cs">
+    <Compile Include="GameSpecific\Controls\SettingEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\SettingEditor.Designer.cs">
+    <Compile Include="GameSpecific\Controls\SettingEditor.Designer.cs">
       <DependentUpon>SettingEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="DataStructures\IGCSMessage.cs" />
@@ -141,7 +149,7 @@
     <EmbeddedResource Include="Controls\FloatInput.resx">
       <DependentUpon>FloatInput.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\SettingEditor.resx">
+    <EmbeddedResource Include="GameSpecific\Controls\SettingEditor.resx">
       <DependentUpon>SettingEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ExceptionViewer.resx">

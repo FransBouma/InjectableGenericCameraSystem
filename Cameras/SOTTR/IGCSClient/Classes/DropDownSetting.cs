@@ -28,64 +28,49 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using IGCSClient.Controls;
 using IGCSClient.Interfaces;
-using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
-using SD.Tools.BCLExtensions.SystemRelated;
+using SD.Tools.Algorithmia.UtilityClasses;
 
-namespace IGCSClient.Controls
+namespace IGCSClient.Classes
 {
-	/// <summary>
-	/// Control to specify a selection from a series of string values. 
-	/// </summary>
-	public partial class DropDownInput : UserControl, IInputControl<int>
+	public class DropDownSetting : Setting<int>
 	{
-		public event EventHandler ValueChanged;
-
-		public DropDownInput()
-		{
-			InitializeComponent();
-		}
-
-
-		public void Setup(List<string> items)
-		{
-			_inputControl.Items.Clear();
-			_inputControl.Items.AddRange(items.ToArray());
-			_inputControl.SelectedIndex = items.Count > 0 ? 0 : -1;
-			_inputControl.MaxDropDownItems = items.Count > 0 ? Math.Min(15, items.Count) : 1;
-		}
-
-
-		public void SetValueFromString(string valueAsString, int defaultValue)
-		{
-			if(!Int32.TryParse(valueAsString, out var valueToSet))
-			{
-				valueToSet = defaultValue;
-			}
-			this.Value = valueToSet;
-		}
-
-		
-		private void _inputControl_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			this.ValueChanged.RaiseEvent(this);
-		}
-
-
-		#region Properties
-		/// <inheritdoc/>
-		public int Value
-		{
-			get { return _inputControl.SelectedIndex; }
-			set { _inputControl.SelectedIndex = value; }
-		}
+		#region Members
+		private List<string> _items;
+		private int _defaultValue;
 		#endregion
+
+		public DropDownSetting(byte id, string name, List<string> items, int defaultValue)
+			: base(id, name)
+		{
+			ArgumentVerifier.CantBeNull(items, nameof(items));
+			ArgumentVerifier.ShouldBeTrue(l=>l.Count > 0, items, $"{nameof(items)} has to have at least one element");
+			ArgumentVerifier.ShouldBeTrue(v=>v>=0, defaultValue, $"{nameof(defaultValue)} should be 0 or higher");
+			_items = items;
+			_defaultValue = defaultValue;
+		}
+
+
+		public override void Setup(IInputControl<int> controlToUse)
+		{
+			base.Setup(controlToUse);
+			DropDownInput controlAsDropDown = controlToUse as DropDownInput;
+			if(controlAsDropDown == null)
+			{
+				return;
+			}
+			controlAsDropDown.Setup(_items);
+			controlAsDropDown.Value = _defaultValue;
+		}
+
+
+		protected override int GetDefaultValue()
+		{
+			return _defaultValue;
+		}
 	}
 }

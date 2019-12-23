@@ -57,10 +57,21 @@ namespace IGCSClient
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
+			_settingsEditor.Setup();
+			AppStateSingleton.Instance().LoadFromIni();
+
 			_pipeServer = new NamedPipeServer(ConstantsEnums.NamedPipeName);
 			_pipeServer.MessageReceived += _pipeServer_MessageReceived;
 			LogHandlerSingleton.Instance().LogLine("Named pipe enabled.", "System");
 		}
+
+
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			AppStateSingleton.Instance().WriteToIni();
+			base.OnClosing(e);
+		}
+
 
 		// TEST CODE BELOW THIS LINE
 
