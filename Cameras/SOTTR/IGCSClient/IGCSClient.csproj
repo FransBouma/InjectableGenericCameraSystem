@@ -59,7 +59,21 @@
     <Compile Include="Classes\IniFileHandler.cs" />
     <Compile Include="Classes\IntSetting.cs" />
     <Compile Include="Classes\FloatSetting.cs" />
+    <Compile Include="Classes\KeyBindingSetting.cs" />
+    <Compile Include="Classes\KeyCombination.cs" />
+    <Compile Include="Controls\KeyCombinationEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\KeyCombinationEditor.Designer.cs">
+      <DependentUpon>KeyCombinationEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="GameSpecific\Classes\SettingFactory.cs" />
+    <Compile Include="GameSpecific\Controls\KeyBindingEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GameSpecific\Controls\KeyBindingEditor.Designer.cs">
+      <DependentUpon>KeyBindingEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Interfaces\ISetting.cs" />
     <Compile Include="Classes\LogHandler.cs" />
     <Compile Include="Classes\Setting.cs" />
@@ -148,6 +162,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\FloatInput.resx">
       <DependentUpon>FloatInput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\KeyCombinationEditor.resx">
+      <DependentUpon>KeyCombinationEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GameSpecific\Controls\KeyBindingEditor.resx">
+      <DependentUpon>KeyBindingEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GameSpecific\Controls\SettingEditor.resx">
       <DependentUpon>SettingEditor.cs</DependentUpon>

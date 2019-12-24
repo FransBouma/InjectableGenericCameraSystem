@@ -63,6 +63,10 @@ namespace IGCSClient
 			_pipeServer = new NamedPipeServer(ConstantsEnums.NamedPipeName);
 			_pipeServer.MessageReceived += _pipeServer_MessageReceived;
 			LogHandlerSingleton.Instance().LogLine("Named pipe enabled.", "System");
+
+			// Disable a tab by setting 'Enabled' to false.
+			//_hotsamplingTab.Enabled = false;
+			//_settingsTab.Enabled = false;
 		}
 
 
@@ -92,6 +96,15 @@ namespace IGCSClient
 		private void _pipeServer_MessageReceived(object sender, ContainerEventArgs<byte[]> e)
 		{
 			HandleMessageReceived(e);
+		}
+
+		private void _mainTabControl_Selecting(object sender, TabControlCancelEventArgs e)
+		{
+			// To make sure the user can't select a disabled tab
+			if(!e.TabPage.Enabled)
+			{
+				e.Cancel = true;
+			}
 		}
 	}
 }

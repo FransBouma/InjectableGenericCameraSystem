@@ -10,7 +10,6 @@ namespace IGCSClient.Controls
 		private CheckBox _verboseCheckBox;
 		private System.Windows.Forms.ToolTip _mainToolTip;
 		private System.ComponentModel.IContainer components;
-		private Button _clearButton;
 
 		
 		#region Windows Form Designer generated code
@@ -38,11 +37,11 @@ namespace IGCSClient.Controls
 		{
 			this.components = new System.ComponentModel.Container();
 			this._outputTextBox = new System.Windows.Forms.RichTextBox();
-			this._clearButton = new System.Windows.Forms.Button();
 			this._verboseCheckBox = new System.Windows.Forms.CheckBox();
 			this._mainToolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.panelControl2 = new System.Windows.Forms.Panel();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this._clearButton = new System.Windows.Forms.Button();
 			this.panelControl2.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
@@ -61,16 +60,6 @@ namespace IGCSClient.Controls
 			this._outputTextBox.Size = new System.Drawing.Size(655, 327);
 			this._outputTextBox.TabIndex = 2;
 			this._outputTextBox.Text = "";
-			// 
-			// _clearButton
-			// 
-			this._clearButton.Location = new System.Drawing.Point(4, 5);
-			this._clearButton.Name = "_clearButton";
-			this._clearButton.Size = new System.Drawing.Size(63, 22);
-			this._clearButton.TabIndex = 5;
-			this._clearButton.Text = "Clear ";
-			this._mainToolTip.SetToolTip(this._clearButton, "Clear the contents of the output window");
-			this._clearButton.Click += new System.EventHandler(this.btnClear_Click);
 			// 
 			// _verboseCheckBox
 			// 
@@ -104,6 +93,16 @@ namespace IGCSClient.Controls
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Application log";
 			// 
+			// _clearButton
+			// 
+			this._clearButton.Location = new System.Drawing.Point(5, 4);
+			this._clearButton.Name = "_clearButton";
+			this._clearButton.Size = new System.Drawing.Size(54, 22);
+			this._clearButton.TabIndex = 6;
+			this._clearButton.Text = "Clear";
+			this._clearButton.UseVisualStyleBackColor = true;
+			this._clearButton.Click += new System.EventHandler(this.btnClear_Click);
+			// 
 			// ApplicationOutput
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -119,6 +118,7 @@ namespace IGCSClient.Controls
 		#endregion
 		private Panel panelControl2;
 		private GroupBox groupBox1;
+		private Button _clearButton;
 	}
 }
 

@@ -50,22 +50,22 @@ namespace IGCSClient.GameSpecific.Controls
 			this._fovSpeedInput = new IGCSClient.Controls.FloatInput();
 			this.label8 = new System.Windows.Forms.Label();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
+			this._horizontalPanoramaControlsPanel = new System.Windows.Forms.Panel();
+			this._panoFovInput = new IGCSClient.Controls.FloatInput();
+			this.label12 = new System.Windows.Forms.Label();
+			this._panoOverlapInput = new IGCSClient.Controls.FloatInput();
+			this.label13 = new System.Windows.Forms.Label();
+			this._lightfieldControlsPanel = new System.Windows.Forms.Panel();
+			this._lightfieldDistanceInput = new IGCSClient.Controls.FloatInput();
+			this.label14 = new System.Windows.Forms.Label();
+			this._lightfieldShotCountInput = new IGCSClient.Controls.IntInput();
+			this.label15 = new System.Windows.Forms.Label();
 			this._shotTypeInput = new IGCSClient.Controls.DropDownInput();
 			this._frameWaitInput = new IGCSClient.Controls.IntInput();
 			this.label11 = new System.Windows.Forms.Label();
 			this._shotOutputFolderInput = new IGCSClient.Controls.FolderInput();
 			this.label10 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
-			this._horizontalPanoramaControlsPanel = new System.Windows.Forms.Panel();
-			this.label12 = new System.Windows.Forms.Label();
-			this._panoFovInput = new IGCSClient.Controls.FloatInput();
-			this.label13 = new System.Windows.Forms.Label();
-			this._panoOverlapInput = new IGCSClient.Controls.FloatInput();
-			this._lightfieldControlsPanel = new System.Windows.Forms.Panel();
-			this._lightfieldDistanceInput = new IGCSClient.Controls.FloatInput();
-			this.label14 = new System.Windows.Forms.Label();
-			this._lightfieldShotCountInput = new IGCSClient.Controls.IntInput();
-			this.label15 = new System.Windows.Forms.Label();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -270,6 +270,96 @@ namespace IGCSClient.GameSpecific.Controls
 			this.groupBox4.TabStop = false;
 			this.groupBox4.Text = "Screenshot options";
 			// 
+			// _horizontalPanoramaControlsPanel
+			// 
+			this._horizontalPanoramaControlsPanel.Controls.Add(this._panoFovInput);
+			this._horizontalPanoramaControlsPanel.Controls.Add(this.label12);
+			this._horizontalPanoramaControlsPanel.Controls.Add(this._panoOverlapInput);
+			this._horizontalPanoramaControlsPanel.Controls.Add(this.label13);
+			this._horizontalPanoramaControlsPanel.Location = new System.Drawing.Point(2, 95);
+			this._horizontalPanoramaControlsPanel.Name = "_horizontalPanoramaControlsPanel";
+			this._horizontalPanoramaControlsPanel.Size = new System.Drawing.Size(581, 54);
+			this._horizontalPanoramaControlsPanel.TabIndex = 3;
+			// 
+			// _panoFovInput
+			// 
+			this._panoFovInput.Location = new System.Drawing.Point(226, 5);
+			this._panoFovInput.Name = "_panoFovInput";
+			this._panoFovInput.Size = new System.Drawing.Size(109, 20);
+			this._panoFovInput.TabIndex = 2;
+			this._panoFovInput.Value = 0F;
+			// 
+			// label12
+			// 
+			this.label12.AutoSize = true;
+			this.label12.Location = new System.Drawing.Point(10, 7);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(209, 13);
+			this.label12.TabIndex = 0;
+			this.label12.Text = "Total field of view in panorama (in degrees)";
+			// 
+			// _panoOverlapInput
+			// 
+			this._panoOverlapInput.Location = new System.Drawing.Point(226, 31);
+			this._panoOverlapInput.Name = "_panoOverlapInput";
+			this._panoOverlapInput.Size = new System.Drawing.Size(65, 20);
+			this._panoOverlapInput.TabIndex = 3;
+			this._panoOverlapInput.Value = 0F;
+			// 
+			// label13
+			// 
+			this.label13.AutoSize = true;
+			this.label13.Location = new System.Drawing.Point(10, 33);
+			this.label13.Name = "label13";
+			this.label13.Size = new System.Drawing.Size(184, 13);
+			this.label13.TabIndex = 0;
+			this.label13.Text = "Percentage of overlap between shots";
+			// 
+			// _lightfieldControlsPanel
+			// 
+			this._lightfieldControlsPanel.Controls.Add(this._lightfieldDistanceInput);
+			this._lightfieldControlsPanel.Controls.Add(this.label14);
+			this._lightfieldControlsPanel.Controls.Add(this._lightfieldShotCountInput);
+			this._lightfieldControlsPanel.Controls.Add(this.label15);
+			this._lightfieldControlsPanel.Location = new System.Drawing.Point(2, 95);
+			this._lightfieldControlsPanel.Name = "_lightfieldControlsPanel";
+			this._lightfieldControlsPanel.Size = new System.Drawing.Size(581, 54);
+			this._lightfieldControlsPanel.TabIndex = 4;
+			// 
+			// _lightfieldDistanceInput
+			// 
+			this._lightfieldDistanceInput.Location = new System.Drawing.Point(226, 5);
+			this._lightfieldDistanceInput.Name = "_lightfieldDistanceInput";
+			this._lightfieldDistanceInput.Size = new System.Drawing.Size(109, 20);
+			this._lightfieldDistanceInput.TabIndex = 1;
+			this._lightfieldDistanceInput.Value = 0F;
+			// 
+			// label14
+			// 
+			this.label14.AutoSize = true;
+			this.label14.Location = new System.Drawing.Point(10, 7);
+			this.label14.Name = "label14";
+			this.label14.Size = new System.Drawing.Size(162, 13);
+			this.label14.TabIndex = 0;
+			this.label14.Text = "Distance between lightfield shots";
+			// 
+			// _lightfieldShotCountInput
+			// 
+			this._lightfieldShotCountInput.Location = new System.Drawing.Point(226, 31);
+			this._lightfieldShotCountInput.Name = "_lightfieldShotCountInput";
+			this._lightfieldShotCountInput.Size = new System.Drawing.Size(65, 20);
+			this._lightfieldShotCountInput.TabIndex = 2;
+			this._lightfieldShotCountInput.Value = 0;
+			// 
+			// label15
+			// 
+			this.label15.AutoSize = true;
+			this.label15.Location = new System.Drawing.Point(10, 33);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(120, 13);
+			this.label15.TabIndex = 0;
+			this.label15.Text = "Number of shots to take";
+			// 
 			// _shotTypeInput
 			// 
 			this._shotTypeInput.Location = new System.Drawing.Point(228, 73);
@@ -321,96 +411,6 @@ namespace IGCSClient.GameSpecific.Controls
 			this.label9.Size = new System.Drawing.Size(137, 13);
 			this.label9.TabIndex = 0;
 			this.label9.Text = "Screenshot output directory";
-			// 
-			// _horizontalPanoramaControlsPanel
-			// 
-			this._horizontalPanoramaControlsPanel.Controls.Add(this._panoFovInput);
-			this._horizontalPanoramaControlsPanel.Controls.Add(this.label12);
-			this._horizontalPanoramaControlsPanel.Controls.Add(this._panoOverlapInput);
-			this._horizontalPanoramaControlsPanel.Controls.Add(this.label13);
-			this._horizontalPanoramaControlsPanel.Location = new System.Drawing.Point(2, 95);
-			this._horizontalPanoramaControlsPanel.Name = "_horizontalPanoramaControlsPanel";
-			this._horizontalPanoramaControlsPanel.Size = new System.Drawing.Size(587, 54);
-			this._horizontalPanoramaControlsPanel.TabIndex = 3;
-			// 
-			// label12
-			// 
-			this.label12.AutoSize = true;
-			this.label12.Location = new System.Drawing.Point(10, 7);
-			this.label12.Name = "label12";
-			this.label12.Size = new System.Drawing.Size(209, 13);
-			this.label12.TabIndex = 0;
-			this.label12.Text = "Total field of view in panorama (in degrees)";
-			// 
-			// _panoFovInput
-			// 
-			this._panoFovInput.Location = new System.Drawing.Point(226, 5);
-			this._panoFovInput.Name = "_panoFovInput";
-			this._panoFovInput.Size = new System.Drawing.Size(109, 20);
-			this._panoFovInput.TabIndex = 2;
-			this._panoFovInput.Value = 0F;
-			// 
-			// label13
-			// 
-			this.label13.AutoSize = true;
-			this.label13.Location = new System.Drawing.Point(10, 33);
-			this.label13.Name = "label13";
-			this.label13.Size = new System.Drawing.Size(184, 13);
-			this.label13.TabIndex = 0;
-			this.label13.Text = "Percentage of overlap between shots";
-			// 
-			// _panoOverlapInput
-			// 
-			this._panoOverlapInput.Location = new System.Drawing.Point(226, 31);
-			this._panoOverlapInput.Name = "_panoOverlapInput";
-			this._panoOverlapInput.Size = new System.Drawing.Size(65, 20);
-			this._panoOverlapInput.TabIndex = 3;
-			this._panoOverlapInput.Value = 0;
-			// 
-			// _lightfieldControlsPanel
-			// 
-			this._lightfieldControlsPanel.Controls.Add(this._lightfieldDistanceInput);
-			this._lightfieldControlsPanel.Controls.Add(this.label14);
-			this._lightfieldControlsPanel.Controls.Add(this._lightfieldShotCountInput);
-			this._lightfieldControlsPanel.Controls.Add(this.label15);
-			this._lightfieldControlsPanel.Location = new System.Drawing.Point(2, 95);
-			this._lightfieldControlsPanel.Name = "_lightfieldControlsPanel";
-			this._lightfieldControlsPanel.Size = new System.Drawing.Size(587, 54);
-			this._lightfieldControlsPanel.TabIndex = 4;
-			// 
-			// _lightfieldDistanceInput
-			// 
-			this._lightfieldDistanceInput.Location = new System.Drawing.Point(226, 5);
-			this._lightfieldDistanceInput.Name = "_lightfieldDistanceInput";
-			this._lightfieldDistanceInput.Size = new System.Drawing.Size(109, 20);
-			this._lightfieldDistanceInput.TabIndex = 1;
-			this._lightfieldDistanceInput.Value = 0F;
-			// 
-			// label14
-			// 
-			this.label14.AutoSize = true;
-			this.label14.Location = new System.Drawing.Point(10, 7);
-			this.label14.Name = "label14";
-			this.label14.Size = new System.Drawing.Size(162, 13);
-			this.label14.TabIndex = 0;
-			this.label14.Text = "Distance between lightfield shots";
-			// 
-			// _lightfieldShotCountInput
-			// 
-			this._lightfieldShotCountInput.Location = new System.Drawing.Point(226, 31);
-			this._lightfieldShotCountInput.Name = "_lightfieldShotCountInput";
-			this._lightfieldShotCountInput.Size = new System.Drawing.Size(65, 20);
-			this._lightfieldShotCountInput.TabIndex = 2;
-			this._lightfieldShotCountInput.Value = 0;
-			// 
-			// label15
-			// 
-			this.label15.AutoSize = true;
-			this.label15.Location = new System.Drawing.Point(10, 33);
-			this.label15.Name = "label15";
-			this.label15.Size = new System.Drawing.Size(120, 13);
-			this.label15.TabIndex = 0;
-			this.label15.Text = "Number of shots to take";
 			// 
 			// SettingEditor
 			// 
