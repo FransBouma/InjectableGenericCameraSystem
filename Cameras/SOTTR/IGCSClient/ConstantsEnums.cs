@@ -92,4 +92,40 @@ namespace IGCSClient
 		public const byte LightfieldShotCount = 14;
 		// to add more, derived a type of this class and define the next value one higher than the last one in this class.
 	}
+
+
+	public class KeyBindingType
+	{
+		public const byte BlockInputToGame = 0;
+		public const byte EnableDisableCamera = 1;
+		public const byte DecreaseFoV=2;
+		public const byte IncreaseFoV=3;
+		public const byte ResetFoV=4;
+		public const byte LockUnlockCameraMovement=5;
+		public const byte MoveCameraLeft=6;
+		public const byte MoveCameraRight=7;
+		public const byte MoveCameraForward=8;
+		public const byte MoveCameraBackward=9;
+		public const byte MoveCameraUp=10;
+		public const byte MoveCameraDown=11;
+		public const byte RotateCameraUp=12;
+		public const byte RotateCameraDown=13;
+		public const byte RotateCameraLeft=14;
+		public const byte RotateCameraRight=15;
+		public const byte TiltCameraLeft=16;
+		public const byte TiltCameraRight=17;
+		public const byte TestMultiShotSetup=18;
+		public const byte TakeShot=19;
+		public const byte TakeMultiShot=20;
+		public const byte ToggleHUD=21;
+		public const byte PauseUnpauseGame = 22;
+		// to add more, derived a type of this class and define the next value one higher than the last one in this class.
+	}
+
+
+	public class SettingKind
+	{
+		public const byte NormalSetting = 1;
+		public const byte KeyBinding = 2;
+	}
 }

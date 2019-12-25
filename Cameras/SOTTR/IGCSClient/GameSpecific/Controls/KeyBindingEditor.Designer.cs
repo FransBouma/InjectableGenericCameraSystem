@@ -51,29 +51,29 @@
 			this.label21 = new System.Windows.Forms.Label();
 			this.label22 = new System.Windows.Forms.Label();
 			this.label23 = new System.Windows.Forms.Label();
-			this.keyCombinationEditor2 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor13 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor10 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor12 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor11 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor8 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor4 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor9 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor6 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor23 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor22 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor21 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor20 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor18 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor19 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor17 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor16 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor15 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor14 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor3 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor5 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor7 = new IGCSClient.Controls.KeyCombinationEditor();
-			this.keyCombinationEditor1 = new IGCSClient.Controls.KeyCombinationEditor();
+			this._enableDisableCameraInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._moveCameraDownInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._moveCameraForwardInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._moveCameraBackwardInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._moveCameraUpInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._moveCameraLeftInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._decreaseFoVInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._moveCameraRightInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._resetFoVInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._pauseUnPauseInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._toggleHUDInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._takeMultiShotInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._takeShotInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._tiltCameraRightInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._testMultiShotSetupInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._tiltCameraLeftInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._rotateCameraRightInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._rotateCameraLeftInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._rotateCameraDownInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._rotateCameraUpInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._increaseFoVInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._lockUnlockCameraMovementInput = new IGCSClient.Controls.KeyCombinationInput();
+			this._blockInputInput = new IGCSClient.Controls.KeyCombinationInput();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -285,180 +285,203 @@
 			this.label23.Text = "Pause / unpause the game";
 			this.label23.Visible = false;
 			// 
-			// keyCombinationEditor2
+			// _enableDisableCameraInput
 			// 
-			this.keyCombinationEditor2.Location = new System.Drawing.Point(174, 29);
-			this.keyCombinationEditor2.Name = "keyCombinationEditor2";
-			this.keyCombinationEditor2.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor2.TabIndex = 0;
+			this._enableDisableCameraInput.Location = new System.Drawing.Point(174, 29);
+			this._enableDisableCameraInput.Name = "_enableDisableCameraInput";
+			this._enableDisableCameraInput.Size = new System.Drawing.Size(221, 23);
+			this._enableDisableCameraInput.TabIndex = 0;
+			this._enableDisableCameraInput.Value = null;
 			// 
-			// keyCombinationEditor13
+			// _moveCameraDownInput
 			// 
-			this.keyCombinationEditor13.Location = new System.Drawing.Point(174, 279);
-			this.keyCombinationEditor13.Name = "keyCombinationEditor13";
-			this.keyCombinationEditor13.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor13.TabIndex = 0;
+			this._moveCameraDownInput.Location = new System.Drawing.Point(174, 279);
+			this._moveCameraDownInput.Name = "_moveCameraDownInput";
+			this._moveCameraDownInput.Size = new System.Drawing.Size(221, 23);
+			this._moveCameraDownInput.TabIndex = 0;
+			this._moveCameraDownInput.Value = null;
 			// 
-			// keyCombinationEditor10
+			// _moveCameraForwardInput
 			// 
-			this.keyCombinationEditor10.Location = new System.Drawing.Point(174, 204);
-			this.keyCombinationEditor10.Name = "keyCombinationEditor10";
-			this.keyCombinationEditor10.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor10.TabIndex = 0;
+			this._moveCameraForwardInput.Location = new System.Drawing.Point(174, 204);
+			this._moveCameraForwardInput.Name = "_moveCameraForwardInput";
+			this._moveCameraForwardInput.Size = new System.Drawing.Size(221, 23);
+			this._moveCameraForwardInput.TabIndex = 0;
+			this._moveCameraForwardInput.Value = null;
 			// 
-			// keyCombinationEditor12
+			// _moveCameraBackwardInput
 			// 
-			this.keyCombinationEditor12.Location = new System.Drawing.Point(174, 229);
-			this.keyCombinationEditor12.Name = "keyCombinationEditor12";
-			this.keyCombinationEditor12.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor12.TabIndex = 0;
+			this._moveCameraBackwardInput.Location = new System.Drawing.Point(174, 229);
+			this._moveCameraBackwardInput.Name = "_moveCameraBackwardInput";
+			this._moveCameraBackwardInput.Size = new System.Drawing.Size(221, 23);
+			this._moveCameraBackwardInput.TabIndex = 0;
+			this._moveCameraBackwardInput.Value = null;
 			// 
-			// keyCombinationEditor11
+			// _moveCameraUpInput
 			// 
-			this.keyCombinationEditor11.Location = new System.Drawing.Point(174, 254);
-			this.keyCombinationEditor11.Name = "keyCombinationEditor11";
-			this.keyCombinationEditor11.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor11.TabIndex = 0;
+			this._moveCameraUpInput.Location = new System.Drawing.Point(174, 254);
+			this._moveCameraUpInput.Name = "_moveCameraUpInput";
+			this._moveCameraUpInput.Size = new System.Drawing.Size(221, 23);
+			this._moveCameraUpInput.TabIndex = 0;
+			this._moveCameraUpInput.Value = null;
 			// 
-			// keyCombinationEditor8
+			// _moveCameraLeftInput
 			// 
-			this.keyCombinationEditor8.Location = new System.Drawing.Point(174, 154);
-			this.keyCombinationEditor8.Name = "keyCombinationEditor8";
-			this.keyCombinationEditor8.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor8.TabIndex = 0;
+			this._moveCameraLeftInput.Location = new System.Drawing.Point(174, 154);
+			this._moveCameraLeftInput.Name = "_moveCameraLeftInput";
+			this._moveCameraLeftInput.Size = new System.Drawing.Size(221, 23);
+			this._moveCameraLeftInput.TabIndex = 0;
+			this._moveCameraLeftInput.Value = null;
 			// 
-			// keyCombinationEditor4
+			// _decreaseFoVInput
 			// 
-			this.keyCombinationEditor4.Location = new System.Drawing.Point(174, 54);
-			this.keyCombinationEditor4.Name = "keyCombinationEditor4";
-			this.keyCombinationEditor4.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor4.TabIndex = 0;
+			this._decreaseFoVInput.Location = new System.Drawing.Point(174, 54);
+			this._decreaseFoVInput.Name = "_decreaseFoVInput";
+			this._decreaseFoVInput.Size = new System.Drawing.Size(221, 23);
+			this._decreaseFoVInput.TabIndex = 0;
+			this._decreaseFoVInput.Value = null;
 			// 
-			// keyCombinationEditor9
+			// _moveCameraRightInput
 			// 
-			this.keyCombinationEditor9.Location = new System.Drawing.Point(174, 179);
-			this.keyCombinationEditor9.Name = "keyCombinationEditor9";
-			this.keyCombinationEditor9.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor9.TabIndex = 0;
+			this._moveCameraRightInput.Location = new System.Drawing.Point(174, 179);
+			this._moveCameraRightInput.Name = "_moveCameraRightInput";
+			this._moveCameraRightInput.Size = new System.Drawing.Size(221, 23);
+			this._moveCameraRightInput.TabIndex = 0;
+			this._moveCameraRightInput.Value = null;
 			// 
-			// keyCombinationEditor6
+			// _resetFoVInput
 			// 
-			this.keyCombinationEditor6.Location = new System.Drawing.Point(174, 104);
-			this.keyCombinationEditor6.Name = "keyCombinationEditor6";
-			this.keyCombinationEditor6.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor6.TabIndex = 0;
+			this._resetFoVInput.Location = new System.Drawing.Point(174, 104);
+			this._resetFoVInput.Name = "_resetFoVInput";
+			this._resetFoVInput.Size = new System.Drawing.Size(221, 23);
+			this._resetFoVInput.TabIndex = 0;
+			this._resetFoVInput.Value = null;
 			// 
-			// keyCombinationEditor23
+			// _pauseUnPauseInput
 			// 
-			this.keyCombinationEditor23.Location = new System.Drawing.Point(174, 554);
-			this.keyCombinationEditor23.Name = "keyCombinationEditor23";
-			this.keyCombinationEditor23.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor23.TabIndex = 0;
-			this.keyCombinationEditor23.Visible = false;
+			this._pauseUnPauseInput.Location = new System.Drawing.Point(174, 554);
+			this._pauseUnPauseInput.Name = "_pauseUnPauseInput";
+			this._pauseUnPauseInput.Size = new System.Drawing.Size(221, 23);
+			this._pauseUnPauseInput.TabIndex = 0;
+			this._pauseUnPauseInput.Value = null;
+			this._pauseUnPauseInput.Visible = false;
 			// 
-			// keyCombinationEditor22
+			// _toggleHUDInput
 			// 
-			this.keyCombinationEditor22.Location = new System.Drawing.Point(174, 529);
-			this.keyCombinationEditor22.Name = "keyCombinationEditor22";
-			this.keyCombinationEditor22.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor22.TabIndex = 0;
-			this.keyCombinationEditor22.Visible = false;
+			this._toggleHUDInput.Location = new System.Drawing.Point(174, 529);
+			this._toggleHUDInput.Name = "_toggleHUDInput";
+			this._toggleHUDInput.Size = new System.Drawing.Size(221, 23);
+			this._toggleHUDInput.TabIndex = 0;
+			this._toggleHUDInput.Value = null;
+			this._toggleHUDInput.Visible = false;
 			// 
-			// keyCombinationEditor21
+			// _takeMultiShotInput
 			// 
-			this.keyCombinationEditor21.Location = new System.Drawing.Point(174, 504);
-			this.keyCombinationEditor21.Name = "keyCombinationEditor21";
-			this.keyCombinationEditor21.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor21.TabIndex = 0;
+			this._takeMultiShotInput.Location = new System.Drawing.Point(174, 504);
+			this._takeMultiShotInput.Name = "_takeMultiShotInput";
+			this._takeMultiShotInput.Size = new System.Drawing.Size(221, 23);
+			this._takeMultiShotInput.TabIndex = 0;
+			this._takeMultiShotInput.Value = null;
 			// 
-			// keyCombinationEditor20
+			// _takeShotInput
 			// 
-			this.keyCombinationEditor20.Location = new System.Drawing.Point(174, 479);
-			this.keyCombinationEditor20.Name = "keyCombinationEditor20";
-			this.keyCombinationEditor20.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor20.TabIndex = 0;
+			this._takeShotInput.Location = new System.Drawing.Point(174, 479);
+			this._takeShotInput.Name = "_takeShotInput";
+			this._takeShotInput.Size = new System.Drawing.Size(221, 23);
+			this._takeShotInput.TabIndex = 0;
+			this._takeShotInput.Value = null;
 			// 
-			// keyCombinationEditor18
+			// _tiltCameraRightInput
 			// 
-			this.keyCombinationEditor18.Location = new System.Drawing.Point(174, 429);
-			this.keyCombinationEditor18.Name = "keyCombinationEditor18";
-			this.keyCombinationEditor18.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor18.TabIndex = 0;
+			this._tiltCameraRightInput.Location = new System.Drawing.Point(174, 429);
+			this._tiltCameraRightInput.Name = "_tiltCameraRightInput";
+			this._tiltCameraRightInput.Size = new System.Drawing.Size(221, 23);
+			this._tiltCameraRightInput.TabIndex = 0;
+			this._tiltCameraRightInput.Value = null;
 			// 
-			// keyCombinationEditor19
+			// _testMultiShotSetupInput
 			// 
-			this.keyCombinationEditor19.Location = new System.Drawing.Point(174, 454);
-			this.keyCombinationEditor19.Name = "keyCombinationEditor19";
-			this.keyCombinationEditor19.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor19.TabIndex = 0;
+			this._testMultiShotSetupInput.Location = new System.Drawing.Point(174, 454);
+			this._testMultiShotSetupInput.Name = "_testMultiShotSetupInput";
+			this._testMultiShotSetupInput.Size = new System.Drawing.Size(221, 23);
+			this._testMultiShotSetupInput.TabIndex = 0;
+			this._testMultiShotSetupInput.Value = null;
 			// 
-			// keyCombinationEditor17
+			// _tiltCameraLeftInput
 			// 
-			this.keyCombinationEditor17.Location = new System.Drawing.Point(174, 404);
-			this.keyCombinationEditor17.Name = "keyCombinationEditor17";
-			this.keyCombinationEditor17.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor17.TabIndex = 0;
+			this._tiltCameraLeftInput.Location = new System.Drawing.Point(174, 404);
+			this._tiltCameraLeftInput.Name = "_tiltCameraLeftInput";
+			this._tiltCameraLeftInput.Size = new System.Drawing.Size(221, 23);
+			this._tiltCameraLeftInput.TabIndex = 0;
+			this._tiltCameraLeftInput.Value = null;
 			// 
-			// keyCombinationEditor16
+			// _rotateCameraRightInput
 			// 
-			this.keyCombinationEditor16.Location = new System.Drawing.Point(174, 379);
-			this.keyCombinationEditor16.Name = "keyCombinationEditor16";
-			this.keyCombinationEditor16.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor16.TabIndex = 0;
+			this._rotateCameraRightInput.Location = new System.Drawing.Point(174, 379);
+			this._rotateCameraRightInput.Name = "_rotateCameraRightInput";
+			this._rotateCameraRightInput.Size = new System.Drawing.Size(221, 23);
+			this._rotateCameraRightInput.TabIndex = 0;
+			this._rotateCameraRightInput.Value = null;
 			// 
-			// keyCombinationEditor15
+			// _rotateCameraLeftInput
 			// 
-			this.keyCombinationEditor15.Location = new System.Drawing.Point(174, 354);
-			this.keyCombinationEditor15.Name = "keyCombinationEditor15";
-			this.keyCombinationEditor15.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor15.TabIndex = 0;
+			this._rotateCameraLeftInput.Location = new System.Drawing.Point(174, 354);
+			this._rotateCameraLeftInput.Name = "_rotateCameraLeftInput";
+			this._rotateCameraLeftInput.Size = new System.Drawing.Size(221, 23);
+			this._rotateCameraLeftInput.TabIndex = 0;
+			this._rotateCameraLeftInput.Value = null;
 			// 
-			// keyCombinationEditor14
+			// _rotateCameraDownInput
 			// 
-			this.keyCombinationEditor14.Location = new System.Drawing.Point(174, 329);
-			this.keyCombinationEditor14.Name = "keyCombinationEditor14";
-			this.keyCombinationEditor14.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor14.TabIndex = 0;
+			this._rotateCameraDownInput.Location = new System.Drawing.Point(174, 329);
+			this._rotateCameraDownInput.Name = "_rotateCameraDownInput";
+			this._rotateCameraDownInput.Size = new System.Drawing.Size(221, 23);
+			this._rotateCameraDownInput.TabIndex = 0;
+			this._rotateCameraDownInput.Value = null;
 			// 
-			// keyCombinationEditor3
+			// _rotateCameraUpInput
 			// 
-			this.keyCombinationEditor3.Location = new System.Drawing.Point(174, 304);
-			this.keyCombinationEditor3.Name = "keyCombinationEditor3";
-			this.keyCombinationEditor3.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor3.TabIndex = 0;
+			this._rotateCameraUpInput.Location = new System.Drawing.Point(174, 304);
+			this._rotateCameraUpInput.Name = "_rotateCameraUpInput";
+			this._rotateCameraUpInput.Size = new System.Drawing.Size(221, 23);
+			this._rotateCameraUpInput.TabIndex = 0;
+			this._rotateCameraUpInput.Value = null;
 			// 
-			// keyCombinationEditor5
+			// _increaseFoVInput
 			// 
-			this.keyCombinationEditor5.Location = new System.Drawing.Point(174, 79);
-			this.keyCombinationEditor5.Name = "keyCombinationEditor5";
-			this.keyCombinationEditor5.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor5.TabIndex = 0;
+			this._increaseFoVInput.Location = new System.Drawing.Point(174, 79);
+			this._increaseFoVInput.Name = "_increaseFoVInput";
+			this._increaseFoVInput.Size = new System.Drawing.Size(221, 23);
+			this._increaseFoVInput.TabIndex = 0;
+			this._increaseFoVInput.Value = null;
 			// 
-			// keyCombinationEditor7
+			// _lockUnlockCameraMovementInput
 			// 
-			this.keyCombinationEditor7.Location = new System.Drawing.Point(174, 129);
-			this.keyCombinationEditor7.Name = "keyCombinationEditor7";
-			this.keyCombinationEditor7.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor7.TabIndex = 0;
+			this._lockUnlockCameraMovementInput.Location = new System.Drawing.Point(174, 129);
+			this._lockUnlockCameraMovementInput.Name = "_lockUnlockCameraMovementInput";
+			this._lockUnlockCameraMovementInput.Size = new System.Drawing.Size(221, 23);
+			this._lockUnlockCameraMovementInput.TabIndex = 0;
+			this._lockUnlockCameraMovementInput.Value = null;
 			// 
-			// keyCombinationEditor1
+			// _blockInputInput
 			// 
-			this.keyCombinationEditor1.Location = new System.Drawing.Point(174, 4);
-			this.keyCombinationEditor1.Name = "keyCombinationEditor1";
-			this.keyCombinationEditor1.Size = new System.Drawing.Size(221, 23);
-			this.keyCombinationEditor1.TabIndex = 0;
+			this._blockInputInput.Location = new System.Drawing.Point(174, 4);
+			this._blockInputInput.Name = "_blockInputInput";
+			this._blockInputInput.Size = new System.Drawing.Size(221, 23);
+			this._blockInputInput.TabIndex = 0;
+			this._blockInputInput.Value = null;
 			// 
 			// KeyBindingEditor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this.keyCombinationEditor2);
-			this.Controls.Add(this.keyCombinationEditor13);
+			this.Controls.Add(this._enableDisableCameraInput);
+			this.Controls.Add(this._moveCameraDownInput);
 			this.Controls.Add(this.label13);
 			this.Controls.Add(this.label4);
-			this.Controls.Add(this.keyCombinationEditor10);
+			this.Controls.Add(this._moveCameraForwardInput);
 			this.Controls.Add(this.label7);
-			this.Controls.Add(this.keyCombinationEditor12);
+			this.Controls.Add(this._moveCameraBackwardInput);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label10);
 			this.Controls.Add(this.label23);
@@ -472,31 +495,31 @@
 			this.Controls.Add(this.label17);
 			this.Controls.Add(this.label15);
 			this.Controls.Add(this.label3);
-			this.Controls.Add(this.keyCombinationEditor11);
+			this.Controls.Add(this._moveCameraUpInput);
 			this.Controls.Add(this.label5);
-			this.Controls.Add(this.keyCombinationEditor8);
+			this.Controls.Add(this._moveCameraLeftInput);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.label12);
-			this.Controls.Add(this.keyCombinationEditor4);
-			this.Controls.Add(this.keyCombinationEditor9);
-			this.Controls.Add(this.keyCombinationEditor6);
+			this.Controls.Add(this._decreaseFoVInput);
+			this.Controls.Add(this._moveCameraRightInput);
+			this.Controls.Add(this._resetFoVInput);
 			this.Controls.Add(this.label11);
-			this.Controls.Add(this.keyCombinationEditor23);
-			this.Controls.Add(this.keyCombinationEditor22);
-			this.Controls.Add(this.keyCombinationEditor21);
-			this.Controls.Add(this.keyCombinationEditor20);
-			this.Controls.Add(this.keyCombinationEditor18);
-			this.Controls.Add(this.keyCombinationEditor19);
-			this.Controls.Add(this.keyCombinationEditor17);
-			this.Controls.Add(this.keyCombinationEditor16);
-			this.Controls.Add(this.keyCombinationEditor15);
-			this.Controls.Add(this.keyCombinationEditor14);
-			this.Controls.Add(this.keyCombinationEditor3);
+			this.Controls.Add(this._pauseUnPauseInput);
+			this.Controls.Add(this._toggleHUDInput);
+			this.Controls.Add(this._takeMultiShotInput);
+			this.Controls.Add(this._takeShotInput);
+			this.Controls.Add(this._tiltCameraRightInput);
+			this.Controls.Add(this._testMultiShotSetupInput);
+			this.Controls.Add(this._tiltCameraLeftInput);
+			this.Controls.Add(this._rotateCameraRightInput);
+			this.Controls.Add(this._rotateCameraLeftInput);
+			this.Controls.Add(this._rotateCameraDownInput);
+			this.Controls.Add(this._rotateCameraUpInput);
 			this.Controls.Add(this.label8);
-			this.Controls.Add(this.keyCombinationEditor5);
+			this.Controls.Add(this._increaseFoVInput);
 			this.Controls.Add(this.label9);
-			this.Controls.Add(this.keyCombinationEditor7);
-			this.Controls.Add(this.keyCombinationEditor1);
+			this.Controls.Add(this._lockUnlockCameraMovementInput);
+			this.Controls.Add(this._blockInputInput);
 			this.Controls.Add(this.label6);
 			this.Name = "KeyBindingEditor";
 			this.Size = new System.Drawing.Size(469, 588);
@@ -507,50 +530,50 @@
 
 		#endregion
 
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor1;
+		private IGCSClient.Controls.KeyCombinationInput _blockInputInput;
 		private System.Windows.Forms.Label label1;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor2;
+		private IGCSClient.Controls.KeyCombinationInput _enableDisableCameraInput;
 		private System.Windows.Forms.Label label2;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor3;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor4;
+		private IGCSClient.Controls.KeyCombinationInput _rotateCameraUpInput;
+		private IGCSClient.Controls.KeyCombinationInput _decreaseFoVInput;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label4;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor5;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor6;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor7;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor8;
+		private IGCSClient.Controls.KeyCombinationInput _increaseFoVInput;
+		private IGCSClient.Controls.KeyCombinationInput _resetFoVInput;
+		private IGCSClient.Controls.KeyCombinationInput _lockUnlockCameraMovementInput;
+		private IGCSClient.Controls.KeyCombinationInput _moveCameraLeftInput;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label9;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor9;
+		private IGCSClient.Controls.KeyCombinationInput _moveCameraRightInput;
 		private System.Windows.Forms.Label label10;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor10;
+		private IGCSClient.Controls.KeyCombinationInput _moveCameraForwardInput;
 		private System.Windows.Forms.Label label11;
 		private System.Windows.Forms.Label label12;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor11;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor12;
+		private IGCSClient.Controls.KeyCombinationInput _moveCameraUpInput;
+		private IGCSClient.Controls.KeyCombinationInput _moveCameraBackwardInput;
 		private System.Windows.Forms.Label label13;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor13;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor14;
+		private IGCSClient.Controls.KeyCombinationInput _moveCameraDownInput;
+		private IGCSClient.Controls.KeyCombinationInput _rotateCameraDownInput;
 		private System.Windows.Forms.Label label14;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor15;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor16;
+		private IGCSClient.Controls.KeyCombinationInput _rotateCameraLeftInput;
+		private IGCSClient.Controls.KeyCombinationInput _rotateCameraRightInput;
 		private System.Windows.Forms.Label label15;
 		private System.Windows.Forms.Label label16;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor17;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor18;
+		private IGCSClient.Controls.KeyCombinationInput _tiltCameraLeftInput;
+		private IGCSClient.Controls.KeyCombinationInput _tiltCameraRightInput;
 		private System.Windows.Forms.Label label17;
 		private System.Windows.Forms.Label label18;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor19;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor20;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor21;
+		private IGCSClient.Controls.KeyCombinationInput _testMultiShotSetupInput;
+		private IGCSClient.Controls.KeyCombinationInput _takeShotInput;
+		private IGCSClient.Controls.KeyCombinationInput _takeMultiShotInput;
 		private System.Windows.Forms.Label label19;
 		private System.Windows.Forms.Label label20;
 		private System.Windows.Forms.Label label21;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor22;
-		private IGCSClient.Controls.KeyCombinationEditor keyCombinationEditor23;
+		private IGCSClient.Controls.KeyCombinationInput _toggleHUDInput;
+		private IGCSClient.Controls.KeyCombinationInput _pauseUnPauseInput;
 		private System.Windows.Forms.Label label22;
 		private System.Windows.Forms.Label label23;
 	}

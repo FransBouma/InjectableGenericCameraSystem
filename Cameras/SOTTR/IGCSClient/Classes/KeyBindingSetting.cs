@@ -31,13 +31,45 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using IGCSClient.Controls;
+using IGCSClient.Interfaces;
 
 namespace IGCSClient.Classes
 {
 	public class KeyBindingSetting : Setting<KeyCombination>
 	{
-		public KeyBindingSetting(byte id, string name) : base(id, name)
+		#region Members
+		private KeyCombination _initialCombination;
+		#endregion
+
+		public KeyBindingSetting(byte id, string name, KeyCombination initialCombination) 
+			: base(id, name, SettingKind.KeyBinding)
 		{
+			_initialCombination = initialCombination;
+		}
+
+
+		public override void Setup(IInputControl<KeyCombination> controlToUse)
+		{
+			base.Setup(controlToUse);
+			KeyCombinationInput controlAsCombinationInput = controlToUse as KeyCombinationInput;
+			if(controlAsCombinationInput == null)
+			{
+				return;
+			}
+			controlAsCombinationInput.Setup(_initialCombination);
+		}
+
+
+		protected override string GetValueAsString()
+		{
+			return this.Value.GetValueAsString();
+		}
+
+
+		protected override KeyCombination GetDefaultValue()
+		{
+			return _initialCombination;
 		}
 	}
 }

@@ -34,7 +34,7 @@
 			this._settingsTab = new System.Windows.Forms.TabPage();
 			this._settingsEditor = new IGCSClient.GameSpecific.Controls.SettingEditor();
 			this._keyBindingsTab = new System.Windows.Forms.TabPage();
-			this.keyBindingEditor1 = new IGCSClient.GameSpecific.Controls.KeyBindingEditor();
+			this._keyBindingsEditor = new IGCSClient.GameSpecific.Controls.KeyBindingEditor();
 			this._hotsamplingTab = new System.Windows.Forms.TabPage();
 			this._logTab = new System.Windows.Forms.TabPage();
 			this._logControl = new IGCSClient.Controls.ApplicationOutput();
@@ -75,7 +75,7 @@
 			this._generalTab.Location = new System.Drawing.Point(4, 22);
 			this._generalTab.Name = "_generalTab";
 			this._generalTab.Padding = new System.Windows.Forms.Padding(3);
-			this._generalTab.Size = new System.Drawing.Size(878, 637);
+			this._generalTab.Size = new System.Drawing.Size(654, 396);
 			this._generalTab.TabIndex = 0;
 			this._generalTab.Text = "General";
 			// 
@@ -102,7 +102,7 @@
 			// 
 			this._keyBindingsTab.AutoScroll = true;
 			this._keyBindingsTab.BackColor = System.Drawing.SystemColors.Window;
-			this._keyBindingsTab.Controls.Add(this.keyBindingEditor1);
+			this._keyBindingsTab.Controls.Add(this._keyBindingsEditor);
 			this._keyBindingsTab.Location = new System.Drawing.Point(4, 22);
 			this._keyBindingsTab.Name = "_keyBindingsTab";
 			this._keyBindingsTab.Padding = new System.Windows.Forms.Padding(3);
@@ -110,21 +110,21 @@
 			this._keyBindingsTab.TabIndex = 3;
 			this._keyBindingsTab.Text = "Key bindings";
 			// 
-			// keyBindingEditor1
+			// _keyBindingsEditor
 			// 
-			this.keyBindingEditor1.BackColor = System.Drawing.SystemColors.Window;
-			this.keyBindingEditor1.Dock = System.Windows.Forms.DockStyle.Top;
-			this.keyBindingEditor1.Location = new System.Drawing.Point(3, 3);
-			this.keyBindingEditor1.Name = "keyBindingEditor1";
-			this.keyBindingEditor1.Size = new System.Drawing.Size(631, 587);
-			this.keyBindingEditor1.TabIndex = 4;
+			this._keyBindingsEditor.BackColor = System.Drawing.SystemColors.Window;
+			this._keyBindingsEditor.Dock = System.Windows.Forms.DockStyle.Top;
+			this._keyBindingsEditor.Location = new System.Drawing.Point(3, 3);
+			this._keyBindingsEditor.Name = "_keyBindingsEditor";
+			this._keyBindingsEditor.Size = new System.Drawing.Size(631, 587);
+			this._keyBindingsEditor.TabIndex = 4;
 			// 
 			// _hotsamplingTab
 			// 
 			this._hotsamplingTab.Location = new System.Drawing.Point(4, 22);
 			this._hotsamplingTab.Name = "_hotsamplingTab";
 			this._hotsamplingTab.Padding = new System.Windows.Forms.Padding(3);
-			this._hotsamplingTab.Size = new System.Drawing.Size(878, 637);
+			this._hotsamplingTab.Size = new System.Drawing.Size(654, 396);
 			this._hotsamplingTab.TabIndex = 4;
 			this._hotsamplingTab.Text = "Hotsampling";
 			this._hotsamplingTab.UseVisualStyleBackColor = true;
@@ -135,7 +135,7 @@
 			this._logTab.Location = new System.Drawing.Point(4, 22);
 			this._logTab.Name = "_logTab";
 			this._logTab.Padding = new System.Windows.Forms.Padding(3);
-			this._logTab.Size = new System.Drawing.Size(878, 637);
+			this._logTab.Size = new System.Drawing.Size(654, 396);
 			this._logTab.TabIndex = 2;
 			this._logTab.Text = "Log";
 			this._logTab.UseVisualStyleBackColor = true;
@@ -146,7 +146,7 @@
 			this._logControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this._logControl.Location = new System.Drawing.Point(3, 3);
 			this._logControl.Name = "_logControl";
-			this._logControl.Size = new System.Drawing.Size(872, 631);
+			this._logControl.Size = new System.Drawing.Size(648, 390);
 			this._logControl.TabIndex = 4;
 			// 
 			// MainForm
@@ -179,7 +179,7 @@
 		private System.Windows.Forms.TabPage _keyBindingsTab;
 		private System.Windows.Forms.TabPage _hotsamplingTab;
 		private GameSpecific.Controls.SettingEditor _settingsEditor;
-		private GameSpecific.Controls.KeyBindingEditor keyBindingEditor1;
+		private GameSpecific.Controls.KeyBindingEditor _keyBindingsEditor;
 		private Controls.ApplicationOutput _logControl;
 	}
 }

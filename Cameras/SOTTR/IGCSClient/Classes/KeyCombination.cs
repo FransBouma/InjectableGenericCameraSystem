@@ -59,7 +59,6 @@ namespace IGCSClient.Classes
 															};
 		#endregion
 
-		
 		public KeyCombination()
 		{
 			_textualRepresentation = "Press a key";
@@ -67,6 +66,16 @@ namespace IGCSClient.Classes
 			_ctrlPressed = false;
 			_shiftPressed = false;
 			_keyCode = 0;
+		}
+
+
+		public KeyCombination(int keyCode) : this(false, false, false, keyCode)
+		{ }
+
+
+		public KeyCombination(bool altPressed, bool ctrlPressed, bool shiftPressed, int keyCode)
+		{
+			SetNewValues(altPressed, ctrlPressed, shiftPressed, keyCode);
 		}
 
 
@@ -90,6 +99,58 @@ namespace IGCSClient.Classes
 			_keyCode = keyCode;
 
 			CreateTextualRepresentation();
+		}
+		
+
+		public override string ToString()
+		{
+			return _textualRepresentation;
+		}
+
+
+		/// <summary>
+		/// Fills this object with the values determined from the string specified. 
+		/// </summary>
+		/// <param name="valueAsString">The string to obtain the values from. Should be in the format: keycode,altpressed,ctrlpressed,shiftpressed<br/>
+		/// where keycode is an int, altpressed, ctrlpressed and shiftpressed are 'true' or 'false' strings.</param>
+		/// <returns>true if string was parsed successfully, false otherwise</returns>
+		public bool SetValueFromString(string valueAsString)
+		{
+			if(string.IsNullOrWhiteSpace(valueAsString))
+			{
+				return false;
+			}
+			string[] fragments = valueAsString.Split(',');
+			if(fragments.Length != 4)
+			{
+				return false;
+			}
+
+			try
+			{
+				_keyCode = Convert.ToInt32(fragments[0]);
+				_altPressed = Convert.ToBoolean(fragments[1]);
+				_ctrlPressed = Convert.ToBoolean(fragments[2]);
+				_shiftPressed = Convert.ToBoolean(fragments[3]);
+				CreateTextualRepresentation();
+			}
+			catch
+			{
+				// some error occurred during parsing, ignore the values and the exception as it's not really useful to handle it further. 
+				return false;
+			}
+			return true;
+		}
+
+
+		/// <summary>
+		/// Returns the value of this object as a string for persistence purposes. The value returned is compatible with the method SetValueFromString.
+		/// </summary>
+		/// <returns>The string representation of the values of this object. Format: keycode,altpressed,ctrlpressed,shiftpressed<br/>
+		/// where keycode is an int, altpressed, ctrlpressed and shiftpressed are 'true' or 'false' strings.</returns>
+		public string GetValueAsString()
+		{
+			return string.Format("{0},{1},{2},{3}", _keyCode, _altPressed, _ctrlPressed, _shiftPressed);
 		}
 
 
@@ -131,12 +192,6 @@ namespace IGCSClient.Classes
 				return string.Empty;
 			}
 			return KeyCodeToStringLookup[_keyCode];
-		}
-
-
-		public override string ToString()
-		{
-			return _textualRepresentation;
 		}
 	}
 }

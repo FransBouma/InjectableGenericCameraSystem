@@ -63,6 +63,7 @@ namespace IGCSClient
 		private static void Init()
 		{
 			SettingFactory.InitializeSettings();
+			SettingFactory.InitializeKeyBindings();
 		}
 
 

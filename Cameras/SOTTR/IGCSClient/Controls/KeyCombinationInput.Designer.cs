@@ -1,6 +1,6 @@
 ﻿namespace IGCSClient.Controls
 {
-	partial class KeyCombinationEditor
+	partial class KeyCombinationInput
 	{
 		/// <summary> 
 		/// Required designer variable.
@@ -74,7 +74,7 @@
 			this.Controls.Add(this._okButton);
 			this.Controls.Add(this._cancelButton);
 			this.Controls.Add(this._keyInputTextBox);
-			this.Name = "KeyCombinationEditor";
+			this.Name = "KeyCombinationInput";
 			this.Size = new System.Drawing.Size(270, 23);
 			this.Leave += new System.EventHandler(this.KeyCombinationEditor_Leave);
 			this.ResumeLayout(false);

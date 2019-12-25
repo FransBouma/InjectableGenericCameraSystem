@@ -57,7 +57,11 @@ namespace IGCSClient
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
+			// First setup the controls 
 			_settingsEditor.Setup();
+			_keyBindingsEditor.Setup();
+
+			// then load the values from the ini file (if any) so the controls are already there.
 			AppStateSingleton.Instance().LoadFromIni();
 
 			_pipeServer = new NamedPipeServer(ConstantsEnums.NamedPipeName);

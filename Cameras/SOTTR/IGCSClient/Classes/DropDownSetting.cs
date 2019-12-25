@@ -45,7 +45,7 @@ namespace IGCSClient.Classes
 		#endregion
 
 		public DropDownSetting(byte id, string name, List<string> items, int defaultValue)
-			: base(id, name)
+			: base(id, name, SettingKind.NormalSetting)
 		{
 			ArgumentVerifier.CantBeNull(items, nameof(items));
 			ArgumentVerifier.ShouldBeTrue(l=>l.Count > 0, items, $"{nameof(items)} has to have at least one element");

@@ -49,7 +49,7 @@ namespace IGCSClient.Classes
 
 
 		public FloatSetting(byte id, string name, decimal minValue, decimal maxValue, int scale, decimal increment, float defaultValue)
-			: base(id, name)
+			: base(id, name, SettingKind.NormalSetting)
 		{
 			_minValue = minValue;
 			_maxValue = maxValue;

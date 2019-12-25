@@ -43,18 +43,22 @@ namespace IGCSClient.Classes
 	public class Setting<T> : ISetting
 	{
 		#region Members
-		public IInputControl<T> _inputControl;
+		private IInputControl<T> _inputControl;
+		private byte _settingKind;
 		#endregion
+
 
 		/// <summary>
 		/// Ctor
 		/// </summary>
 		/// <param name="id">the id of the setting</param>
 		/// <param name="name">the name of the setting</param>
-		public Setting(byte id, string name)
+		/// <param name="settingKind">The kind of the setting, which is used for messaging</param>
+		public Setting(byte id, string name, byte settingKind)
 		{
 			this.ID = id;
 			this.Name = name;
+			_settingKind = settingKind;
 		}
 
 

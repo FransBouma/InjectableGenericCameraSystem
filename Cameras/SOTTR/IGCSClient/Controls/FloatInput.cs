@@ -47,6 +47,8 @@ namespace IGCSClient.Controls
 	/// </summary>
 	public partial class FloatInput : UserControl, IInputControl<float>
 	{
+		private bool _suppressEvents = false;
+
 		public event EventHandler ValueChanged;
 
 		public FloatInput()
@@ -57,10 +59,13 @@ namespace IGCSClient.Controls
 
 		public void Setup(decimal minValue, decimal maxValue, int scale, decimal increment)
 		{
+			// Necessary to suppress events as setting the minimum sets the value too.
+			_suppressEvents = true;
 			_inputControl.Maximum = maxValue;
 			_inputControl.Minimum = minValue;
 			_inputControl.DecimalPlaces = scale;
 			_inputControl.Increment = increment;
+			_suppressEvents = false;
 		}
 
 
@@ -76,6 +81,10 @@ namespace IGCSClient.Controls
 		
 		private void _inputControl_ValueChanged(object sender, EventArgs e)
 		{
+			if(_suppressEvents)
+			{
+				return;
+			}
 			this.ValueChanged.RaiseEvent(this);
 		}
 

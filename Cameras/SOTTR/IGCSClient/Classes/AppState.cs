@@ -59,11 +59,13 @@ namespace IGCSClient.Classes
 	{
 		#region Members
 		private readonly List<ISetting> _settings;
+		private readonly List<KeyBindingSetting> _keyBindings;
 		#endregion
 
 		internal AppState()
 		{
 			_settings = new List<ISetting>();
+			_keyBindings = new List<KeyBindingSetting>();
 		}
 
 
@@ -73,12 +75,23 @@ namespace IGCSClient.Classes
 		}
 
 
+		public void AddKeyBinding(KeyBindingSetting bindingToAdd)
+		{
+			_keyBindings.Add(bindingToAdd);
+		}
+
+
 		public void WriteToIni()
 		{
 			var iniFile = new IniFileHandler(ConstantsEnums.IniFilename);
 			foreach(var setting in _settings)
 			{
 				iniFile.Write(setting.Name, setting.GetValueAsString(), "CameraSettings");
+			}
+
+			foreach(ISetting binding in _keyBindings)
+			{
+				iniFile.Write(binding.Name, binding.GetValueAsString(), "KeyBindings");
 			}
 		}
 
@@ -90,8 +103,12 @@ namespace IGCSClient.Classes
 			{
 				foreach(var setting in _settings)
 				{
-					string valueAsString = iniFile.Read(setting.Name, "CameraSettings");
-					setting.SetValueFromString(valueAsString);
+					setting.SetValueFromString(iniFile.Read(setting.Name, "CameraSettings"));
+				}
+
+				foreach(var binding in _keyBindings)
+				{
+					binding.SetValueFromString(iniFile.Read(binding.Name, "KeyBindings"));
 				}
 			}
 		}
@@ -101,6 +118,11 @@ namespace IGCSClient.Classes
 		public ISetting[] Settings
 		{
 			get { return _settings.ToArray(); }
+		}
+
+		public ISetting[] KeyBindings
+		{
+			get { return _keyBindings.ToArray(); }
 		}
 		#endregion
 	}

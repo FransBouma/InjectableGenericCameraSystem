@@ -41,7 +41,7 @@ namespace IGCSClient.Classes
 
 
 		public BoolSetting(byte id, string name, bool defaultValue)
-			: base(id, name)
+			: base(id, name, SettingKind.NormalSetting)
 		{
 			_defaultValue = defaultValue;
 		}

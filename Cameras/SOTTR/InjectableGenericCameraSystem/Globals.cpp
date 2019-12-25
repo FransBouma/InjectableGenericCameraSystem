@@ -141,7 +141,7 @@ namespace IGCS
 		_keyBindingPerActionType[ActionType::TiltLeft] = new ActionData("TiltLeft", "Tilt camera left", IGCS_KEY_TILT_LEFT, false, false, false);
 		_keyBindingPerActionType[ActionType::TiltRight] = new ActionData("TiltRight", "Tilt camera right", IGCS_KEY_TILT_RIGHT, false, false, false);
 		_keyBindingPerActionType[ActionType::ToggleOverlay] = new ActionData("ToggleOverlay", "Show / hide camera tools main window", IGCS_KEY_TOGGLE_OVERLAY, false, true, false);
-		_keyBindingPerActionType[ActionType::TestMultiShotSetup] = new ActionData("TestMultiShotSetup", "Test multi-shot setup", IGCS_KEY_TEST_SHOT_SETUP, false, true, false);
+		_keyBindingPerActionType[ActionType::TestMultiShotSetup] = new ActionData("TestMultiShotSetup", "Test multi-shot setup", IGCS_KEY_TEST_SHOT_SETUP, false, false, false);
 		_keyBindingPerActionType[ActionType::TakeScreenshot] = new ActionData("TakeScreenshot", "Take screenshot", IGCS_KEY_TAKE_SCREENSHOT, false, false, false);
 		_keyBindingPerActionType[ActionType::TakeMultiShot] = new ActionData("TakeMultiShot", "Take multi-screenshot", IGCS_KEY_TAKE_MULTISHOT, false, true, false);
 

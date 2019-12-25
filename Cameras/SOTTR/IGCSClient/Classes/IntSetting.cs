@@ -47,7 +47,7 @@ namespace IGCSClient.Classes
 
 
 		public IntSetting(byte id, string name, int minValue, int maxValue, int increment, int defaultValue)
-			: base(id, name)
+			: base(id, name, SettingKind.NormalSetting)
 		{
 			_minValue = minValue;
 			_maxValue = maxValue;

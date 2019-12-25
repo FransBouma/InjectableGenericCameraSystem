@@ -32,6 +32,28 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="SD.Tools.Algorithmia, Version=1.4.0.0, Culture=neutral, PublicKeyToken=8ede9265bbb8e107, processorArchitecture=MSIL">
       <HintPath>..\packages\SD.Tools.Algorithmia.1.4.0\lib\net452\SD.Tools.Algorithmia.dll</HintPath>
@@ -61,12 +83,13 @@
     <Compile Include="Classes\FloatSetting.cs" />
     <Compile Include="Classes\KeyBindingSetting.cs" />
     <Compile Include="Classes\KeyCombination.cs" />
-    <Compile Include="Controls\KeyCombinationEditor.cs">
+    <Compile Include="Controls\KeyCombinationInput.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\KeyCombinationEditor.Designer.cs">
-      <DependentUpon>KeyCombinationEditor.cs</DependentUpon>
+    <Compile Include="Controls\KeyCombinationInput.Designer.cs">
+      <DependentUpon>KeyCombinationInput.cs</DependentUpon>
     </Compile>
+    <Compile Include="GameSpecific\Classes\GameSpecificConstants.cs" />
     <Compile Include="GameSpecific\Classes\SettingFactory.cs" />
     <Compile Include="GameSpecific\Controls\KeyBindingEditor.cs">
       <SubType>UserControl</SubType>
@@ -163,8 +186,8 @@
     <EmbeddedResource Include="Controls\FloatInput.resx">
       <DependentUpon>FloatInput.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\KeyCombinationEditor.resx">
-      <DependentUpon>KeyCombinationEditor.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\KeyCombinationInput.resx">
+      <DependentUpon>KeyCombinationInput.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GameSpecific\Controls\KeyBindingEditor.resx">
       <DependentUpon>KeyBindingEditor.cs</DependentUpon>

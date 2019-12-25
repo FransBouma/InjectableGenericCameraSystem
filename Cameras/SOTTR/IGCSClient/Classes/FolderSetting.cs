@@ -45,7 +45,7 @@ namespace IGCSClient.Classes
 
 		
 		public FolderSetting(byte id, string name, string initialFolder, string description)
-			: base(id, name)
+			: base(id, name, SettingKind.NormalSetting)
 		{
 			_initialFolder = initialFolder;
 			_description = description;

@@ -37,6 +37,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using IGCSClient.Classes;
 using IGCSClient.Interfaces;
+using SD.Tools.Algorithmia.UtilityClasses;
 using SD.Tools.BCLExtensions.SystemRelated;
 
 namespace IGCSClient.Controls
@@ -44,7 +45,7 @@ namespace IGCSClient.Controls
 	/// <summary>
 	/// Simple editor which can retrieve a key combination pressed by the user. 
 	/// </summary>
-	public partial class KeyCombinationEditor : UserControl, IInputControl<KeyCombination>
+	public partial class KeyCombinationInput : UserControl, IInputControl<KeyCombination>
 	{
 		#region Members
 		private KeyCombination _tmpCombination, _toEdit, _activeCombination;
@@ -52,6 +53,40 @@ namespace IGCSClient.Controls
 		#endregion
 
 		public event EventHandler ValueChanged;
+
+		public KeyCombinationInput()
+		{
+			InitializeComponent();
+			_tmpCombination = new KeyCombination();
+			_okButton.Visible = false;
+			_cancelButton.Visible = false;
+		}
+
+
+		public void SetValueFromString(string valueAsString, KeyCombination defaultValue)
+		{
+			if(_toEdit == null)
+			{
+				_toEdit = new KeyCombination();
+				_activeCombination = _toEdit;
+			}
+
+			if(!_toEdit.SetValueFromString(valueAsString))
+			{
+				_toEdit.CopyValues(defaultValue);
+			}
+			ReflectEditingState();
+		}
+
+
+		public void Setup(KeyCombination initialCombination)
+		{
+			ArgumentVerifier.CantBeNull(initialCombination, nameof(initialCombination));
+			_toEdit = initialCombination;
+			_activeCombination = _toEdit;
+			ReflectEditingState();
+		}
+
 
 		private void _keyInputTextBox_KeyDown(object sender, KeyEventArgs e)
 		{
@@ -75,29 +110,6 @@ namespace IGCSClient.Controls
 			ReflectEditingState();
 			e.Handled = true;
 		}
-
-		public KeyCombinationEditor()
-		{
-			InitializeComponent();
-			_tmpCombination = new KeyCombination();
-			_toEdit = new KeyCombination();
-			_okButton.Visible = false;
-			_cancelButton.Visible = false;
-			_activeCombination = _toEdit;
-
-#warning DEBUG CODE
-			_toEdit.SetNewValues(true, false, false, 67);       //Alt-C
-#warning END DEBUG CODE
-
-			ReflectEditingState();
-		}
-
-
-		public void SetValueFromString(string valueAsString, KeyCombination defaultValue)
-		{
-#warning >>>>>>>>>>> IMPLEMENT
-		}
-
 
 		private void SwitchToEditModeIfNeeded()
 		{
