@@ -103,4 +103,25 @@ namespace IGCS
 		// Add more above
 		Amount,
 	};
+
+
+	enum class SettingType : BYTE
+	{
+		FastMovementMultiplier = 0,
+		SlowMovementMultiplier = 1,
+		UpMovementMultiplier = 2,
+		MovementSpeed = 3,
+		CameraControlDevice = 4,
+		RotationSpeed = 5,
+		InvertYLookDirection = 6,
+		FoVZoomSpeed = 7,
+		ShotOutputFolder = 8,
+		ShotFramesToWait = 9,
+		ShotType = 10,
+		PanoTotalFoV = 11,
+		PanoOverlapPercentage = 12,
+		LightfieldDistance = 13,
+		LightfieldShotCount = 14,
+		// add more here
+	};
 }

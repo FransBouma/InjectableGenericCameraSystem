@@ -75,14 +75,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\AppState.cs" />
-    <Compile Include="Classes\BoolSetting.cs" />
-    <Compile Include="Classes\DropDownSetting.cs" />
-    <Compile Include="Classes\FolderSetting.cs" />
+    <Compile Include="Classes\Settings\BoolSetting.cs" />
+    <Compile Include="Classes\Settings\DropDownSetting.cs" />
+    <Compile Include="Classes\Settings\FolderSetting.cs" />
     <Compile Include="Classes\IniFileHandler.cs" />
-    <Compile Include="Classes\IntSetting.cs" />
-    <Compile Include="Classes\FloatSetting.cs" />
-    <Compile Include="Classes\KeyBindingSetting.cs" />
+    <Compile Include="Classes\Settings\IntSetting.cs" />
+    <Compile Include="Classes\Settings\FloatSetting.cs" />
+    <Compile Include="Classes\Settings\KeyBindingSetting.cs" />
     <Compile Include="Classes\KeyCombination.cs" />
+    <Compile Include="Classes\MessageHandler.cs" />
     <Compile Include="Controls\KeyCombinationInput.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -99,7 +100,7 @@
     </Compile>
     <Compile Include="Interfaces\ISetting.cs" />
     <Compile Include="Classes\LogHandler.cs" />
-    <Compile Include="Classes\Setting.cs" />
+    <Compile Include="Classes\Settings\Setting.cs" />
     <Compile Include="ConstantsEnums.cs" />
     <Compile Include="Controls\ApplicationOutput.cs">
       <SubType>UserControl</SubType>
@@ -143,7 +144,7 @@
     <Compile Include="GameSpecific\Controls\SettingEditor.Designer.cs">
       <DependentUpon>SettingEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataStructures\IGCSMessage.cs" />
+    <Compile Include="Classes\IGCSMessage.cs" />
     <Compile Include="Forms\ExceptionViewer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -154,7 +155,6 @@
       <DependentUpon>SimpleExceptionViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Classes\GeneralUtils.cs" />
-    <Compile Include="Interfaces\IIGCSMessage.cs" />
     <Compile Include="Interfaces\IInputControl.cs" />
     <Compile Include="NamedPipeSubsystem\NamedPipeClient.cs" />
     <Compile Include="NamedPipeSubsystem\NamedPipeStreamBase.cs" />

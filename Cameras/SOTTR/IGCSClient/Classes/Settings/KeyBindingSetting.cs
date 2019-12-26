@@ -31,31 +31,51 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using IGCSClient.Classes;
+using IGCSClient.Controls;
 using IGCSClient.Interfaces;
 
-namespace IGCSClient.DataStructures
+namespace IGCSClient.Classes
 {
-	/// <summary>
-	/// Simple message to wrap a payload in to be send to the other end of our named pipe. 
-	/// </summary>
-	/// <typeparam name="T">The type of the payload. Depends on the message type what it is.</typeparam>
-	public class IGCSMessage<T> : IIGCSMessage
+	public class KeyBindingSetting : Setting<KeyCombination>
 	{
-		/// <summary>
-		/// CTor
-		/// </summary>
-		/// <param name="messageType">The type of the message to send</param>
-		/// <param name="payload">THe value to send</param>
-		public IGCSMessage(byte messageType, T payload)
+		#region Members
+		private KeyCombination _initialCombination;
+		#endregion
+
+		public KeyBindingSetting(byte id, string name, KeyCombination initialCombination) 
+			: base(id, name, SettingKind.KeyBinding)
 		{
-			this.MessageType = messageType;
-			this.Payload = payload;
+			_initialCombination = initialCombination;
 		}
 
-		public byte MessageType {get;set; }
-		public T Payload {get;set;}
 
-		byte[] IIGCSMessage.PayloadAsByteArray => GeneralUtils.ConvertToByteArray(this.Payload);
+		public override void Setup(IInputControl<KeyCombination> controlToUse)
+		{
+			base.Setup(controlToUse);
+			KeyCombinationInput controlAsCombinationInput = controlToUse as KeyCombinationInput;
+			if(controlAsCombinationInput == null)
+			{
+				return;
+			}
+			controlAsCombinationInput.Setup(_initialCombination);
+		}
+
+
+		protected override string GetValueAsString()
+		{
+			return this.Value.GetValueAsString();
+		}
+
+
+		protected override KeyCombination GetDefaultValue()
+		{
+			return _initialCombination;
+		}
+
+
+		public override void SendValueAsMessage()
+		{
+			MessageHandlerSingleton.Instance().SendKeyBindingMessage(this.ID, this.Value.GetValueAsByteArray());
+		}
 	}
 }

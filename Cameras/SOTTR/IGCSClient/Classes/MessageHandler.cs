@@ -31,121 +31,98 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using IGCSClient.Interfaces;
 using IGCSClient.NamedPipeSubSystem;
 using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
-using SD.Tools.BCLExtensions.SystemRelated;
 
 namespace IGCSClient.Classes
 {
 	/// <summary>
-	/// Singleton class containing the single appstate instance which contains the state of this application at runtime. 
+	/// Singleton which handles all messages either received or to be send. 
 	/// </summary>
-	public static class AppStateSingleton
+	public static class MessageHandlerSingleton
 	{
-		private static AppState _instance = new AppState();
+		private static MessageHandler _instance = new MessageHandler();
 
 		/// <summary>Dummy static constructor to make sure threadsafe initialization is performed.</summary>
-		static AppStateSingleton() {}
+		static MessageHandlerSingleton() {}
 
 		/// <summary>
 		/// Gets the single instance in use in this application
 		/// </summary>
 		/// <returns></returns>
-		public static AppState Instance() => _instance;
+		public static MessageHandler Instance() => _instance;
+
 	}
 
-	/// <summary>
-	/// The class containing the actual application state at runtime.
-	/// </summary>
-	public class AppState
+
+	public class MessageHandler
 	{
 		#region Members
-		private readonly List<ISetting> _settings;
-		private readonly List<KeyBindingSetting> _keyBindings;
+		private NamedPipeServer _pipeServer;
+		private NamedPipeClient _pipeClient;
 		#endregion
 
-
-		internal AppState()
+		internal MessageHandler()
 		{
-			_settings = new List<ISetting>();
-			_keyBindings = new List<KeyBindingSetting>();
+			_pipeServer = new NamedPipeServer(ConstantsEnums.NamedPipeName);
+			_pipeClient = new NamedPipeClient(ConstantsEnums.NamedPipeName);
+			_pipeServer.MessageReceived += _pipeServer_MessageReceived;
+			_pipeServer.ClientConnectionEstablished += _pipeServer_ClientConnectionEstablished;
+			LogHandlerSingleton.Instance().LogLine("Named pipe enabled.", "System");
 		}
 
 
-		public void AddSetting(ISetting settingToAdd)
+		/// <summary>
+		/// Sends a setting message. Setting messages have as format: MessageType.Setting | ID | payload
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="payload"></param>
+		public void SendSettingMessage(byte id, byte[] payload)
 		{
-			_settings.Add(settingToAdd);
+			_pipeClient.Send(new IGCSMessage(MessageType.Setting, id, payload));
+#if DEBUG
+			LogHandlerSingleton.Instance().LogLine("Setting message sent with id: {0}. Length: {1}", "[DEBUG] MessageHandler", id, payload.Length);
+#endif
 		}
 
 
-		public void AddKeyBinding(KeyBindingSetting bindingToAdd)
+		/// <summary>
+		/// Sends a keybinding message. Setting messages have as format: MessageType.KeyBinding | ID | payload
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="payload"></param>
+		public void SendKeyBindingMessage(byte id, byte[] payload)
 		{
-			_keyBindings.Add(bindingToAdd);
+			_pipeClient.Send(new IGCSMessage(MessageType.KeyBinding, id, payload));
 		}
-		
 
-		public void SendSettings()
+
+		private void HandleNamedPipeMessageReceived(ContainerEventArgs<byte[]> e)
 		{
-			foreach(var s in _settings)
+#warning >>> IMPLEMENT
+		}
+
+
+		private void _pipeServer_ClientConnectionEstablished(object sender, EventArgs e)
+		{
+			if(this.ClientConnectionReceivedFunc != null)
 			{
-				s.SendValueAsMessage();
+				this.ClientConnectionReceivedFunc();
 			}
 		}
 
 
-		public void SendKeyBindings()
+		private void _pipeServer_MessageReceived(object sender, ContainerEventArgs<byte[]> e)
 		{
-			foreach(var kb in _keyBindings)
-			{
-				kb.SendValueAsMessage();
-			}
-		}
-		
-
-		public void WriteToIni()
-		{
-			var iniFile = new IniFileHandler(ConstantsEnums.IniFilename);
-			foreach(var setting in _settings)
-			{
-				iniFile.Write(setting.Name, setting.GetValueAsString(), "CameraSettings");
-			}
-
-			foreach(ISetting binding in _keyBindings)
-			{
-				iniFile.Write(binding.Name, binding.GetValueAsString(), "KeyBindings");
-			}
-		}
-
-
-		public void LoadFromIni()
-		{
-			var iniFile = new IniFileHandler(ConstantsEnums.IniFilename);
-			if(iniFile.FileExists())
-			{
-				foreach(var setting in _settings)
-				{
-					setting.SetValueFromString(iniFile.Read(setting.Name, "CameraSettings"));
-				}
-
-				foreach(var binding in _keyBindings)
-				{
-					binding.SetValueFromString(iniFile.Read(binding.Name, "KeyBindings"));
-				}
-			}
+			HandleNamedPipeMessageReceived(e);
 		}
 
 
 		#region Properties
-		public ISetting[] Settings
-		{
-			get { return _settings.ToArray(); }
-		}
-
-		public ISetting[] KeyBindings
-		{
-			get { return _keyBindings.Cast<ISetting>().ToArray(); }
-		}
+		/// <summary>
+		/// Func which is called when a client connection has been established
+		/// </summary>
+		public Action ClientConnectionReceivedFunc { get; set; }
 		#endregion
 	}
 }

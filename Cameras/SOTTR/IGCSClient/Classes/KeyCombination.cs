@@ -154,6 +154,23 @@ namespace IGCSClient.Classes
 		}
 
 
+		/// <summary>
+		/// Gets the value of this keybinding as a byte array for a message to send to the other side of the named pipe.
+		/// </summary>
+		/// <returns>
+		/// Keybinding is 4 bytes: keycode | altpressed | ctrlpressed | shiftpressed
+		/// </returns>
+		public byte[] GetValueAsByteArray()
+		{
+			var toReturn = new byte[4];
+			toReturn[0] = Convert.ToByte(_keyCode);
+			toReturn[1] = Convert.ToByte(_altPressed);
+			toReturn[2] = Convert.ToByte(_ctrlPressed);
+			toReturn[3] = Convert.ToByte(_shiftPressed);
+			return toReturn;
+		}
+
+
 		private void CreateTextualRepresentation()
 		{
 			var builder = new StringBuilder(512);

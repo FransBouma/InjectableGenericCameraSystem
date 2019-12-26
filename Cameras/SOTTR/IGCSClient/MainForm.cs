@@ -63,10 +63,7 @@ namespace IGCSClient
 
 			// then load the values from the ini file (if any) so the controls are already there.
 			AppStateSingleton.Instance().LoadFromIni();
-
-			_pipeServer = new NamedPipeServer(ConstantsEnums.NamedPipeName);
-			_pipeServer.MessageReceived += _pipeServer_MessageReceived;
-			LogHandlerSingleton.Instance().LogLine("Named pipe enabled.", "System");
+			MessageHandlerSingleton.Instance().ClientConnectionReceivedFunc = () => HandleClientConnectionReceived();
 
 			// Disable a tab by setting 'Enabled' to false.
 			//_hotsamplingTab.Enabled = false;
@@ -78,6 +75,25 @@ namespace IGCSClient
 		{
 			AppStateSingleton.Instance().WriteToIni();
 			base.OnClosing(e);
+		}
+
+		
+		private void HandleClientConnectionReceived()
+		{
+			AppStateSingleton.Instance().SendSettings();
+			AppStateSingleton.Instance().SendKeyBindings();
+			LogHandlerSingleton.Instance().LogLine("Client connected", "System");
+#warning UPDATE STATUS BAR WITH CONNECTED.
+		}
+		
+
+		private void _mainTabControl_Selecting(object sender, TabControlCancelEventArgs e)
+		{
+			// To make sure the user can't select a disabled tab
+			if(!e.TabPage.Enabled)
+			{
+				e.Cancel = true;
+			}
 		}
 
 
@@ -94,21 +110,6 @@ namespace IGCSClient
 			// for now, assume a string
 			string valueAsString = new ASCIIEncoding().GetString(value);
 			LogHandlerSingleton.Instance().LogLine("Value: {0}", "Named pipe", valueAsString);
-		}
-
-
-		private void _pipeServer_MessageReceived(object sender, ContainerEventArgs<byte[]> e)
-		{
-			HandleMessageReceived(e);
-		}
-
-		private void _mainTabControl_Selecting(object sender, TabControlCancelEventArgs e)
-		{
-			// To make sure the user can't select a disabled tab
-			if(!e.TabPage.Enabled)
-			{
-				e.Cancel = true;
-			}
 		}
 	}
 }

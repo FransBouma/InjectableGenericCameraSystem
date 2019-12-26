@@ -40,9 +40,13 @@ namespace IGCS
 		static NamedPipeManager& instance();
 
 		void connect();
+		void startListening();
 		void writeMessage(std::string messageText);
-		
+		DWORD listenerThread();
+
 	private:
+		void handleMessage(BYTE buffer[], DWORD bytesRead);
+
 		HANDLE _pipeHandle;
 		bool _pipeConnected;
 	};

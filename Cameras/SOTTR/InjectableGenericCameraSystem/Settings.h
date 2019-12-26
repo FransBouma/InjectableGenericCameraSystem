@@ -109,6 +109,64 @@ namespace IGCS
 		}
 
 
+		void setValueFromMessage(BYTE payload[], DWORD payloadLength)
+		{
+			// byte 1 is the id of the setting. Bytes 2 and further contain the data for the setting.
+			if(payloadLength<3)
+			{
+				return;
+			}
+			switch(static_cast<SettingType>(payload[1]))
+			{
+			case SettingType::FastMovementMultiplier:
+				fastMovementMultiplier = Utils::floatFromBytes(payload, payloadLength, 2);
+				break;
+			case SettingType::SlowMovementMultiplier:
+				slowMovementMultiplier = Utils::floatFromBytes(payload, payloadLength, 2);
+				break;
+			case SettingType::UpMovementMultiplier:
+				movementUpMultiplier= Utils::floatFromBytes(payload, payloadLength, 2);
+				break;
+			case SettingType::MovementSpeed:
+				movementSpeed= Utils::floatFromBytes(payload, payloadLength, 2);
+				break;
+			case SettingType::CameraControlDevice:
+				cameraControlDevice = Utils::intFromBytes(payload, payloadLength, 2);
+				break;
+			case SettingType::RotationSpeed:
+				rotationSpeed = Utils::floatFromBytes(payload, payloadLength, 2);
+				break;
+			case SettingType::InvertYLookDirection:
+				invertY = payload[2] == (BYTE)1 ? true : false;
+				break;
+			case SettingType::FoVZoomSpeed:
+				fovChangeSpeed= Utils::floatFromBytes(payload, payloadLength, 2);
+				break;
+			case SettingType::ShotOutputFolder:
+				strncpy_s(screenshotFolder, Utils::stringFromBytes(payload, payloadLength, 2).c_str(), sizeof(screenshotFolder) - 1);
+				break;
+			case SettingType::ShotFramesToWait:
+				numberOfFramesToWaitBetweenSteps = Utils::intFromBytes(payload, payloadLength, 2);
+				break;
+			case SettingType::ShotType:
+				typeOfScreenshot = Utils::intFromBytes(payload, payloadLength, 2);
+				break;
+			case SettingType::PanoTotalFoV:
+				totalPanoAngleDegrees= Utils::floatFromBytes(payload, payloadLength, 2);
+				break;
+			case SettingType::PanoOverlapPercentage:
+				overlapPercentagePerPanoShot= Utils::floatFromBytes(payload, payloadLength, 2);
+				break;
+			case SettingType::LightfieldDistance:
+				distanceBetweenLightfieldShots = Utils::floatFromBytes(payload, payloadLength, 2);
+				break;
+			case SettingType::LightfieldShotCount:
+				numberOfShotsToTake = Utils::intFromBytes(payload, payloadLength, 2);
+				break;
+			}
+		}
+		
+
 		void init(bool persistedOnly)
 		{
 			invertY = CONTROLLER_Y_INVERT;
@@ -127,7 +185,7 @@ namespace IGCS
 			typeOfScreenshot = (int)ScreenshotType::Lightfield;
 			totalPanoAngleDegrees = 110.0f;
 			overlapPercentagePerPanoShot = 80.0f;
-			strcpy(screenshotFolder, "c:\\");
+			strncpy_s(screenshotFolder, "c:\\", sizeof(screenshotFolder)-1);
 
 			if (!persistedOnly)
 			{

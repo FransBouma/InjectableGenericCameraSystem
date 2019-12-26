@@ -58,6 +58,17 @@ namespace IGCSClient
 		Bool,			// 1 byte length, 1 == true, 0 == false.
 	}
 
+
+	public class MessageType
+	{
+		public const byte Setting = 1;
+		public const byte KeyBinding = 2;
+		public const byte Notification = 3;
+		public const byte TextMessage = 4;
+		public const byte Action = 5;
+	}
+
+
 	public class CameraDeviceType
 	{
 		public const byte KeyboardMouse = 0;

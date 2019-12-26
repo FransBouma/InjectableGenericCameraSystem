@@ -32,6 +32,7 @@ using System.IO.Pipes;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
+using SD.Tools.BCLExtensions.SystemRelated;
 
 namespace IGCSClient.NamedPipeSubSystem
 {
@@ -45,7 +46,10 @@ namespace IGCSClient.NamedPipeSubSystem
 		private List<NamedPipeStreamConnection> _connections;
 		private object _connectionsSemaphore;
 		private PipeSecurity _pipeSecurity;
+
+		public event EventHandler ClientConnectionEstablished;
 		#endregion
+
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NamedPipeServer"/> class.
@@ -128,6 +132,7 @@ namespace IGCSClient.NamedPipeSubSystem
 				{
 					_connections.Add(clientConnection);
 				}
+				this.ClientConnectionEstablished.RaiseEvent(this);
 			}
 			NamedPipeServerStream connector = CreateNamedPipeServerStream();
 			connector.BeginWaitForConnection(new AsyncCallback(this.ClientConnected), connector);

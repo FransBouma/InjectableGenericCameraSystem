@@ -32,6 +32,7 @@ using System.Linq;
 using System.Text;
 using System.IO.Pipes;
 using System.Threading;
+using IGCSClient.Classes;
 using IGCSClient.Interfaces;
 
 namespace IGCSClient.NamedPipeSubSystem
@@ -46,7 +47,7 @@ namespace IGCSClient.NamedPipeSubSystem
 		private PipeStream _stream;
 		private bool _isDisposed, _messageSendingEnabled;
 		private volatile bool _isFlushing;		// always modified within sections locking on _streamLock
-		private Queue<IIGCSMessage> _messageQueue;
+		private Queue<IGCSMessage> _messageQueue;
 		private string _pipeName;
 		private AutoResetEvent _flushSemaphore;
 		private int _messagesFlushedCounter; // always modified / examined within sections locking on _streamLock.
@@ -73,7 +74,7 @@ namespace IGCSClient.NamedPipeSubSystem
 		{
 			_pipeName = pipeName;
 			_messageSendingEnabled = true;
-			_messageQueue = new Queue<IIGCSMessage>(1024);
+			_messageQueue = new Queue<IGCSMessage>(1024);
 			_streamLock = new object();
 			_queueLock = new object();
 			_flushSemaphore = new AutoResetEvent(false);
@@ -96,7 +97,7 @@ namespace IGCSClient.NamedPipeSubSystem
 		/// Sends the specified message over the channel.
 		/// </summary>
 		/// <param name="message">The message.</param>
-		public void Send(IIGCSMessage message)
+		public void Send(IGCSMessage message)
 		{
 			if(message == null)
 			{
@@ -336,7 +337,8 @@ namespace IGCSClient.NamedPipeSubSystem
 					{
 						if(_stream == null)
 						{
-							_stream = new NamedPipeClientStream(serverName, pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
+							//_stream = new NamedPipeClientStream(serverName, pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
+							_stream = new NamedPipeClientStream(pipeName);
 						}
 						if(!_stream.IsConnected)
 						{
@@ -376,17 +378,17 @@ namespace IGCSClient.NamedPipeSubSystem
 		private List<byte[]> GetMessagesToSend()
 		{
 			List<byte[]> toReturn = new List<byte[]>();
-			Queue<IIGCSMessage> queuedMessages = null;
+			Queue<IGCSMessage> queuedMessages = null;
 			lock(_queueLock)
 			{
 				queuedMessages = _messageQueue;
-				_messageQueue = new Queue<IIGCSMessage>(1024);
+				_messageQueue = new Queue<IGCSMessage>(1024);
 			}
 			if(queuedMessages != null)
 			{
 				foreach(var message in queuedMessages)
 				{
-					toReturn.Add(message.PayloadAsByteArray);
+					toReturn.Add(message.GetPayloadAsByteArray());
 				}
 			}
 			return toReturn;

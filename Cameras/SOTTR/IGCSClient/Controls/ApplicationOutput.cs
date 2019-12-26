@@ -37,6 +37,8 @@ namespace IGCSClient.Controls
 	/// </summary>
 	public partial class ApplicationOutput : UserControl
 	{
+		public LogLineDelegate LogLineFunc;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ApplicationOutput"/> class.
 		/// </summary>
@@ -44,6 +46,9 @@ namespace IGCSClient.Controls
 		{
 			InitializeComponent();
 		}
+
+
+		public delegate void LogLineDelegate(string lineToLog, string source, bool isVerboseMessage, bool appendNewLine, bool isError, params object[] args);
 
 
 		/// <summary>

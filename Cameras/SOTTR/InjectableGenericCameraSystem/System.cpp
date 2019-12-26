@@ -333,6 +333,7 @@ namespace IGCS
 		OverlayControl::initImGui();
 #ifdef _DX12_
 		NamedPipeManager::instance().connect();
+		NamedPipeManager::instance().startListening();
 		Console::Init();
 		Console::WriteHeader();
 #else

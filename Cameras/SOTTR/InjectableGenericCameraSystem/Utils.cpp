@@ -289,4 +289,41 @@ namespace IGCS::Utils
 		string toReturn = vkCodeToStringLookup[vkCode];
 		return toReturn;
 	}
+
+	float floatFromBytes(BYTE byteArray[], DWORD arrayLength, int startIndex)
+	{
+		if(arrayLength<startIndex+4)
+		{
+			return -1.0f;
+		}
+		float* floatInArray = reinterpret_cast<float*>(byteArray + startIndex);
+		return *floatInArray;
+	}
+
+	
+	int intFromBytes(BYTE byteArray[], DWORD arrayLength, int startIndex)
+	{
+		if (arrayLength < startIndex + 4)
+		{
+			return -1;
+		}
+		int* intInArray = reinterpret_cast<int*>(byteArray + startIndex);
+		return *intInArray;
+	}
+
+	
+	std::string stringFromBytes(BYTE byteArray[], DWORD arrayLength, int startIndex)
+	{
+		if (arrayLength < startIndex + 4)
+		{
+			return nullptr;
+		}
+		char* charInArray = reinterpret_cast<char*>(byteArray + startIndex);
+		// copy over the bytes in our own array which has a trailing 0
+		char* characters = new char[(arrayLength - startIndex) + 1];
+		memcpy(characters, charInArray, arrayLength - startIndex);
+		characters[(arrayLength - startIndex)] = '\0';
+		string toReturn(characters);
+		return toReturn;
+	}
 }

@@ -41,6 +41,10 @@ namespace IGCSClient.Interfaces
 		/// </summary>
 		/// <param name="inputControl"></param>
 		void Setup(Control inputControl);
+		/// <summary>
+		/// Method which sends the value of the setting as a message to the other side of the named pipe.
+		/// </summary>
+		void SendValueAsMessage();
 
 		/// <summary>
 		/// Gets the control associated with the setting in a generic form

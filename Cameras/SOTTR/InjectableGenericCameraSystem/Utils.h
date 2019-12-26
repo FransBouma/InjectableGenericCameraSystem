@@ -67,4 +67,7 @@ namespace IGCS::Utils
 	bool keyDown(int virtualKeyCode);
 	bool altPressed();
 	std::string vkCodeToString(int vkCode);
+	float floatFromBytes(BYTE byteArray[], DWORD arrayLength, int startIndex);
+	int intFromBytes(BYTE byteArray[], DWORD arrayLength, int startIndex);
+	std::string stringFromBytes(BYTE byteArray[], DWORD arrayLength, int startIndex);
 }

@@ -108,6 +108,17 @@ namespace IGCS
 		_screenshotController.configure(_settings.screenshotFolder, _settings.numberOfFramesToWaitBetweenSteps, _settings.movementSpeed, _settings.rotationSpeed);
 	}
 
+	
+	void Globals::handleSettingMessage(BYTE payload[], DWORD payloadLength)
+	{
+		_settings.setValueFromMessage(payload, payloadLength);
+	}
+
+	
+	void Globals::handleKeybindingMessage(BYTE payload[], DWORD payloadLength)
+	{
+	}
+
 
 	ActionData* Globals::getActionData(ActionType type)
 	{

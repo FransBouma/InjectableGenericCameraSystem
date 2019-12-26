@@ -31,45 +31,44 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using IGCSClient.Controls;
 using IGCSClient.Interfaces;
 
 namespace IGCSClient.Classes
 {
-	public class KeyBindingSetting : Setting<KeyCombination>
+	/// <summary>
+	/// Simple message to wrap a payload in to be send to the other end of our named pipe. 
+	/// </summary>
+	/// <remarks>Will produce a byte stream with the format: messageType | id | payload.
+	/// Messages are simple as the scope of the messages are pretty simple: the message type specifies what type of message it is, the id specifies
+	/// the specific message, and the payload then is the data for the message.</remarks> 
+	public class IGCSMessage
 	{
 		#region Members
-		private KeyCombination _initialCombination;
+		private byte _messageType, _id;
+		private byte[] _payload;
 		#endregion
 
-		public KeyBindingSetting(byte id, string name, KeyCombination initialCombination) 
-			: base(id, name, SettingKind.KeyBinding)
+		/// <summary>
+		/// CTor
+		/// </summary>
+		/// <param name="messageType">The type of the message to send</param>
+		/// <param name="id">the id of the message</param>
+		/// <param name="payload">The data for the message to send</param>
+		public IGCSMessage(byte messageType, byte id, byte[] payload)
 		{
-			_initialCombination = initialCombination;
+			_id = id;
+			_messageType = messageType;
+			_payload = payload;
 		}
 
 
-		public override void Setup(IInputControl<KeyCombination> controlToUse)
+		public byte[] GetPayloadAsByteArray()
 		{
-			base.Setup(controlToUse);
-			KeyCombinationInput controlAsCombinationInput = controlToUse as KeyCombinationInput;
-			if(controlAsCombinationInput == null)
-			{
-				return;
-			}
-			controlAsCombinationInput.Setup(_initialCombination);
-		}
-
-
-		protected override string GetValueAsString()
-		{
-			return this.Value.GetValueAsString();
-		}
-
-
-		protected override KeyCombination GetDefaultValue()
-		{
-			return _initialCombination;
+			var messageBytes = new byte[_payload.Length + 2];
+			messageBytes[0] = MessageType.Setting;
+			messageBytes[1] = _id;
+			Array.Copy(_payload, 0, messageBytes, 2, _payload.Length);
+			return messageBytes;
 		}
 	}
 }

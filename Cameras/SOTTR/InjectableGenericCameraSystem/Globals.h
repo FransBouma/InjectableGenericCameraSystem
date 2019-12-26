@@ -69,6 +69,8 @@ namespace IGCS
 		ActionData& getKeyCollector() { return _keyCollectorData; }
 		ScreenshotController& getScreenshotController() { return _screenshotController; }
 		void reinitializeScreenshotController();
+		void handleSettingMessage(BYTE payload[], DWORD payloadLength);
+		void handleKeybindingMessage(BYTE payload[], DWORD payloadLength);
 
 	private:
 		void initializeKeyBindings();

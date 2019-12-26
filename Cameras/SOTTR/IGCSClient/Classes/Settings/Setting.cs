@@ -74,6 +74,13 @@ namespace IGCSClient.Classes
 		}
 
 
+		/// <inheritdoc/>
+		public virtual void SendValueAsMessage()
+		{
+			MessageHandlerSingleton.Instance().SendSettingMessage(this.ID, GeneralUtils.ConvertToByteArray(this.Value));
+		}
+
+
 		/// <inheritdoc />
 		public void SetValueFromString(string valueAsString)
 		{
@@ -97,14 +104,11 @@ namespace IGCSClient.Classes
 
 			return Convert.ToString(this.Value);
 		}
-				
+		
 
 		private void _inputControl_ValueChanged(object sender, EventArgs e)
 		{
-#warning TODO: Implement message passing of new value to the named pipe.
-#if DEBUG
-			LogHandlerSingleton.Instance().LogLine("Value of {0} changed to: {1}", "[DEBUG] " + this.Name, true, true, this.ID, this.Value);
-#endif
+			SendValueAsMessage();
 		}
 
 
