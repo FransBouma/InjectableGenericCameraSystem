@@ -34,6 +34,7 @@ using System.IO.Pipes;
 using System.Threading;
 using IGCSClient.Classes;
 using IGCSClient.Interfaces;
+using SD.Tools.BCLExtensions.SystemRelated;
 
 namespace IGCSClient.NamedPipeSubSystem
 {
@@ -51,6 +52,8 @@ namespace IGCSClient.NamedPipeSubSystem
 		private string _pipeName;
 		private AutoResetEvent _flushSemaphore;
 		private int _messagesFlushedCounter; // always modified / examined within sections locking on _streamLock.
+
+		public event EventHandler ConnectedToPipe;
 		#endregion
 
 		#region Constants
@@ -293,7 +296,7 @@ namespace IGCSClient.NamedPipeSubSystem
 							try
 							{
 								this._stream.BeginWrite(message, 0, message.Length, new AsyncCallback(this.EndSendMessage), state);
-								this._stream.Flush();
+								//this._stream.Flush();
 								if(_isFlushing)
 								{
 									Interlocked.Increment(ref _messagesFlushedCounter);
@@ -329,6 +332,7 @@ namespace IGCSClient.NamedPipeSubSystem
 			int iterationCounter = 0;
 			// initially set to 1000, will increase to 2000 if iteration counter increases MaxNoConnectionLoopIterationsBeforeDelayIncrease
 			int loopDelayMS = 1000;
+			bool connectEventRaised = false;
 			while(true)
 			{
 				lock(_streamLock)
@@ -337,11 +341,19 @@ namespace IGCSClient.NamedPipeSubSystem
 					{
 						if(_stream == null)
 						{
-							//_stream = new NamedPipeClientStream(serverName, pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
-							_stream = new NamedPipeClientStream(pipeName);
+							_stream = new NamedPipeClientStream(serverName, pipeName, PipeDirection.Out, PipeOptions.Asynchronous);
 						}
-						if(!_stream.IsConnected)
+						if(_stream.IsConnected)
 						{
+							if(!connectEventRaised)
+							{
+								this.ConnectedToPipe.RaiseEvent(this);
+								connectEventRaised = true;
+							}
+						}
+						else
+						{
+							connectEventRaised = false;
 							try
 							{
 								// Connect is a tight loop over the unsafe Connect method call. it always makes at least 1 call, so the timeout

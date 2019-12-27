@@ -65,7 +65,7 @@ namespace IGCSClient.Classes
 		public byte[] GetPayloadAsByteArray()
 		{
 			var messageBytes = new byte[_payload.Length + 2];
-			messageBytes[0] = MessageType.Setting;
+			messageBytes[0] = _messageType;
 			messageBytes[1] = _id;
 			Array.Copy(_payload, 0, messageBytes, 2, _payload.Length);
 			return messageBytes;

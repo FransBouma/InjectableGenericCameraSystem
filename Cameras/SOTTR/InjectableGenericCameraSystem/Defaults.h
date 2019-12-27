@@ -82,7 +82,8 @@ namespace IGCS
 	#define DEVICE_ID_GAMEPAD					1
 	#define DEVICE_ID_ALL						2
 
-	#define IGCS_NAMED_PIPE_NAME				"\\\\.\\pipe\\IgcsIPCPipe"
+	#define IGCS_PIPENAME_DLL_TO_CLIENT				"\\\\.\\pipe\\IgcsDllToClient"
+	#define IGCS_PIPENAME_CLIENT_TO_DLL				"\\\\.\\pipe\\IgcsClientToDll"
 
 	enum class ScreenshotType : short
 	{

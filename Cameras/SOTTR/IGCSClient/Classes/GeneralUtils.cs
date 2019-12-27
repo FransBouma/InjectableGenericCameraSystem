@@ -44,8 +44,7 @@ namespace IGCSClient.Classes
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="payload"></param>
-		/// <returns>byte array to be send over the pipe which represents the payload. 
-		/// Format is: first byte is type specifier (value of PayloadType), then the bytes of the payload itself</returns>
+		/// <returns>byte array to be send over the pipe which represents the payload.</returns>
 		internal static byte[] ConvertToByteArray<T>(T payload)
 		{
 			if(!(payload is object))
@@ -115,10 +114,7 @@ namespace IGCSClient.Classes
 					break;
 			}
 
-			byte[] toReturn = new byte[payloadInBytes.Length+1];
-			toReturn[0] = (byte)typeOfPayload;
-			Array.Copy(payloadInBytes, 0, toReturn, 1, payloadInBytes.Length);
-			return toReturn;
+			return payloadInBytes;
 		}
 	}
 }

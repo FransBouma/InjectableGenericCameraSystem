@@ -64,10 +64,11 @@ namespace IGCSClient.Classes
 
 		internal MessageHandler()
 		{
-			_pipeServer = new NamedPipeServer(ConstantsEnums.NamedPipeName);
-			_pipeClient = new NamedPipeClient(ConstantsEnums.NamedPipeName);
+			_pipeServer = new NamedPipeServer(ConstantsEnums.DllToClientNamedPipeName);
+			_pipeClient = new NamedPipeClient(ConstantsEnums.ClientToDllNamedPipeName);
 			_pipeServer.MessageReceived += _pipeServer_MessageReceived;
 			_pipeServer.ClientConnectionEstablished += _pipeServer_ClientConnectionEstablished;
+			_pipeClient.ConnectedToPipe += _pipeClient_ConnectedToPipe;
 			LogHandlerSingleton.Instance().LogLine("Named pipe enabled.", "System");
 		}
 
@@ -99,7 +100,18 @@ namespace IGCSClient.Classes
 
 		private void HandleNamedPipeMessageReceived(ContainerEventArgs<byte[]> e)
 		{
-#warning >>> IMPLEMENT
+			// test code.
+
+			LogHandlerSingleton.Instance().LogLine(new ASCIIEncoding().GetString(e.Value, 0, e.Value.Length-1), "Named Pipe Handler");
+		}
+
+		
+		private void _pipeClient_ConnectedToPipe(object sender, EventArgs e)
+		{
+			if(this.ConnectedToNamedPipeFunc != null)
+			{
+				this.ConnectedToNamedPipeFunc();
+			}
 		}
 
 
@@ -120,9 +132,13 @@ namespace IGCSClient.Classes
 
 		#region Properties
 		/// <summary>
-		/// Func which is called when a client connection has been established
+		/// Func which is called when a connection from the dll to our named pipe has been established
 		/// </summary>
 		public Action ClientConnectionReceivedFunc { get; set; }
+		/// <summary>
+		/// Func which is called when a connection to the dll's named pipe has been established
+		/// </summary>
+		public Action ConnectedToNamedPipeFunc { get; set; }
 		#endregion
 	}
 }

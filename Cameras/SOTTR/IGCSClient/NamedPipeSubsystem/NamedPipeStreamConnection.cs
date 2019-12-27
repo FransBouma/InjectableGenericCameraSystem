@@ -29,6 +29,7 @@
 using System;
 using System.IO.Pipes;
 using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
+using SD.Tools.BCLExtensions.SystemRelated;
 
 namespace IGCSClient.NamedPipeSubSystem
 {
@@ -41,6 +42,10 @@ namespace IGCSClient.NamedPipeSubSystem
 		#region Class Member Declarations
 		private readonly object _instanceLock;
 		private PipeStream _stream;
+		/// <summary>
+		/// Raised when the client disconnects from this stream
+		/// </summary>
+		public event EventHandler Disconnected;
 		#endregion
 
 		/// <summary>
@@ -67,7 +72,7 @@ namespace IGCSClient.NamedPipeSubSystem
 		}
 
 
-		/// </inheritdoc>
+		/// <inheritdoc/>
 		public override void Disconnect()
 		{
 			lock(_instanceLock)
@@ -93,11 +98,16 @@ namespace IGCSClient.NamedPipeSubSystem
 				Array.Copy(asyncState, 0, destinationArray, 0, length);
 				OnMessageReceived(new ContainerEventArgs<byte[]>(destinationArray));
 			}
+
 			lock(_instanceLock)
 			{
 				if(_stream.IsConnected)
 				{
 					_stream.BeginRead(asyncState, 0, ConstantsEnums.BufferLength, new AsyncCallback(EndRead), asyncState);
+				}
+				else
+				{
+					this.Disconnected.RaiseEvent(this);
 				}
 			}
 		}

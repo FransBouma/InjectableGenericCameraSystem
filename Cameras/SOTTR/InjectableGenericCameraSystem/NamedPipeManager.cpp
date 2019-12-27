@@ -44,7 +44,7 @@ namespace IGCS
 		return This->listenerThread();
 	}
 
-	NamedPipeManager::NamedPipeManager(): _pipeHandle(nullptr), _pipeConnected(false)
+	NamedPipeManager::NamedPipeManager(): _clientToDllPipe(nullptr), _clientToDllPipeConnected(false), _dllToClientPipe(nullptr), _dllToClientPipeConnected(false)
 	{
 	}
 
@@ -60,20 +60,19 @@ namespace IGCS
 	}
 
 	
-	void NamedPipeManager::connect()
+	void NamedPipeManager::connectDllToClient()
 	{
-		if(_pipeConnected)
+		if(_dllToClientPipeConnected)
 		{
 			return;
 		}
-		_pipeHandle = CreateFile(TEXT(IGCS_NAMED_PIPE_NAME), GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, nullptr);
-		_pipeConnected = (_pipeHandle != INVALID_HANDLE_VALUE);
-		if(!_pipeConnected)
+		_dllToClientPipe = CreateFile(TEXT(IGCS_PIPENAME_DLL_TO_CLIENT), GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, nullptr);
+		_dllToClientPipeConnected = (_dllToClientPipe != INVALID_HANDLE_VALUE);
+		if(!_dllToClientPipeConnected)
 		{
-			Console::WriteError("Couldn't connect to named pipe.");
+			Console::WriteError("Couldn't connect to named pipe DLL -> Client. Please start the client first.");
 		}
 	}
-
 	
 	void NamedPipeManager::startListening()
 	{
@@ -85,51 +84,62 @@ namespace IGCS
 	
 	void NamedPipeManager::writeMessage(std::string messageText)
 	{
-		if(!_pipeConnected)
+		if(!_dllToClientPipeConnected)
 		{
 			return;
 		}
 
 		DWORD numberOfBytesWritten;
-		WriteFile(_pipeHandle, messageText.c_str(), messageText.length() + 1, &numberOfBytesWritten, nullptr);
+		WriteFile(_dllToClientPipe, messageText.c_str(), messageText.length(), &numberOfBytesWritten, nullptr);
 	}
 
-
-try this? => https://developercommunity.visualstudio.com/content/problem/241290/trouble-connecting-c-client-to-c-pipeserver-using.html	
 	
 	DWORD NamedPipeManager::listenerThread()
 	{
-		if (_pipeHandle == INVALID_HANDLE_VALUE)
+		Console::WriteLine("listenerThread start");
+		SECURITY_ATTRIBUTES sa;
+		sa.lpSecurityDescriptor = (PSECURITY_DESCRIPTOR)malloc(SECURITY_DESCRIPTOR_MIN_LENGTH);
+		bool saInitFailed = false;
+		if (!InitializeSecurityDescriptor(sa.lpSecurityDescriptor, SECURITY_DESCRIPTOR_REVISION))
 		{
-			_pipeHandle = CreateFile(TEXT(IGCS_NAMED_PIPE_NAME), GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, 0, nullptr);
-			DWORD lastError = GetLastError();
+			saInitFailed = true;
 		}
-		while(_pipeHandle!=INVALID_HANDLE_VALUE)
+		if (sa.lpSecurityDescriptor != nullptr)
 		{
-			DWORD dwMode = PIPE_READMODE_MESSAGE;
-			BOOL fSuccess = SetNamedPipeHandleState(
-				_pipeHandle, // pipe handle
-				&dwMode, // new pipe mode
-				NULL, // don't set maximum bytes
-				NULL); // don't set maximum time
-
-			if (!fSuccess)
+			// Grant everyone access, otherwise we are required to run the client as admin. We likely will need to do that anyway, but to avoid
+			// the requirement in general we allow everyone. 
+			if (!SetSecurityDescriptorDacl(sa.lpSecurityDescriptor, TRUE, nullptr, FALSE))
 			{
-				Console::WriteError(Utils::formatString("SetNamedPipeHandleState return: 0x%llx%", GetLastError()));
-				Sleep(500);
+				saInitFailed = true;
 			}
-			BYTE buffer[1024];
-			DWORD bytesRead;
-			while(true)
+			sa.nLength = sizeof sa;
+			sa.bInheritHandle = TRUE;
+		}
+		else
+		{
+			saInitFailed = true;
+		}
+		_clientToDllPipe = CreateNamedPipe(TEXT(IGCS_PIPENAME_CLIENT_TO_DLL), PIPE_ACCESS_INBOUND, PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT, 1, 0, 1024 * 4,
+											NMPWAIT_WAIT_FOREVER, saInitFailed ? nullptr : &sa);
+		_clientToDllPipeConnected = (_clientToDllPipe != INVALID_HANDLE_VALUE);
+		if (!_clientToDllPipeConnected)
+		{
+			Console::WriteError("Couldn't create the Client -> DLL named pipe.");
+		}
+		while (_clientToDllPipe != INVALID_HANDLE_VALUE)
+		{
+			auto connectResult = ConnectNamedPipe(_clientToDllPipe, nullptr);
+			if(connectResult!=0 || GetLastError()==ERROR_PIPE_CONNECTED)
 			{
-				auto result = ReadFile(_pipeHandle, buffer, sizeof(buffer), &bytesRead, nullptr);
-				handleMessage(buffer, bytesRead);
-				if(result==FALSE)
+				BYTE buffer[1024];
+				DWORD bytesRead;
+				while (ReadFile(_clientToDllPipe, buffer, sizeof(buffer), &bytesRead, nullptr))
 				{
-					break;
+					handleMessage(buffer, bytesRead);
 				}
 			}
 		}
+		Console::WriteLine("listenerThread End");
 		return 0;
 	}
 

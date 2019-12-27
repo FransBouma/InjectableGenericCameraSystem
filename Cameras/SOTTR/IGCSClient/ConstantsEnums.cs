@@ -36,8 +36,9 @@ namespace IGCSClient
 {
 	internal class ConstantsEnums
 	{
-		internal static readonly string NamedPipeName = "IgcsIPCPipe";
-		internal static readonly int BufferLength = 1*1024*1024;	// 1MB buffer should be more than enough. We expect to be actively reading whenever things arrive.
+		internal static readonly string DllToClientNamedPipeName = "IgcsDllToClient";
+		internal static readonly string ClientToDllNamedPipeName = "IgcsClientToDll";
+		internal static readonly int BufferLength = 4*1024;	// 4KB buffer should be more than enough. We expect to be actively reading whenever things arrive.
 		internal static readonly string IniFilename = "IGCSClientSettings.ini";
 	}
 

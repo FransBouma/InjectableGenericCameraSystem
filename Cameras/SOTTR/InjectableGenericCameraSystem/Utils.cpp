@@ -113,7 +113,10 @@ namespace IGCS::Utils
 				toReturn.lpBaseOfDll = nullptr;
 			}
 		}
-		CloseHandle(processHandle);
+		if (processHandle != nullptr)
+		{
+			CloseHandle(processHandle);
+		}
 		return toReturn;
 	}
 

@@ -46,6 +46,7 @@ namespace IGCSClient.NamedPipeSubSystem
 		private List<NamedPipeStreamConnection> _connections;
 		private object _connectionsSemaphore;
 		private PipeSecurity _pipeSecurity;
+		private NamedPipeServerStream _connector;
 
 		public event EventHandler ClientConnectionEstablished;
 		#endregion
@@ -61,7 +62,7 @@ namespace IGCSClient.NamedPipeSubSystem
 
 			_connections = new List<NamedPipeStreamConnection>();
 			// set up security so everyone can write to the pipe.
-			using(NamedPipeServerStream seedPipe = new NamedPipeServerStream("seedPipe", PipeDirection.InOut, 1, PipeTransmissionMode.Message, PipeOptions.None, 1000, 1000))
+			using(NamedPipeServerStream seedPipe = new NamedPipeServerStream("seedPipe", PipeDirection.In, 1, PipeTransmissionMode.Message, PipeOptions.None, 1000, 1000))
 			{
 				// just get a copy of the security roles and close this pipe.
 				_pipeSecurity = seedPipe.GetAccessControl();
@@ -72,8 +73,8 @@ namespace IGCSClient.NamedPipeSubSystem
 			sid = new SecurityIdentifier(WellKnownSidType.NetworkSid, null);
 			_pipeSecurity.AddAccessRule(new PipeAccessRule(sid, PipeAccessRights.ReadWrite, AccessControlType.Deny));
 
-			var connector = CreateNamedPipeServerStream();
-			connector.BeginWaitForConnection(new AsyncCallback(this.ClientConnected), connector);
+			_connector = CreateNamedPipeServerStream();
+			_connector.BeginWaitForConnection(new AsyncCallback(this.ClientConnected), _connector);
 		}
 
 
@@ -127,6 +128,7 @@ namespace IGCSClient.NamedPipeSubSystem
 			{
 				NamedPipeStreamConnection clientConnection = new NamedPipeStreamConnection(asyncState, this.PipeName);
 				clientConnection.MessageReceived += new EventHandler<ContainerEventArgs<byte[]>>(Connection_MessageReceived);
+				clientConnection.Disconnected += Connection_Disconnected;
 
 				lock(_connectionsSemaphore)
 				{
@@ -134,8 +136,6 @@ namespace IGCSClient.NamedPipeSubSystem
 				}
 				this.ClientConnectionEstablished.RaiseEvent(this);
 			}
-			NamedPipeServerStream connector = CreateNamedPipeServerStream();
-			connector.BeginWaitForConnection(new AsyncCallback(this.ClientConnected), connector);
 		}
 
 
@@ -145,18 +145,41 @@ namespace IGCSClient.NamedPipeSubSystem
 		/// <returns></returns>
 		private NamedPipeServerStream CreateNamedPipeServerStream()
 		{
-			return new NamedPipeServerStream(this.PipeName, PipeDirection.InOut, -1, PipeTransmissionMode.Message, PipeOptions.Asynchronous, ConstantsEnums.BufferLength, 0, _pipeSecurity);
+			return new NamedPipeServerStream(this.PipeName, PipeDirection.In, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous, ConstantsEnums.BufferLength, 0, _pipeSecurity);
 		}
 
 
 		/// <summary>
-		/// Handles the MessageReceived event of the Connection control.
+		/// Handles the MessageReceived event of the Connection object.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="args">The <see cref="SD.Tools.Algorithmia.GeneralDataStructures.EventArguments.ContainerEventArgs&lt;System.Byte[]&gt;"/> instance containing the event data.</param>
 		private void Connection_MessageReceived(object sender, ContainerEventArgs<byte[]> args)
 		{
 			this.OnMessageReceived(args);
+		}
+
+
+		/// <summary>
+		/// Handles the disconnect event of the client connection object
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="args">The <see cref="SD.Tools.Algorithmia.GeneralDataStructures.EventArguments.ContainerEventArgs&lt;System.Byte[]&gt;"/> instance containing the event data.</param>
+		private void Connection_Disconnected(object sender, EventArgs args)
+		{
+			lock(_connectionsSemaphore)
+			{
+				var connection = sender as NamedPipeStreamConnection;
+				if(connection != null)
+				{
+					_connections.Remove(connection);
+				}
+			}
+
+			// wait for a new client to connect
+			_connector.Dispose();
+			_connector = CreateNamedPipeServerStream();
+			_connector.BeginWaitForConnection(new AsyncCallback(this.ClientConnected), _connector);
 		}
 	}
 }

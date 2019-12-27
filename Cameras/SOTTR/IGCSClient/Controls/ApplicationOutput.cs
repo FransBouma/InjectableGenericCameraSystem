@@ -45,6 +45,7 @@ namespace IGCSClient.Controls
 		public ApplicationOutput()
 		{
 			InitializeComponent();
+			LogLineFunc = LogLine;
 		}
 
 

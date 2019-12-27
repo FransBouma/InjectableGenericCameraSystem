@@ -332,7 +332,7 @@ namespace IGCS
 		Globals::instance().mainWindowHandle(Utils::findMainWindow(GetCurrentProcessId()));
 		OverlayControl::initImGui();
 #ifdef _DX12_
-		NamedPipeManager::instance().connect();
+		NamedPipeManager::instance().connectDllToClient();
 		NamedPipeManager::instance().startListening();
 		Console::Init();
 		Console::WriteHeader();

@@ -39,7 +39,7 @@ namespace IGCS
 
 		static NamedPipeManager& instance();
 
-		void connect();
+		void connectDllToClient();
 		void startListening();
 		void writeMessage(std::string messageText);
 		DWORD listenerThread();
@@ -47,8 +47,10 @@ namespace IGCS
 	private:
 		void handleMessage(BYTE buffer[], DWORD bytesRead);
 
-		HANDLE _pipeHandle;
-		bool _pipeConnected;
+		HANDLE _dllToClientPipe;
+		HANDLE _clientToDllPipe;
+		bool _dllToClientPipeConnected;
+		bool _clientToDllPipeConnected;
 	};
 }
 

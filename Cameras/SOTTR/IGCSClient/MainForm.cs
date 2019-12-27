@@ -33,6 +33,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using IGCSClient.Classes;
@@ -63,12 +64,14 @@ namespace IGCSClient
 
 			// then load the values from the ini file (if any) so the controls are already there.
 			AppStateSingleton.Instance().LoadFromIni();
-			MessageHandlerSingleton.Instance().ClientConnectionReceivedFunc = () => HandleClientConnectionReceived();
+			MessageHandlerSingleton.Instance().ConnectedToNamedPipeFunc = () => HandleConnectedToPipe();
+			MessageHandlerSingleton.Instance().ClientConnectionReceivedFunc = () => HandleConnectionReceived();
 
 			// Disable a tab by setting 'Enabled' to false.
 			//_hotsamplingTab.Enabled = false;
 			//_settingsTab.Enabled = false;
 		}
+
 
 
 		protected override void OnClosing(CancelEventArgs e)
@@ -77,12 +80,21 @@ namespace IGCSClient
 			base.OnClosing(e);
 		}
 
-		
-		private void HandleClientConnectionReceived()
+
+		private void HandleConnectionReceived()
 		{
+			LogHandlerSingleton.Instance().LogLine("DLL Connected to our named pipe.", "System");
+			
+#warning UPDATE STATUS BAR WITH CONNECTED.
+		}
+
+		
+		private void HandleConnectedToPipe()
+		{
+			LogHandlerSingleton.Instance().LogLine("Connected to the DLL's named pipe", "System");
 			AppStateSingleton.Instance().SendSettings();
 			AppStateSingleton.Instance().SendKeyBindings();
-			LogHandlerSingleton.Instance().LogLine("Client connected", "System");
+			LogHandlerSingleton.Instance().LogLine("Initial settings sent", "System");
 #warning UPDATE STATUS BAR WITH CONNECTED.
 		}
 		
