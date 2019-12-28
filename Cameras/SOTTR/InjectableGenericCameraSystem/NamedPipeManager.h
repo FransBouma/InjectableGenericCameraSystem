@@ -28,6 +28,7 @@
 #pragma once
 #include "stdafx.h"
 #include <string>
+#include "Defaults.h"
 
 namespace IGCS
 {
@@ -41,7 +42,11 @@ namespace IGCS
 
 		void connectDllToClient();
 		void startListening();
-		void writeMessage(std::string messageText);
+		void writeTextPayload(const std::string& messageText, MessageType typeOfMessage);
+		void writeMessage(const std::string& messageText);
+		void writeMessage(const std::string& messageText, bool isError);
+		void writeMessage(const std::string& messageText, bool isError, bool isDebug);
+		void writeNotification(const std::string& notificationText);
 		DWORD listenerThread();
 
 	private:

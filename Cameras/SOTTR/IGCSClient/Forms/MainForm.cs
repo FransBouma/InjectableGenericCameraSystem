@@ -42,12 +42,10 @@ using IGCSClient.Interfaces;
 using IGCSClient.NamedPipeSubSystem;
 using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
 
-namespace IGCSClient
+namespace IGCSClient.Forms
 {
 	public partial class MainForm : Form
 	{
-		private NamedPipeServer _pipeServer;
-
 		public MainForm()
 		{
 			InitializeComponent();
@@ -70,9 +68,12 @@ namespace IGCSClient
 			// Disable a tab by setting 'Enabled' to false.
 			//_hotsamplingTab.Enabled = false;
 			//_settingsTab.Enabled = false;
+
+			var notificationWindow = new NotificationWindow();
+			MessageHandlerSingleton.Instance().NotificationLogFunc = s => notificationWindow.AddNotification(s);
+			notificationWindow.Show(this);
 		}
-
-
+		
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
@@ -83,19 +84,19 @@ namespace IGCSClient
 
 		private void HandleConnectionReceived()
 		{
-			LogHandlerSingleton.Instance().LogLine("DLL Connected to our named pipe.", "System");
-			
-#warning UPDATE STATUS BAR WITH CONNECTED.
+			LogHandlerSingleton.Instance().LogLine("DLL Connected to our named pipe.", "System", true, true);
+
+			_dllToClientConnectedSBLabel.Text = "Client->Camera dll active";
 		}
 
 		
 		private void HandleConnectedToPipe()
 		{
-			LogHandlerSingleton.Instance().LogLine("Connected to the DLL's named pipe", "System");
+			LogHandlerSingleton.Instance().LogLine("Connected to the DLL's named pipe", "System", true, true);
 			AppStateSingleton.Instance().SendSettings();
 			AppStateSingleton.Instance().SendKeyBindings();
-			LogHandlerSingleton.Instance().LogLine("Initial settings sent", "System");
-#warning UPDATE STATUS BAR WITH CONNECTED.
+			LogHandlerSingleton.Instance().LogLine("Initial settings sent", "System", true, true);
+			_clientToDllConnectedSBLabel.Text = "Camera dll->client active";
 		}
 		
 
@@ -106,22 +107,6 @@ namespace IGCSClient
 			{
 				e.Cancel = true;
 			}
-		}
-
-
-		// TEST CODE BELOW THIS LINE
-
-
-
-		private void HandleMessageReceived(ContainerEventArgs<byte[]> e)
-		{
-			byte[] value = e.Value;
-
-			LogHandlerSingleton.Instance().LogLine("Message received. Length of value: {0}", "Named pipe", value.Length);
-
-			// for now, assume a string
-			string valueAsString = new ASCIIEncoding().GetString(value);
-			LogHandlerSingleton.Instance().LogLine("Value: {0}", "Named pipe", valueAsString);
 		}
 	}
 }

@@ -33,6 +33,7 @@
 #include <string>
 #include "Utils.h"
 #include "Globals.h"
+#include <vector>
 
 namespace IGCS
 {
@@ -73,6 +74,7 @@ namespace IGCS
 			Console::WriteError("Couldn't connect to named pipe DLL -> Client. Please start the client first.");
 		}
 	}
+
 	
 	void NamedPipeManager::startListening()
 	{
@@ -81,22 +83,61 @@ namespace IGCS
 		HANDLE threadHandle = CreateThread(nullptr, 0, staticListenerThread, (LPVOID)this, 0, &threadID);
 	}
 
-	
-	void NamedPipeManager::writeMessage(std::string messageText)
+
+	void NamedPipeManager::writeTextPayload(const std::string& messageText, MessageType typeOfMessage)
 	{
-		if(!_dllToClientPipeConnected)
+		if (!_dllToClientPipeConnected)
 		{
 			return;
 		}
 
+		BYTE payload[IGCS_MAX_MESSAGE_SIZE];
+		payload[0] = BYTE(typeOfMessage);
+		strncpy_s((char*)(&payload[1]), IGCS_MAX_MESSAGE_SIZE-2, messageText.c_str(), messageText.length());
 		DWORD numberOfBytesWritten;
-		WriteFile(_dllToClientPipe, messageText.c_str(), messageText.length(), &numberOfBytesWritten, nullptr);
+		WriteFile(_dllToClientPipe, payload, messageText.length() + 1, &numberOfBytesWritten, nullptr);
 	}
 
 	
+	void NamedPipeManager::writeMessage(const std::string& messageText)
+	{
+		writeMessage(messageText, false, false);
+	}
+
+	
+	void NamedPipeManager::writeMessage(const std::string& messageText, bool isError)
+	{
+		writeMessage(messageText, isError, false);
+	}
+
+	
+	void NamedPipeManager::writeMessage(const std::string& messageText, bool isError, bool isDebug)
+	{
+		MessageType typeOfMessage = MessageType::NormalTextMessage;
+		if(isError)
+		{
+			typeOfMessage = MessageType::ErrorTextMessage;
+		}
+		else
+		{
+			if(isDebug)
+			{
+				typeOfMessage = MessageType::DebugTextMessage;
+			}
+		}
+		writeTextPayload(messageText, typeOfMessage);
+	}
+
+	
+	void NamedPipeManager::writeNotification(const std::string& notificationText)
+	{
+		writeTextPayload(notificationText, MessageType::Notification);
+	}
+
+
 	DWORD NamedPipeManager::listenerThread()
 	{
-		Console::WriteLine("listenerThread start");
+		// Set security ACLs as by default the connecting party has to be admin.
 		SECURITY_ATTRIBUTES sa;
 		sa.lpSecurityDescriptor = (PSECURITY_DESCRIPTOR)malloc(SECURITY_DESCRIPTOR_MIN_LENGTH);
 		bool saInitFailed = false;
@@ -119,12 +160,13 @@ namespace IGCS
 		{
 			saInitFailed = true;
 		}
-		_clientToDllPipe = CreateNamedPipe(TEXT(IGCS_PIPENAME_CLIENT_TO_DLL), PIPE_ACCESS_INBOUND, PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT, 1, 0, 1024 * 4,
+		_clientToDllPipe = CreateNamedPipe(TEXT(IGCS_PIPENAME_CLIENT_TO_DLL), PIPE_ACCESS_INBOUND, PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT, 1, 0, IGCS_MAX_MESSAGE_SIZE,
 											NMPWAIT_WAIT_FOREVER, saInitFailed ? nullptr : &sa);
 		_clientToDllPipeConnected = (_clientToDllPipe != INVALID_HANDLE_VALUE);
 		if (!_clientToDllPipeConnected)
 		{
 			Console::WriteError("Couldn't create the Client -> DLL named pipe.");
+			return 1;
 		}
 		while (_clientToDllPipe != INVALID_HANDLE_VALUE)
 		{
@@ -139,7 +181,6 @@ namespace IGCS
 				}
 			}
 		}
-		Console::WriteLine("listenerThread End");
 		return 0;
 	}
 
@@ -148,28 +189,20 @@ namespace IGCS
 	{
 		if(bytesRead<3)
 		{
-			Console::WriteError(Utils::formatString("Received message with length: %d", bytesRead));
+			//not useful
 			return;
 		}
 		switch(buffer[0])
 		{
 		case 1:		// Setting
 			Globals::instance().handleSettingMessage(buffer, bytesRead);
-#ifdef _DEBUG			
-			Console::WriteLine(Utils::formatString("Setting message received with id %d. Length: %d", buffer[1], bytesRead));
-#endif
 			break;
 		case 2:		// Keybinding
 			Globals::instance().handleKeybindingMessage(buffer, bytesRead);
-#ifdef _DEBUG
-			Console::WriteLine(Utils::formatString("Keybinding message received with id %d. Length: %d", buffer[1], bytesRead));
-#endif
 			break;
-		case 5:		// Action
+		case 7:		// Action
 			break;
-		default:
-			Console::WriteError(Utils::formatString("Received message of type: %d. Can't handle it. Ignored", buffer[0]));
-			break;
+		// ignore the rest
 		}
 	}
 }

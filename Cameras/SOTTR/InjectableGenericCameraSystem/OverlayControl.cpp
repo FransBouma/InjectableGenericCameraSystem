@@ -14,6 +14,7 @@
 #include "Input.h"
 #include <atomic>
 #include "InputHooker.h"
+#include "NamedPipeManager.h"
 
 using namespace std;
 
@@ -61,17 +62,19 @@ namespace IGCS::OverlayControl
 		InitializeCriticalSectionAndSpinCount(&_notificationCriticalSection, 0x400);
 	}
 
-	void addNotification(string notificationText)
+	void addNotification(const string& notificationText)
 	{
+#if _DX12_
+		NamedPipeManager::instance().writeNotification(notificationText);
+#else
 		EnterCriticalSection(&_notificationCriticalSection);
-#if !_DX12_
-			Notification toAdd;
+		Notification toAdd;
 			toAdd.notificationText = notificationText;
 			toAdd.timeFirstDisplayed = -1.0f;
 			_activeNotifications.push_back(toAdd);
 			OverlayConsole::instance().logLine(notificationText.c_str());
-#endif
 		LeaveCriticalSection(&_notificationCriticalSection);
+#endif
 	}
 
 

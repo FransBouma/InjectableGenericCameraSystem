@@ -39,6 +39,7 @@ namespace IGCS
 	#define IGCS_SETTINGS_SAVE_DELAY				5.0f	// in seconds
 	#define IGCS_SPLASH_DURATION					8.0f	// in seconds
 	#define IGCS_SUPPORT_RAWKEYBOARDINPUT			true	// if set to false, raw keyboard input is ignored.
+	#define IGCS_MAX_MESSAGE_SIZE					4*1024	// in bytes
 
 	// Keyboard system control
 	#define IGCS_KEY_TOGGLE_OVERLAY					VK_INSERT		// With control
@@ -124,5 +125,17 @@ namespace IGCS
 		LightfieldDistance = 13,
 		LightfieldShotCount = 14,
 		// add more here
+	};
+
+	
+	enum class MessageType : BYTE
+	{
+		Setting = 1,
+		KeyBinding = 2,
+		Notification = 3,
+		NormalTextMessage = 4,
+		ErrorTextMessage = 5,
+		DebugTextMessage= 6,
+		Action = 7,
 	};
 }

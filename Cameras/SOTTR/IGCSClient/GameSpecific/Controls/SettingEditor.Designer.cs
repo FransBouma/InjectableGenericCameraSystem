@@ -1,6 +1,4 @@
-﻿using IGCSClient.Controls;
-
-namespace IGCSClient.GameSpecific.Controls
+﻿namespace IGCSClient.GameSpecific.Controls
 {
 	partial class SettingEditor
 	{
@@ -441,40 +439,40 @@ namespace IGCSClient.GameSpecific.Controls
 		#endregion
 
 		private System.Windows.Forms.GroupBox groupBox1;
-		private FloatInput _movementSpeedInput;
+		private IGCSClient.Controls.FloatInput _movementSpeedInput;
 		private System.Windows.Forms.Label label4;
-		private FloatInput _upMovementInput;
+		private IGCSClient.Controls.FloatInput _upMovementInput;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.Label label3;
-		private FloatInput _slowMovementInput;
+		private IGCSClient.Controls.FloatInput _slowMovementInput;
 		private System.Windows.Forms.Label label2;
-		private FloatInput _fastMovementInput;
+		private IGCSClient.Controls.FloatInput _fastMovementInput;
 		private System.Windows.Forms.Label label1;
-		private DropDownInput _cameraControlDeviceInput;
+		private IGCSClient.Controls.DropDownInput _cameraControlDeviceInput;
 		private System.Windows.Forms.GroupBox groupBox2;
-		private FloatInput _rotationSpeedInput;
+		private IGCSClient.Controls.FloatInput _rotationSpeedInput;
 		private System.Windows.Forms.Label label6;
-		private BoolInput _invertYInput;
+		private IGCSClient.Controls.BoolInput _invertYInput;
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.GroupBox groupBox3;
-		private FloatInput _fovSpeedInput;
+		private IGCSClient.Controls.FloatInput _fovSpeedInput;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.GroupBox groupBox4;
-		private FolderInput _shotOutputFolderInput;
+		private IGCSClient.Controls.FolderInput _shotOutputFolderInput;
 		private System.Windows.Forms.Label label9;
-		private IntInput _frameWaitInput;
+		private IGCSClient.Controls.IntInput _frameWaitInput;
 		private System.Windows.Forms.Label label10;
-		private DropDownInput _shotTypeInput;
+		private IGCSClient.Controls.DropDownInput _shotTypeInput;
 		private System.Windows.Forms.Label label11;
 		private System.Windows.Forms.Panel _horizontalPanoramaControlsPanel;
 		private System.Windows.Forms.Panel _lightfieldControlsPanel;
-		private FloatInput _lightfieldDistanceInput;
+		private IGCSClient.Controls.FloatInput _lightfieldDistanceInput;
 		private System.Windows.Forms.Label label14;
-		private IntInput _lightfieldShotCountInput;
+		private IGCSClient.Controls.IntInput _lightfieldShotCountInput;
 		private System.Windows.Forms.Label label15;
-		private FloatInput _panoFovInput;
+		private IGCSClient.Controls.FloatInput _panoFovInput;
 		private System.Windows.Forms.Label label12;
-		private FloatInput _panoOverlapInput;
+		private IGCSClient.Controls.FloatInput _panoOverlapInput;
 		private System.Windows.Forms.Label label13;
 	}
 }

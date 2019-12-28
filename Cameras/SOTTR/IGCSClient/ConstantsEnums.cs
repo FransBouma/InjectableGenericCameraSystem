@@ -65,8 +65,10 @@ namespace IGCSClient
 		public const byte Setting = 1;
 		public const byte KeyBinding = 2;
 		public const byte Notification = 3;
-		public const byte TextMessage = 4;
-		public const byte Action = 5;
+		public const byte NormalTextMessage = 4;
+		public const byte ErrorTextMessage = 5;
+		public const byte DebugTextMessage = 6;
+		public const byte Action = 7;
 	}
 
 

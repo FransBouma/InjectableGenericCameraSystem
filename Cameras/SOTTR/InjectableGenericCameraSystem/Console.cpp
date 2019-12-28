@@ -91,6 +91,7 @@ namespace IGCS::Console
 	void WriteError(const string& error)
 	{
 		EnsureConsole();
+		NamedPipeManager::instance().writeMessage(error, true, false);
 		cerr << error << endl;
 	}
 

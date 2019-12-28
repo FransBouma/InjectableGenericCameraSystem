@@ -54,20 +54,20 @@ namespace IGCSClient.Controls
 
 		/// <summary>
 		/// Logs the line in LineToLog in the output window, no verbose specification, which means that the line is logged
-		/// even when the verbose checkbox is disabled. Always appends a newline.
+		/// even when the verbose checkbox is disabled.
 		/// </summary>
 		/// <param name="lineToLog">Line to log which can contain format characters</param>
 		/// <param name="source">Source description of the line</param>
 		/// <param name="args">The args to pass to the string formatter.</param>
 		public void LogLine(string lineToLog, string source, params object[] args)
 		{
-			LogLine(lineToLog, source, false, true, false, args);
+			LogLine(lineToLog, source, false, false, false, args);
 		}
 
 
 		/// <summary>
 		/// Logs the line in LineToLog in the output window, based on the verbose setting isVerboseMessage, which means that the line is not logged
-		/// when the verbose checkbox is disabled if isVerboseMessage is set to true. Always appends a newline.
+		/// when the verbose checkbox is disabled if isVerboseMessage is set to true.
 		/// </summary>
 		/// <param name="lineToLog">Line to log which can contain format characters</param>
 		/// <param name="source">Source description of the line</param>
@@ -75,7 +75,7 @@ namespace IGCSClient.Controls
 		/// <param name="args">The args to pass to the string formatter.</param>
 		public void LogLine(string lineToLog, string source, bool isVerboseMessage, params object[] args)
 		{
-			LogLine(lineToLog, source, isVerboseMessage, true, false, args);
+			LogLine(lineToLog, source, isVerboseMessage, false, false, args);
 		}
 
 
@@ -88,11 +88,11 @@ namespace IGCSClient.Controls
 		/// <param name="lineToLog">Line to log which can contain format characters</param>
 		/// <param name="source">Source description of the line</param>
 		/// <param name="isVerboseMessage">Flag to signal if the line is a VerboseMessage, which means it is only logged when the Verbose checkbox is set</param>
-		/// <param name="appendNewLine">Flag to signal if a Newline should be appended to the line.</param>
+		/// <param name="isDebug">Flag to signal that the message is a debug message. Debug messages are only shown in debug builds.</param>
 		/// <param name="args">The args to pass to the string formatter.</param>
-		public void LogLine(string lineToLog, string source, bool isVerboseMessage, bool appendNewLine, params object[] args)
+		public void LogLine(string lineToLog, string source, bool isVerboseMessage, bool isDebug, params object[] args)
 		{
-			LogLine(lineToLog, source, isVerboseMessage, appendNewLine, false, args);
+			LogLine(lineToLog, source, isVerboseMessage, isDebug, false, args);
 		}
 
 
@@ -104,10 +104,10 @@ namespace IGCSClient.Controls
 		/// <param name="lineToLog">Line to log which can contain format characters</param>
 		/// <param name="source">Source description of the line</param>
 		/// <param name="isVerboseMessage">Flag to signal if the line is a VerboseMessage, which means it is only logged when the Verbose checkbox is set</param>
-		/// <param name="appendNewLine">Flag to signal if a Newline should be appended to the line.</param>
+		/// <param name="isDebug">Flag to signal that the message is a debug message. Debug messages are only shown in debug builds.</param>
 		/// <param name="isError">if set to <c>true</c> [is error].</param>
 		/// <param name="args">The args to pass to the string formatter.</param>
-		public void LogLine(string lineToLog, string source, bool isVerboseMessage, bool appendNewLine, bool isError, params object[] args)
+		public void LogLine(string lineToLog, string source, bool isVerboseMessage, bool isDebug, bool isError, params object[] args)
 		{
 			if( (!_verboseCheckBox.Checked) && isVerboseMessage)
 			{
@@ -115,11 +115,15 @@ namespace IGCSClient.Controls
 				return;
 			}
 
-			string crlf = string.Empty;
-			if(appendNewLine)
+#if DEBUG
+			string debugPrefix = isDebug ? "[DEBUG] " : string.Empty;
+#else
+			if(isDebug)
 			{
-				crlf = Environment.NewLine;
+				return;
 			}
+			string debugPrefix = string.Empty;
+#endif
 			Font currentFont = _outputTextBox.Font;
 			// display Source
 			if(!string.IsNullOrEmpty(source))
@@ -134,12 +138,13 @@ namespace IGCSClient.Controls
 			{
 				_outputTextBox.SelectionColor = Color.Red;
 			}
-			string stringToLog = lineToLog;
+			// strip trailing zeros, which might be there due to c style string passing from dll to client
+			string stringToLog = lineToLog.TrimEnd('\0');
 			if(args.Length>0)
 			{
 				stringToLog = string.Format(lineToLog, args);
 			}
-			_outputTextBox.AppendText(string.Format("{0}{1}", stringToLog, crlf));
+			_outputTextBox.AppendText(string.Format("{0}{1}{2}", debugPrefix, stringToLog, Environment.NewLine));
 			_outputTextBox.SelectionColor = currentColor;
 		}
 

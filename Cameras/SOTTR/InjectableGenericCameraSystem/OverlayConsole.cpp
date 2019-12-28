@@ -3,7 +3,7 @@
 #include "imgui.h"
 #include "Utils.h"
 #ifdef _DX12_
-#include "Console.h"
+#include "NamedPipeManager.h"
 #endif // _DX12_
 
 using namespace std;
@@ -31,7 +31,7 @@ namespace IGCS
 		string formattedArgs = Utils::formatStringVa(fmt, args);
 		va_end(args);
 #ifdef _DX12_
-		Console::WriteLine(formattedArgs);
+		NamedPipeManager::instance().writeMessage(formattedArgs, false, true);
 #else
 		logLine("%s %s", CONSOLE_DEBUG_PREFIX, formattedArgs.c_str());
 #endif //_DX12_
@@ -45,7 +45,11 @@ namespace IGCS
 		va_start(args, fmt);
 		string formattedArgs = Utils::formatStringVa(fmt, args);
 		va_end(args);
+#ifdef _DX12_
+		NamedPipeManager::instance().writeMessage(formattedArgs, true, false);
+#else
 		logLine("%s %s", CONSOLE_ERROR_PREFIX, formattedArgs.c_str());
+#endif
 	}
 
 
@@ -58,7 +62,7 @@ namespace IGCS
 #ifdef _DX12_
 		string formattedArgs = Utils::formatStringVa(fmt, args);
 		va_end(args);
-		Console::WriteLine(formattedArgs);
+		NamedPipeManager::instance().writeMessage(formattedArgs);
 #else
 		logLinev(format.c_str(), args);
 		va_end(args);

@@ -64,12 +64,12 @@ namespace IGCSClient.Classes
 
 		internal MessageHandler()
 		{
-			_pipeServer = new NamedPipeServer(ConstantsEnums.DllToClientNamedPipeName);
-			_pipeClient = new NamedPipeClient(ConstantsEnums.ClientToDllNamedPipeName);
+			_pipeServer = new NamedPipeServer(ConstantsEnums.DllToClientNamedPipeName);			// for connection from dll to this client. We create and own the pipe
+			_pipeClient = new NamedPipeClient(ConstantsEnums.ClientToDllNamedPipeName);			// for connection from this client to dll. Dll creates and owns the pipe
 			_pipeServer.MessageReceived += _pipeServer_MessageReceived;
 			_pipeServer.ClientConnectionEstablished += _pipeServer_ClientConnectionEstablished;
 			_pipeClient.ConnectedToPipe += _pipeClient_ConnectedToPipe;
-			LogHandlerSingleton.Instance().LogLine("Named pipe enabled.", "System");
+			LogHandlerSingleton.Instance().LogLine("Named pipe enabled.", "System", true, true);
 		}
 
 
@@ -81,9 +81,6 @@ namespace IGCSClient.Classes
 		public void SendSettingMessage(byte id, byte[] payload)
 		{
 			_pipeClient.Send(new IGCSMessage(MessageType.Setting, id, payload));
-#if DEBUG
-			LogHandlerSingleton.Instance().LogLine("Setting message sent with id: {0}. Length: {1}", "[DEBUG] MessageHandler", id, payload.Length);
-#endif
 		}
 
 
@@ -100,9 +97,34 @@ namespace IGCSClient.Classes
 
 		private void HandleNamedPipeMessageReceived(ContainerEventArgs<byte[]> e)
 		{
-			// test code.
+			if(e.Value.Length < 2)
+			{
+				// not usable
+				return;
+			}
 
-			LogHandlerSingleton.Instance().LogLine(new ASCIIEncoding().GetString(e.Value, 0, e.Value.Length-1), "Named Pipe Handler");
+			// data starts at offset 1 or later, as the first byte is the message type.
+			var asciiEncoding = new ASCIIEncoding();
+			switch(e.Value[0])
+			{
+				case MessageType.Action:
+					break;
+				case MessageType.Notification:
+					var notificationText = asciiEncoding.GetString(e.Value, 1, e.Value.Length-1);
+					LogHandlerSingleton.Instance().LogLine("Notification: " + notificationText, string.Empty);
+					this.NotificationLogFunc?.Invoke(notificationText);
+					break;
+				case MessageType.NormalTextMessage:
+					LogHandlerSingleton.Instance().LogLine(asciiEncoding.GetString(e.Value, 1, e.Value.Length-1), string.Empty);
+					break;
+				case MessageType.DebugTextMessage:
+					LogHandlerSingleton.Instance().LogLine(asciiEncoding.GetString(e.Value, 1, e.Value.Length-1), "Camera dll", true, true);
+					break;
+				case MessageType.ErrorTextMessage:
+					LogHandlerSingleton.Instance().LogLine(asciiEncoding.GetString(e.Value, 1, e.Value.Length-1), "Camera dll", true, false, true);
+					break;
+				// rest are ignored.
+			}
 		}
 
 		
@@ -139,6 +161,7 @@ namespace IGCSClient.Classes
 		/// Func which is called when a connection to the dll's named pipe has been established
 		/// </summary>
 		public Action ConnectedToNamedPipeFunc { get; set; }
+		public Action<string> NotificationLogFunc { get; set; }
 		#endregion
 	}
 }

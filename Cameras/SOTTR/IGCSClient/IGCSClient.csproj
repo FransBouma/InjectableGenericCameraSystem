@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -89,6 +90,12 @@
     </Compile>
     <Compile Include="Controls\KeyCombinationInput.Designer.cs">
       <DependentUpon>KeyCombinationInput.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\NotificationWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NotificationWindow.Designer.cs">
+      <DependentUpon>NotificationWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="GameSpecific\Classes\GameSpecificConstants.cs" />
     <Compile Include="GameSpecific\Classes\SettingFactory.cs" />
@@ -160,10 +167,10 @@
     <Compile Include="NamedPipeSubsystem\NamedPipeStreamBase.cs" />
     <Compile Include="NamedPipeSubsystem\NamedPipeStreamConnection.cs" />
     <Compile Include="NamedPipeSubsystem\NamedPipeServer.cs" />
-    <Compile Include="MainForm.cs">
+    <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
@@ -189,6 +196,9 @@
     <EmbeddedResource Include="Controls\KeyCombinationInput.resx">
       <DependentUpon>KeyCombinationInput.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NotificationWindow.resx">
+      <DependentUpon>NotificationWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GameSpecific\Controls\KeyBindingEditor.resx">
       <DependentUpon>KeyBindingEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -201,7 +211,7 @@
     <EmbeddedResource Include="Forms\SimpleExceptionViewer.resx">
       <DependentUpon>SimpleExceptionViewer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
+    <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

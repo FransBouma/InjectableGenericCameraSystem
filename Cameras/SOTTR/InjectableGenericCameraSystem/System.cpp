@@ -335,7 +335,6 @@ namespace IGCS
 		NamedPipeManager::instance().connectDllToClient();
 		NamedPipeManager::instance().startListening();
 		Console::Init();
-		Console::WriteHeader();
 #else
 		D3D11InternalOverlay::initializeHook();
 #endif

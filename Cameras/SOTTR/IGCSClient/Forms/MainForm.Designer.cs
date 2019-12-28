@@ -1,4 +1,4 @@
-﻿namespace IGCSClient
+﻿namespace IGCSClient.Forms
 {
 	partial class MainForm
 	{
@@ -28,29 +28,34 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+			this._statusBar = new System.Windows.Forms.StatusStrip();
 			this._mainTabControl = new System.Windows.Forms.TabControl();
 			this._generalTab = new System.Windows.Forms.TabPage();
 			this._settingsTab = new System.Windows.Forms.TabPage();
-			this._settingsEditor = new IGCSClient.GameSpecific.Controls.SettingEditor();
 			this._keyBindingsTab = new System.Windows.Forms.TabPage();
-			this._keyBindingsEditor = new IGCSClient.GameSpecific.Controls.KeyBindingEditor();
 			this._hotsamplingTab = new System.Windows.Forms.TabPage();
 			this._logTab = new System.Windows.Forms.TabPage();
+			this._dllToClientConnectedSBLabel = new System.Windows.Forms.ToolStripStatusLabel();
+			this._clientToDllConnectedSBLabel = new System.Windows.Forms.ToolStripStatusLabel();
+			this._settingsEditor = new IGCSClient.GameSpecific.Controls.SettingEditor();
+			this._keyBindingsEditor = new IGCSClient.GameSpecific.Controls.KeyBindingEditor();
 			this._logControl = new IGCSClient.Controls.ApplicationOutput();
+			this._statusBar.SuspendLayout();
 			this._mainTabControl.SuspendLayout();
 			this._settingsTab.SuspendLayout();
 			this._keyBindingsTab.SuspendLayout();
 			this._logTab.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// statusStrip1
+			// _statusBar
 			// 
-			this.statusStrip1.Location = new System.Drawing.Point(0, 428);
-			this.statusStrip1.Name = "statusStrip1";
-			this.statusStrip1.Size = new System.Drawing.Size(668, 22);
-			this.statusStrip1.TabIndex = 0;
-			this.statusStrip1.Text = "statusStrip1";
+			this._statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._dllToClientConnectedSBLabel,
+            this._clientToDllConnectedSBLabel});
+			this._statusBar.Location = new System.Drawing.Point(0, 426);
+			this._statusBar.Name = "_statusBar";
+			this._statusBar.Size = new System.Drawing.Size(668, 24);
+			this._statusBar.TabIndex = 0;
 			// 
 			// _mainTabControl
 			// 
@@ -90,14 +95,6 @@
 			this._settingsTab.TabIndex = 1;
 			this._settingsTab.Text = "Settings";
 			// 
-			// _settingsEditor
-			// 
-			this._settingsEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._settingsEditor.Location = new System.Drawing.Point(3, 3);
-			this._settingsEditor.Name = "_settingsEditor";
-			this._settingsEditor.Size = new System.Drawing.Size(648, 390);
-			this._settingsEditor.TabIndex = 4;
-			// 
 			// _keyBindingsTab
 			// 
 			this._keyBindingsTab.AutoScroll = true;
@@ -109,15 +106,6 @@
 			this._keyBindingsTab.Size = new System.Drawing.Size(654, 396);
 			this._keyBindingsTab.TabIndex = 3;
 			this._keyBindingsTab.Text = "Key bindings";
-			// 
-			// _keyBindingsEditor
-			// 
-			this._keyBindingsEditor.BackColor = System.Drawing.SystemColors.Window;
-			this._keyBindingsEditor.Dock = System.Windows.Forms.DockStyle.Top;
-			this._keyBindingsEditor.Location = new System.Drawing.Point(3, 3);
-			this._keyBindingsEditor.Name = "_keyBindingsEditor";
-			this._keyBindingsEditor.Size = new System.Drawing.Size(631, 587);
-			this._keyBindingsEditor.TabIndex = 4;
 			// 
 			// _hotsamplingTab
 			// 
@@ -140,6 +128,37 @@
 			this._logTab.Text = "Log";
 			this._logTab.UseVisualStyleBackColor = true;
 			// 
+			// _dllToClientConnectedSBLabel
+			// 
+			this._dllToClientConnectedSBLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+			this._dllToClientConnectedSBLabel.Name = "_dllToClientConnectedSBLabel";
+			this._dllToClientConnectedSBLabel.Size = new System.Drawing.Size(90, 19);
+			this._dllToClientConnectedSBLabel.Text = "Not connected";
+			// 
+			// _clientToDllConnectedSBLabel
+			// 
+			this._clientToDllConnectedSBLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+			this._clientToDllConnectedSBLabel.Name = "_clientToDllConnectedSBLabel";
+			this._clientToDllConnectedSBLabel.Size = new System.Drawing.Size(90, 19);
+			this._clientToDllConnectedSBLabel.Text = "Not connected";
+			// 
+			// _settingsEditor
+			// 
+			this._settingsEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._settingsEditor.Location = new System.Drawing.Point(3, 3);
+			this._settingsEditor.Name = "_settingsEditor";
+			this._settingsEditor.Size = new System.Drawing.Size(648, 390);
+			this._settingsEditor.TabIndex = 4;
+			// 
+			// _keyBindingsEditor
+			// 
+			this._keyBindingsEditor.BackColor = System.Drawing.SystemColors.Window;
+			this._keyBindingsEditor.Dock = System.Windows.Forms.DockStyle.Top;
+			this._keyBindingsEditor.Location = new System.Drawing.Point(3, 3);
+			this._keyBindingsEditor.Name = "_keyBindingsEditor";
+			this._keyBindingsEditor.Size = new System.Drawing.Size(631, 587);
+			this._keyBindingsEditor.TabIndex = 4;
+			// 
 			// _logControl
 			// 
 			this._logControl.BackColor = System.Drawing.SystemColors.Window;
@@ -155,11 +174,13 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(668, 450);
 			this.Controls.Add(this._mainTabControl);
-			this.Controls.Add(this.statusStrip1);
+			this.Controls.Add(this._statusBar);
 			this.DoubleBuffered = true;
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Form1";
+			this._statusBar.ResumeLayout(false);
+			this._statusBar.PerformLayout();
 			this._mainTabControl.ResumeLayout(false);
 			this._settingsTab.ResumeLayout(false);
 			this._keyBindingsTab.ResumeLayout(false);
@@ -171,7 +192,7 @@
 
 		#endregion
 
-		private System.Windows.Forms.StatusStrip statusStrip1;
+		private System.Windows.Forms.StatusStrip _statusBar;
 		private System.Windows.Forms.TabControl _mainTabControl;
 		private System.Windows.Forms.TabPage _generalTab;
 		private System.Windows.Forms.TabPage _settingsTab;
@@ -181,6 +202,8 @@
 		private GameSpecific.Controls.SettingEditor _settingsEditor;
 		private GameSpecific.Controls.KeyBindingEditor _keyBindingsEditor;
 		private Controls.ApplicationOutput _logControl;
+		private System.Windows.Forms.ToolStripStatusLabel _dllToClientConnectedSBLabel;
+		private System.Windows.Forms.ToolStripStatusLabel _clientToDllConnectedSBLabel;
 	}
 }
 

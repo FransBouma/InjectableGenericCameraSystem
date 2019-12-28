@@ -82,20 +82,20 @@ namespace IGCSClient.Classes
 
 		/// <summary>
 		/// Logs the line in LineToLog in the output window, no verbose specification, which means that the line is logged
-		/// even when the verbose checkbox is disabled. Always appends a newline.
+		/// even when the verbose checkbox is disabled.
 		/// </summary>
 		/// <param name="lineToLog">Line to log which can contain format characters</param>
 		/// <param name="source">Source description of the line</param>
 		/// <param name="args">The args to pass to the string formatter.</param>
 		public void LogLine(string lineToLog, string source, params object[] args)
 		{
-			LogLine(lineToLog, source, false, true, false, args);
+			LogLine(lineToLog, source, false, false, false, args);
 		}
 
 
 		/// <summary>
 		/// Logs the line in LineToLog in the output window, based on the verbose setting isVerboseMessage, which means that the line is not logged
-		/// when the verbose checkbox is disabled if isVerboseMessage is set to true. Always appends a newline.
+		/// when the verbose checkbox is disabled if isVerboseMessage is set to true.
 		/// </summary>
 		/// <param name="lineToLog">Line to log which can contain format characters</param>
 		/// <param name="source">Source description of the line</param>
@@ -103,46 +103,44 @@ namespace IGCSClient.Classes
 		/// <param name="args">The args to pass to the string formatter.</param>
 		public void LogLine(string lineToLog, string source, bool isVerboseMessage, params object[] args)
 		{
-			LogLine(lineToLog, source, isVerboseMessage, true, false, args);
+			LogLine(lineToLog, source, isVerboseMessage, false, false, args);
 		}
 		
 
 		/// <summary>
 		/// Logs the given line to the output window. Based on the verbose checkbox and the VerboseMessage flag the message is logged or not.
 		/// If the verbose checkbox is set, also lines with VerboseMessage=true will be logged, otherwise these messages will be suppressed.
-		/// Appends a newline if AppendNewLine is set to true.
 		/// </summary>
 		/// <param name="lineToLog">Line to log which can contain format characters</param>
 		/// <param name="source">Source description of the line</param>
 		/// <param name="isVerboseMessage">Flag to signal if the line is a VerboseMessage, which means it is only logged when the Verbose checkbox is set</param>
-		/// <param name="appendNewLine">Flag to signal if a Newline should be appended to the line.</param>
+		/// <param name="isDebug">Flag to signal that the message is a debug message. Debug messages are only shown in debug builds.</param>
 		/// <param name="args">The args to pass to the string formatter.</param>
-		public void LogLine(string lineToLog, string source, bool isVerboseMessage, bool appendNewLine, params object[] args)
+		public void LogLine(string lineToLog, string source, bool isVerboseMessage, bool isDebug, params object[] args)
 		{
-			LogLine(lineToLog, source, isVerboseMessage, appendNewLine, false, args);
+			LogLine(lineToLog, source, isVerboseMessage, isDebug, false, args);
 		}
 
 
 		/// <summary>
 		/// Logs the given line to the output window. Based on the verbose checkbox and the VerboseMessage flag the message is logged or not.
 		/// If the verbose checkbox is set, also lines with VerboseMessage=true will be logged, otherwise these messages will be suppressed.
-		/// Appends a newline if AppendNewLine is set to true.
 		/// </summary>
 		/// <param name="lineToLog">Line to log which can contain format characters</param>
 		/// <param name="source">Source description of the line</param>
 		/// <param name="isVerboseMessage">Flag to signal if the line is a VerboseMessage, which means it is only logged when the Verbose checkbox is set</param>
-		/// <param name="appendNewLine">Flag to signal if a Newline should be appended to the line.</param>
+		/// <param name="isDebug">Flag to signal that the message is a debug message. Debug messages are only shown in debug builds.</param>
 		/// <param name="isError">if set to <c>true</c> [is error].</param>
 		/// <param name="args">The args to pass to the string formatter.</param>
-		public void LogLine(string lineToLog, string source, bool isVerboseMessage, bool appendNewLine, bool isError, params object[] args)
+		public void LogLine(string lineToLog, string source, bool isVerboseMessage, bool isDebug, bool isError, params object[] args)
 		{
 			if(_outputControl.InvokeRequired)
 			{
-				_outputControl.Invoke(_outputControl.LogLineFunc, new object[] {lineToLog, source, isVerboseMessage, appendNewLine, isError, args});
+				_outputControl.Invoke(_outputControl.LogLineFunc, new object[] {lineToLog, source, isVerboseMessage, isDebug, isError, args});
 			}
 			else
 			{
-				_outputControl.LogLine(lineToLog, source, isVerboseMessage, appendNewLine, isError, args);
+				_outputControl.LogLine(lineToLog, source, isVerboseMessage, isDebug, isError, args);
 			}
 		}
 
