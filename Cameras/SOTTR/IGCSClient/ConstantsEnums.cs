@@ -40,6 +40,11 @@ namespace IGCSClient
 		internal static readonly string ClientToDllNamedPipeName = "IgcsClientToDll";
 		internal static readonly int BufferLength = 4*1024;	// 4KB buffer should be more than enough. We expect to be actively reading whenever things arrive.
 		internal static readonly string IniFilename = "IGCSClientSettings.ini";
+		internal static readonly double NotificationWindowOpacity = 0.7;
+		internal static readonly double NotificationDisplayTimeInSeconds = 2.0;
+		internal static readonly string IGCSSettingsFolder = "IGCS";
+		internal static readonly string RecentlyUsedFilename = "IGCSClientRecentlyUsed.txt";
+		internal static readonly int NumberOfDllCacheEntriesToKeep = 100;
 	}
 
 

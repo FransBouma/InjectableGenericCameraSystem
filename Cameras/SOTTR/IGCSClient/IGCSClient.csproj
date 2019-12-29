@@ -55,6 +55,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="SD.Tools.Algorithmia, Version=1.4.0.0, Culture=neutral, PublicKeyToken=8ede9265bbb8e107, processorArchitecture=MSIL">
       <HintPath>..\packages\SD.Tools.Algorithmia.1.4.0\lib\net452\SD.Tools.Algorithmia.dll</HintPath>
@@ -63,6 +66,7 @@
       <HintPath>..\packages\SD.Tools.BCLExtensions.1.2.2\lib\net452\SD.Tools.BCLExtensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -76,6 +80,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\AppState.cs" />
+    <Compile Include="Classes\DllCacheData.cs" />
+    <Compile Include="Classes\DllInjector.cs" />
     <Compile Include="Classes\Settings\BoolSetting.cs" />
     <Compile Include="Classes\Settings\DropDownSetting.cs" />
     <Compile Include="Classes\Settings\FolderSetting.cs" />
@@ -85,6 +91,13 @@
     <Compile Include="Classes\Settings\KeyBindingSetting.cs" />
     <Compile Include="Classes\KeyCombination.cs" />
     <Compile Include="Classes\MessageHandler.cs" />
+    <Compile Include="Classes\Win32Wrapper.cs" />
+    <Compile Include="Controls\GeneralTabControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\GeneralTabControl.Designer.cs">
+      <DependentUpon>GeneralTabControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\KeyCombinationInput.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -96,6 +109,12 @@
     </Compile>
     <Compile Include="Forms\NotificationWindow.Designer.cs">
       <DependentUpon>NotificationWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProcessSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProcessSelector.Designer.cs">
+      <DependentUpon>ProcessSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="GameSpecific\Classes\GameSpecificConstants.cs" />
     <Compile Include="GameSpecific\Classes\SettingFactory.cs" />
@@ -187,6 +206,9 @@
     <EmbeddedResource Include="Controls\BoolInput.resx">
       <DependentUpon>BoolInput.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\GeneralTabControl.resx">
+      <DependentUpon>GeneralTabControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\IntInput.resx">
       <DependentUpon>IntInput.cs</DependentUpon>
     </EmbeddedResource>
@@ -198,6 +220,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\NotificationWindow.resx">
       <DependentUpon>NotificationWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProcessSelector.resx">
+      <DependentUpon>ProcessSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GameSpecific\Controls\KeyBindingEditor.resx">
       <DependentUpon>KeyBindingEditor.cs</DependentUpon>
@@ -224,16 +249,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.manifest" />
+    <None Include="LICENSE" />
     <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -241,6 +259,8 @@
   <ItemGroup>
     <None Include="Resources\Folder_16x.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\IGCSIcon.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

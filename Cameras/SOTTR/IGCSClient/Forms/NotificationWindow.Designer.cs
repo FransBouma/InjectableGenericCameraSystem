@@ -28,34 +28,26 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this._notificationGroupBox = new System.Windows.Forms.GroupBox();
+			this.components = new System.ComponentModel.Container();
 			this._notificationLabel = new System.Windows.Forms.Label();
-			this._notificationGroupBox.SuspendLayout();
+			this._notificationPurgeTimer = new System.Windows.Forms.Timer(this.components);
 			this.SuspendLayout();
-			// 
-			// _notificationGroupBox
-			// 
-			this._notificationGroupBox.AutoSize = true;
-			this._notificationGroupBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this._notificationGroupBox.BackColor = System.Drawing.Color.Transparent;
-			this._notificationGroupBox.Controls.Add(this._notificationLabel);
-			this._notificationGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._notificationGroupBox.Location = new System.Drawing.Point(0, 0);
-			this._notificationGroupBox.Name = "_notificationGroupBox";
-			this._notificationGroupBox.Size = new System.Drawing.Size(800, 450);
-			this._notificationGroupBox.TabIndex = 0;
-			this._notificationGroupBox.TabStop = false;
-			this._notificationGroupBox.Text = "Notifications";
 			// 
 			// _notificationLabel
 			// 
 			this._notificationLabel.AutoSize = true;
 			this._notificationLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._notificationLabel.Location = new System.Drawing.Point(3, 16);
+			this._notificationLabel.Location = new System.Drawing.Point(0, 0);
 			this._notificationLabel.Name = "_notificationLabel";
-			this._notificationLabel.Size = new System.Drawing.Size(101, 13);
+			this._notificationLabel.Padding = new System.Windows.Forms.Padding(10);
+			this._notificationLabel.Size = new System.Drawing.Size(121, 33);
 			this._notificationLabel.TabIndex = 0;
 			this._notificationLabel.Text = "This is the initial text";
+			// 
+			// _notificationPurgeTimer
+			// 
+			this._notificationPurgeTimer.Interval = 200;
+			this._notificationPurgeTimer.Tick += new System.EventHandler(this._notificationPurgeTimer_Tick);
 			// 
 			// NotificationWindow
 			// 
@@ -63,8 +55,8 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoSize = true;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.ClientSize = new System.Drawing.Size(800, 450);
-			this.Controls.Add(this._notificationGroupBox);
+			this.ClientSize = new System.Drawing.Size(315, 129);
+			this.Controls.Add(this._notificationLabel);
 			this.DoubleBuffered = true;
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 			this.Location = new System.Drawing.Point(4, 4);
@@ -74,16 +66,13 @@
 			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
 			this.Text = "NotificationWindow";
 			this.TopMost = true;
-			this._notificationGroupBox.ResumeLayout(false);
-			this._notificationGroupBox.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
 		}
 
 		#endregion
-
-		private System.Windows.Forms.GroupBox _notificationGroupBox;
 		private System.Windows.Forms.Label _notificationLabel;
+		private System.Windows.Forms.Timer _notificationPurgeTimer;
 	}
 }

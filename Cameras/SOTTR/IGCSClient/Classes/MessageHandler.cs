@@ -111,7 +111,7 @@ namespace IGCSClient.Classes
 					break;
 				case MessageType.Notification:
 					var notificationText = asciiEncoding.GetString(e.Value, 1, e.Value.Length-1);
-					LogHandlerSingleton.Instance().LogLine("Notification: " + notificationText, string.Empty);
+					LogHandlerSingleton.Instance().LogLine(notificationText, string.Empty);
 					this.NotificationLogFunc?.Invoke(notificationText);
 					break;
 				case MessageType.NormalTextMessage:

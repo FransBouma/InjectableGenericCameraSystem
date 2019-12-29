@@ -86,7 +86,7 @@ namespace IGCSClient.GameSpecific.Classes
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.MoveCameraForward, nameof(KeyBindingType.MoveCameraForward), new KeyCombination(GameSpecificKeyBindingDefaults.MoveCameraForwardDefault)));
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.MoveCameraBackward, nameof(KeyBindingType.MoveCameraBackward), new KeyCombination(GameSpecificKeyBindingDefaults.MoveCameraBackwardDefault)));
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.MoveCameraUp, nameof(KeyBindingType.MoveCameraUp), new KeyCombination(GameSpecificKeyBindingDefaults.MoveCameraUpDefault)));
-			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.MoveCameraDown, nameof(KeyBindingType.MoveCameraDown), new KeyCombination(GameSpecificKeyBindingDefaults.MoveCameraForwardDefault)));
+			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.MoveCameraDown, nameof(KeyBindingType.MoveCameraDown), new KeyCombination(GameSpecificKeyBindingDefaults.MoveCameraDownDefault)));
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.RotateCameraUp, nameof(KeyBindingType.RotateCameraUp), new KeyCombination(GameSpecificKeyBindingDefaults.RotateCameraUpDefault)));
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.RotateCameraDown, nameof(KeyBindingType.RotateCameraDown), new KeyCombination(GameSpecificKeyBindingDefaults.RotateCameraDownDefault)));
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.RotateCameraLeft, nameof(KeyBindingType.RotateCameraLeft), new KeyCombination(GameSpecificKeyBindingDefaults.RotateCameraLeftDefault)));

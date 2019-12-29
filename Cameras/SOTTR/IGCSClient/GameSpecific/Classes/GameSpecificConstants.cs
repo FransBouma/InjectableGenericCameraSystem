@@ -30,6 +30,12 @@ using System.Windows.Forms;
 
 namespace IGCSClient.GameSpecific.Classes
 {
+	internal static class GameSpecificConstants
+	{
+		public const string ClientWindowTitle = "Shadow of the Tomb Raider tools, v1.0.4";
+	}
+
+
 	internal static class GameSpecificSettingDefaults
 	{
 		public const float FastMovementMultiplier = 5.0f;

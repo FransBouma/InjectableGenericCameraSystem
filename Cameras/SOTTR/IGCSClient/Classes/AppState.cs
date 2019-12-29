@@ -28,6 +28,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -64,6 +66,8 @@ namespace IGCSClient.Classes
 		#region Members
 		private readonly List<ISetting> _settings;
 		private readonly List<KeyBindingSetting> _keyBindings;
+		private Dictionary<string, DllCacheData> _recentProcessesWithDllsUsed;		// key: process name (blabla.exe), value: dll name (full path) & DateTime last used.
+		private Process _attachedProcess;
 		#endregion
 
 
@@ -71,6 +75,7 @@ namespace IGCSClient.Classes
 		{
 			_settings = new List<ISetting>();
 			_keyBindings = new List<KeyBindingSetting>();
+			_recentProcessesWithDllsUsed = new Dictionary<string, DllCacheData>();
 		}
 
 
@@ -104,7 +109,74 @@ namespace IGCSClient.Classes
 		}
 		
 
-		public void WriteToIni()
+		public void LoadRecentProcessList()
+		{
+			try
+			{
+				var fileName = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConstantsEnums.IGCSSettingsFolder),
+											ConstantsEnums.RecentlyUsedFilename);
+				if(!File.Exists(fileName))
+				{
+					return;
+				}
+
+				// format: 
+				// processname1|dllname1|Ticks
+				// processname2|dllname1|Ticks
+				// processname3|dllname2|Ticks
+				// ...
+				// example:
+				// mygame.exe|..\..\mygamecameratools.dll|2384763243
+				// mygame2.exe|unlocker.dll|23462112323
+				var allLines = File.ReadAllLines(fileName);
+				foreach(var line in allLines)
+				{
+					var parts = line.Split('|');
+					if(parts.Length != 3)
+					{
+						continue;
+					}
+
+					_recentProcessesWithDllsUsed[parts[0]] = new DllCacheData(parts[1], new DateTime(Convert.ToInt64(parts[2])));
+				}
+			}
+			catch
+			{
+				// ignore, as we can't do much about it anyway... 
+			}
+		}
+		
+
+		public void SaveRecentProcessList()
+		{
+			if(_recentProcessesWithDllsUsed.Count<=0)
+			{
+				return;
+			}
+			// trim list if there are more than the max
+			if(_recentProcessesWithDllsUsed.Count > ConstantsEnums.NumberOfDllCacheEntriesToKeep)
+			{
+				// keep the most recent 100. 
+				var mostRecent = _recentProcessesWithDllsUsed.OrderByDescending(kvp=>kvp.Value.LastUsedDate).Take(ConstantsEnums.NumberOfDllCacheEntriesToKeep).Select(kvp=>kvp.Key).ToList();
+				// remove the rest. 
+				var toRemove = _recentProcessesWithDllsUsed.Keys.Except(mostRecent).ToList();
+				foreach(var key in toRemove)
+				{
+					_recentProcessesWithDllsUsed.Remove(key);
+				}
+			}
+			var folderName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ConstantsEnums.IGCSSettingsFolder);
+			if(!Directory.Exists(folderName))
+			{
+				Directory.CreateDirectory(folderName);
+			}
+			var fileName = Path.Combine(folderName, ConstantsEnums.RecentlyUsedFilename);
+			var linesToWrite = _recentProcessesWithDllsUsed.Select(kvp=>kvp.Key + "|" + kvp.Value.DllName + "|" + kvp.Value.LastUsedDate.Ticks);
+			File.WriteAllLines(fileName, linesToWrite);
+		}
+
+
+		public void SaveSettingsToIni()
 		{
 			var iniFile = new IniFileHandler(ConstantsEnums.IniFilename);
 			foreach(var setting in _settings)
@@ -137,6 +209,35 @@ namespace IGCSClient.Classes
 		}
 
 
+		public List<string> GetRecentProcessesList()
+		{
+			return _recentProcessesWithDllsUsed.Keys.ToList();
+		}
+
+
+		public string GetDllNameForSelectedProcess(string processName)
+		{
+			string toReturn = string.Empty;
+			if(_recentProcessesWithDllsUsed.TryGetValue(processName, out DllCacheData dllData))
+			{
+				toReturn = dllData.DllName;
+			}
+			return toReturn;
+		}
+
+
+		public void AddDllNameForProcess(string processName, string dllName)
+		{
+			_recentProcessesWithDllsUsed[processName] = new DllCacheData(dllName, DateTime.Now);
+		}
+
+
+		public void SetAttachedProcess(Process attachedProcess)
+		{
+			_attachedProcess = attachedProcess;
+		}
+
+
 		#region Properties
 		public ISetting[] Settings
 		{
@@ -146,6 +247,11 @@ namespace IGCSClient.Classes
 		public ISetting[] KeyBindings
 		{
 			get { return _keyBindings.Cast<ISetting>().ToArray(); }
+		}
+
+		public Process AttachedProcess
+		{
+			get { return _attachedProcess; }
 		}
 		#endregion
 	}

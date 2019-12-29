@@ -28,6 +28,7 @@
 using System;
 using System.Text;
 using System.Windows.Forms;
+using IGCSClient.Properties;
 
 namespace IGCSClient.Forms
 {
@@ -48,6 +49,7 @@ namespace IGCSClient.Forms
 		public SimpleExceptionViewer(Exception toView, string caption)
 		{
 			InitializeComponent();
+			this.Icon = Resources.IGCSIcon;
 			_toView = toView;
 			if(!string.IsNullOrEmpty(caption))
 			{

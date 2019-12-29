@@ -37,10 +37,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using IGCSClient.Classes;
-using IGCSClient.Controls;
-using IGCSClient.Interfaces;
-using IGCSClient.NamedPipeSubSystem;
-using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
+using IGCSClient.GameSpecific.Classes;
+using IGCSClient.Properties;
 
 namespace IGCSClient.Forms
 {
@@ -50,24 +48,29 @@ namespace IGCSClient.Forms
 		{
 			InitializeComponent();
 			LogHandlerSingleton.Instance().Setup(_logControl);
+			this.Icon = Resources.IGCSIcon;
 		}
 
 
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
+			this.Text = GameSpecificConstants.ClientWindowTitle;
+
 			// First setup the controls 
 			_settingsEditor.Setup();
 			_keyBindingsEditor.Setup();
 
 			// then load the values from the ini file (if any) so the controls are already there.
 			AppStateSingleton.Instance().LoadFromIni();
+			AppStateSingleton.Instance().LoadRecentProcessList();
 			MessageHandlerSingleton.Instance().ConnectedToNamedPipeFunc = () => HandleConnectedToPipe();
 			MessageHandlerSingleton.Instance().ClientConnectionReceivedFunc = () => HandleConnectionReceived();
 
-			// Disable a tab by setting 'Enabled' to false.
-			//_hotsamplingTab.Enabled = false;
-			//_settingsTab.Enabled = false;
+			// Disable all tabs, except general, log and about.
+			_hotsamplingTab.Enabled = false;
+			_settingsTab.Enabled = false;
+			_keyBindingsTab.Enabled = false;
 
 			var notificationWindow = new NotificationWindow();
 			MessageHandlerSingleton.Instance().NotificationLogFunc = s => notificationWindow.AddNotification(s);
@@ -77,8 +80,19 @@ namespace IGCSClient.Forms
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
-			AppStateSingleton.Instance().WriteToIni();
+			AppStateSingleton.Instance().SaveSettingsToIni();
+			AppStateSingleton.Instance().SaveRecentProcessList();
 			base.OnClosing(e);
+		}
+
+		
+
+		private void HandleDllInjected()
+		{
+			// enable all tabs
+			_hotsamplingTab.Enabled = true;
+			_settingsTab.Enabled = true;
+			_keyBindingsTab.Enabled = true;
 		}
 
 
@@ -100,13 +114,9 @@ namespace IGCSClient.Forms
 		}
 		
 
-		private void _mainTabControl_Selecting(object sender, TabControlCancelEventArgs e)
+		private void _generalTabControl_DllInjected(object sender, EventArgs e)
 		{
-			// To make sure the user can't select a disabled tab
-			if(!e.TabPage.Enabled)
-			{
-				e.Cancel = true;
-			}
+			HandleDllInjected();
 		}
 	}
 }
