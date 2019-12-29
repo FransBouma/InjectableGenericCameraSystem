@@ -98,6 +98,12 @@
     <Compile Include="Controls\GeneralTabControl.Designer.cs">
       <DependentUpon>GeneralTabControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\HotsamplingControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\HotsamplingControl.Designer.cs">
+      <DependentUpon>HotsamplingControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\KeyCombinationInput.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -208,6 +214,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\GeneralTabControl.resx">
       <DependentUpon>GeneralTabControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\HotsamplingControl.resx">
+      <DependentUpon>HotsamplingControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\IntInput.resx">
       <DependentUpon>IntInput.cs</DependentUpon>

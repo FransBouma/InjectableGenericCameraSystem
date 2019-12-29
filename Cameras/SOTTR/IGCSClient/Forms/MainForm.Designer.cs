@@ -33,20 +33,22 @@
 			this._clientToDllConnectedSBLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this._mainTabControl = new System.Windows.Forms.TabControl();
 			this._generalTab = new System.Windows.Forms.TabPage();
+			this._generalTabControl = new IGCSClient.Controls.GeneralTabControl();
 			this._settingsTab = new System.Windows.Forms.TabPage();
+			this._settingsEditor = new IGCSClient.GameSpecific.Controls.SettingEditor();
 			this._keyBindingsTab = new System.Windows.Forms.TabPage();
+			this._keyBindingsEditor = new IGCSClient.GameSpecific.Controls.KeyBindingEditor();
 			this._hotsamplingTab = new System.Windows.Forms.TabPage();
 			this._logTab = new System.Windows.Forms.TabPage();
-			this._aboutTab = new System.Windows.Forms.TabPage();
-			this._generalTabControl = new IGCSClient.Controls.GeneralTabControl();
-			this._settingsEditor = new IGCSClient.GameSpecific.Controls.SettingEditor();
-			this._keyBindingsEditor = new IGCSClient.GameSpecific.Controls.KeyBindingEditor();
 			this._logControl = new IGCSClient.Controls.ApplicationOutput();
+			this._aboutTab = new System.Windows.Forms.TabPage();
+			this._hotsamplingControl = new IGCSClient.Controls.HotsamplingControl();
 			this._statusBar.SuspendLayout();
 			this._mainTabControl.SuspendLayout();
 			this._generalTab.SuspendLayout();
 			this._settingsTab.SuspendLayout();
 			this._keyBindingsTab.SuspendLayout();
+			this._hotsamplingTab.SuspendLayout();
 			this._logTab.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -102,6 +104,15 @@
 			this._generalTab.TabIndex = 0;
 			this._generalTab.Text = "General";
 			// 
+			// _generalTabControl
+			// 
+			this._generalTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._generalTabControl.Location = new System.Drawing.Point(3, 3);
+			this._generalTabControl.Name = "_generalTabControl";
+			this._generalTabControl.Size = new System.Drawing.Size(635, 384);
+			this._generalTabControl.TabIndex = 0;
+			this._generalTabControl.DllInjected += new System.EventHandler(this._generalTabControl_DllInjected);
+			// 
 			// _settingsTab
 			// 
 			this._settingsTab.BackColor = System.Drawing.SystemColors.Window;
@@ -112,6 +123,14 @@
 			this._settingsTab.Size = new System.Drawing.Size(641, 390);
 			this._settingsTab.TabIndex = 1;
 			this._settingsTab.Text = "Settings";
+			// 
+			// _settingsEditor
+			// 
+			this._settingsEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._settingsEditor.Location = new System.Drawing.Point(3, 3);
+			this._settingsEditor.Name = "_settingsEditor";
+			this._settingsEditor.Size = new System.Drawing.Size(635, 384);
+			this._settingsEditor.TabIndex = 4;
 			// 
 			// _keyBindingsTab
 			// 
@@ -125,8 +144,18 @@
 			this._keyBindingsTab.TabIndex = 3;
 			this._keyBindingsTab.Text = "Key bindings";
 			// 
+			// _keyBindingsEditor
+			// 
+			this._keyBindingsEditor.BackColor = System.Drawing.SystemColors.Window;
+			this._keyBindingsEditor.Dock = System.Windows.Forms.DockStyle.Top;
+			this._keyBindingsEditor.Location = new System.Drawing.Point(3, 3);
+			this._keyBindingsEditor.Name = "_keyBindingsEditor";
+			this._keyBindingsEditor.Size = new System.Drawing.Size(618, 587);
+			this._keyBindingsEditor.TabIndex = 4;
+			// 
 			// _hotsamplingTab
 			// 
+			this._hotsamplingTab.Controls.Add(this._hotsamplingControl);
 			this._hotsamplingTab.Location = new System.Drawing.Point(4, 22);
 			this._hotsamplingTab.Name = "_hotsamplingTab";
 			this._hotsamplingTab.Padding = new System.Windows.Forms.Padding(3);
@@ -146,6 +175,15 @@
 			this._logTab.Text = "Log";
 			this._logTab.UseVisualStyleBackColor = true;
 			// 
+			// _logControl
+			// 
+			this._logControl.BackColor = System.Drawing.SystemColors.Window;
+			this._logControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._logControl.Location = new System.Drawing.Point(3, 3);
+			this._logControl.Name = "_logControl";
+			this._logControl.Size = new System.Drawing.Size(635, 384);
+			this._logControl.TabIndex = 4;
+			// 
 			// _aboutTab
 			// 
 			this._aboutTab.Location = new System.Drawing.Point(4, 22);
@@ -156,40 +194,13 @@
 			this._aboutTab.Text = "About";
 			this._aboutTab.UseVisualStyleBackColor = true;
 			// 
-			// _generalTabControl
+			// _hotsamplingControl
 			// 
-			this._generalTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._generalTabControl.Location = new System.Drawing.Point(3, 3);
-			this._generalTabControl.Name = "_generalTabControl";
-			this._generalTabControl.Size = new System.Drawing.Size(635, 384);
-			this._generalTabControl.TabIndex = 0;
-			this._generalTabControl.DllInjected += new System.EventHandler(this._generalTabControl_DllInjected);
-			// 
-			// _settingsEditor
-			// 
-			this._settingsEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._settingsEditor.Location = new System.Drawing.Point(3, 3);
-			this._settingsEditor.Name = "_settingsEditor";
-			this._settingsEditor.Size = new System.Drawing.Size(635, 384);
-			this._settingsEditor.TabIndex = 4;
-			// 
-			// _keyBindingsEditor
-			// 
-			this._keyBindingsEditor.BackColor = System.Drawing.SystemColors.Window;
-			this._keyBindingsEditor.Dock = System.Windows.Forms.DockStyle.Top;
-			this._keyBindingsEditor.Location = new System.Drawing.Point(3, 3);
-			this._keyBindingsEditor.Name = "_keyBindingsEditor";
-			this._keyBindingsEditor.Size = new System.Drawing.Size(618, 587);
-			this._keyBindingsEditor.TabIndex = 4;
-			// 
-			// _logControl
-			// 
-			this._logControl.BackColor = System.Drawing.SystemColors.Window;
-			this._logControl.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._logControl.Location = new System.Drawing.Point(3, 3);
-			this._logControl.Name = "_logControl";
-			this._logControl.Size = new System.Drawing.Size(635, 384);
-			this._logControl.TabIndex = 4;
+			this._hotsamplingControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._hotsamplingControl.Location = new System.Drawing.Point(3, 3);
+			this._hotsamplingControl.Name = "_hotsamplingControl";
+			this._hotsamplingControl.Size = new System.Drawing.Size(635, 384);
+			this._hotsamplingControl.TabIndex = 0;
 			// 
 			// MainForm
 			// 
@@ -208,6 +219,7 @@
 			this._generalTab.ResumeLayout(false);
 			this._settingsTab.ResumeLayout(false);
 			this._keyBindingsTab.ResumeLayout(false);
+			this._hotsamplingTab.ResumeLayout(false);
 			this._logTab.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -230,6 +242,7 @@
 		private System.Windows.Forms.ToolStripStatusLabel _clientToDllConnectedSBLabel;
 		private System.Windows.Forms.TabPage _aboutTab;
 		private Controls.GeneralTabControl _generalTabControl;
+		private Controls.HotsamplingControl _hotsamplingControl;
 	}
 }
 

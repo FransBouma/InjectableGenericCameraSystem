@@ -68,7 +68,7 @@ namespace IGCSClient.Forms
 			MessageHandlerSingleton.Instance().ClientConnectionReceivedFunc = () => HandleConnectionReceived();
 
 			// Disable all tabs, except general, log and about.
-			_hotsamplingTab.Enabled = false;
+			//_hotsamplingTab.Enabled = false;
 			_settingsTab.Enabled = false;
 			_keyBindingsTab.Enabled = false;
 
