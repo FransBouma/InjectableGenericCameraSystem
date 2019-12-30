@@ -65,7 +65,6 @@ namespace IGCSClient.Forms
 			{
 				_notifications.Add(new Pair<string, DateTime>(toAdd, DateTime.Now));
 			}
-			DisplayNotifications();
 		}
 
 
@@ -79,7 +78,6 @@ namespace IGCSClient.Forms
 					displayText = string.Join(Environment.NewLine, _notifications.Select(n => n.Value1).ToArray());
 				}
 			}
-
 			this.Opacity = string.IsNullOrWhiteSpace(displayText) ? 0.0 : ConstantsEnums.NotificationWindowOpacity;
 			_notificationLabel.Text = displayText;
 		}

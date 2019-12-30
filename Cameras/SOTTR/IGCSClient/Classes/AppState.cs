@@ -34,6 +34,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using IGCSClient.Interfaces;
 using IGCSClient.NamedPipeSubSystem;
 using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
@@ -68,6 +69,7 @@ namespace IGCSClient.Classes
 		private readonly List<KeyBindingSetting> _keyBindings;
 		private Dictionary<string, DllCacheData> _recentProcessesWithDllsUsed;		// key: process name (blabla.exe), value: dll name (full path) & DateTime last used.
 		private Process _attachedProcess;
+		private IntPtr _attachedProcessMainWindowHwnd;
 		#endregion
 
 
@@ -76,6 +78,35 @@ namespace IGCSClient.Classes
 			_settings = new List<ISetting>();
 			_keyBindings = new List<KeyBindingSetting>();
 			_recentProcessesWithDllsUsed = new Dictionary<string, DllCacheData>();
+			_attachedProcessMainWindowHwnd = IntPtr.Zero;
+		}
+
+
+		public IntPtr GetMainWindowHandleOfAttachedProcess()
+		{
+			if(this.AttachedProcess == null)
+			{
+				return IntPtr.Zero;
+			}
+
+			var screenOfWindow = Screen.FromHandle(_attachedProcessMainWindowHwnd);
+			if(screenOfWindow.Bounds.IsEmpty)
+			{
+				// obtain it using window traversal and top most 
+				var allWindowHandles = GeneralUtils.GetProcessWindowHandles(_attachedProcess);
+				foreach(var hwnd in allWindowHandles)
+				{
+					WINDOWINFO info = new WINDOWINFO();
+					Win32Wrapper.GetWindowInfo(hwnd, ref info);
+					screenOfWindow = Screen.FromHandle(hwnd);
+					if(!screenOfWindow.Bounds.IsEmpty)
+					{
+						_attachedProcessMainWindowHwnd = hwnd;
+						break;
+					}
+				}
+			}
+			return _attachedProcessMainWindowHwnd;
 		}
 
 
@@ -235,6 +266,7 @@ namespace IGCSClient.Classes
 		public void SetAttachedProcess(Process attachedProcess)
 		{
 			_attachedProcess = attachedProcess;
+			_attachedProcessMainWindowHwnd = attachedProcess.MainWindowHandle;
 		}
 
 

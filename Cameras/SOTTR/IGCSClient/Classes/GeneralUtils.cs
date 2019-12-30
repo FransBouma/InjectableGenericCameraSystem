@@ -33,6 +33,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace IGCSClient.Classes
@@ -115,6 +116,55 @@ namespace IGCSClient.Classes
 			}
 
 			return payloadInBytes;
+		}
+
+
+		public static List<IntPtr> GetProcessWindowHandles(Process process)
+		{
+			List<IntPtr> rootWindows = GetChildWindows(IntPtr.Zero);
+			List<IntPtr> dsProcRootWindows = new List<IntPtr>();
+			foreach (IntPtr hWnd in rootWindows)
+			{
+				Win32Wrapper.GetWindowThreadProcessId(hWnd, out var lpdwProcessId);
+				if(lpdwProcessId == process.Id)
+				{
+					dsProcRootWindows.Add(hWnd);
+				}
+			}
+			return dsProcRootWindows;
+		}
+
+
+		public static List<IntPtr> GetChildWindows(IntPtr parent)
+		{
+			List<IntPtr> result = new List<IntPtr>();
+			GCHandle listHandle = GCHandle.Alloc(result);
+			try
+			{
+				Win32Wrapper.Win32Callback childProc = new Win32Wrapper.Win32Callback(EnumWindow);
+				Win32Wrapper.EnumChildWindows(parent, childProc, GCHandle.ToIntPtr(listHandle));
+			}
+			finally
+			{
+				if(listHandle.IsAllocated)
+				{
+					listHandle.Free();
+				}
+			}
+			return result;
+		}
+
+
+		private static bool EnumWindow(IntPtr handle, IntPtr pointer)
+		{
+			GCHandle gch = GCHandle.FromIntPtr(pointer);
+			List<IntPtr> list = gch.Target as List<IntPtr>;
+			if (list == null)
+			{
+				throw new InvalidCastException("GCHandle Target could not be cast as List<IntPtr>");
+			}
+			list.Add(handle);
+			return true;
 		}
 	}
 }

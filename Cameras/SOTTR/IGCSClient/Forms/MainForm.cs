@@ -49,6 +49,7 @@ namespace IGCSClient.Forms
 			InitializeComponent();
 			LogHandlerSingleton.Instance().Setup(_logControl);
 			this.Icon = Resources.IGCSIcon;
+			this.MinimumSize = this.Size;
 		}
 
 
@@ -68,7 +69,7 @@ namespace IGCSClient.Forms
 			MessageHandlerSingleton.Instance().ClientConnectionReceivedFunc = () => HandleConnectionReceived();
 
 			// Disable all tabs, except general, log and about.
-			//_hotsamplingTab.Enabled = false;
+			_hotsamplingTab.Enabled = false;
 			_settingsTab.Enabled = false;
 			_keyBindingsTab.Enabled = false;
 
@@ -93,6 +94,8 @@ namespace IGCSClient.Forms
 			_hotsamplingTab.Enabled = true;
 			_settingsTab.Enabled = true;
 			_keyBindingsTab.Enabled = true;
+			// show the resolutions on the hotsampling tab
+			_hotsamplingControl.BindData();
 		}
 
 

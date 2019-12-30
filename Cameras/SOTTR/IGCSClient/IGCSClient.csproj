@@ -271,5 +271,11 @@
   <ItemGroup>
     <None Include="Resources\IGCSIcon.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\StatusWarning_12x_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\StatusWarning_16x.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

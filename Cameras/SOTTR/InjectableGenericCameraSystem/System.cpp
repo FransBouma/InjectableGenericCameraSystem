@@ -334,7 +334,7 @@ namespace IGCS
 #ifdef _DX12_
 		NamedPipeManager::instance().connectDllToClient();
 		NamedPipeManager::instance().startListening();
-		Console::Init();
+		//Console::Init();
 #else
 		D3D11InternalOverlay::initializeHook();
 #endif

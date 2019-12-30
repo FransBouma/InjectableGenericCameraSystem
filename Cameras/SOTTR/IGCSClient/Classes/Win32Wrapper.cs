@@ -92,8 +92,77 @@ namespace IGCSClient.Classes
 		 Release = 0x8000,
 	}
 
-    public class Win32Wrapper
+	
+	/// <summary>
+	/// RECT struct.
+	/// </summary>
+	[StructLayout(LayoutKind.Sequential)]
+	public struct RECT
+	{
+		public int left;
+		public int top;
+		public int right;
+		public int bottom;
+
+		public int Width { get { return right - left; } }
+		public int Height { get { return bottom - top; } }
+
+		public static void CopyRect(RECT rcSrc, ref RECT rcDest)
+		{
+			rcDest.left = rcSrc.left;
+			rcDest.top = rcSrc.top;
+			rcDest.right = rcSrc.right;
+			rcDest.bottom = rcSrc.bottom;
+		}
+	}
+
+
+	/// <summary>
+	/// WINDOWINFO struct.
+	/// </summary>
+	[StructLayout(LayoutKind.Sequential)]
+	public struct WINDOWINFO
+	{
+		public uint cbSize;
+		public RECT rcWindow;
+		public RECT rcClient;
+		public uint dwStyle;
+		public uint dwExStyle;
+		public uint dwWindowStatus;
+		public uint cxWindowBorders;
+		public uint cyWindowBorders;
+		public ushort atomWindowType;
+		public ushort wCreatorVersion;
+	}
+
+
+    public static class Win32Wrapper
     {
+		public const uint SWP_NOSIZE = 0x01;
+		public const uint SWP_NOMOVE = 0x02;
+		public const uint SWP_NOZORDER = 0x04;
+		public const uint SWP_NOACTIVATE = 0x10;
+		public const uint SWP_NOOWNERZORDER = 0x200;
+		public const uint SWP_NOSENDCHANGING = 0x400;
+		public const uint SWP_FRAMECHANGED = 0x20;
+
+		public const int SW_SHOWNOACTIVATE = 4;
+		public const int WM_EXITSIZEMOVE = 0x0232;
+
+		public const uint WS_THICKFRAME = 0x40000;
+		public const uint WS_DLGFRAME = 0x400000;
+		public const uint WS_BORDER = 0x800000;
+
+		public const uint WS_EX_DLGMODALFRAME = 1;
+		public const uint WS_EX_WINDOWEDGE = 0x100;
+		public const uint WS_EX_CLIENTEDGE = 0200;
+		public const uint WS_EX_STATICEDGE = 0x20000;
+
+		public const int GWL_STYLE = -16;
+		public const int GWL_EXSTYLE = -20;
+
+		public delegate bool Win32Callback(IntPtr hwnd, IntPtr lParam);
+
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError=true)]
 		public static extern IntPtr OpenProcess(ProcessAccessFlags processAccess, bool bInheritHandle, uint processId);
 
@@ -120,5 +189,37 @@ namespace IGCSClient.Classes
 
 		[DllImport("kernel32.dll", SetLastError=true, ExactSpelling=true)]
 		public static extern bool VirtualFreeEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, FreeType dwFreeType);
-    }
+		
+		[DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
+		public static extern bool GetWindowInfo(IntPtr hwnd, ref WINDOWINFO pwi);
+
+		[DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
+		public static extern bool SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
+
+		[DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
+		public static extern bool IsIconic(IntPtr hWnd);
+
+		[DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
+		public static extern bool IsZoomed(IntPtr hWnd);
+
+		[DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
+		public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+		[DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
+		public static extern int SendMessage(IntPtr hWnd, int msg, int wParam, int lParam);
+
+		[DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
+		public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+		[DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
+		public static extern int SetWindowLong(IntPtr hWnd, int nIndex, uint dwNewLong);
+
+		[DllImport("user32.Dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool EnumChildWindows(IntPtr parentHandle, Win32Callback callback, IntPtr lParam);
+
+		[DllImport("user32.dll")]
+		public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+	}
 }

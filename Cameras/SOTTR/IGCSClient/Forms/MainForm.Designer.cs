@@ -39,10 +39,10 @@
 			this._keyBindingsTab = new System.Windows.Forms.TabPage();
 			this._keyBindingsEditor = new IGCSClient.GameSpecific.Controls.KeyBindingEditor();
 			this._hotsamplingTab = new System.Windows.Forms.TabPage();
+			this._hotsamplingControl = new IGCSClient.Controls.HotsamplingControl();
 			this._logTab = new System.Windows.Forms.TabPage();
 			this._logControl = new IGCSClient.Controls.ApplicationOutput();
 			this._aboutTab = new System.Windows.Forms.TabPage();
-			this._hotsamplingControl = new IGCSClient.Controls.HotsamplingControl();
 			this._statusBar.SuspendLayout();
 			this._mainTabControl.SuspendLayout();
 			this._generalTab.SuspendLayout();
@@ -54,12 +54,9 @@
 			// 
 			// _statusBar
 			// 
-			this._statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._dllToClientConnectedSBLabel,
-            this._clientToDllConnectedSBLabel});
-			this._statusBar.Location = new System.Drawing.Point(0, 420);
+			this._statusBar.Location = new System.Drawing.Point(0, 435);
 			this._statusBar.Name = "_statusBar";
-			this._statusBar.Size = new System.Drawing.Size(655, 24);
+			this._statusBar.Size = new System.Drawing.Size(666, 24);
 			this._statusBar.TabIndex = 0;
 			// 
 			// _dllToClientConnectedSBLabel
@@ -90,7 +87,7 @@
 			this._mainTabControl.Location = new System.Drawing.Point(3, 3);
 			this._mainTabControl.Name = "_mainTabControl";
 			this._mainTabControl.SelectedIndex = 0;
-			this._mainTabControl.Size = new System.Drawing.Size(649, 416);
+			this._mainTabControl.Size = new System.Drawing.Size(660, 431);
 			this._mainTabControl.TabIndex = 1;
 			// 
 			// _generalTab
@@ -159,10 +156,18 @@
 			this._hotsamplingTab.Location = new System.Drawing.Point(4, 22);
 			this._hotsamplingTab.Name = "_hotsamplingTab";
 			this._hotsamplingTab.Padding = new System.Windows.Forms.Padding(3);
-			this._hotsamplingTab.Size = new System.Drawing.Size(641, 390);
+			this._hotsamplingTab.Size = new System.Drawing.Size(652, 405);
 			this._hotsamplingTab.TabIndex = 4;
 			this._hotsamplingTab.Text = "Hotsampling";
 			this._hotsamplingTab.UseVisualStyleBackColor = true;
+			// 
+			// _hotsamplingControl
+			// 
+			this._hotsamplingControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._hotsamplingControl.Location = new System.Drawing.Point(3, 3);
+			this._hotsamplingControl.Name = "_hotsamplingControl";
+			this._hotsamplingControl.Size = new System.Drawing.Size(646, 399);
+			this._hotsamplingControl.TabIndex = 0;
 			// 
 			// _logTab
 			// 
@@ -194,19 +199,11 @@
 			this._aboutTab.Text = "About";
 			this._aboutTab.UseVisualStyleBackColor = true;
 			// 
-			// _hotsamplingControl
-			// 
-			this._hotsamplingControl.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._hotsamplingControl.Location = new System.Drawing.Point(3, 3);
-			this._hotsamplingControl.Name = "_hotsamplingControl";
-			this._hotsamplingControl.Size = new System.Drawing.Size(635, 384);
-			this._hotsamplingControl.TabIndex = 0;
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(655, 444);
+			this.ClientSize = new System.Drawing.Size(666, 459);
 			this.Controls.Add(this._mainTabControl);
 			this.Controls.Add(this._statusBar);
 			this.DoubleBuffered = true;
