@@ -79,7 +79,7 @@ namespace IGCSClient.Controls
 			var defaultARs = new List<AspectRatio>()
 							 {
 								 new AspectRatio(16, 9), new AspectRatio(16, 10), new AspectRatio(21, 9), new AspectRatio(1, 1),
-								 new AspectRatio(9, 16), new AspectRatio(2, 3), new AspectRatio(3, 2), new AspectRatio(2, 1), new AspectRatio(4, 5)
+								 new AspectRatio(9, 16), new AspectRatio(2, 3), new AspectRatio(3, 2), new AspectRatio(2, 1), new AspectRatio(3, 4), new AspectRatio(4, 5)
 							 };
 			// remove the one we already have determined from the monitor (if present)
 			defaultARs.Remove(arOfScreen);
