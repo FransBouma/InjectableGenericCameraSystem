@@ -65,6 +65,7 @@ namespace IGCSClient.Controls
 		public void BindData()
 		{
 			GetActiveGameWindowInfo();
+			// game window hwnd is set in getactivegamewindowinfo
 			var screenWithGameWindow = Screen.FromHandle(_gameWindowHwnd);
 			BuildResolutionTree(screenWithGameWindow.Bounds);
 			_resolutionRefreshTimer.Enabled = true;
@@ -137,6 +138,11 @@ namespace IGCSClient.Controls
 
 		private AspectRatio CalculateAspectRatio(int width, int height)
 		{
+			if(width <= 0 || height <= 0)
+			{
+				return new AspectRatio(0, 0);
+			}
+
 			// calculate biggest common divisor using Euclides' algorithm: https://en.wikipedia.org/wiki/Euclidean_algorithm
 			// then divide both width and height with that number to get the values for the AR.
 			int biggest, smallest;
@@ -193,55 +199,53 @@ namespace IGCSClient.Controls
 			_currentWidthTextBox.Text = _gameWindowInfo.rcWindow.Width.ToString();
 			_currentHeightTextBox.Text = _gameWindowInfo.rcWindow.Height.ToString();
 			_currentARTextBox.Text = CalculateAspectRatio(_gameWindowInfo.rcWindow.Width, _gameWindowInfo.rcWindow.Height).ToString();
+			if(_newHeightUpDown.Value <= 0 || _newWidthUpDown.Value <= 0)
+			{
+				//reset with current window
+				_newHeightUpDown.Value = _gameWindowInfo.rcWindow.Height;
+				_newWidthUpDown.Value = _gameWindowInfo.rcWindow.Width;
+			}
 		}
 		
 
 		private void PerformHotSampling()
 		{
-			var selectedNode = _availableResolutionsTreeView.SelectedNode;
-			if(selectedNode == null || selectedNode.Tag == null)
+			if(_newWidthUpDown.Value < 100 || _newHeightUpDown.Value < 100)
 			{
 				return;
 			}
-
-			var resolution = (Resolution)selectedNode.Tag;
 			if((Win32Wrapper.IsIconic(_gameWindowHwnd) || Win32Wrapper.IsZoomed(_gameWindowHwnd)))
 			{
 				Win32Wrapper.ShowWindow(_gameWindowHwnd, Win32Wrapper.SW_SHOWNOACTIVATE);
 			}
+
+			int newHorizontalResolution = (int)_newWidthUpDown.Value;
+			int newVerticalResolution = (int)_newHeightUpDown.Value;
 			// always set the window at (0,0), if width is >= screen width.
 			var screenBounds = Screen.FromHandle(_gameWindowHwnd).Bounds;
-			int x = resolution.HorizontalResolution >= screenBounds.Width ? 0 : _gameWindowInfo.rcWindow.left;
-			int y = resolution.HorizontalResolution >= screenBounds.Height ? 0 : _gameWindowInfo.rcWindow.top;
 			uint uFlags = Win32Wrapper.SWP_NOZORDER | Win32Wrapper.SWP_NOACTIVATE | Win32Wrapper.SWP_NOOWNERZORDER | Win32Wrapper.SWP_NOSENDCHANGING;
-			if(resolution.HorizontalResolution < screenBounds.Width)
+			if(newHorizontalResolution < screenBounds.Width)
 			{
 				// let the window be where it is.
 				uFlags |= Win32Wrapper.SWP_NOMOVE;
 			}
 
-			Win32Wrapper.SetWindowPos(_gameWindowHwnd, 0, x, y, x+resolution.HorizontalResolution, y+resolution.VerticalResolution, uFlags);
+			Win32Wrapper.SetWindowPos(_gameWindowHwnd, 0, 0, 0, newHorizontalResolution, newVerticalResolution, uFlags);
 			if(GameSpecificConstants.HotsamplingRequiresEXITSIZEMOVE)
 			{
 				Win32Wrapper.SendMessage(_gameWindowHwnd, Win32Wrapper.WM_EXITSIZEMOVE, 0, 0);
 			}
 
-			//if(_removeBordersCheckBox.Checked)
+			// remove / add borders
+			uint nStyle = (uint)Win32Wrapper.GetWindowLong(_gameWindowHwnd, Win32Wrapper.GWL_STYLE);
+			nStyle = (nStyle | (Win32Wrapper.WS_THICKFRAME + Win32Wrapper.WS_DLGFRAME + Win32Wrapper.WS_BORDER + Win32Wrapper.WS_MAXIMIZEBOX + Win32Wrapper.WS_MINIMIZEBOX));
+			if(!_useWindowBordersCheckBox.Checked)
 			{
-				// remove the borders
-				uint nStyle = (uint)Win32Wrapper.GetWindowLong(_gameWindowHwnd, Win32Wrapper.GWL_STYLE);
-				nStyle = (nStyle | (Win32Wrapper.WS_THICKFRAME + Win32Wrapper.WS_DLGFRAME + Win32Wrapper.WS_BORDER)) ^
-						 (Win32Wrapper.WS_THICKFRAME + Win32Wrapper.WS_DLGFRAME + Win32Wrapper.WS_BORDER);
-				Win32Wrapper.SetWindowLong(_gameWindowHwnd, Win32Wrapper.GWL_STYLE, nStyle);
-
-				nStyle = (uint)Win32Wrapper.GetWindowLong(_gameWindowHwnd, Win32Wrapper.GWL_EXSTYLE);
-				nStyle = (nStyle | (Win32Wrapper.WS_EX_DLGMODALFRAME + Win32Wrapper.WS_EX_WINDOWEDGE + Win32Wrapper.WS_EX_CLIENTEDGE + Win32Wrapper.WS_EX_STATICEDGE)) ^
-						 (Win32Wrapper.WS_EX_DLGMODALFRAME + Win32Wrapper.WS_EX_WINDOWEDGE + Win32Wrapper.WS_EX_CLIENTEDGE + Win32Wrapper.WS_EX_STATICEDGE);
-				Win32Wrapper.SetWindowLong(_gameWindowHwnd, Win32Wrapper.GWL_EXSTYLE, nStyle);
-
-				uFlags = Win32Wrapper.SWP_NOSIZE | Win32Wrapper.SWP_NOMOVE | Win32Wrapper.SWP_NOZORDER | Win32Wrapper.SWP_NOACTIVATE | Win32Wrapper.SWP_NOOWNERZORDER | Win32Wrapper.SWP_NOSENDCHANGING | Win32Wrapper.SWP_FRAMECHANGED;
-				Win32Wrapper.SetWindowPos(_gameWindowHwnd, 0, 0, 0, 0, 0, uFlags);
+				nStyle^=(Win32Wrapper.WS_THICKFRAME + Win32Wrapper.WS_DLGFRAME + Win32Wrapper.WS_BORDER + Win32Wrapper.WS_MAXIMIZEBOX + Win32Wrapper.WS_MINIMIZEBOX);
 			}
+			Win32Wrapper.SetWindowLong(_gameWindowHwnd, Win32Wrapper.GWL_STYLE, nStyle);
+			uFlags = Win32Wrapper.SWP_NOSIZE | Win32Wrapper.SWP_NOMOVE | Win32Wrapper.SWP_NOZORDER | Win32Wrapper.SWP_NOACTIVATE | Win32Wrapper.SWP_NOOWNERZORDER | Win32Wrapper.SWP_NOSENDCHANGING | Win32Wrapper.SWP_FRAMECHANGED;
+			Win32Wrapper.SetWindowPos(_gameWindowHwnd, 0, 0, 0, 0, 0, uFlags);
 		}
 		
 
@@ -273,11 +277,8 @@ namespace IGCSClient.Controls
 		{
 			if(e.Node.Tag == null)
 			{
-				_newResolutionGroupBox.Enabled = false;
 				return;
 			}
-
-			_newResolutionGroupBox.Enabled = true;
 			var resolution = (Resolution)e.Node.Tag;
 			_newHeightUpDown.Value = resolution.VerticalResolution;
 			_newWidthUpDown.Value = resolution.HorizontalResolution;
@@ -302,6 +303,25 @@ namespace IGCSClient.Controls
 		private void _setResolutionButton_Click(object sender, EventArgs e)
 		{
 			PerformHotSampling();
+		}
+
+		private void _newWidthUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			HandleResolutionValueChanged();
+		}
+
+		private void _newHeightUpDown_ValueChanged(object sender, EventArgs e)
+		{
+			HandleResolutionValueChanged();
+		}
+
+
+		private void HandleResolutionValueChanged()
+		{
+			int horizontalResolution = (int)_newWidthUpDown.Value;
+			int verticalResolution = (int)_newHeightUpDown.Value;
+			_setResolutionButton.Enabled = (horizontalResolution > 640 && verticalResolution > 480);
+			_aspectRatioTextBox.Text = CalculateAspectRatio(horizontalResolution, verticalResolution).ToString();
 		}
 	}
 

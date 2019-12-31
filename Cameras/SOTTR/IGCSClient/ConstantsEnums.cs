@@ -45,6 +45,7 @@ namespace IGCSClient
 		internal static readonly string IGCSSettingsFolder = "IGCS";
 		internal static readonly string RecentlyUsedFilename = "IGCSClientRecentlyUsed.txt";
 		internal static readonly int NumberOfDllCacheEntriesToKeep = 100;
+		internal static readonly string IGCSRootURL = @"https://github.com/FransBouma/InjectableGenericCameraSystem/";
 	}
 
 

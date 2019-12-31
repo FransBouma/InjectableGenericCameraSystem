@@ -31,32 +31,32 @@
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HotsamplingControl));
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this._currentResolutionGroupBox = new System.Windows.Forms.GroupBox();
+			this._currentHeightTextBox = new System.Windows.Forms.TextBox();
+			this.label3 = new System.Windows.Forms.Label();
+			this.label4 = new System.Windows.Forms.Label();
+			this._currentARTextBox = new System.Windows.Forms.TextBox();
+			this._currentWidthTextBox = new System.Windows.Forms.TextBox();
+			this.label2 = new System.Windows.Forms.Label();
 			this._newResolutionGroupBox = new System.Windows.Forms.GroupBox();
-			this._removeBordersCheckBox = new System.Windows.Forms.CheckBox();
+			this.label1 = new System.Windows.Forms.Label();
+			this._aspectRatioTextBox = new System.Windows.Forms.TextBox();
+			this._useWindowBordersCheckBox = new System.Windows.Forms.CheckBox();
+			this.label6 = new System.Windows.Forms.Label();
+			this.label5 = new System.Windows.Forms.Label();
 			this._setResolutionButton = new System.Windows.Forms.Button();
 			this._newHeightUpDown = new System.Windows.Forms.NumericUpDown();
 			this._newWidthUpDown = new System.Windows.Forms.NumericUpDown();
+			this._warningLabel = new System.Windows.Forms.Button();
 			this._refreshButton = new System.Windows.Forms.Button();
 			this._availableResolutionsTreeView = new System.Windows.Forms.TreeView();
 			this._treeIcons = new System.Windows.Forms.ImageList(this.components);
-			this._warningLabel = new System.Windows.Forms.Button();
-			this._currentResolutionGroupBox = new System.Windows.Forms.GroupBox();
-			this.label2 = new System.Windows.Forms.Label();
-			this._currentWidthTextBox = new System.Windows.Forms.TextBox();
-			this.label3 = new System.Windows.Forms.Label();
-			this._currentHeightTextBox = new System.Windows.Forms.TextBox();
-			this.label5 = new System.Windows.Forms.Label();
-			this.label1 = new System.Windows.Forms.Label();
-			this.label6 = new System.Windows.Forms.Label();
-			this._aspectRatioTextBox = new System.Windows.Forms.TextBox();
-			this.label4 = new System.Windows.Forms.Label();
-			this._currentARTextBox = new System.Windows.Forms.TextBox();
 			this._resolutionRefreshTimer = new System.Windows.Forms.Timer(this.components);
 			this.groupBox1.SuspendLayout();
+			this._currentResolutionGroupBox.SuspendLayout();
 			this._newResolutionGroupBox.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._newHeightUpDown)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this._newWidthUpDown)).BeginInit();
-			this._currentResolutionGroupBox.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// groupBox1
@@ -76,17 +76,85 @@
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Game window resolution control";
 			// 
+			// _currentResolutionGroupBox
+			// 
+			this._currentResolutionGroupBox.Controls.Add(this._currentHeightTextBox);
+			this._currentResolutionGroupBox.Controls.Add(this.label3);
+			this._currentResolutionGroupBox.Controls.Add(this.label4);
+			this._currentResolutionGroupBox.Controls.Add(this._currentARTextBox);
+			this._currentResolutionGroupBox.Controls.Add(this._currentWidthTextBox);
+			this._currentResolutionGroupBox.Controls.Add(this.label2);
+			this._currentResolutionGroupBox.Location = new System.Drawing.Point(241, 123);
+			this._currentResolutionGroupBox.Name = "_currentResolutionGroupBox";
+			this._currentResolutionGroupBox.Size = new System.Drawing.Size(315, 79);
+			this._currentResolutionGroupBox.TabIndex = 1;
+			this._currentResolutionGroupBox.TabStop = false;
+			this._currentResolutionGroupBox.Text = "Active window resolution";
+			// 
+			// _currentHeightTextBox
+			// 
+			this._currentHeightTextBox.Location = new System.Drawing.Point(56, 47);
+			this._currentHeightTextBox.Name = "_currentHeightTextBox";
+			this._currentHeightTextBox.ReadOnly = true;
+			this._currentHeightTextBox.Size = new System.Drawing.Size(58, 20);
+			this._currentHeightTextBox.TabIndex = 1;
+			this._currentHeightTextBox.TabStop = false;
+			// 
+			// label3
+			// 
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(8, 50);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(38, 13);
+			this.label3.TabIndex = 0;
+			this.label3.Text = "Height";
+			// 
+			// label4
+			// 
+			this.label4.AutoSize = true;
+			this.label4.Location = new System.Drawing.Point(137, 24);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(63, 13);
+			this.label4.TabIndex = 0;
+			this.label4.Text = "Aspect ratio";
+			// 
+			// _currentARTextBox
+			// 
+			this._currentARTextBox.Location = new System.Drawing.Point(206, 21);
+			this._currentARTextBox.Name = "_currentARTextBox";
+			this._currentARTextBox.ReadOnly = true;
+			this._currentARTextBox.Size = new System.Drawing.Size(58, 20);
+			this._currentARTextBox.TabIndex = 1;
+			this._currentARTextBox.TabStop = false;
+			// 
+			// _currentWidthTextBox
+			// 
+			this._currentWidthTextBox.Location = new System.Drawing.Point(56, 21);
+			this._currentWidthTextBox.Name = "_currentWidthTextBox";
+			this._currentWidthTextBox.ReadOnly = true;
+			this._currentWidthTextBox.Size = new System.Drawing.Size(58, 20);
+			this._currentWidthTextBox.TabIndex = 1;
+			this._currentWidthTextBox.TabStop = false;
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(8, 24);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(35, 13);
+			this.label2.TabIndex = 0;
+			this.label2.Text = "Width";
+			// 
 			// _newResolutionGroupBox
 			// 
 			this._newResolutionGroupBox.Controls.Add(this.label1);
 			this._newResolutionGroupBox.Controls.Add(this._aspectRatioTextBox);
-			this._newResolutionGroupBox.Controls.Add(this._removeBordersCheckBox);
+			this._newResolutionGroupBox.Controls.Add(this._useWindowBordersCheckBox);
 			this._newResolutionGroupBox.Controls.Add(this.label6);
 			this._newResolutionGroupBox.Controls.Add(this.label5);
 			this._newResolutionGroupBox.Controls.Add(this._setResolutionButton);
 			this._newResolutionGroupBox.Controls.Add(this._newHeightUpDown);
 			this._newResolutionGroupBox.Controls.Add(this._newWidthUpDown);
-			this._newResolutionGroupBox.Enabled = false;
 			this._newResolutionGroupBox.Location = new System.Drawing.Point(240, 14);
 			this._newResolutionGroupBox.Name = "_newResolutionGroupBox";
 			this._newResolutionGroupBox.Size = new System.Drawing.Size(315, 103);
@@ -94,20 +162,55 @@
 			this._newResolutionGroupBox.TabStop = false;
 			this._newResolutionGroupBox.Text = "New resolution to set";
 			// 
-			// _removeBordersCheckBox
+			// label1
 			// 
-			this._removeBordersCheckBox.AutoSize = true;
-			this._removeBordersCheckBox.Checked = true;
-			this._removeBordersCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-			this._removeBordersCheckBox.Location = new System.Drawing.Point(141, 45);
-			this._removeBordersCheckBox.Name = "_removeBordersCheckBox";
-			this._removeBordersCheckBox.Size = new System.Drawing.Size(104, 17);
-			this._removeBordersCheckBox.TabIndex = 3;
-			this._removeBordersCheckBox.Text = "Remove borders";
-			this._removeBordersCheckBox.UseVisualStyleBackColor = true;
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(8, 46);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(38, 13);
+			this.label1.TabIndex = 0;
+			this.label1.Text = "Height";
+			// 
+			// _aspectRatioTextBox
+			// 
+			this._aspectRatioTextBox.Location = new System.Drawing.Point(207, 17);
+			this._aspectRatioTextBox.Name = "_aspectRatioTextBox";
+			this._aspectRatioTextBox.ReadOnly = true;
+			this._aspectRatioTextBox.Size = new System.Drawing.Size(58, 20);
+			this._aspectRatioTextBox.TabIndex = 1;
+			this._aspectRatioTextBox.TabStop = false;
+			// 
+			// _useWindowBordersCheckBox
+			// 
+			this._useWindowBordersCheckBox.AutoSize = true;
+			this._useWindowBordersCheckBox.Location = new System.Drawing.Point(141, 45);
+			this._useWindowBordersCheckBox.Name = "_useWindowBordersCheckBox";
+			this._useWindowBordersCheckBox.Size = new System.Drawing.Size(103, 17);
+			this._useWindowBordersCheckBox.TabIndex = 3;
+			this._useWindowBordersCheckBox.Text = "Window borders";
+			this._useWindowBordersCheckBox.UseVisualStyleBackColor = true;
+			// 
+			// label6
+			// 
+			this.label6.AutoSize = true;
+			this.label6.Location = new System.Drawing.Point(138, 20);
+			this.label6.Name = "label6";
+			this.label6.Size = new System.Drawing.Size(63, 13);
+			this.label6.TabIndex = 0;
+			this.label6.Text = "Aspect ratio";
+			// 
+			// label5
+			// 
+			this.label5.AutoSize = true;
+			this.label5.Location = new System.Drawing.Point(8, 20);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(35, 13);
+			this.label5.TabIndex = 0;
+			this.label5.Text = "Width";
 			// 
 			// _setResolutionButton
 			// 
+			this._setResolutionButton.Enabled = false;
 			this._setResolutionButton.Location = new System.Drawing.Point(56, 69);
 			this._setResolutionButton.Name = "_setResolutionButton";
 			this._setResolutionButton.Size = new System.Drawing.Size(60, 23);
@@ -132,6 +235,7 @@
 			this._newHeightUpDown.Name = "_newHeightUpDown";
 			this._newHeightUpDown.Size = new System.Drawing.Size(58, 20);
 			this._newHeightUpDown.TabIndex = 1;
+			this._newHeightUpDown.ValueChanged += new System.EventHandler(this._newHeightUpDown_ValueChanged);
 			// 
 			// _newWidthUpDown
 			// 
@@ -149,11 +253,32 @@
 			this._newWidthUpDown.Name = "_newWidthUpDown";
 			this._newWidthUpDown.Size = new System.Drawing.Size(58, 20);
 			this._newWidthUpDown.TabIndex = 0;
+			this._newWidthUpDown.ValueChanged += new System.EventHandler(this._newWidthUpDown_ValueChanged);
+			// 
+			// _warningLabel
+			// 
+			this._warningLabel.AutoEllipsis = true;
+			this._warningLabel.FlatAppearance.BorderSize = 0;
+			this._warningLabel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+			this._warningLabel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+			this._warningLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this._warningLabel.Image = ((System.Drawing.Image)(resources.GetObject("_warningLabel.Image")));
+			this._warningLabel.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+			this._warningLabel.Location = new System.Drawing.Point(241, 208);
+			this._warningLabel.Name = "_warningLabel";
+			this._warningLabel.Size = new System.Drawing.Size(285, 36);
+			this._warningLabel.TabIndex = 5;
+			this._warningLabel.TabStop = false;
+			this._warningLabel.Text = "Be aware that choosing a high resolution could make the game crash due to insuffi" +
+    "cient memory available. ";
+			this._warningLabel.TextAlign = System.Drawing.ContentAlignment.TopLeft;
+			this._warningLabel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+			this._warningLabel.UseVisualStyleBackColor = true;
 			// 
 			// _refreshButton
 			// 
 			this._refreshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._refreshButton.Location = new System.Drawing.Point(240, 353);
+			this._refreshButton.Location = new System.Drawing.Point(240, 354);
 			this._refreshButton.Name = "_refreshButton";
 			this._refreshButton.Size = new System.Drawing.Size(75, 23);
 			this._refreshButton.TabIndex = 2;
@@ -186,127 +311,6 @@
 			this._treeIcons.Images.SetKeyName(1, "Folder_16x.png");
 			this._treeIcons.Images.SetKeyName(2, "FolderOpen_16x.png");
 			// 
-			// _warningLabel
-			// 
-			this._warningLabel.AutoEllipsis = true;
-			this._warningLabel.FlatAppearance.BorderSize = 0;
-			this._warningLabel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
-			this._warningLabel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
-			this._warningLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this._warningLabel.Image = ((System.Drawing.Image)(resources.GetObject("_warningLabel.Image")));
-			this._warningLabel.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
-			this._warningLabel.Location = new System.Drawing.Point(241, 208);
-			this._warningLabel.Name = "_warningLabel";
-			this._warningLabel.Size = new System.Drawing.Size(285, 36);
-			this._warningLabel.TabIndex = 5;
-			this._warningLabel.TabStop = false;
-			this._warningLabel.Text = "Be aware that choosing a high resolution could make the game crash due to insuffi" +
-    "cient memory available. ";
-			this._warningLabel.TextAlign = System.Drawing.ContentAlignment.TopLeft;
-			this._warningLabel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-			this._warningLabel.UseVisualStyleBackColor = true;
-			// 
-			// _currentResolutionGroupBox
-			// 
-			this._currentResolutionGroupBox.Controls.Add(this._currentHeightTextBox);
-			this._currentResolutionGroupBox.Controls.Add(this.label3);
-			this._currentResolutionGroupBox.Controls.Add(this.label4);
-			this._currentResolutionGroupBox.Controls.Add(this._currentARTextBox);
-			this._currentResolutionGroupBox.Controls.Add(this._currentWidthTextBox);
-			this._currentResolutionGroupBox.Controls.Add(this.label2);
-			this._currentResolutionGroupBox.Location = new System.Drawing.Point(241, 123);
-			this._currentResolutionGroupBox.Name = "_currentResolutionGroupBox";
-			this._currentResolutionGroupBox.Size = new System.Drawing.Size(315, 79);
-			this._currentResolutionGroupBox.TabIndex = 1;
-			this._currentResolutionGroupBox.TabStop = false;
-			this._currentResolutionGroupBox.Text = "Active window resolution";
-			// 
-			// label2
-			// 
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(8, 24);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(35, 13);
-			this.label2.TabIndex = 0;
-			this.label2.Text = "Width";
-			// 
-			// _currentWidthTextBox
-			// 
-			this._currentWidthTextBox.Location = new System.Drawing.Point(56, 21);
-			this._currentWidthTextBox.Name = "_currentWidthTextBox";
-			this._currentWidthTextBox.ReadOnly = true;
-			this._currentWidthTextBox.Size = new System.Drawing.Size(58, 20);
-			this._currentWidthTextBox.TabIndex = 1;
-			// 
-			// label3
-			// 
-			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(8, 50);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(38, 13);
-			this.label3.TabIndex = 0;
-			this.label3.Text = "Height";
-			// 
-			// _currentHeightTextBox
-			// 
-			this._currentHeightTextBox.Location = new System.Drawing.Point(56, 47);
-			this._currentHeightTextBox.Name = "_currentHeightTextBox";
-			this._currentHeightTextBox.ReadOnly = true;
-			this._currentHeightTextBox.Size = new System.Drawing.Size(58, 20);
-			this._currentHeightTextBox.TabIndex = 1;
-			// 
-			// label5
-			// 
-			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(8, 20);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(35, 13);
-			this.label5.TabIndex = 0;
-			this.label5.Text = "Width";
-			// 
-			// label1
-			// 
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(8, 46);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(38, 13);
-			this.label1.TabIndex = 0;
-			this.label1.Text = "Height";
-			// 
-			// label6
-			// 
-			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(138, 20);
-			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(63, 13);
-			this.label6.TabIndex = 0;
-			this.label6.Text = "Aspect ratio";
-			// 
-			// _aspectRatioTextBox
-			// 
-			this._aspectRatioTextBox.Location = new System.Drawing.Point(207, 17);
-			this._aspectRatioTextBox.Name = "_aspectRatioTextBox";
-			this._aspectRatioTextBox.ReadOnly = true;
-			this._aspectRatioTextBox.Size = new System.Drawing.Size(58, 20);
-			this._aspectRatioTextBox.TabIndex = 1;
-			// 
-			// label4
-			// 
-			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(137, 24);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(63, 13);
-			this.label4.TabIndex = 0;
-			this.label4.Text = "Aspect ratio";
-			// 
-			// _currentARTextBox
-			// 
-			this._currentARTextBox.Location = new System.Drawing.Point(206, 21);
-			this._currentARTextBox.Name = "_currentARTextBox";
-			this._currentARTextBox.ReadOnly = true;
-			this._currentARTextBox.Size = new System.Drawing.Size(58, 20);
-			this._currentARTextBox.TabIndex = 1;
-			// 
 			// _resolutionRefreshTimer
 			// 
 			this._resolutionRefreshTimer.Interval = 1000;
@@ -320,12 +324,12 @@
 			this.Name = "HotsamplingControl";
 			this.Size = new System.Drawing.Size(783, 389);
 			this.groupBox1.ResumeLayout(false);
+			this._currentResolutionGroupBox.ResumeLayout(false);
+			this._currentResolutionGroupBox.PerformLayout();
 			this._newResolutionGroupBox.ResumeLayout(false);
 			this._newResolutionGroupBox.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this._newHeightUpDown)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this._newWidthUpDown)).EndInit();
-			this._currentResolutionGroupBox.ResumeLayout(false);
-			this._currentResolutionGroupBox.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -340,7 +344,7 @@
 		private System.Windows.Forms.Button _setResolutionButton;
 		private System.Windows.Forms.NumericUpDown _newHeightUpDown;
 		private System.Windows.Forms.NumericUpDown _newWidthUpDown;
-		private System.Windows.Forms.CheckBox _removeBordersCheckBox;
+		private System.Windows.Forms.CheckBox _useWindowBordersCheckBox;
 		private System.Windows.Forms.Button _warningLabel;
 		private System.Windows.Forms.GroupBox _currentResolutionGroupBox;
 		private System.Windows.Forms.TextBox _currentHeightTextBox;

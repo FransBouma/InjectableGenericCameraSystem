@@ -32,7 +32,9 @@ namespace IGCSClient.GameSpecific.Classes
 {
 	internal static class GameSpecificConstants
 	{
-		public const string ClientWindowTitle = "Shadow of the Tomb Raider tools (v1.0.4). By Otis_Inf";
+		public const string ClientWindowTitle = "Shadow of the Tomb Raider tools";
+		public const string CameraVersion = "1.0.4";
+		public const string CameraCredits = "Otis_Inf";
 		public const bool HotsamplingRequiresEXITSIZEMOVE = false;
 	}
 

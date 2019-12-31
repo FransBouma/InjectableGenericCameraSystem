@@ -27,6 +27,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #include "stdafx.h"
+#include <filesystem>
 
 namespace IGCS
 {
@@ -70,4 +71,5 @@ namespace IGCS::Utils
 	float floatFromBytes(BYTE byteArray[], DWORD arrayLength, int startIndex);
 	int intFromBytes(BYTE byteArray[], DWORD arrayLength, int startIndex);
 	std::string stringFromBytes(BYTE byteArray[], DWORD arrayLength, int startIndex);
+	std::filesystem::path obtainHostExeAndPath();
 }

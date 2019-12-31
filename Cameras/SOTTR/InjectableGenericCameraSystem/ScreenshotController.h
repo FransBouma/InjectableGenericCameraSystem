@@ -33,6 +33,7 @@
 #include <mutex>
 #include "Camera.h"
 #include "Defaults.h"
+#include <filesystem>
 
 namespace IGCS
 {
@@ -60,7 +61,8 @@ namespace IGCS
 		void reset();
 		bool shouldTakeShot();		// returns true if a shot should be taken, false otherwise. 
 		void presentCalled();
-
+		void hostExeFilename(std::filesystem::path hostExeFilename) { _hostExeFilename = hostExeFilename; }
+		
 	private:
 		void waitForShots();
 		void saveGrabbedShots();
@@ -85,7 +87,7 @@ namespace IGCS
 		int _numberOfFramesToWaitBetweenSteps = 1;
 		int _framebufferWidth = 0;
 		int _framebufferHeight = 0;
-		ScreenshotType _typeOfShot = ScreenshotType::Lightfield;
+		ScreenshotType _typeOfShot = ScreenshotType::HorizontalPanorama;
 		ScreenshotControllerState _state = ScreenshotControllerState::Off;
 		ScreenshotFiletype _filetype = ScreenshotFiletype::Jpeg;
 		Camera _camera;				// use local copy of the camera, passed in by the start*shot methods, passed by value. This frees us from caching the old state when manipulating the camera.
@@ -97,6 +99,7 @@ namespace IGCS
 		// Used together to make sure the main thread in System doesn't busy-wait and waits till the grabbing process has been completed.
 		std::mutex _waitCompletionMutex;
 		std::condition_variable _waitCompletionHandle;
+		std::filesystem::path _hostExeFilename;
 	};
 }
 

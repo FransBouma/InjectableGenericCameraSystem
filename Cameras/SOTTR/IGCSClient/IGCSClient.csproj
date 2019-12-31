@@ -58,6 +58,9 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>IGCSIcon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="SD.Tools.Algorithmia, Version=1.4.0.0, Culture=neutral, PublicKeyToken=8ede9265bbb8e107, processorArchitecture=MSIL">
       <HintPath>..\packages\SD.Tools.Algorithmia.1.4.0\lib\net452\SD.Tools.Algorithmia.dll</HintPath>
@@ -272,10 +275,10 @@
     <None Include="Resources\IGCSIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\StatusWarning_12x_16x.png" />
+    <None Include="Resources\StatusWarning_16x.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\StatusWarning_16x.png" />
+    <Content Include="IGCSIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

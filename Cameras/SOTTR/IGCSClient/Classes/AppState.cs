@@ -99,8 +99,9 @@ namespace IGCSClient.Classes
 					WINDOWINFO info = new WINDOWINFO();
 					Win32Wrapper.GetWindowInfo(hwnd, ref info);
 					screenOfWindow = Screen.FromHandle(hwnd);
-					if(!screenOfWindow.Bounds.IsEmpty)
+					if(!screenOfWindow.Bounds.IsEmpty && info.rcWindow.Width>10)
 					{
+						// window is on a monitor and has a width wider than 10
 						_attachedProcessMainWindowHwnd = hwnd;
 						break;
 					}

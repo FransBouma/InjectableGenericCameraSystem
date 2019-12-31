@@ -316,7 +316,7 @@ namespace IGCS
 	{
 		// don't reset framebuffer width/height, numberOfFramesToWaitBetweenSteps, movementSpeed, 
 		// rotationSpeed, rootFolder as those are set through configure!
-		_typeOfShot = ScreenshotType::Lightfield;
+		_typeOfShot = ScreenshotType::HorizontalPanorama;
 		_state = ScreenshotControllerState::Off;
 		_totalFoV = 0.0f;
 		_currentFoV = 0.0f;

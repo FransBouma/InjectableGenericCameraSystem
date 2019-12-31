@@ -52,6 +52,7 @@ namespace IGCSClient.Controls
 		private string _defaultDllName;
 
 		public event EventHandler DllInjected;
+		public event EventHandler AttachedProcessExited;
 		#endregion
 
 		public GeneralTabControl()
@@ -251,9 +252,10 @@ namespace IGCSClient.Controls
 				// store dll with process name in recent list
 				AppStateSingleton.Instance().AddDllNameForProcess(_selectedProcess.MainModule.ModuleName, filenameOfDllToInject);
 				AppStateSingleton.Instance().SetAttachedProcess(_selectedProcess);
+				_selectedProcess.EnableRaisingEvents = true;
+				_selectedProcess.Exited += _selectedProcess_Exited;
 				DisplayAttachedProcessInUI();
 				this.DllInjected.RaiseEvent(this);
-				MessageBox.Show(this, "Injection succeeded. Enjoy!", "Injection result", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 			else
 			{
@@ -261,6 +263,12 @@ namespace IGCSClient.Controls
 													Environment.NewLine, injector.LastActionPerformed, new Win32Exception(injector.LastError).Message), "Injection result", 
 								MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+		}
+
+		private void _selectedProcess_Exited(object sender, EventArgs e)
+		{
+			// process has died, we should too.
+			this.AttachedProcessExited.RaiseEvent(this);
 		}
 	}
 }

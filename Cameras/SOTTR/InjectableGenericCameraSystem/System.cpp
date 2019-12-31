@@ -64,6 +64,10 @@ namespace IGCS
 		Globals::instance().systemActive(true);
 		_hostImageAddress = (LPBYTE)hostBaseAddress;
 		_hostImageSize = hostImageSize;
+		filesystem::path hostExeFilenameAndPath = Utils::obtainHostExeAndPath();
+		_hostExeFilename = hostExeFilenameAndPath.stem();
+		_hostExePath = hostExeFilenameAndPath.parent_path();
+		Globals::instance().hostExeFilename(_hostExeFilename);
 		Globals::instance().gamePad().setInvertLStickY(CONTROLLER_Y_INVERT);
 		Globals::instance().gamePad().setInvertRStickY(CONTROLLER_Y_INVERT);
 		initialize();		// will block till camera is found

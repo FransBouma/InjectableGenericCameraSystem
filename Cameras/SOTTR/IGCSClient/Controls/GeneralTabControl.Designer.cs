@@ -41,10 +41,10 @@
 			this._windowTitleLabel = new System.Windows.Forms.Label();
 			this._executablePathLabel = new System.Windows.Forms.Label();
 			this._executableIconPictureBox = new System.Windows.Forms.PictureBox();
+			this._windowTitleTextBox = new System.Windows.Forms.TextBox();
+			this._executableTextBox = new System.Windows.Forms.TextBox();
 			this._openDllToInjectDialog = new System.Windows.Forms.OpenFileDialog();
 			this._mainToolTip = new System.Windows.Forms.ToolTip(this.components);
-			this._executableTextBox = new System.Windows.Forms.TextBox();
-			this._windowTitleTextBox = new System.Windows.Forms.TextBox();
 			this._injectDllGroupBox.SuspendLayout();
 			this._attachedProcessInfoGroupBox.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._executableIconPictureBox)).BeginInit();
@@ -63,7 +63,7 @@
 			this._injectDllGroupBox.Controls.Add(this.label1);
 			this._injectDllGroupBox.Location = new System.Drawing.Point(4, 4);
 			this._injectDllGroupBox.Name = "_injectDllGroupBox";
-			this._injectDllGroupBox.Size = new System.Drawing.Size(708, 113);
+			this._injectDllGroupBox.Size = new System.Drawing.Size(708, 105);
 			this._injectDllGroupBox.TabIndex = 1;
 			this._injectDllGroupBox.TabStop = false;
 			this._injectDllGroupBox.Text = "Process and DLL selection";
@@ -71,7 +71,7 @@
 			// _injectButton
 			// 
 			this._injectButton.Enabled = false;
-			this._injectButton.Location = new System.Drawing.Point(122, 71);
+			this._injectButton.Location = new System.Drawing.Point(121, 71);
 			this._injectButton.Name = "_injectButton";
 			this._injectButton.Size = new System.Drawing.Size(99, 23);
 			this._injectButton.TabIndex = 2;
@@ -188,17 +188,17 @@
 			this._executableIconPictureBox.TabIndex = 0;
 			this._executableIconPictureBox.TabStop = false;
 			// 
-			// _openDllToInjectDialog
+			// _windowTitleTextBox
 			// 
-			this._openDllToInjectDialog.DefaultExt = "dll";
-			this._openDllToInjectDialog.Filter = "Dll files|*.dll";
-			this._openDllToInjectDialog.Title = "Please select the dll to inject";
-			// 
-			// _mainToolTip
-			// 
-			this._mainToolTip.AutoPopDelay = 5000;
-			this._mainToolTip.InitialDelay = 100;
-			this._mainToolTip.ReshowDelay = 100;
+			this._windowTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this._windowTitleTextBox.Location = new System.Drawing.Point(122, 43);
+			this._windowTitleTextBox.Name = "_windowTitleTextBox";
+			this._windowTitleTextBox.ReadOnly = true;
+			this._windowTitleTextBox.Size = new System.Drawing.Size(580, 20);
+			this._windowTitleTextBox.TabIndex = 0;
+			this._windowTitleTextBox.TabStop = false;
+			this._windowTitleTextBox.TextChanged += new System.EventHandler(this._processNameTextBox_TextChanged);
 			// 
 			// _executableTextBox
 			// 
@@ -212,24 +212,24 @@
 			this._executableTextBox.TabStop = false;
 			this._executableTextBox.TextChanged += new System.EventHandler(this._processNameTextBox_TextChanged);
 			// 
-			// _windowTitleTextBox
+			// _openDllToInjectDialog
 			// 
-			this._windowTitleTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this._windowTitleTextBox.Location = new System.Drawing.Point(122, 43);
-			this._windowTitleTextBox.Name = "_windowTitleTextBox";
-			this._windowTitleTextBox.ReadOnly = true;
-			this._windowTitleTextBox.Size = new System.Drawing.Size(580, 20);
-			this._windowTitleTextBox.TabIndex = 0;
-			this._windowTitleTextBox.TabStop = false;
-			this._windowTitleTextBox.TextChanged += new System.EventHandler(this._processNameTextBox_TextChanged);
+			this._openDllToInjectDialog.DefaultExt = "dll";
+			this._openDllToInjectDialog.Filter = "Dll files|*.dll";
+			this._openDllToInjectDialog.Title = "Please select the dll to inject";
+			// 
+			// _mainToolTip
+			// 
+			this._mainToolTip.AutoPopDelay = 5000;
+			this._mainToolTip.InitialDelay = 100;
+			this._mainToolTip.ReshowDelay = 100;
 			// 
 			// GeneralTabControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this._attachedProcessInfoGroupBox);
 			this.Controls.Add(this._injectDllGroupBox);
+			this.Controls.Add(this._attachedProcessInfoGroupBox);
 			this.Name = "GeneralTabControl";
 			this.Size = new System.Drawing.Size(719, 282);
 			this._injectDllGroupBox.ResumeLayout(false);

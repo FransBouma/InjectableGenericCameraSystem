@@ -71,6 +71,7 @@ namespace IGCS
 		void reinitializeScreenshotController();
 		void handleSettingMessage(BYTE payload[], DWORD payloadLength);
 		void handleKeybindingMessage(BYTE payload[], DWORD payloadLength);
+		void hostExeFilename(std::filesystem::path hostExeFilename) { _screenshotController.hostExeFilename(hostExeFilename); }
 
 	private:
 		void initializeKeyBindings();

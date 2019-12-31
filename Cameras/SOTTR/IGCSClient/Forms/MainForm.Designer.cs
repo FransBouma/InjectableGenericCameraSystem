@@ -28,9 +28,10 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this._statusBar = new System.Windows.Forms.StatusStrip();
-			this._dllToClientConnectedSBLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this._clientToDllConnectedSBLabel = new System.Windows.Forms.ToolStripStatusLabel();
+			this._dllToClientConnectedSBLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this._mainTabControl = new System.Windows.Forms.TabControl();
 			this._generalTab = new System.Windows.Forms.TabPage();
 			this._generalTabControl = new IGCSClient.Controls.GeneralTabControl();
@@ -43,6 +44,11 @@
 			this._logTab = new System.Windows.Forms.TabPage();
 			this._logControl = new IGCSClient.Controls.ApplicationOutput();
 			this._aboutTab = new System.Windows.Forms.TabPage();
+			this._igcsSBLink = new System.Windows.Forms.ToolStripStatusLabel();
+			this._cameraAboutGroupBox = new System.Windows.Forms.GroupBox();
+			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this._cameraAboutLabel = new System.Windows.Forms.Label();
+			this._aboutIGCSTextBox = new System.Windows.Forms.RichTextBox();
 			this._statusBar.SuspendLayout();
 			this._mainTabControl.SuspendLayout();
 			this._generalTab.SuspendLayout();
@@ -50,21 +56,21 @@
 			this._keyBindingsTab.SuspendLayout();
 			this._hotsamplingTab.SuspendLayout();
 			this._logTab.SuspendLayout();
+			this._aboutTab.SuspendLayout();
+			this._cameraAboutGroupBox.SuspendLayout();
+			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// _statusBar
 			// 
+			this._statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._clientToDllConnectedSBLabel,
+            this._dllToClientConnectedSBLabel,
+            this._igcsSBLink});
 			this._statusBar.Location = new System.Drawing.Point(0, 435);
 			this._statusBar.Name = "_statusBar";
 			this._statusBar.Size = new System.Drawing.Size(666, 24);
 			this._statusBar.TabIndex = 0;
-			// 
-			// _dllToClientConnectedSBLabel
-			// 
-			this._dllToClientConnectedSBLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
-			this._dllToClientConnectedSBLabel.Name = "_dllToClientConnectedSBLabel";
-			this._dllToClientConnectedSBLabel.Size = new System.Drawing.Size(90, 19);
-			this._dllToClientConnectedSBLabel.Text = "Not connected";
 			// 
 			// _clientToDllConnectedSBLabel
 			// 
@@ -72,6 +78,13 @@
 			this._clientToDllConnectedSBLabel.Name = "_clientToDllConnectedSBLabel";
 			this._clientToDllConnectedSBLabel.Size = new System.Drawing.Size(90, 19);
 			this._clientToDllConnectedSBLabel.Text = "Not connected";
+			// 
+			// _dllToClientConnectedSBLabel
+			// 
+			this._dllToClientConnectedSBLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+			this._dllToClientConnectedSBLabel.Name = "_dllToClientConnectedSBLabel";
+			this._dllToClientConnectedSBLabel.Size = new System.Drawing.Size(90, 19);
+			this._dllToClientConnectedSBLabel.Text = "Not connected";
 			// 
 			// _mainTabControl
 			// 
@@ -97,7 +110,7 @@
 			this._generalTab.Location = new System.Drawing.Point(4, 22);
 			this._generalTab.Name = "_generalTab";
 			this._generalTab.Padding = new System.Windows.Forms.Padding(3);
-			this._generalTab.Size = new System.Drawing.Size(641, 390);
+			this._generalTab.Size = new System.Drawing.Size(652, 405);
 			this._generalTab.TabIndex = 0;
 			this._generalTab.Text = "General";
 			// 
@@ -106,9 +119,10 @@
 			this._generalTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this._generalTabControl.Location = new System.Drawing.Point(3, 3);
 			this._generalTabControl.Name = "_generalTabControl";
-			this._generalTabControl.Size = new System.Drawing.Size(635, 384);
+			this._generalTabControl.Size = new System.Drawing.Size(646, 399);
 			this._generalTabControl.TabIndex = 0;
 			this._generalTabControl.DllInjected += new System.EventHandler(this._generalTabControl_DllInjected);
+			this._generalTabControl.AttachedProcessExited += new System.EventHandler(this._generalTabControl_AttachedProcessExited);
 			// 
 			// _settingsTab
 			// 
@@ -117,7 +131,7 @@
 			this._settingsTab.Location = new System.Drawing.Point(4, 22);
 			this._settingsTab.Name = "_settingsTab";
 			this._settingsTab.Padding = new System.Windows.Forms.Padding(3);
-			this._settingsTab.Size = new System.Drawing.Size(641, 390);
+			this._settingsTab.Size = new System.Drawing.Size(652, 405);
 			this._settingsTab.TabIndex = 1;
 			this._settingsTab.Text = "Settings";
 			// 
@@ -126,7 +140,7 @@
 			this._settingsEditor.Dock = System.Windows.Forms.DockStyle.Fill;
 			this._settingsEditor.Location = new System.Drawing.Point(3, 3);
 			this._settingsEditor.Name = "_settingsEditor";
-			this._settingsEditor.Size = new System.Drawing.Size(635, 384);
+			this._settingsEditor.Size = new System.Drawing.Size(646, 399);
 			this._settingsEditor.TabIndex = 4;
 			// 
 			// _keyBindingsTab
@@ -137,7 +151,7 @@
 			this._keyBindingsTab.Location = new System.Drawing.Point(4, 22);
 			this._keyBindingsTab.Name = "_keyBindingsTab";
 			this._keyBindingsTab.Padding = new System.Windows.Forms.Padding(3);
-			this._keyBindingsTab.Size = new System.Drawing.Size(641, 390);
+			this._keyBindingsTab.Size = new System.Drawing.Size(652, 405);
 			this._keyBindingsTab.TabIndex = 3;
 			this._keyBindingsTab.Text = "Key bindings";
 			// 
@@ -147,7 +161,7 @@
 			this._keyBindingsEditor.Dock = System.Windows.Forms.DockStyle.Top;
 			this._keyBindingsEditor.Location = new System.Drawing.Point(3, 3);
 			this._keyBindingsEditor.Name = "_keyBindingsEditor";
-			this._keyBindingsEditor.Size = new System.Drawing.Size(618, 587);
+			this._keyBindingsEditor.Size = new System.Drawing.Size(629, 587);
 			this._keyBindingsEditor.TabIndex = 4;
 			// 
 			// _hotsamplingTab
@@ -175,7 +189,7 @@
 			this._logTab.Location = new System.Drawing.Point(4, 22);
 			this._logTab.Name = "_logTab";
 			this._logTab.Padding = new System.Windows.Forms.Padding(3);
-			this._logTab.Size = new System.Drawing.Size(641, 390);
+			this._logTab.Size = new System.Drawing.Size(652, 405);
 			this._logTab.TabIndex = 2;
 			this._logTab.Text = "Log";
 			this._logTab.UseVisualStyleBackColor = true;
@@ -186,18 +200,75 @@
 			this._logControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this._logControl.Location = new System.Drawing.Point(3, 3);
 			this._logControl.Name = "_logControl";
-			this._logControl.Size = new System.Drawing.Size(635, 384);
+			this._logControl.Size = new System.Drawing.Size(646, 399);
 			this._logControl.TabIndex = 4;
 			// 
 			// _aboutTab
 			// 
+			this._aboutTab.Controls.Add(this.groupBox2);
+			this._aboutTab.Controls.Add(this._cameraAboutGroupBox);
 			this._aboutTab.Location = new System.Drawing.Point(4, 22);
 			this._aboutTab.Name = "_aboutTab";
 			this._aboutTab.Padding = new System.Windows.Forms.Padding(3);
-			this._aboutTab.Size = new System.Drawing.Size(641, 390);
+			this._aboutTab.Size = new System.Drawing.Size(652, 405);
 			this._aboutTab.TabIndex = 5;
 			this._aboutTab.Text = "About";
 			this._aboutTab.UseVisualStyleBackColor = true;
+			// 
+			// _igcsSBLink
+			// 
+			this._igcsSBLink.IsLink = true;
+			this._igcsSBLink.Name = "_igcsSBLink";
+			this._igcsSBLink.Size = new System.Drawing.Size(471, 19);
+			this._igcsSBLink.Spring = true;
+			this._igcsSBLink.Text = "Powered by IGCS. ©2020 Frans \'Otis_Inf\' Bouma";
+			this._igcsSBLink.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this._igcsSBLink.Click += new System.EventHandler(this._igcsSBLink_Click);
+			// 
+			// _cameraAboutGroupBox
+			// 
+			this._cameraAboutGroupBox.Controls.Add(this._cameraAboutLabel);
+			this._cameraAboutGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
+			this._cameraAboutGroupBox.Location = new System.Drawing.Point(3, 3);
+			this._cameraAboutGroupBox.Name = "_cameraAboutGroupBox";
+			this._cameraAboutGroupBox.Size = new System.Drawing.Size(646, 45);
+			this._cameraAboutGroupBox.TabIndex = 0;
+			this._cameraAboutGroupBox.TabStop = false;
+			this._cameraAboutGroupBox.Text = "About ";
+			// 
+			// groupBox2
+			// 
+			this.groupBox2.Controls.Add(this._aboutIGCSTextBox);
+			this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.groupBox2.Location = new System.Drawing.Point(3, 48);
+			this.groupBox2.Name = "groupBox2";
+			this.groupBox2.Size = new System.Drawing.Size(646, 354);
+			this.groupBox2.TabIndex = 0;
+			this.groupBox2.TabStop = false;
+			this.groupBox2.Text = "About Injectable Generic Camera System ";
+			// 
+			// _cameraAboutLabel
+			// 
+			this._cameraAboutLabel.AutoSize = true;
+			this._cameraAboutLabel.Location = new System.Drawing.Point(7, 20);
+			this._cameraAboutLabel.Name = "_cameraAboutLabel";
+			this._cameraAboutLabel.Size = new System.Drawing.Size(83, 13);
+			this._cameraAboutLabel.TabIndex = 0;
+			this._cameraAboutLabel.Text = "Camera credits: ";
+			// 
+			// _aboutIGCSTextBox
+			// 
+			this._aboutIGCSTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this._aboutIGCSTextBox.BackColor = System.Drawing.SystemColors.Window;
+			this._aboutIGCSTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this._aboutIGCSTextBox.Location = new System.Drawing.Point(8, 19);
+			this._aboutIGCSTextBox.Name = "_aboutIGCSTextBox";
+			this._aboutIGCSTextBox.ReadOnly = true;
+			this._aboutIGCSTextBox.Size = new System.Drawing.Size(630, 326);
+			this._aboutIGCSTextBox.TabIndex = 0;
+			this._aboutIGCSTextBox.Text = "";
 			// 
 			// MainForm
 			// 
@@ -207,9 +278,10 @@
 			this.Controls.Add(this._mainTabControl);
 			this.Controls.Add(this._statusBar);
 			this.DoubleBuffered = true;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Form1";
+			this.Text = "IGCS Client";
 			this._statusBar.ResumeLayout(false);
 			this._statusBar.PerformLayout();
 			this._mainTabControl.ResumeLayout(false);
@@ -218,6 +290,10 @@
 			this._keyBindingsTab.ResumeLayout(false);
 			this._hotsamplingTab.ResumeLayout(false);
 			this._logTab.ResumeLayout(false);
+			this._aboutTab.ResumeLayout(false);
+			this._cameraAboutGroupBox.ResumeLayout(false);
+			this._cameraAboutGroupBox.PerformLayout();
+			this.groupBox2.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -240,6 +316,11 @@
 		private System.Windows.Forms.TabPage _aboutTab;
 		private Controls.GeneralTabControl _generalTabControl;
 		private Controls.HotsamplingControl _hotsamplingControl;
+		private System.Windows.Forms.ToolStripStatusLabel _igcsSBLink;
+		private System.Windows.Forms.GroupBox groupBox2;
+		private System.Windows.Forms.GroupBox _cameraAboutGroupBox;
+		private System.Windows.Forms.Label _cameraAboutLabel;
+		private System.Windows.Forms.RichTextBox _aboutIGCSTextBox;
 	}
 }
 

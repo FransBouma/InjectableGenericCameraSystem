@@ -152,14 +152,10 @@ namespace IGCSClient.Classes
 		public const uint WS_THICKFRAME = 0x40000;
 		public const uint WS_DLGFRAME = 0x400000;
 		public const uint WS_BORDER = 0x800000;
-
-		public const uint WS_EX_DLGMODALFRAME = 1;
-		public const uint WS_EX_WINDOWEDGE = 0x100;
-		public const uint WS_EX_CLIENTEDGE = 0200;
-		public const uint WS_EX_STATICEDGE = 0x20000;
+		public const uint WS_MAXIMIZEBOX = 0x10000;
+		public const uint WS_MINIMIZEBOX = 0x20000;
 
 		public const int GWL_STYLE = -16;
-		public const int GWL_EXSTYLE = -20;
 
 		public delegate bool Win32Callback(IntPtr hwnd, IntPtr lParam);
 

@@ -32,6 +32,7 @@
 #include "OverlayConsole.h"
 #include <comdef.h>
 #include <codecvt>
+#include <filesystem>
 
 using namespace std;
 
@@ -54,6 +55,14 @@ namespace IGCS::Utils
 		"Num Lock", "Scroll Lock",
 	};
 
+	// Obtains the exe's filename + path and returns that as a path object.
+	std::filesystem::path obtainHostExeAndPath()
+	{
+		char lpBuffer[MAX_PATH];
+		GetModuleFileNameA(NULL, lpBuffer, MAX_PATH);
+		return filesystem::path(lpBuffer);
+	}
+	
 
 	BOOL isMainWindow(HWND handle)
 	{
