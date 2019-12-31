@@ -138,4 +138,9 @@ namespace IGCS
 		DebugTextMessage= 6,
 		Action = 7,
 	};
+
+	enum class ActionMessageType : BYTE
+	{
+		RehookXInput = 1,
+	};
 }

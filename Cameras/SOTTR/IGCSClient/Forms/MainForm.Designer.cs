@@ -32,6 +32,7 @@
 			this._statusBar = new System.Windows.Forms.StatusStrip();
 			this._clientToDllConnectedSBLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this._dllToClientConnectedSBLabel = new System.Windows.Forms.ToolStripStatusLabel();
+			this._igcsSBLink = new System.Windows.Forms.ToolStripStatusLabel();
 			this._mainTabControl = new System.Windows.Forms.TabControl();
 			this._generalTab = new System.Windows.Forms.TabPage();
 			this._generalTabControl = new IGCSClient.Controls.GeneralTabControl();
@@ -44,11 +45,10 @@
 			this._logTab = new System.Windows.Forms.TabPage();
 			this._logControl = new IGCSClient.Controls.ApplicationOutput();
 			this._aboutTab = new System.Windows.Forms.TabPage();
-			this._igcsSBLink = new System.Windows.Forms.ToolStripStatusLabel();
-			this._cameraAboutGroupBox = new System.Windows.Forms.GroupBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this._cameraAboutLabel = new System.Windows.Forms.Label();
 			this._aboutIGCSTextBox = new System.Windows.Forms.RichTextBox();
+			this._cameraAboutGroupBox = new System.Windows.Forms.GroupBox();
+			this._cameraAboutLabel = new System.Windows.Forms.Label();
 			this._statusBar.SuspendLayout();
 			this._mainTabControl.SuspendLayout();
 			this._generalTab.SuspendLayout();
@@ -57,8 +57,8 @@
 			this._hotsamplingTab.SuspendLayout();
 			this._logTab.SuspendLayout();
 			this._aboutTab.SuspendLayout();
-			this._cameraAboutGroupBox.SuspendLayout();
 			this.groupBox2.SuspendLayout();
+			this._cameraAboutGroupBox.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// _statusBar
@@ -85,6 +85,16 @@
 			this._dllToClientConnectedSBLabel.Name = "_dllToClientConnectedSBLabel";
 			this._dllToClientConnectedSBLabel.Size = new System.Drawing.Size(90, 19);
 			this._dllToClientConnectedSBLabel.Text = "Not connected";
+			// 
+			// _igcsSBLink
+			// 
+			this._igcsSBLink.IsLink = true;
+			this._igcsSBLink.Name = "_igcsSBLink";
+			this._igcsSBLink.Size = new System.Drawing.Size(471, 19);
+			this._igcsSBLink.Spring = true;
+			this._igcsSBLink.Text = "Powered by IGCS. ©2020 Frans \'Otis_Inf\' Bouma";
+			this._igcsSBLink.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this._igcsSBLink.Click += new System.EventHandler(this._igcsSBLink_Click);
 			// 
 			// _mainTabControl
 			// 
@@ -215,27 +225,6 @@
 			this._aboutTab.Text = "About";
 			this._aboutTab.UseVisualStyleBackColor = true;
 			// 
-			// _igcsSBLink
-			// 
-			this._igcsSBLink.IsLink = true;
-			this._igcsSBLink.Name = "_igcsSBLink";
-			this._igcsSBLink.Size = new System.Drawing.Size(471, 19);
-			this._igcsSBLink.Spring = true;
-			this._igcsSBLink.Text = "Powered by IGCS. ©2020 Frans \'Otis_Inf\' Bouma";
-			this._igcsSBLink.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this._igcsSBLink.Click += new System.EventHandler(this._igcsSBLink_Click);
-			// 
-			// _cameraAboutGroupBox
-			// 
-			this._cameraAboutGroupBox.Controls.Add(this._cameraAboutLabel);
-			this._cameraAboutGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
-			this._cameraAboutGroupBox.Location = new System.Drawing.Point(3, 3);
-			this._cameraAboutGroupBox.Name = "_cameraAboutGroupBox";
-			this._cameraAboutGroupBox.Size = new System.Drawing.Size(646, 45);
-			this._cameraAboutGroupBox.TabIndex = 0;
-			this._cameraAboutGroupBox.TabStop = false;
-			this._cameraAboutGroupBox.Text = "About ";
-			// 
 			// groupBox2
 			// 
 			this.groupBox2.Controls.Add(this._aboutIGCSTextBox);
@@ -246,15 +235,6 @@
 			this.groupBox2.TabIndex = 0;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "About Injectable Generic Camera System ";
-			// 
-			// _cameraAboutLabel
-			// 
-			this._cameraAboutLabel.AutoSize = true;
-			this._cameraAboutLabel.Location = new System.Drawing.Point(7, 20);
-			this._cameraAboutLabel.Name = "_cameraAboutLabel";
-			this._cameraAboutLabel.Size = new System.Drawing.Size(83, 13);
-			this._cameraAboutLabel.TabIndex = 0;
-			this._cameraAboutLabel.Text = "Camera credits: ";
 			// 
 			// _aboutIGCSTextBox
 			// 
@@ -269,6 +249,27 @@
 			this._aboutIGCSTextBox.Size = new System.Drawing.Size(630, 326);
 			this._aboutIGCSTextBox.TabIndex = 0;
 			this._aboutIGCSTextBox.Text = "";
+			this._aboutIGCSTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this._aboutIGCSTextBox_LinkClicked);
+			// 
+			// _cameraAboutGroupBox
+			// 
+			this._cameraAboutGroupBox.Controls.Add(this._cameraAboutLabel);
+			this._cameraAboutGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
+			this._cameraAboutGroupBox.Location = new System.Drawing.Point(3, 3);
+			this._cameraAboutGroupBox.Name = "_cameraAboutGroupBox";
+			this._cameraAboutGroupBox.Size = new System.Drawing.Size(646, 45);
+			this._cameraAboutGroupBox.TabIndex = 0;
+			this._cameraAboutGroupBox.TabStop = false;
+			this._cameraAboutGroupBox.Text = "About ";
+			// 
+			// _cameraAboutLabel
+			// 
+			this._cameraAboutLabel.AutoSize = true;
+			this._cameraAboutLabel.Location = new System.Drawing.Point(7, 20);
+			this._cameraAboutLabel.Name = "_cameraAboutLabel";
+			this._cameraAboutLabel.Size = new System.Drawing.Size(83, 13);
+			this._cameraAboutLabel.TabIndex = 0;
+			this._cameraAboutLabel.Text = "Camera credits: ";
 			// 
 			// MainForm
 			// 
@@ -291,9 +292,9 @@
 			this._hotsamplingTab.ResumeLayout(false);
 			this._logTab.ResumeLayout(false);
 			this._aboutTab.ResumeLayout(false);
+			this.groupBox2.ResumeLayout(false);
 			this._cameraAboutGroupBox.ResumeLayout(false);
 			this._cameraAboutGroupBox.PerformLayout();
-			this.groupBox2.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

@@ -30,6 +30,7 @@
 		{
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProcessSelector));
 			this._processGrid = new System.Windows.Forms.DataGridView();
 			this.COL_ICON = new System.Windows.Forms.DataGridViewImageColumn();
 			this.COL_PROCESS_NAME = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -163,6 +164,7 @@
 			this.Controls.Add(this._selectButton);
 			this.Controls.Add(this._refreshButton);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "ProcessSelector";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Please select the process to inject the dll into";

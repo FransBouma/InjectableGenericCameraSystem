@@ -49,7 +49,6 @@ namespace IGCSClient.Forms
 		{
 			InitializeComponent();
 			LogHandlerSingleton.Instance().Setup(_logControl);
-			this.Icon = Resources.IGCSIcon;
 			this.MinimumSize = this.Size;
 		}
 
@@ -145,11 +144,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' AND 
 		}
 
 		
-
 		private void _generalTabControl_DllInjected(object sender, EventArgs e)
 		{
 			HandleDllInjected();
 		}
+
 
 		private void _generalTabControl_AttachedProcessExited(object sender, EventArgs e)
 		{
@@ -157,9 +156,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' AND 
 			this.Close();
 		}
 
+
 		private void _igcsSBLink_Click(object sender, EventArgs e)
 		{
 			Process.Start(ConstantsEnums.IGCSRootURL);
+		}
+
+
+		private void _aboutIGCSTextBox_LinkClicked(object sender, LinkClickedEventArgs e)
+		{
+			Process.Start(e.LinkText);
 		}
 	}
 }

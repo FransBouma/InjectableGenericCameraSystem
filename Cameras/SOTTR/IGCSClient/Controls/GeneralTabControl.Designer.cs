@@ -45,6 +45,7 @@
 			this._executableTextBox = new System.Windows.Forms.TextBox();
 			this._openDllToInjectDialog = new System.Windows.Forms.OpenFileDialog();
 			this._mainToolTip = new System.Windows.Forms.ToolTip(this.components);
+			this._rehookXInput = new System.Windows.Forms.Button();
 			this._injectDllGroupBox.SuspendLayout();
 			this._attachedProcessInfoGroupBox.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._executableIconPictureBox)).BeginInit();
@@ -149,6 +150,7 @@
 			// 
 			this._attachedProcessInfoGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this._attachedProcessInfoGroupBox.Controls.Add(this._rehookXInput);
 			this._attachedProcessInfoGroupBox.Controls.Add(this._windowTitleLabel);
 			this._attachedProcessInfoGroupBox.Controls.Add(this._executablePathLabel);
 			this._attachedProcessInfoGroupBox.Controls.Add(this._executableIconPictureBox);
@@ -156,7 +158,7 @@
 			this._attachedProcessInfoGroupBox.Controls.Add(this._executableTextBox);
 			this._attachedProcessInfoGroupBox.Location = new System.Drawing.Point(4, 4);
 			this._attachedProcessInfoGroupBox.Name = "_attachedProcessInfoGroupBox";
-			this._attachedProcessInfoGroupBox.Size = new System.Drawing.Size(708, 74);
+			this._attachedProcessInfoGroupBox.Size = new System.Drawing.Size(708, 105);
 			this._attachedProcessInfoGroupBox.TabIndex = 2;
 			this._attachedProcessInfoGroupBox.TabStop = false;
 			this._attachedProcessInfoGroupBox.Text = "Attached process info";
@@ -224,12 +226,22 @@
 			this._mainToolTip.InitialDelay = 100;
 			this._mainToolTip.ReshowDelay = 100;
 			// 
+			// _rehookXInput
+			// 
+			this._rehookXInput.Location = new System.Drawing.Point(121, 68);
+			this._rehookXInput.Name = "_rehookXInput";
+			this._rehookXInput.Size = new System.Drawing.Size(114, 23);
+			this._rehookXInput.TabIndex = 2;
+			this._rehookXInput.Text = "Re-hook XInput";
+			this._rehookXInput.UseVisualStyleBackColor = true;
+			this._rehookXInput.Click += new System.EventHandler(this._rehookXInput_Click);
+			// 
 			// GeneralTabControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this._injectDllGroupBox);
 			this.Controls.Add(this._attachedProcessInfoGroupBox);
+			this.Controls.Add(this._injectDllGroupBox);
 			this.Name = "GeneralTabControl";
 			this.Size = new System.Drawing.Size(719, 282);
 			this._injectDllGroupBox.ResumeLayout(false);
@@ -259,5 +271,6 @@
 		private System.Windows.Forms.ToolTip _mainToolTip;
 		private System.Windows.Forms.TextBox _windowTitleTextBox;
 		private System.Windows.Forms.TextBox _executableTextBox;
+		private System.Windows.Forms.Button _rehookXInput;
 	}
 }

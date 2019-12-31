@@ -233,6 +233,7 @@ namespace IGCSClient.Controls
 			Win32Wrapper.SetWindowPos(_gameWindowHwnd, 0, 0, 0, newHorizontalResolution, newVerticalResolution, uFlags);
 			if(GameSpecificConstants.HotsamplingRequiresEXITSIZEMOVE)
 			{
+				// A warning of unreachable code will be raised here, that's ok. this code is only used when the constant is true
 				Win32Wrapper.SendMessage(_gameWindowHwnd, Win32Wrapper.WM_EXITSIZEMOVE, 0, 0);
 			}
 

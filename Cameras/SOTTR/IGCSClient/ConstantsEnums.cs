@@ -148,4 +148,10 @@ namespace IGCSClient
 		public const byte NormalSetting = 1;
 		public const byte KeyBinding = 2;
 	}
+
+
+	public class ActionType
+	{
+		public const byte RehookXInput = 1;
+	}
 }

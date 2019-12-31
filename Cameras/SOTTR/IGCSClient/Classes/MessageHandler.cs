@@ -93,7 +93,17 @@ namespace IGCSClient.Classes
 		{
 			_pipeClient.Send(new IGCSMessage(MessageType.KeyBinding, id, payload));
 		}
+		
 
+		/// <summary>
+		/// Sends a 2-byte message to signal the dll that it should re-hook the xinput.
+		/// </summary>
+		public void SendRehookXInputAction()
+		{
+			// send a message of 2 bytes, first byte is 'Action', second byte, the id, is the action type, RehookXInput. No payload required. 
+			_pipeClient.Send(new IGCSMessage(MessageType.Action, ActionType.RehookXInput, null));
+		}
+		
 
 		private void HandleNamedPipeMessageReceived(ContainerEventArgs<byte[]> e)
 		{

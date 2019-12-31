@@ -272,9 +272,6 @@
     <None Include="Resources\Folder_16x.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\IGCSIcon.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\StatusWarning_16x.png" />
   </ItemGroup>
   <ItemGroup>

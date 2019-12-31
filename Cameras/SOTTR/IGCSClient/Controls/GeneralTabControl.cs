@@ -270,5 +270,10 @@ namespace IGCSClient.Controls
 			// process has died, we should too.
 			this.AttachedProcessExited.RaiseEvent(this);
 		}
+
+		private void _rehookXInput_Click(object sender, EventArgs e)
+		{
+			MessageHandlerSingleton.Instance().SendRehookXInputAction();
+		}
 	}
 }

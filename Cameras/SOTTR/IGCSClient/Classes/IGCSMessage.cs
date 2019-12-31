@@ -64,10 +64,13 @@ namespace IGCSClient.Classes
 
 		public byte[] GetPayloadAsByteArray()
 		{
-			var messageBytes = new byte[_payload.Length + 2];
+			var messageBytes = _payload==null || _payload.Length==0 ? new byte[2] : new byte[_payload.Length + 2];
 			messageBytes[0] = _messageType;
 			messageBytes[1] = _id;
-			Array.Copy(_payload, 0, messageBytes, 2, _payload.Length);
+			if(_payload?.Length > 0)
+			{
+				Array.Copy(_payload, 0, messageBytes, 2, _payload.Length);
+			}
 			return messageBytes;
 		}
 	}

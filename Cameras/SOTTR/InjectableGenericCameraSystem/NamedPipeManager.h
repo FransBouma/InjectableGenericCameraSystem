@@ -51,6 +51,7 @@ namespace IGCS
 
 	private:
 		void handleMessage(BYTE buffer[], DWORD bytesRead);
+		void handleAction(BYTE buffer[], DWORD bytesRead);
 
 		HANDLE _dllToClientPipe;
 		HANDLE _clientToDllPipe;

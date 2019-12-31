@@ -34,6 +34,7 @@
 #include "Utils.h"
 #include "Globals.h"
 #include <vector>
+#include "InputHooker.h"
 
 namespace IGCS
 {
@@ -187,22 +188,40 @@ namespace IGCS
 	
 	void NamedPipeManager::handleMessage(BYTE buffer[], DWORD bytesRead)
 	{
-		if(bytesRead<3)
+		if(bytesRead<2)
 		{
 			//not useful
 			return;
 		}
-		switch(buffer[0])
+		switch(static_cast<MessageType>(buffer[0]))
 		{
-		case 1:		// Setting
+		case MessageType::Setting:
 			Globals::instance().handleSettingMessage(buffer, bytesRead);
 			break;
-		case 2:		// Keybinding
+		case MessageType::KeyBinding:
 			Globals::instance().handleKeybindingMessage(buffer, bytesRead);
 			break;
-		case 7:		// Action
+		case MessageType::Action:
+			handleAction(buffer, bytesRead);
 			break;
-		// ignore the rest
+		default:
+			// ignore the rest
+			break;
+		}
+	}
+
+
+	void NamedPipeManager::handleAction(BYTE buffer[], DWORD bytesRead)
+	{
+		if(bytesRead<2 || buffer[0] != BYTE(MessageType::Action))
+		{
+			return;
+		}
+		switch(static_cast<ActionMessageType>(buffer[1]))
+		{
+		case ActionMessageType::RehookXInput:
+			InputHooker::setXInputHook(true);
+			break;
 		}
 	}
 }

@@ -52,7 +52,6 @@ namespace IGCSClient.Forms
 		public ExceptionViewer()
 		{
 			InitializeComponent();
-			this.Icon = Resources.IGCSIcon;
 		}
 
 		public ExceptionViewer(Exception exceptionToView)
@@ -129,6 +128,7 @@ namespace IGCSClient.Forms
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExceptionViewer));
 			this.label1 = new System.Windows.Forms.Label();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this._messageTextBox = new System.Windows.Forms.RichTextBox();
@@ -245,6 +245,7 @@ namespace IGCSClient.Forms
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.groupBox1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "ExceptionViewer";
