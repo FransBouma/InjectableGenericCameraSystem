@@ -94,9 +94,6 @@
     <ClInclude Include="Console.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="CDataFile.h">
-      <Filter>Main</Filter>
-    </ClInclude>
     <ClInclude Include="Overlay\imstb_truetype.h">
       <Filter>Overlay\Imgui</Filter>
     </ClInclude>
@@ -187,9 +184,6 @@
       <Filter>Overlay</Filter>
     </ClCompile>
     <ClCompile Include="Console.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="CDataFile.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="Overlay\imgui_impl_win32.cpp">

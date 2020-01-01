@@ -312,7 +312,6 @@
     <ClInclude Include="ActionData.h" />
     <ClInclude Include="AOBBlock.h" />
     <ClInclude Include="CameraManipulator.h" />
-    <ClInclude Include="CDataFile.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="D3D11InternalOverlay.h" />
     <ClInclude Include="Defaults.h" />
@@ -347,7 +346,6 @@
     <ClCompile Include="ActionData.cpp" />
     <ClCompile Include="AOBBlock.cpp" />
     <ClCompile Include="CameraManipulator.cpp" />
-    <ClCompile Include="CDataFile.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="D3D11InternalOverlay.cpp" />
     <ClCompile Include="GameImageHooker.cpp" />

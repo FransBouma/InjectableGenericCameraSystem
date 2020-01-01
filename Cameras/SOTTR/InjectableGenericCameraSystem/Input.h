@@ -42,5 +42,4 @@ namespace IGCS::Input
 	void setKeyboardMouseStateInImGuiIO();
 	bool isActionActivated(ActionType type);
 	bool isActionActivated(ActionType type, bool altCtrlShiftOptional);
-	void collectPressedKeysCumulatively();
 }

@@ -43,7 +43,6 @@ namespace IGCS
 	{
 		initializeKeyBindings();
 		_settings.init(false);
-		_settings.loadFromFile(_keyBindingPerActionType);
 		_screenshotController.configure(_settings.screenshotFolder, _settings.numberOfFramesToWaitBetweenSteps, _settings.movementSpeed, _settings.rotationSpeed);
 	}
 
@@ -59,50 +58,7 @@ namespace IGCS
 		return theInstance;
 	}
 
-
-	void Globals::saveSettingsIfRequired(float delta)
-	{
-		if (_settingsDirtyTimer <= 0.0f)
-		{
-			// nothing to do
-			return;
-		}
-		_settingsDirtyTimer -= delta;
-		if (_settingsDirtyTimer <= 0)
-		{
-			_settings.saveToFile(_keyBindingPerActionType);
-			_settingsDirtyTimer = 0.0f;
-		}
-	}
-
-
-	void Globals::updateActionDataForAction(ActionType type)
-	{
-		if (!_keyCollectorData.isValid())
-		{
-			// not valid, no need to set it.
-			return;
-		}
-		ActionData* toUpdate = getActionData(type);
-		if (nullptr == toUpdate)
-		{
-			return;
-		}
-		toUpdate->update(_keyCollectorData);
-		// mark settings as dirty, so it's persisted, as we potentially set a new keybinding.
-		markSettingsDirty();
-	}
-
-
-	void Globals::markSettingsDirty()
-	{
-		if (_settingsDirtyTimer <= 0)
-		{
-			_settingsDirtyTimer = IGCS_SPLASH_DURATION;
-		}
-	}
-
-
+	
 	void Globals::reinitializeScreenshotController()
 	{
 		_screenshotController.configure(_settings.screenshotFolder, _settings.numberOfFramesToWaitBetweenSteps, _settings.movementSpeed, _settings.rotationSpeed);
@@ -117,6 +73,22 @@ namespace IGCS
 	
 	void Globals::handleKeybindingMessage(BYTE payload[], DWORD payloadLength)
 	{
+		if(payloadLength<6)
+		{
+			return;
+		}
+		// byte 1 is the keybinding id, byte 2-5 are the keybinding data:
+		//payload[2] = _keyCode;
+		//payload[3] = _altPressed;
+		//payload[4] = _ctrlPressed;
+		//payload[5] = _shiftPressed;
+		ActionType idOfBinding = static_cast<ActionType>(payload[1]);
+		ActionData* toUpdate = getActionData(idOfBinding);
+		if (nullptr == toUpdate)
+		{
+			return;
+		}
+		toUpdate->update(payload[2], payload[3] == 0x01, payload[4] == 0x01, payload[5] == 0x01);
 	}
 
 

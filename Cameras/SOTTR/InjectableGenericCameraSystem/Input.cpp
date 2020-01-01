@@ -69,37 +69,6 @@ namespace IGCS::Input
 	}
 
 
-	void collectPressedKeysCumulatively()
-	{
-		// check which keys are down. For keycode, the last one wins.
-		ActionData& toCollectInto = Globals::instance().getKeyCollector();
-
-		// keys below 7 aren't interesting.
-		for (int i = 7; i < 256; i++)
-		{
-			if ((g_keyStates[i] & 0x88) == 0x88 || (g_keyStates[i] & 0x80)==0x80)
-			{
-				// this key is down.
-				switch (i)
-				{
-				case VK_MENU:
-					toCollectInto.setAltRequired();
-					break;
-				case VK_CONTROL:
-					toCollectInto.setCtrlRequired();
-					break;
-				case VK_SHIFT:
-					toCollectInto.setShiftRequired();
-					break;
-				default:
-					toCollectInto.setKeyCode(i);
-					break;
-				}
-			}
-		}
-	}
-
-
 	bool isActionActivated(ActionType type)
 	{
 		return isActionActivated(type, false);
