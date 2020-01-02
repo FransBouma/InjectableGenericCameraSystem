@@ -30,7 +30,7 @@
 
 namespace IGCS
 {
-	enum class ActionType : BYTE
+	enum class ActionType : uint8_t
 	{
 		BlockInput=0,
 		CameraEnable,
@@ -56,9 +56,6 @@ namespace IGCS
 		HudToggle,
 		Timestop,
 
-// TO REMOVE
-		ToggleOverlay,
-
 		Amount,
 	};
 
@@ -75,7 +72,7 @@ namespace IGCS
 		int getIniFileValue();
 		void setValuesFromIniFileValue(int iniFileValue);
 		void clear();
-		void update(BYTE newKeyCode, bool altRequired, bool ctrlRequired, bool shiftRequired);
+		void update(uint8_t newKeyCode, bool altRequired, bool ctrlRequired, bool shiftRequired);
 		void setKeyCode(int newKeyCode);
 
 		std::string getName() { return _name; }

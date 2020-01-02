@@ -33,7 +33,7 @@
 // data shared with asm functions. This is allocated here, 'C' style and not in some datastructure as passing that to 
 // MASM is rather tedious. 
 extern "C" {
-	BYTE g_cameraEnabled = 0;
+	uint8_t g_cameraEnabled = 0;
 }
 
 
@@ -43,7 +43,7 @@ namespace IGCS
 	{
 		initializeKeyBindings();
 		_settings.init(false);
-		_screenshotController.configure(_settings.screenshotFolder, _settings.numberOfFramesToWaitBetweenSteps, _settings.movementSpeed, _settings.rotationSpeed);
+		_screenshotController.configure(_settings.screenshotFolder, _settings.multiShotNumberOfFramesToWaitBetweenSteps, _settings.movementSpeed, _settings.rotationSpeed);
 	}
 
 
@@ -61,17 +61,17 @@ namespace IGCS
 	
 	void Globals::reinitializeScreenshotController()
 	{
-		_screenshotController.configure(_settings.screenshotFolder, _settings.numberOfFramesToWaitBetweenSteps, _settings.movementSpeed, _settings.rotationSpeed);
+		_screenshotController.configure(_settings.screenshotFolder, _settings.multiShotNumberOfFramesToWaitBetweenSteps, _settings.movementSpeed, _settings.rotationSpeed);
 	}
 
 	
-	void Globals::handleSettingMessage(BYTE payload[], DWORD payloadLength)
+	void Globals::handleSettingMessage(uint8_t payload[], DWORD payloadLength)
 	{
 		_settings.setValueFromMessage(payload, payloadLength);
 	}
 
 	
-	void Globals::handleKeybindingMessage(BYTE payload[], DWORD payloadLength)
+	void Globals::handleKeybindingMessage(uint8_t payload[], DWORD payloadLength)
 	{
 		if(payloadLength<6)
 		{
@@ -123,7 +123,6 @@ namespace IGCS
 		_keyBindingPerActionType[ActionType::RotateUp] = new ActionData("RotateUp", "Rotate camera up", IGCS_KEY_ROTATE_UP, false, false, false);
 		_keyBindingPerActionType[ActionType::TiltLeft] = new ActionData("TiltLeft", "Tilt camera left", IGCS_KEY_TILT_LEFT, false, false, false);
 		_keyBindingPerActionType[ActionType::TiltRight] = new ActionData("TiltRight", "Tilt camera right", IGCS_KEY_TILT_RIGHT, false, false, false);
-		_keyBindingPerActionType[ActionType::ToggleOverlay] = new ActionData("ToggleOverlay", "Show / hide camera tools main window", IGCS_KEY_TOGGLE_OVERLAY, false, true, false);
 		_keyBindingPerActionType[ActionType::TestMultiShotSetup] = new ActionData("TestMultiShotSetup", "Test multi-shot setup", IGCS_KEY_TEST_SHOT_SETUP, false, false, false);
 		_keyBindingPerActionType[ActionType::TakeScreenshot] = new ActionData("TakeScreenshot", "Take screenshot", IGCS_KEY_TAKE_SCREENSHOT, false, false, false);
 		_keyBindingPerActionType[ActionType::TakeMultiShot] = new ActionData("TakeMultiShot", "Take multi-screenshot", IGCS_KEY_TAKE_MULTISHOT, false, true, false);

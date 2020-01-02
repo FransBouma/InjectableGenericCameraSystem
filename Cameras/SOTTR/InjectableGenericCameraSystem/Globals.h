@@ -28,10 +28,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Gamepad.h"
-#include "GameConstants.h"
 #include "Defaults.h"
-#include "CDataFile.h"
-#include "Utils.h"
 #include <map>
 #include <atomic>
 #include "ActionData.h"
@@ -39,7 +36,7 @@
 #include "Settings.h"
 #include "ScreenshotController.h"
 
-extern "C" BYTE g_cameraEnabled;
+extern "C" uint8_t g_cameraEnabled;
 
 namespace IGCS
 {
@@ -64,8 +61,8 @@ namespace IGCS
 		ActionData* getActionData(ActionType type);
 		ScreenshotController& getScreenshotController() { return _screenshotController; }
 		void reinitializeScreenshotController();
-		void handleSettingMessage(BYTE payload[], DWORD payloadLength);
-		void handleKeybindingMessage(BYTE payload[], DWORD payloadLength);
+		void handleSettingMessage(uint8_t payload[], DWORD payloadLength);
+		void handleKeybindingMessage(uint8_t payload[], DWORD payloadLength);
 		void hostExeFilename(std::filesystem::path hostExeFilename) { _screenshotController.hostExeFilename(hostExeFilename); }
 
 	private:

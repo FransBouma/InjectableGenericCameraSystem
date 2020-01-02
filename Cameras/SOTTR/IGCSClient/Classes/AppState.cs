@@ -70,6 +70,7 @@ namespace IGCSClient.Classes
 		private Dictionary<string, DllCacheData> _recentProcessesWithDllsUsed;		// key: process name (blabla.exe), value: dll name (full path) & DateTime last used.
 		private Process _attachedProcess;
 		private IntPtr _attachedProcessMainWindowHwnd;
+		private RenderAPIKind _preferredRenderApiKind;
 		#endregion
 
 
@@ -79,6 +80,7 @@ namespace IGCSClient.Classes
 			_keyBindings = new List<KeyBindingSetting>();
 			_recentProcessesWithDllsUsed = new Dictionary<string, DllCacheData>();
 			_attachedProcessMainWindowHwnd = IntPtr.Zero;
+			_preferredRenderApiKind = RenderAPIKind.Direct3D11;
 		}
 
 
@@ -220,6 +222,9 @@ namespace IGCSClient.Classes
 			{
 				iniFile.Write(binding.Name, binding.GetValueAsString(), "KeyBindings");
 			}
+
+			// other settings
+			iniFile.Write("PreferredRenderAPI", ((int)_preferredRenderApiKind).ToString(), "MiscSettings");
 		}
 
 
@@ -237,6 +242,9 @@ namespace IGCSClient.Classes
 				{
 					binding.SetValueFromString(iniFile.Read(binding.Name, "KeyBindings"));
 				}
+
+				// other settings
+				_preferredRenderApiKind = (RenderAPIKind)Convert.ToInt32(iniFile.Read("PreferredRenderAPI", "MiscSettings"));
 			}
 		}
 
@@ -285,6 +293,12 @@ namespace IGCSClient.Classes
 		public Process AttachedProcess
 		{
 			get { return _attachedProcess; }
+		}
+
+		public RenderAPIKind PreferredRenderApiKind
+		{
+			get { return _preferredRenderApiKind; }
+			set { _preferredRenderApiKind = value; }
 		}
 		#endregion
 	}

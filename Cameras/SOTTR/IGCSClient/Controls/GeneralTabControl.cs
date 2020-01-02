@@ -40,6 +40,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using IGCSClient.Classes;
 using IGCSClient.Forms;
+using IGCSClient.GameSpecific.Classes;
 using SD.Tools.BCLExtensions.SystemRelated;
 
 namespace IGCSClient.Controls
@@ -50,6 +51,7 @@ namespace IGCSClient.Controls
 		private Process _selectedProcess;
 		private string _defaultProcessName;
 		private string _defaultDllName;
+		private List<RenderAPIKind> _supportedRenderApis;
 
 		public event EventHandler DllInjected;
 		public event EventHandler AttachedProcessExited;
@@ -59,16 +61,54 @@ namespace IGCSClient.Controls
 		{
 			InitializeComponent();
 			_selectedProcess = null;
+			_supportedRenderApis = new List<RenderAPIKind>();
+			if(GameSpecificConstants.GameSupportsDX11)
+			{
+				_supportedRenderApis.Add(RenderAPIKind.Direct3D11);
+			}
+			if(GameSpecificConstants.GameSupportsDX12)
+			{
+				_supportedRenderApis.Add(RenderAPIKind.Direct3D12);
+			}
+			if(GameSpecificConstants.GameSupportsVulkan)
+			{
+				_supportedRenderApis.Add(RenderAPIKind.Other);
+			}
 		}
 
 
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
+			_renderAPIComboBox.DataSource = _supportedRenderApis.Select(value => new
+																				 {
+																					 (Attribute.GetCustomAttribute(value.GetType()?.GetField(value.ToString()), 
+																												   typeof(DescriptionAttribute)) as DescriptionAttribute)?.Description,
+																					 value
+																				 })
+																.OrderBy(item => item.value)
+																.ToList();
+			_renderAPIComboBox.DisplayMember = "Description";
+			_renderAPIComboBox.ValueMember = "value";
+			if(_supportedRenderApis.Count <= 1)
+			{
+				// disable combo box
+				_renderAPIComboBox.Enabled = false;
+				_renderAPILabel.Enabled = false;
+			}
 			LoadDefaultNamesFromConfigFile();
 			FindDefaultProcess();
 			DisplayProcessInfoForInjection();
 			DisplayAttachedProcessInUI();
+		}
+		
+
+		/// <summary>
+		/// Updates the combobox selection with the preferred render api from the ini file, which is loaded after this control has been shown and initialized.
+		/// </summary>
+		public void UpdateSelectedRenderAPI()
+		{
+			_renderAPIComboBox.SelectedValue = AppStateSingleton.Instance().PreferredRenderApiKind;
 		}
 
 
@@ -265,15 +305,25 @@ namespace IGCSClient.Controls
 			}
 		}
 
+
 		private void _selectedProcess_Exited(object sender, EventArgs e)
 		{
 			// process has died, we should too.
 			this.AttachedProcessExited.RaiseEvent(this);
 		}
 
+
 		private void _rehookXInput_Click(object sender, EventArgs e)
 		{
 			MessageHandlerSingleton.Instance().SendRehookXInputAction();
 		}
+
+
+		#region Properties
+		public RenderAPIKind SelectedRenderAPI
+		{
+			get { return (RenderAPIKind)_renderAPIComboBox.SelectedIndex; }
+		}
+		#endregion
 	}
 }

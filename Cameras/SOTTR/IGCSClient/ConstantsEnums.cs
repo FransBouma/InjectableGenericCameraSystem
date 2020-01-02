@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -153,5 +154,18 @@ namespace IGCSClient
 	public class ActionType
 	{
 		public const byte RehookXInput = 1;
+		public const byte HookDXGIUsingDX11 = 2;
+		public const byte HookDXGIUsingDX12 = 3;
+	}
+
+
+	public enum RenderAPIKind : int
+	{
+		[Description("Direct3D 11")]
+		Direct3D11 = 0,
+		[Description("Direct3D 12")]
+		Direct3D12 = 1,
+		[Description("Other")]
+		Other = 2,
 	}
 }

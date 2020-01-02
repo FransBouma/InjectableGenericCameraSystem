@@ -28,11 +28,10 @@
 #include "stdafx.h"
 #include "CameraManipulator.h"
 #include "GameConstants.h"
-#include "InterceptorHelper.h"
 #include "Globals.h"
-#include "OverlayConsole.h"
 #include "Camera.h"
 #include "GameCameraData.h"
+#include "MessageHandler.h"
 
 using namespace DirectX;
 using namespace std;
@@ -161,7 +160,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 
 	void displayCameraStructAddress()
 	{
-		OverlayConsole::instance().logDebug("Camera struct address: %p", (void*)g_cameraStructAddress);
+		MessageHandler::logDebug("Camera struct address: %p", (void*)g_cameraStructAddress);
 	}
 
 

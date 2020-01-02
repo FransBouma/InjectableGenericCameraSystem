@@ -77,7 +77,7 @@ namespace IGCS
 
 	#define IGCS_JPG_SCREENSHOT_QUALITY				98
 
-	static const BYTE jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]
+	static const uint8_t jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]
 
 	#define DEVICE_ID_KEYBOARD_MOUSE			0
 	#define DEVICE_ID_GAMEPAD					1
@@ -107,7 +107,7 @@ namespace IGCS
 	};
 
 
-	enum class SettingType : BYTE
+	enum class SettingType : uint8_t
 	{
 		FastMovementMultiplier = 0,
 		SlowMovementMultiplier = 1,
@@ -128,7 +128,7 @@ namespace IGCS
 	};
 
 	
-	enum class MessageType : BYTE
+	enum class MessageType : uint8_t
 	{
 		Setting = 1,
 		KeyBinding = 2,
@@ -139,8 +139,10 @@ namespace IGCS
 		Action = 7,
 	};
 
-	enum class ActionMessageType : BYTE
+	enum class ActionMessageType : uint8_t
 	{
 		RehookXInput = 1,
+		HookDXGIUsingDX11=2,
+		HookDXGIUsingDX12=3,
 	};
 }

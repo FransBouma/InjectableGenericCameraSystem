@@ -36,6 +36,9 @@ namespace IGCSClient.GameSpecific.Classes
 		public const string CameraVersion = "1.0.4";
 		public const string CameraCredits = "Otis_Inf";
 		public const bool HotsamplingRequiresEXITSIZEMOVE = false;
+		public const bool GameSupportsDX11 = true;
+		public const bool GameSupportsDX12 = true;
+		public const bool GameSupportsVulkan = false;
 	}
 
 

@@ -35,15 +35,10 @@
 #include "InterceptorHelper.h"
 #include "InputHooker.h"
 #include "input.h"
-#include "CameraManipulator.h"
-#include "GameImageHooker.h"
-#include "D3D11InternalOverlay.h"
-#include "D3D12InternalOverlay.h"
-#include "OverlayConsole.h"
-#include "OverlayControl.h"
 #include "MinHook.h"
-#include "Console.h"
 #include "NamedPipeManager.h"
+#include "MessageHandler.h"
+#include "DXGIHooker.h"
 
 namespace IGCS
 {
@@ -104,19 +99,9 @@ namespace IGCS
 			Sleep(200);
 		}
 
-		if (Input::isActionActivated(ActionType::ToggleOverlay))
-		{
-			OverlayControl::toggleOverlay();
-			_applyHammerPrevention = true;
-		}
 		if (!_cameraStructFound)
 		{
 			// camera not found yet, can't proceed.
-			return;
-		}
-		if (OverlayControl::isMainMenuVisible() && !Globals::instance().settings().allowCameraMovementWhenMenuIsUp)
-		{
-			// stop here, so keys used in the camera system won't affect anything of the camera
 			return;
 		}
 		if (Input::isActionActivated(ActionType::CameraEnable))
@@ -136,7 +121,7 @@ namespace IGCS
 				_camera.resetAngles();
 
 			}
-			g_cameraEnabled = g_cameraEnabled == 0 ? (BYTE)1 : (BYTE)0;
+			g_cameraEnabled = g_cameraEnabled == 0 ? (uint8_t)1 : (uint8_t)0;
 			displayCameraState();
 			_applyHammerPrevention = true;
 		}
@@ -331,17 +316,10 @@ namespace IGCS
 	void System::initialize()
 	{
 		MH_Initialize();
-		OverlayControl::init();
 		// first grab the window handle
 		Globals::instance().mainWindowHandle(Utils::findMainWindow(GetCurrentProcessId()));
-		OverlayControl::initImGui();
-#ifdef _DX12_
 		NamedPipeManager::instance().connectDllToClient();
 		NamedPipeManager::instance().startListening();
-		//Console::Init();
-#else
-		D3D11InternalOverlay::initializeHook();
-#endif
 		InputHooker::setInputHooks();
 		Input::registerRawInput();
 
@@ -361,13 +339,13 @@ namespace IGCS
 	// Waits for the interceptor to pick up the camera struct address. Should only return if address is found 
 	void System::waitForCameraStructAddresses()
 	{
-		OverlayConsole::instance().logLine("Waiting for camera struct interception...");
+		MessageHandler::logLine("Waiting for camera struct interception...");
 		while(!GameSpecific::CameraManipulator::isCameraFound())
 		{
 			handleUserInput();
 			Sleep(100);
 		}
-		OverlayControl::addNotification("Camera found.");
+		MessageHandler::addNotification("Camera found.");
 		GameSpecific::CameraManipulator::displayCameraStructAddress();
 	}
 		
@@ -380,7 +358,7 @@ namespace IGCS
 			return;
 		}
 		_cameraMovementLocked = newValue;
-		OverlayControl::addNotification(_cameraMovementLocked ? "Camera movement is locked" : "Camera movement is unlocked");
+		MessageHandler::addNotification(_cameraMovementLocked ? "Camera movement is locked" : "Camera movement is unlocked");
 	}
 
 
@@ -392,21 +370,18 @@ namespace IGCS
 			return;
 		}
 		Globals::instance().inputBlocked(newValue);
-		OverlayControl::addNotification(newValue ? "Input to game blocked" : "Input to game enabled");
+		MessageHandler::addNotification(newValue ? "Input to game blocked" : "Input to game enabled");
 	}
 
 
 	void System::displayCameraState()
 	{
-		OverlayControl::addNotification(g_cameraEnabled ? "Camera enabled" : "Camera disabled");
+		MessageHandler::addNotification(g_cameraEnabled ? "Camera enabled" : "Camera disabled");
 	}
 
 
 	void System::takeMultiShot(bool isTestRun)
 	{
-#ifdef _DX12_
-		Console::WriteError("Taking multi-screenshots isn't supported in the DX12 version of these tools.");
-#else
 		// first cache the camera state
 		GameSpecific::CameraManipulator::cacheOriginalValuesBeforeMultiShot();
 
@@ -417,30 +392,32 @@ namespace IGCS
 			case ScreenshotType::HorizontalPanorama:
 				{
 					// The total fov of the pano is always given in degrees. So we have to calculate that back to radians for usage with our camera.
-					float totalPanoAngleInDegrees = Utils::clamp(settings.totalPanoAngleDegrees, 30.0f, 360.0f, 110.0f);
-					float totalPanoAngleInRadians = (totalPanoAngleInDegrees / 180.0f) * DirectX::XM_PI;
-					float currentFoVInRadians = Utils::clamp(CameraManipulator::getCurrentFoV(), 0.01f, 3.1f, 1.34f);		// clamp it to max 180degrees. 
+					const float totalPanoAngleInDegrees = Utils::clamp(settings.panoramaTotalAngleDegrees, 30.0f, 360.0f, 110.0f);
+					const float totalPanoAngleInRadians = (totalPanoAngleInDegrees / 180.0f) * DirectX::XM_PI;
+					const float currentFoVInRadians = Utils::clamp(CameraManipulator::getCurrentFoV(), 0.01f, 3.1f, 1.34f);		// clamp it to max 180degrees. 
 					// if total fov is < than current fov, why bother with a pano?
 					if (currentFoVInRadians > 0.0f && currentFoVInRadians < totalPanoAngleInRadians)
 					{
 						// take the shots
 						Globals::instance().getScreenshotController().startHorizontalPanoramaShot(_camera, totalPanoAngleInRadians,
-																									Utils::clamp(settings.overlapPercentagePerPanoShot, 0.1f, 99.0f, 70.0f),
+																									Utils::clamp(settings.panoramaOverlapPercentagePerShot, 0.1f, 99.0f, 70.0f),
 																									currentFoVInRadians, isTestRun);
 					}
 					else
 					{
-						OverlayControl::addNotification("The total panorama angle is smaller than the current field of view, so just take a single screenshot instead.");
+						MessageHandler::addNotification("The total panorama angle is smaller than the current field of view, so just take a single screenshot instead.");
 					}
 				}
 				break;
 			case ScreenshotType::Lightfield:
-				Globals::instance().getScreenshotController().startLightfieldShot(_camera, settings.distanceBetweenLightfieldShots, settings.numberOfShotsToTake, isTestRun);
+				Globals::instance().getScreenshotController().startLightfieldShot(_camera, settings.lightFieldDistanceBetweenShots, settings.multiShotNumberOfShotsToTake, isTestRun);
+				break;
+			default:
+				// nothing
 				break;
 		}
 		// restore camera state
 		GameSpecific::CameraManipulator::restoreOriginalValuesAfterMultiShot();
-#endif
 	}
 
 

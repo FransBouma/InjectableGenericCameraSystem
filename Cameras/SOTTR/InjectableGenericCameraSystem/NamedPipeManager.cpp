@@ -31,10 +31,10 @@
 #include "Defaults.h"
 #include "Console.h"
 #include <string>
-#include "Utils.h"
 #include "Globals.h"
 #include <vector>
 #include "InputHooker.h"
+#include "DXGIHooker.h"
 
 namespace IGCS
 {
@@ -92,8 +92,8 @@ namespace IGCS
 			return;
 		}
 
-		BYTE payload[IGCS_MAX_MESSAGE_SIZE];
-		payload[0] = BYTE(typeOfMessage);
+		uint8_t payload[IGCS_MAX_MESSAGE_SIZE];
+		payload[0] = uint8_t(typeOfMessage);
 		strncpy_s((char*)(&payload[1]), IGCS_MAX_MESSAGE_SIZE-2, messageText.c_str(), messageText.length());
 		DWORD numberOfBytesWritten;
 		WriteFile(_dllToClientPipe, payload, messageText.length() + 1, &numberOfBytesWritten, nullptr);
@@ -174,7 +174,7 @@ namespace IGCS
 			auto connectResult = ConnectNamedPipe(_clientToDllPipe, nullptr);
 			if(connectResult!=0 || GetLastError()==ERROR_PIPE_CONNECTED)
 			{
-				BYTE buffer[1024];
+				uint8_t buffer[1024];
 				DWORD bytesRead;
 				while (ReadFile(_clientToDllPipe, buffer, sizeof(buffer), &bytesRead, nullptr))
 				{
@@ -186,7 +186,7 @@ namespace IGCS
 	}
 
 	
-	void NamedPipeManager::handleMessage(BYTE buffer[], DWORD bytesRead)
+	void NamedPipeManager::handleMessage(uint8_t buffer[], DWORD bytesRead)
 	{
 		if(bytesRead<2)
 		{
@@ -211,9 +211,9 @@ namespace IGCS
 	}
 
 
-	void NamedPipeManager::handleAction(BYTE buffer[], DWORD bytesRead)
+	void NamedPipeManager::handleAction(uint8_t buffer[], DWORD bytesRead)
 	{
-		if(bytesRead<2 || buffer[0] != BYTE(MessageType::Action))
+		if(bytesRead<2 || buffer[0] != uint8_t(MessageType::Action))
 		{
 			return;
 		}
@@ -221,6 +221,12 @@ namespace IGCS
 		{
 		case ActionMessageType::RehookXInput:
 			InputHooker::setXInputHook(true);
+			break;
+		case ActionMessageType::HookDXGIUsingDX11:
+			DXGIHooker::initializeDXGIHookUsingDX11();
+			break;
+		case ActionMessageType::HookDXGIUsingDX12:
+			DXGIHooker::initializeDXGIHookUsingDX12();
 			break;
 		}
 	}

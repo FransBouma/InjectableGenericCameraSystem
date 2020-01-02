@@ -71,7 +71,7 @@ namespace IGCS
 		_keyCode = 0;
 	}
 
-	void ActionData::update(BYTE newKeyCode, bool altRequired, bool ctrlRequired, bool shiftRequired)
+	void ActionData::update(uint8_t newKeyCode, bool altRequired, bool ctrlRequired, bool shiftRequired)
 	{
 		_keyCode = (int)newKeyCode;
 		_altRequired = altRequired;

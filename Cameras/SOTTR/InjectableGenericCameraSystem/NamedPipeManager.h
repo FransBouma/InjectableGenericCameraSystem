@@ -50,8 +50,8 @@ namespace IGCS
 		DWORD listenerThread();
 
 	private:
-		void handleMessage(BYTE buffer[], DWORD bytesRead);
-		void handleAction(BYTE buffer[], DWORD bytesRead);
+		void handleMessage(uint8_t buffer[], DWORD bytesRead);
+		void handleAction(uint8_t buffer[], DWORD bytesRead);
 
 		HANDLE _dllToClientPipe;
 		HANDLE _clientToDllPipe;

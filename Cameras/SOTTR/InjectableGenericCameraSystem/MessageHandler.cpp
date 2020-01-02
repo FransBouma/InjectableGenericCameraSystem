@@ -1,4 +1,4 @@
-//////////////////////////	//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
 // Copyright(c) 2017, Frans Bouma
 // All rights reserved.
@@ -25,36 +25,52 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma once
 
-namespace IGCS::GameSpecific
+#include "stdafx.h"
+#include "MessageHandler.h"
+#include "NamedPipeManager.h"
+#include "Utils.h"
+
+namespace IGCS::MessageHandler
 {
-	// Mandatory constants to define for a game
-	#define GAME_NAME									"Shadow of the Tomb Raider v1.0+"
-	#define CAMERA_VERSION								"1.0.4"
-	#define CAMERA_CREDITS								"Otis_Inf."
-	#define GAME_WINDOW_TITLE							"Shadow of the Tomb Raider"
-	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
-	#define INITIAL_YAW_RADIANS							0.0f	// around Y axis	(out of the screen)
-	#define INITIAL_ROLL_RADIANS						0.0f	// around Z axis	(up)
-	#define CONTROLLER_Y_INVERT							false
-	// These will be overwritten by settings sent by the client. These defines are for initial usage. 
-	#define FASTER_MULTIPLIER							5.0f
-	#define SLOWER_MULTIPLIER							0.1f
-	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
-	#define DEFAULT_MOVEMENT_SPEED						1.00f
-	#define DEFAULT_ROTATION_SPEED						0.01f
-	#define DEFAULT_FOV_SPEED							0.001f
-	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f
-	// End Mandatory constants
+	
+	void addNotification(const string& notificationText)
+	{
+		NamedPipeManager::instance().writeNotification(notificationText);
+	}
 
-	// AOB Keys for interceptor's AOB scanner
-	#define CAMERA_ADDRESS_INTERCEPT_KEY				"AOB_CAMERA_ADDRESS_INTERCEPT"
-	#define CAMERA_WRITE1_INTERCEPT_KEY					"AOB_CAMERA_WRITE1_INTERCEPT"
 
-	// Indices in the structures read by interceptors 
-	#define QUATERNION_IN_STRUCT_OFFSET					0xA0
-	#define COORDS_IN_STRUCT_OFFSET						0x80
-	#define FOV_IN_STRUCT_OFFSET						0xB0
+	void logDebug(const char* fmt, ...)
+	{
+#ifdef _DEBUG
+		va_list args;
+		va_start(args, fmt);
+		const string formattedArgs = Utils::formatStringVa(fmt, args);
+		va_end(args);
 
+		NamedPipeManager::instance().writeMessage(formattedArgs, false, true);
+#endif
+	}
+
+
+	void logError(const char* fmt, ...)
+	{
+		va_list args;
+		va_start(args, fmt);
+		const string formattedArgs = Utils::formatStringVa(fmt, args);
+		va_end(args);
+		NamedPipeManager::instance().writeMessage(formattedArgs, true, false);
+	}
+
+
+	void logLine(const char* fmt, ...)
+	{
+		va_list args;
+		va_start(args, fmt);
+		string format(fmt);
+		format += '\n';
+		const string formattedArgs = Utils::formatStringVa(fmt, args);
+		va_end(args);
+		NamedPipeManager::instance().writeMessage(formattedArgs);
+	}
 }

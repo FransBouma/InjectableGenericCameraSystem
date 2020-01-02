@@ -102,9 +102,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this._mainTabControl.Controls.Add(this._generalTab);
+			this._mainTabControl.Controls.Add(this._hotsamplingTab);
 			this._mainTabControl.Controls.Add(this._settingsTab);
 			this._mainTabControl.Controls.Add(this._keyBindingsTab);
-			this._mainTabControl.Controls.Add(this._hotsamplingTab);
 			this._mainTabControl.Controls.Add(this._logTab);
 			this._mainTabControl.Controls.Add(this._aboutTab);
 			this._mainTabControl.Location = new System.Drawing.Point(3, 3);

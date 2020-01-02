@@ -29,12 +29,11 @@
 #include "ScreenshotController.h"
 #include "Utils.h"
 #include "Defaults.h"
-#include "OverlayConsole.h"
-#include "OverlayControl.h"
 #include <direct.h>
 #include "CameraManipulator.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
+#include "MessageHandler.h"
 
 using namespace std;
 
@@ -96,15 +95,15 @@ namespace IGCS
 
 	void ScreenshotController::startSingleShot()
 	{
-		OverlayConsole::instance().logDebug("strtSingleShot start.");
+		MessageHandler::logDebug("strtSingleShot start.");
 		reset();
 		_typeOfShot = ScreenshotType::SingleShot;
 		_state = ScreenshotControllerState::Grabbing;
 		// we'll wait now till all the shots are taken. 
 		waitForShots();
-		OverlayControl::addNotification("Single screenshot taken. Writing to disk...");
+		MessageHandler::addNotification("Single screenshot taken. Writing to disk...");
 		saveGrabbedShots();
-		OverlayControl::addNotification("Single screenshot done.");
+		MessageHandler::addNotification("Single screenshot done.");
 		// done
 	}
 
@@ -134,9 +133,9 @@ namespace IGCS
 		_state = ScreenshotControllerState::Grabbing;
 		// we'll wait now till all the shots are taken. 
 		waitForShots();
-		OverlayControl::addNotification("All Panorama shots have been taken. Writing shots to disk...");
+		MessageHandler::addNotification("All Panorama shots have been taken. Writing shots to disk...");
 		saveGrabbedShots();
-		OverlayControl::addNotification("Panorama done.");
+		MessageHandler::addNotification("Panorama done.");
 		// done
 
 	}
@@ -144,7 +143,7 @@ namespace IGCS
 
 	void ScreenshotController::startLightfieldShot(Camera camera, float distancePerStep, int amountOfShots, bool isTestRun)
 	{
-		OverlayConsole::instance().logDebug("startLightfield shot start. isTestRun: %d", isTestRun);
+		MessageHandler::logDebug("startLightfield shot start. isTestRun: %d", isTestRun);
 		reset();
 		_isTestRun = isTestRun;
 		_camera = camera;
@@ -158,9 +157,9 @@ namespace IGCS
 		_state = ScreenshotControllerState::Grabbing;
 		// we'll wait now till all the shots are taken. 
 		waitForShots();
-		OverlayControl::addNotification("All Lightfield have been shots taken. Writing shots to disk...");
+		MessageHandler::addNotification("All Lightfield have been shots taken. Writing shots to disk...");
 		saveGrabbedShots();
-		OverlayControl::addNotification("Lightfield done.");
+		MessageHandler::addNotification("Lightfield done.");
 		// done
 	}
 
@@ -233,11 +232,11 @@ namespace IGCS
 		}
 		if (saveSuccessful)
 		{
-			OverlayConsole::instance().logDebug("Successfully wrote screenshot of dimensions %dx%d to... %s", _framebufferWidth, _framebufferHeight, filename.c_str());
+			MessageHandler::logDebug("Successfully wrote screenshot of dimensions %dx%d to... %s", _framebufferWidth, _framebufferHeight, filename.c_str());
 		}
 		else 
 		{
-			OverlayConsole::instance().logDebug("Failed to write screenshot of dimensions %dx%d to... %s", _framebufferWidth, _framebufferHeight, filename.c_str());
+			MessageHandler::logDebug("Failed to write screenshot of dimensions %dx%d to... %s", _framebufferWidth, _framebufferHeight, filename.c_str());
 		}
 	}
 
@@ -278,6 +277,7 @@ namespace IGCS
 				moveCameraForLightfield(1, false);
 				break;
 			case ScreenshotType::SingleShot:
+			default:
 				// nothing
 				break;
 		}

@@ -105,6 +105,27 @@ namespace IGCSClient.Classes
 		}
 		
 
+		/// <summary>
+		/// Sends an action to tell the dll to hook DXGI based on the api specified. This is important as hooking dxgi with dx11 if the game uses dx12 will fail and vice versa.
+		/// </summary>
+		/// <param name="selectedRenderApi"></param>
+		public void SendDXGIHookActionForPreferredRenderAPI(RenderAPIKind selectedRenderApi)
+		{
+			switch(selectedRenderApi)
+			{
+				case RenderAPIKind.Direct3D11:
+					_pipeClient.Send(new IGCSMessage(MessageType.Action, ActionType.HookDXGIUsingDX11, null));
+					break;
+				case RenderAPIKind.Direct3D12:
+					_pipeClient.Send(new IGCSMessage(MessageType.Action, ActionType.HookDXGIUsingDX12, null));
+					break;
+				case RenderAPIKind.Other:
+					// do nothing for now. 
+					break;
+			}
+		}
+		
+
 		private void HandleNamedPipeMessageReceived(ContainerEventArgs<byte[]> e)
 		{
 			if(e.Value.Length < 2)

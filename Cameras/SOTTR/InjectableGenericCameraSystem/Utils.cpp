@@ -29,10 +29,10 @@
 #include "Utils.h"
 #include "GameConstants.h"
 #include "AOBBlock.h"
-#include "OverlayConsole.h"
 #include <comdef.h>
 #include <codecvt>
 #include <filesystem>
+#include "MessageHandler.h"
 
 using namespace std;
 
@@ -78,7 +78,7 @@ namespace IGCS::Utils
 			// convert title to char* so we can display it
 			_bstr_t titleAsBstr(title);
 			const char* titleAsChar = titleAsBstr;		// char conversion copy
-			OverlayConsole::instance().logDebug("Window found with title: '%s'", titleAsChar);
+			MessageHandler::logDebug("Window found with title: '%s'", titleAsChar);
 		}
 		return toReturn;
 	}
@@ -161,9 +161,9 @@ namespace IGCS::Utils
 	}
 
 
-	BYTE CharToByte(char c)
+	uint8_t CharToByte(char c)
 	{
-		BYTE b;
+		uint8_t b;
 		sscanf_s(&c, "%hhx", &b);
 		return b;
 	}
@@ -184,7 +184,7 @@ namespace IGCS::Utils
 
 	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, AOBBlock* const toScanFor)
 	{
-		BYTE firstByte = *(toScanFor->bytePattern());
+		uint8_t firstByte = *(toScanFor->bytePattern());
 		__int64 length = (__int64)imageAddress + imageSize - toScanFor->patternSize();
 
 		LPBYTE toReturn = nullptr;
@@ -199,33 +199,33 @@ namespace IGCS::Utils
 
 				if ((x & 0xFF) == firstByte)
 				{
-					if (DataCompare(reinterpret_cast<BYTE*>(i), toScanFor->bytePattern(), toScanFor->patternMask()))
+					if (DataCompare(reinterpret_cast<uint8_t*>(i), toScanFor->bytePattern(), toScanFor->patternMask()))
 					{
-						toReturn = reinterpret_cast<BYTE*>(i);
+						toReturn = reinterpret_cast<uint8_t*>(i);
 						break;
 					}
 				}
 				if ((x & 0xFF00) >> 8 == firstByte)
 				{
-					if (DataCompare(reinterpret_cast<BYTE*>(i + 1), toScanFor->bytePattern(), toScanFor->patternMask()))
+					if (DataCompare(reinterpret_cast<uint8_t*>(i + 1), toScanFor->bytePattern(), toScanFor->patternMask()))
 					{
-						toReturn = reinterpret_cast<BYTE*>(i + 1);
+						toReturn = reinterpret_cast<uint8_t*>(i + 1);
 						break;
 					}
 				}
 				if ((x & 0xFF0000) >> 16 == firstByte)
 				{
-					if (DataCompare(reinterpret_cast<BYTE*>(i + 2), toScanFor->bytePattern(), toScanFor->patternMask()))
+					if (DataCompare(reinterpret_cast<uint8_t*>(i + 2), toScanFor->bytePattern(), toScanFor->patternMask()))
 					{
-						toReturn = reinterpret_cast<BYTE*>(i + 2);
+						toReturn = reinterpret_cast<uint8_t*>(i + 2);
 						break;
 					}
 				}
 				if ((x & 0xFF000000) >> 24 == firstByte)
 				{
-					if (DataCompare(reinterpret_cast<BYTE*>(i + 3), toScanFor->bytePattern(), toScanFor->patternMask()))
+					if (DataCompare(reinterpret_cast<uint8_t*>(i + 3), toScanFor->bytePattern(), toScanFor->patternMask()))
 					{
-						toReturn = reinterpret_cast<BYTE*>(i + 3);
+						toReturn = reinterpret_cast<uint8_t*>(i + 3);
 						break;
 					}
 				}
@@ -302,7 +302,7 @@ namespace IGCS::Utils
 		return toReturn;
 	}
 
-	float floatFromBytes(BYTE byteArray[], DWORD arrayLength, int startIndex)
+	float floatFromBytes(uint8_t byteArray[], DWORD arrayLength, int startIndex)
 	{
 		if(arrayLength<startIndex+4)
 		{
@@ -313,7 +313,7 @@ namespace IGCS::Utils
 	}
 
 	
-	int intFromBytes(BYTE byteArray[], DWORD arrayLength, int startIndex)
+	int intFromBytes(uint8_t byteArray[], DWORD arrayLength, int startIndex)
 	{
 		if (arrayLength < startIndex + 4)
 		{
@@ -324,7 +324,7 @@ namespace IGCS::Utils
 	}
 
 	
-	std::string stringFromBytes(BYTE byteArray[], DWORD arrayLength, int startIndex)
+	std::string stringFromBytes(uint8_t byteArray[], DWORD arrayLength, int startIndex)
 	{
 		if (arrayLength < startIndex + 4)
 		{

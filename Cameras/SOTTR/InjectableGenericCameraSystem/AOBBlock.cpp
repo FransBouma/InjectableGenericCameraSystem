@@ -29,7 +29,7 @@
 #include "stdafx.h"
 #include "AOBBlock.h"
 #include "Utils.h"
-#include "OverlayConsole.h"
+#include "MessageHandler.h"
 
 namespace IGCS
 {
@@ -51,12 +51,12 @@ namespace IGCS
 		LPBYTE aobPatternLocation = Utils::findAOBPattern(imageAddress, imageSize, this);
 		if (nullptr == aobPatternLocation)
 		{
-			OverlayConsole::instance().logError("Can't find pattern for block '%s'! Hook not set.", _blockName.c_str());
+			MessageHandler::logError("Can't find pattern for block '%s'! Hook not set.", _blockName.c_str());
 			return false;
 		}
 		else
 		{
-			OverlayConsole::instance().logDebug("Pattern for block '%s' found at address: %p", _blockName.c_str(), (void*)aobPatternLocation);
+			MessageHandler::logDebug("Pattern for block '%s' found at address: %p", _blockName.c_str(), (void*)aobPatternLocation);
 		}
 		_locationInImage = aobPatternLocation;
 		return true;

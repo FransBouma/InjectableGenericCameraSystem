@@ -30,8 +30,7 @@
 #include "GameConstants.h"
 #include "GameImageHooker.h"
 #include <map>
-#include "OverlayConsole.h"
-#include "CameraManipulator.h"
+#include "MessageHandler.h"
 
 using namespace std;
 
@@ -64,11 +63,11 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		}
 		if (result)
 		{
-			OverlayConsole::instance().logLine("All interception offsets found.");
+			MessageHandler::logLine("All interception offsets found.");
 		}
 		else
 		{
-			OverlayConsole::instance().logError("One or more interception offsets weren't found: tools aren't compatible with this game's version.");
+			MessageHandler::logError("One or more interception offsets weren't found: tools aren't compatible with this game's version.");
 		}
 	}
 
