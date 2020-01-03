@@ -69,6 +69,11 @@ namespace IGCSClient.GameSpecific.Classes
 			appState.AddSetting(new FloatSetting(SettingType.PanoOverlapPercentage, nameof(SettingType.PanoOverlapPercentage), 0.1M, 99.9M, 1, 0.1M, GameSpecificSettingDefaults.PanoOverlapPercentage));
 			appState.AddSetting(new FloatSetting(SettingType.LightfieldDistance, nameof(SettingType.LightfieldDistance), 0.001M, 5.0M, 3, 0.001M, GameSpecificSettingDefaults.LightfieldDistance));
 			appState.AddSetting(new IntSetting(SettingType.LightfieldShotCount, nameof(SettingType.LightfieldShotCount), 0, 60, 1, GameSpecificSettingDefaults.LightfieldShotCount));
+			appState.AddSetting(new DropDownSetting(SettingType.ShotFileType, nameof(SettingType.ShotFileType), new List<string>()
+																												{
+																													nameof(ScreenshotFileType.Bmp), nameof(ScreenshotFileType.Jpeg), 
+																													nameof(ScreenshotFileType.Png)
+																												}, GameSpecificSettingDefaults.ShotFileType));
 		}
 
 

@@ -29,41 +29,43 @@
 		private void InitializeComponent()
 		{
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this._cameraControlDeviceInput = new IGCSClient.Controls.DropDownInput();
-			this._movementSpeedInput = new IGCSClient.Controls.FloatInput();
 			this.label4 = new System.Windows.Forms.Label();
-			this._upMovementInput = new IGCSClient.Controls.FloatInput();
 			this.label5 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
-			this._slowMovementInput = new IGCSClient.Controls.FloatInput();
 			this.label2 = new System.Windows.Forms.Label();
-			this._fastMovementInput = new IGCSClient.Controls.FloatInput();
 			this.label1 = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this._invertYInput = new IGCSClient.Controls.BoolInput();
-			this._rotationSpeedInput = new IGCSClient.Controls.FloatInput();
 			this.label7 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
-			this._fovSpeedInput = new IGCSClient.Controls.FloatInput();
 			this.label8 = new System.Windows.Forms.Label();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
 			this._horizontalPanoramaControlsPanel = new System.Windows.Forms.Panel();
-			this._panoFovInput = new IGCSClient.Controls.FloatInput();
 			this.label12 = new System.Windows.Forms.Label();
-			this._panoOverlapInput = new IGCSClient.Controls.FloatInput();
 			this.label13 = new System.Windows.Forms.Label();
 			this._lightfieldControlsPanel = new System.Windows.Forms.Panel();
-			this._lightfieldDistanceInput = new IGCSClient.Controls.FloatInput();
 			this.label14 = new System.Windows.Forms.Label();
-			this._lightfieldShotCountInput = new IGCSClient.Controls.IntInput();
 			this.label15 = new System.Windows.Forms.Label();
-			this._shotTypeInput = new IGCSClient.Controls.DropDownInput();
-			this._frameWaitInput = new IGCSClient.Controls.IntInput();
 			this.label11 = new System.Windows.Forms.Label();
-			this._shotOutputFolderInput = new IGCSClient.Controls.FolderInput();
 			this.label10 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
+			this.label16 = new System.Windows.Forms.Label();
+			this._panoFovInput = new IGCSClient.Controls.FloatInput();
+			this._panoOverlapInput = new IGCSClient.Controls.FloatInput();
+			this._lightfieldDistanceInput = new IGCSClient.Controls.FloatInput();
+			this._lightfieldShotCountInput = new IGCSClient.Controls.IntInput();
+			this._shotFileTypeInput = new IGCSClient.Controls.DropDownInput();
+			this._shotTypeInput = new IGCSClient.Controls.DropDownInput();
+			this._frameWaitInput = new IGCSClient.Controls.IntInput();
+			this._shotOutputFolderInput = new IGCSClient.Controls.FolderInput();
+			this._fovSpeedInput = new IGCSClient.Controls.FloatInput();
+			this._invertYInput = new IGCSClient.Controls.BoolInput();
+			this._rotationSpeedInput = new IGCSClient.Controls.FloatInput();
+			this._cameraControlDeviceInput = new IGCSClient.Controls.DropDownInput();
+			this._movementSpeedInput = new IGCSClient.Controls.FloatInput();
+			this._upMovementInput = new IGCSClient.Controls.FloatInput();
+			this._slowMovementInput = new IGCSClient.Controls.FloatInput();
+			this._fastMovementInput = new IGCSClient.Controls.FloatInput();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -91,22 +93,6 @@
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Camera movement options";
 			// 
-			// _cameraControlDeviceInput
-			// 
-			this._cameraControlDeviceInput.Location = new System.Drawing.Point(161, 124);
-			this._cameraControlDeviceInput.Name = "_cameraControlDeviceInput";
-			this._cameraControlDeviceInput.Size = new System.Drawing.Size(109, 21);
-			this._cameraControlDeviceInput.TabIndex = 4;
-			this._cameraControlDeviceInput.Value = -1;
-			// 
-			// _movementSpeedInput
-			// 
-			this._movementSpeedInput.Location = new System.Drawing.Point(161, 98);
-			this._movementSpeedInput.Name = "_movementSpeedInput";
-			this._movementSpeedInput.Size = new System.Drawing.Size(109, 20);
-			this._movementSpeedInput.TabIndex = 3;
-			this._movementSpeedInput.Value = 0F;
-			// 
 			// label4
 			// 
 			this.label4.AutoSize = true;
@@ -115,14 +101,6 @@
 			this.label4.Size = new System.Drawing.Size(113, 13);
 			this.label4.TabIndex = 0;
 			this.label4.Text = "Camera control device";
-			// 
-			// _upMovementInput
-			// 
-			this._upMovementInput.Location = new System.Drawing.Point(161, 72);
-			this._upMovementInput.Name = "_upMovementInput";
-			this._upMovementInput.Size = new System.Drawing.Size(109, 20);
-			this._upMovementInput.TabIndex = 2;
-			this._upMovementInput.Value = 0F;
 			// 
 			// label5
 			// 
@@ -142,14 +120,6 @@
 			this.label3.TabIndex = 0;
 			this.label3.Text = "Up movement multiplier";
 			// 
-			// _slowMovementInput
-			// 
-			this._slowMovementInput.Location = new System.Drawing.Point(161, 46);
-			this._slowMovementInput.Name = "_slowMovementInput";
-			this._slowMovementInput.Size = new System.Drawing.Size(109, 20);
-			this._slowMovementInput.TabIndex = 1;
-			this._slowMovementInput.Value = 0F;
-			// 
 			// label2
 			// 
 			this.label2.AutoSize = true;
@@ -158,14 +128,6 @@
 			this.label2.Size = new System.Drawing.Size(125, 13);
 			this.label2.TabIndex = 0;
 			this.label2.Text = "Slow movement multiplier";
-			// 
-			// _fastMovementInput
-			// 
-			this._fastMovementInput.Location = new System.Drawing.Point(161, 20);
-			this._fastMovementInput.Name = "_fastMovementInput";
-			this._fastMovementInput.Size = new System.Drawing.Size(109, 20);
-			this._fastMovementInput.TabIndex = 0;
-			this._fastMovementInput.Value = 0F;
 			// 
 			// label1
 			// 
@@ -188,22 +150,6 @@
 			this.groupBox2.TabIndex = 1;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Camera rotation options";
-			// 
-			// _invertYInput
-			// 
-			this._invertYInput.Location = new System.Drawing.Point(180, 46);
-			this._invertYInput.Name = "_invertYInput";
-			this._invertYInput.Size = new System.Drawing.Size(20, 20);
-			this._invertYInput.TabIndex = 1;
-			this._invertYInput.Value = false;
-			// 
-			// _rotationSpeedInput
-			// 
-			this._rotationSpeedInput.Location = new System.Drawing.Point(180, 20);
-			this._rotationSpeedInput.Name = "_rotationSpeedInput";
-			this._rotationSpeedInput.Size = new System.Drawing.Size(109, 20);
-			this._rotationSpeedInput.TabIndex = 0;
-			this._rotationSpeedInput.Value = 0F;
 			// 
 			// label7
 			// 
@@ -234,14 +180,6 @@
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Miscellaneous camera options";
 			// 
-			// _fovSpeedInput
-			// 
-			this._fovSpeedInput.Location = new System.Drawing.Point(180, 22);
-			this._fovSpeedInput.Name = "_fovSpeedInput";
-			this._fovSpeedInput.Size = new System.Drawing.Size(109, 20);
-			this._fovSpeedInput.TabIndex = 0;
-			this._fovSpeedInput.Value = 0F;
-			// 
 			// label8
 			// 
 			this.label8.AutoSize = true;
@@ -255,7 +193,9 @@
 			// 
 			this.groupBox4.Controls.Add(this._horizontalPanoramaControlsPanel);
 			this.groupBox4.Controls.Add(this._lightfieldControlsPanel);
+			this.groupBox4.Controls.Add(this._shotFileTypeInput);
 			this.groupBox4.Controls.Add(this._shotTypeInput);
+			this.groupBox4.Controls.Add(this.label16);
 			this.groupBox4.Controls.Add(this._frameWaitInput);
 			this.groupBox4.Controls.Add(this.label11);
 			this.groupBox4.Controls.Add(this._shotOutputFolderInput);
@@ -263,7 +203,7 @@
 			this.groupBox4.Controls.Add(this.label9);
 			this.groupBox4.Location = new System.Drawing.Point(4, 167);
 			this.groupBox4.Name = "groupBox4";
-			this.groupBox4.Size = new System.Drawing.Size(589, 157);
+			this.groupBox4.Size = new System.Drawing.Size(589, 184);
 			this.groupBox4.TabIndex = 3;
 			this.groupBox4.TabStop = false;
 			this.groupBox4.Text = "Screenshot options";
@@ -274,18 +214,10 @@
 			this._horizontalPanoramaControlsPanel.Controls.Add(this.label12);
 			this._horizontalPanoramaControlsPanel.Controls.Add(this._panoOverlapInput);
 			this._horizontalPanoramaControlsPanel.Controls.Add(this.label13);
-			this._horizontalPanoramaControlsPanel.Location = new System.Drawing.Point(2, 95);
+			this._horizontalPanoramaControlsPanel.Location = new System.Drawing.Point(2, 121);
 			this._horizontalPanoramaControlsPanel.Name = "_horizontalPanoramaControlsPanel";
 			this._horizontalPanoramaControlsPanel.Size = new System.Drawing.Size(581, 54);
-			this._horizontalPanoramaControlsPanel.TabIndex = 3;
-			// 
-			// _panoFovInput
-			// 
-			this._panoFovInput.Location = new System.Drawing.Point(226, 5);
-			this._panoFovInput.Name = "_panoFovInput";
-			this._panoFovInput.Size = new System.Drawing.Size(109, 20);
-			this._panoFovInput.TabIndex = 2;
-			this._panoFovInput.Value = 0F;
+			this._horizontalPanoramaControlsPanel.TabIndex = 4;
 			// 
 			// label12
 			// 
@@ -295,14 +227,6 @@
 			this.label12.Size = new System.Drawing.Size(209, 13);
 			this.label12.TabIndex = 0;
 			this.label12.Text = "Total field of view in panorama (in degrees)";
-			// 
-			// _panoOverlapInput
-			// 
-			this._panoOverlapInput.Location = new System.Drawing.Point(226, 31);
-			this._panoOverlapInput.Name = "_panoOverlapInput";
-			this._panoOverlapInput.Size = new System.Drawing.Size(65, 20);
-			this._panoOverlapInput.TabIndex = 3;
-			this._panoOverlapInput.Value = 0F;
 			// 
 			// label13
 			// 
@@ -319,18 +243,10 @@
 			this._lightfieldControlsPanel.Controls.Add(this.label14);
 			this._lightfieldControlsPanel.Controls.Add(this._lightfieldShotCountInput);
 			this._lightfieldControlsPanel.Controls.Add(this.label15);
-			this._lightfieldControlsPanel.Location = new System.Drawing.Point(2, 95);
+			this._lightfieldControlsPanel.Location = new System.Drawing.Point(2, 121);
 			this._lightfieldControlsPanel.Name = "_lightfieldControlsPanel";
 			this._lightfieldControlsPanel.Size = new System.Drawing.Size(581, 54);
 			this._lightfieldControlsPanel.TabIndex = 4;
-			// 
-			// _lightfieldDistanceInput
-			// 
-			this._lightfieldDistanceInput.Location = new System.Drawing.Point(226, 5);
-			this._lightfieldDistanceInput.Name = "_lightfieldDistanceInput";
-			this._lightfieldDistanceInput.Size = new System.Drawing.Size(109, 20);
-			this._lightfieldDistanceInput.TabIndex = 1;
-			this._lightfieldDistanceInput.Value = 0F;
 			// 
 			// label14
 			// 
@@ -341,14 +257,6 @@
 			this.label14.TabIndex = 0;
 			this.label14.Text = "Distance between lightfield shots";
 			// 
-			// _lightfieldShotCountInput
-			// 
-			this._lightfieldShotCountInput.Location = new System.Drawing.Point(226, 31);
-			this._lightfieldShotCountInput.Name = "_lightfieldShotCountInput";
-			this._lightfieldShotCountInput.Size = new System.Drawing.Size(65, 20);
-			this._lightfieldShotCountInput.TabIndex = 2;
-			this._lightfieldShotCountInput.Value = 0;
-			// 
 			// label15
 			// 
 			this.label15.AutoSize = true;
@@ -358,23 +266,6 @@
 			this.label15.TabIndex = 0;
 			this.label15.Text = "Number of shots to take";
 			// 
-			// _shotTypeInput
-			// 
-			this._shotTypeInput.Location = new System.Drawing.Point(228, 73);
-			this._shotTypeInput.Name = "_shotTypeInput";
-			this._shotTypeInput.Size = new System.Drawing.Size(170, 21);
-			this._shotTypeInput.TabIndex = 2;
-			this._shotTypeInput.Value = -1;
-			this._shotTypeInput.ValueChanged += new System.EventHandler(this._shotTypeInput_ValueChanged);
-			// 
-			// _frameWaitInput
-			// 
-			this._frameWaitInput.Location = new System.Drawing.Point(228, 47);
-			this._frameWaitInput.Name = "_frameWaitInput";
-			this._frameWaitInput.Size = new System.Drawing.Size(65, 20);
-			this._frameWaitInput.TabIndex = 1;
-			this._frameWaitInput.Value = 0;
-			// 
 			// label11
 			// 
 			this.label11.AutoSize = true;
@@ -383,14 +274,6 @@
 			this.label11.Size = new System.Drawing.Size(107, 13);
 			this.label11.TabIndex = 0;
 			this.label11.Text = "Multi-screenshot type";
-			// 
-			// _shotOutputFolderInput
-			// 
-			this._shotOutputFolderInput.Location = new System.Drawing.Point(228, 22);
-			this._shotOutputFolderInput.Name = "_shotOutputFolderInput";
-			this._shotOutputFolderInput.Size = new System.Drawing.Size(349, 20);
-			this._shotOutputFolderInput.TabIndex = 0;
-			this._shotOutputFolderInput.Value = "";
 			// 
 			// label10
 			// 
@@ -410,6 +293,144 @@
 			this.label9.TabIndex = 0;
 			this.label9.Text = "Screenshot output directory";
 			// 
+			// label16
+			// 
+			this.label16.AutoSize = true;
+			this.label16.Location = new System.Drawing.Point(12, 102);
+			this.label16.Name = "label16";
+			this.label16.Size = new System.Drawing.Size(100, 13);
+			this.label16.TabIndex = 0;
+			this.label16.Text = "Screenshot file type";
+			// 
+			// _panoFovInput
+			// 
+			this._panoFovInput.Location = new System.Drawing.Point(226, 5);
+			this._panoFovInput.Name = "_panoFovInput";
+			this._panoFovInput.Size = new System.Drawing.Size(109, 20);
+			this._panoFovInput.TabIndex = 2;
+			this._panoFovInput.Value = 0F;
+			// 
+			// _panoOverlapInput
+			// 
+			this._panoOverlapInput.Location = new System.Drawing.Point(226, 31);
+			this._panoOverlapInput.Name = "_panoOverlapInput";
+			this._panoOverlapInput.Size = new System.Drawing.Size(65, 20);
+			this._panoOverlapInput.TabIndex = 3;
+			this._panoOverlapInput.Value = 0F;
+			// 
+			// _lightfieldDistanceInput
+			// 
+			this._lightfieldDistanceInput.Location = new System.Drawing.Point(226, 5);
+			this._lightfieldDistanceInput.Name = "_lightfieldDistanceInput";
+			this._lightfieldDistanceInput.Size = new System.Drawing.Size(109, 20);
+			this._lightfieldDistanceInput.TabIndex = 1;
+			this._lightfieldDistanceInput.Value = 0F;
+			// 
+			// _lightfieldShotCountInput
+			// 
+			this._lightfieldShotCountInput.Location = new System.Drawing.Point(226, 31);
+			this._lightfieldShotCountInput.Name = "_lightfieldShotCountInput";
+			this._lightfieldShotCountInput.Size = new System.Drawing.Size(65, 20);
+			this._lightfieldShotCountInput.TabIndex = 2;
+			this._lightfieldShotCountInput.Value = 0;
+			// 
+			// _shotFileTypeInput
+			// 
+			this._shotFileTypeInput.Location = new System.Drawing.Point(228, 99);
+			this._shotFileTypeInput.Name = "_shotFileTypeInput";
+			this._shotFileTypeInput.Size = new System.Drawing.Size(170, 21);
+			this._shotFileTypeInput.TabIndex = 3;
+			this._shotFileTypeInput.Value = -1;
+			// 
+			// _shotTypeInput
+			// 
+			this._shotTypeInput.Location = new System.Drawing.Point(228, 73);
+			this._shotTypeInput.Name = "_shotTypeInput";
+			this._shotTypeInput.Size = new System.Drawing.Size(170, 21);
+			this._shotTypeInput.TabIndex = 2;
+			this._shotTypeInput.Value = -1;
+			this._shotTypeInput.ValueChanged += new System.EventHandler(this._shotTypeInput_ValueChanged);
+			// 
+			// _frameWaitInput
+			// 
+			this._frameWaitInput.Location = new System.Drawing.Point(228, 47);
+			this._frameWaitInput.Name = "_frameWaitInput";
+			this._frameWaitInput.Size = new System.Drawing.Size(65, 20);
+			this._frameWaitInput.TabIndex = 1;
+			this._frameWaitInput.Value = 0;
+			// 
+			// _shotOutputFolderInput
+			// 
+			this._shotOutputFolderInput.Location = new System.Drawing.Point(228, 22);
+			this._shotOutputFolderInput.Name = "_shotOutputFolderInput";
+			this._shotOutputFolderInput.Size = new System.Drawing.Size(349, 20);
+			this._shotOutputFolderInput.TabIndex = 0;
+			this._shotOutputFolderInput.Value = "";
+			// 
+			// _fovSpeedInput
+			// 
+			this._fovSpeedInput.Location = new System.Drawing.Point(180, 22);
+			this._fovSpeedInput.Name = "_fovSpeedInput";
+			this._fovSpeedInput.Size = new System.Drawing.Size(109, 20);
+			this._fovSpeedInput.TabIndex = 0;
+			this._fovSpeedInput.Value = 0F;
+			// 
+			// _invertYInput
+			// 
+			this._invertYInput.Location = new System.Drawing.Point(180, 46);
+			this._invertYInput.Name = "_invertYInput";
+			this._invertYInput.Size = new System.Drawing.Size(20, 20);
+			this._invertYInput.TabIndex = 1;
+			this._invertYInput.Value = false;
+			// 
+			// _rotationSpeedInput
+			// 
+			this._rotationSpeedInput.Location = new System.Drawing.Point(180, 20);
+			this._rotationSpeedInput.Name = "_rotationSpeedInput";
+			this._rotationSpeedInput.Size = new System.Drawing.Size(109, 20);
+			this._rotationSpeedInput.TabIndex = 0;
+			this._rotationSpeedInput.Value = 0F;
+			// 
+			// _cameraControlDeviceInput
+			// 
+			this._cameraControlDeviceInput.Location = new System.Drawing.Point(161, 124);
+			this._cameraControlDeviceInput.Name = "_cameraControlDeviceInput";
+			this._cameraControlDeviceInput.Size = new System.Drawing.Size(109, 21);
+			this._cameraControlDeviceInput.TabIndex = 4;
+			this._cameraControlDeviceInput.Value = -1;
+			// 
+			// _movementSpeedInput
+			// 
+			this._movementSpeedInput.Location = new System.Drawing.Point(161, 98);
+			this._movementSpeedInput.Name = "_movementSpeedInput";
+			this._movementSpeedInput.Size = new System.Drawing.Size(109, 20);
+			this._movementSpeedInput.TabIndex = 3;
+			this._movementSpeedInput.Value = 0F;
+			// 
+			// _upMovementInput
+			// 
+			this._upMovementInput.Location = new System.Drawing.Point(161, 72);
+			this._upMovementInput.Name = "_upMovementInput";
+			this._upMovementInput.Size = new System.Drawing.Size(109, 20);
+			this._upMovementInput.TabIndex = 2;
+			this._upMovementInput.Value = 0F;
+			// 
+			// _slowMovementInput
+			// 
+			this._slowMovementInput.Location = new System.Drawing.Point(161, 46);
+			this._slowMovementInput.Name = "_slowMovementInput";
+			this._slowMovementInput.Size = new System.Drawing.Size(109, 20);
+			this._slowMovementInput.TabIndex = 1;
+			this._slowMovementInput.Value = 0F;
+			// 
+			// _fastMovementInput
+			// 
+			this._fastMovementInput.Location = new System.Drawing.Point(161, 20);
+			this._fastMovementInput.Name = "_fastMovementInput";
+			this._fastMovementInput.Size = new System.Drawing.Size(109, 20);
+			this._fastMovementInput.TabIndex = 0;
+			this._fastMovementInput.Value = 0F;
+			// 
 			// SettingEditor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -419,7 +440,7 @@
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
 			this.Name = "SettingEditor";
-			this.Size = new System.Drawing.Size(601, 331);
+			this.Size = new System.Drawing.Size(601, 360);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
 			this.groupBox2.ResumeLayout(false);
@@ -474,5 +495,7 @@
 		private System.Windows.Forms.Label label12;
 		private IGCSClient.Controls.FloatInput _panoOverlapInput;
 		private System.Windows.Forms.Label label13;
+		private IGCSClient.Controls.DropDownInput _shotFileTypeInput;
+		private System.Windows.Forms.Label label16;
 	}
 }

@@ -100,6 +100,9 @@ namespace IGCSClient.GameSpecific.Controls
 					case SettingType.LightfieldShotCount:
 						setting.Setup(_lightfieldShotCountInput);
 						break;
+					case SettingType.ShotFileType:
+						setting.Setup(_shotFileTypeInput);
+						break;
 				}
 			}
 		}

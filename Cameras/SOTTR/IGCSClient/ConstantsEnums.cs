@@ -94,6 +94,14 @@ namespace IGCSClient
 	}
 
 
+	public class ScreenshotFileType
+	{
+		public const byte Bmp = 0;
+		public const byte Jpeg = 1;
+		public const byte Png = 2;
+	}
+
+
 	public class SettingType
 	{
 		public const byte FastMovementMultiplier = 0;
@@ -111,6 +119,8 @@ namespace IGCSClient
 		public const byte PanoOverlapPercentage = 12;
 		public const byte LightfieldDistance = 13;
 		public const byte LightfieldShotCount = 14;
+		public const byte ShotFileType = 15;
+
 		// to add more, derived a type of this class and define the next value one higher than the last one in this class.
 	}
 

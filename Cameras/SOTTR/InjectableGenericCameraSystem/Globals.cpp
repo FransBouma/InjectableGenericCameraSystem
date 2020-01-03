@@ -62,12 +62,14 @@ namespace IGCS
 	void Globals::reinitializeScreenshotController()
 	{
 		_screenshotController.configure(_settings.screenshotFolder, _settings.multiShotNumberOfFramesToWaitBetweenSteps, _settings.movementSpeed, _settings.rotationSpeed);
+		_screenshotController.setFileType((ScreenshotFiletype)_settings.screenshotFiletype);
 	}
 
 	
 	void Globals::handleSettingMessage(uint8_t payload[], DWORD payloadLength)
 	{
 		_settings.setValueFromMessage(payload, payloadLength);
+		reinitializeScreenshotController();
 	}
 
 	

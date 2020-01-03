@@ -26,6 +26,7 @@ namespace IGCS
 		float panoramaTotalAngleDegrees;
 		float panoramaOverlapPercentagePerShot;
 		char screenshotFolder[_MAX_PATH + 1] = { 0 };
+		int screenshotFiletype;
 		
 		void setValueFromMessage(uint8_t payload[], DWORD payloadLength)
 		{
@@ -81,6 +82,12 @@ namespace IGCS
 			case SettingType::LightfieldShotCount:
 				multiShotNumberOfShotsToTake = Utils::intFromBytes(payload, payloadLength, 2);
 				break;
+			case SettingType::ShotFileType:
+				screenshotFiletype = Utils::intFromBytes(payload, payloadLength, 2);
+				break;
+			default:
+				// nothing
+				break;
 			}
 		}
 		
@@ -102,6 +109,7 @@ namespace IGCS
 			panoramaTotalAngleDegrees = 110.0f;
 			panoramaOverlapPercentagePerShot = 80.0f;
 			strncpy_s(screenshotFolder, "c:\\", sizeof(screenshotFolder)-1);
+			screenshotFiletype = (int)ScreenshotFiletype::Jpeg;
 		}
 	};
 }

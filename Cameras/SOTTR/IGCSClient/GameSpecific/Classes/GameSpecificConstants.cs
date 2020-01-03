@@ -58,6 +58,7 @@ namespace IGCSClient.GameSpecific.Classes
 		public const float PanoOverlapPercentage = 80.0f;
 		public const float LightfieldDistance = 1.0f;
 		public const int LightfieldShotCount = 45;
+		public const int ShotFileType = 1;
 	}
 
 

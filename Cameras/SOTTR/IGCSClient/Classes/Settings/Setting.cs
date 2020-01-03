@@ -78,6 +78,7 @@ namespace IGCSClient.Classes
 		public virtual void SendValueAsMessage()
 		{
 			MessageHandlerSingleton.Instance().SendSettingMessage(this.ID, GeneralUtils.ConvertToByteArray(this.Value));
+			LogHandlerSingleton.Instance().LogLine("Setting value sent: ID: {0}. Value: {1}", "Setting", true, true, this.ID, this.GetValueAsString());
 		}
 
 

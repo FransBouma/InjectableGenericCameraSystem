@@ -40,6 +40,7 @@
 #include <thread>
 #include "MessageHandler.h"
 #include <VersionHelpers.h>
+#include <atlbase.h>
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3d12.lib")
@@ -54,6 +55,7 @@ namespace IGCS::DXGIHooker
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Forward declarations
 	std::vector<uint8_t> capture_frame_DX11(IDXGISwapChain* pSwapChain);
+	std::vector<uint8_t> capture_frame_DX12(IDXGISwapChain* pSwapChain);
 	bool handlePresentCore(IDXGISwapChain* pSwapChain, UINT Flags);
 
 	//--------------------------------------------------------------------------------------------------------------------------------
@@ -64,7 +66,9 @@ namespace IGCS::DXGIHooker
 
 	static ID3D11Device* _deviceDX11 = nullptr;
 	static ID3D11DeviceContext* _contextDX11 = nullptr;
-
+	static ID3D12Device* _deviceDX12 = nullptr;
+	static ID3D12CommandQueue* _commandQueueDX12 = nullptr;
+	
 	//--------------------------------------------------------------------------------------------------------------------------------
 	// Pointers to the original hooked functions
 	static DXGIPresentHook hookedDXGIPresent = nullptr;
@@ -75,11 +79,36 @@ namespace IGCS::DXGIHooker
 	static atomic_bool _presentInProgress = false;
 	static atomic_bool _direct3D11Available = false;
 	static atomic_bool _direct3D12Available = false;
+	
 
 	HRESULT __stdcall detourDXGIResizeBuffers(IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags)
 	{
 		Globals::instance().getScreenshotController().reset();		// kill off any in-progress screenshot process
 		return hookedDXGIResizeBuffers(pSwapChain, bufferCount, width, height, newFormat, swapChainFlags);
+	}
+
+
+	void grabShotIfRequired(IDXGISwapChain* pSwapChain, ScreenshotController& screenshotController, bool validFrameToGrab)
+	{
+		if (validFrameToGrab && screenshotController.shouldTakeShot())
+		{
+			vector<uint8_t> screenshotBytes;
+			if (_direct3D12Available)
+			{
+				screenshotBytes = capture_frame_DX12(pSwapChain);
+			}
+			else
+			{
+				if (_direct3D11Available)
+				{
+					screenshotBytes = capture_frame_DX11(pSwapChain);
+				}
+			}
+			if (!screenshotBytes.empty())
+			{
+				screenshotController.storeGrabbedShot(screenshotBytes);
+			}
+		}
 	}
 
 
@@ -89,42 +118,83 @@ namespace IGCS::DXGIHooker
 		{
 			return S_OK;
 		}
-		ScreenshotController& screenshotController = Globals::instance().getScreenshotController();
 		const bool validFrameToGrab = handlePresentCore(pSwapChain, Flags);
-		bool grabFrame = (validFrameToGrab && screenshotController.shouldTakeShot());
-		HRESULT toReturn = hookedDXGIPresent(pSwapChain, SyncInterval, Flags);
+		const HRESULT toReturn = hookedDXGIPresent(pSwapChain, SyncInterval, Flags);
 		// if we have to grab the frame, do it now.
-		if (grabFrame && _direct3D11Available)
-		{
-			screenshotController.storeGrabbedShot(capture_frame_DX11(pSwapChain));
-		}
+		ScreenshotController& screenshotController = Globals::instance().getScreenshotController();
+		grabShotIfRequired(pSwapChain, screenshotController, validFrameToGrab);
 		screenshotController.presentCalled();
 		_presentInProgress = false;
 		return toReturn;
 	}
 
-
+	
 	HRESULT __stdcall detourDXGIPresent1(IDXGISwapChain1* pSwapChain, UINT SyncInterval, UINT PresentFlags, const DXGI_PRESENT_PARAMETERS* pPresentParameters)
 	{
 		if (_presentInProgress)
 		{
 			return S_OK;
 		}
-		ScreenshotController& screenshotController = Globals::instance().getScreenshotController();
 		const bool validFrameToGrab = handlePresentCore(pSwapChain, PresentFlags);
-		bool grabFrame = (validFrameToGrab && screenshotController.shouldTakeShot());
-		HRESULT toReturn = hookedDXGIPresent1(pSwapChain, SyncInterval, PresentFlags, pPresentParameters);
+		const HRESULT toReturn = hookedDXGIPresent1(pSwapChain, SyncInterval, PresentFlags, pPresentParameters);
 		// if we have to grab the frame, do it now.
-		if (grabFrame && _direct3D11Available)
-		{
-			screenshotController.storeGrabbedShot(capture_frame_DX11(pSwapChain));
-		}
+		ScreenshotController& screenshotController = Globals::instance().getScreenshotController();
+		grabShotIfRequired(pSwapChain, screenshotController, validFrameToGrab);
 		screenshotController.presentCalled();
 		_presentInProgress = false;
 		return toReturn;
 	}
 
 
+	void determineDirect3DObjects(IDXGISwapChain* pSwapChain)
+	{
+		if(!_initializeDeviceAndContext)
+		{
+			return;
+		}
+		
+		// First dx12, then dx11
+		if (FAILED(pSwapChain->GetDevice(__uuidof(_deviceDX12), (void**)&_deviceDX12)))
+		{
+			_direct3D12Available = false;
+			// check dx11
+			if (FAILED(pSwapChain->GetDevice(__uuidof(_deviceDX11), (void**)&_deviceDX11)))
+			{
+				MessageHandler::logError("Can't init Direct3D 11/12 devices.");
+				_direct3D11Available = false;
+				return;
+			}
+			MessageHandler::logDebug("DX11 Device: %p", (void*)_deviceDX11);
+			_deviceDX11->GetImmediateContext(&_contextDX11);
+			if (nullptr == _contextDX11)
+			{
+				MessageHandler::logError("Failed to get Direct3D 11 device context from hooked swapchain.");
+				_direct3D11Available = false;
+				return;
+			}
+			MessageHandler::logDebug("DX11 Context: %p", (void*)_contextDX11);
+			_direct3D11Available = true;
+		}
+		else
+		{
+			// dx12
+			D3D12_COMMAND_QUEUE_DESC commandQueueDesc = {};
+			commandQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+			commandQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+			commandQueueDesc.NodeMask = 0;
+			if (FAILED(_deviceDX12->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&_commandQueueDX12))))
+			{
+				MessageHandler::logError("Failed to create D3D12CommandQueue");
+				_direct3D12Available = false;
+			}
+			else
+			{
+				_direct3D12Available = true;
+			}
+		}
+	}
+
+	
 	// Performs the handling of Present/Present1 core functionality. 
 	// Returns true if the frame is a valid frame to grab, false otherwise. 
 	bool handlePresentCore(IDXGISwapChain* pSwapChain, UINT Flags)
@@ -135,32 +205,11 @@ namespace IGCS::DXGIHooker
 		{
 			if (_initializeDeviceAndContext)
 			{
-				if (FAILED(pSwapChain->GetDevice(__uuidof(_deviceDX11), (void**)&_deviceDX11)))
-				{
-					MessageHandler::logError("Failed to get Direct3D 11 device from hooked swapchain. Using Direct3D12?");
-					_direct3D11Available = false;
-				}
-				else
-				{
-					MessageHandler::logDebug("DX11 Device: %p", (void*)_deviceDX11);
-					_deviceDX11->GetImmediateContext(&_contextDX11);
-				}
-				if (nullptr == _contextDX11)
-				{
-					MessageHandler::logError("Failed to get Direct3D 11 device context from hooked swapchain. Using Direct3D12?");
-					_direct3D11Available = false;
-				}
-				else
-				{
-					MessageHandler::logDebug("DX11 Context: %p", (void*)_contextDX11);
-				}
+				determineDirect3DObjects(pSwapChain);
+
 				_initializeDeviceAndContext = false;
 			}
-			if (_direct3D11Available)
-			{
-				validFrameToGrab = true;
-				// render our own stuff
-			}
+			validFrameToGrab = (_direct3D11Available || _direct3D12Available);
 			Input::resetKeyStates();
 			Input::resetMouseState();
 		}
@@ -174,7 +223,7 @@ namespace IGCS::DXGIHooker
 		if (SUCCEEDED(pTmpSwapChain->QueryInterface(__uuidof(IDXGISwapChain1), (void**)&pTmpSwapChain1)))
 		{
 			// SwapChain1 is available, hook present1 as well. 
-			__int64* pSwapChain1Vtable = NULL;
+			__int64* pSwapChain1Vtable = nullptr;
 			pSwapChain1Vtable = (__int64*)pTmpSwapChain1;
 			pSwapChain1Vtable = (__int64*)pSwapChain1Vtable[0];
 			MessageHandler::logDebug("Present1 Address: %p", (void*)(__int64*)pSwapChain1Vtable[DXGI_PRESENT1_INDEX]);
@@ -200,6 +249,7 @@ namespace IGCS::DXGIHooker
 		return DefWindowProc(hWnd, msg, wParam, lParam);
 	}
 
+	
 	// Tries to hook DXGI using a DX12 swapchain on a fake window. 
 	bool initializeDXGIHookUsingDX12()
 	{
@@ -223,7 +273,7 @@ namespace IGCS::DXGIHooker
 		 
 		// Create tmp window. We initialize the swapchain on this window. As we own this swapchain we won't run into access denied issues if the swapchain is
 		// exclusive to the window of the game. 
-		WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProcForDX12TmpWindow, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("IGCS TmpWindow"), NULL };
+		WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProcForDX12TmpWindow, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, _T("IGCS TmpWindow"), nullptr };
 		::RegisterClassEx(&wc);
 		HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("IGCS TmpWindow"), WS_OVERLAPPEDWINDOW, 100, 100, 100, 100, NULL, NULL, wc.hInstance, NULL);
 
@@ -281,7 +331,7 @@ namespace IGCS::DXGIHooker
 			return false;
 		}
 
-		__int64* pSwapChainVtable = NULL;
+		__int64* pSwapChainVtable = nullptr;
 		pSwapChainVtable = (__int64*)pTmpSwapChain;
 		pSwapChainVtable = (__int64*)pSwapChainVtable[0];
 
@@ -355,8 +405,8 @@ namespace IGCS::DXGIHooker
 		swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-		ID3D11Device *pTmpDevice = NULL;
-		ID3D11DeviceContext *pTmpContext = NULL;
+		ID3D11Device *pTmpDevice = nullptr;
+		ID3D11DeviceContext *pTmpContext = nullptr;
 		IDXGISwapChain* pTmpSwapChain;
 		if (FAILED(D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, NULL, &featureLevel, 1, D3D11_SDK_VERSION, &swapChainDesc, &pTmpSwapChain, &pTmpDevice, NULL, &pTmpContext)))
 		{
@@ -364,7 +414,7 @@ namespace IGCS::DXGIHooker
 			return false;
 		}
 
-		__int64* pSwapChainVtable = NULL;
+		__int64* pSwapChainVtable = nullptr;
 		pSwapChainVtable = (__int64*)pTmpSwapChain;
 		pSwapChainVtable = (__int64*)pSwapChainVtable[0];
 
@@ -403,72 +453,205 @@ namespace IGCS::DXGIHooker
 		_direct3D11Available = true;
 		return true;
 	}
-	
 
-	std::vector<uint8_t> capture_frame_DX11(IDXGISwapChain* pSwapChain)
+
+	void copyBackBufferBytes(uint32_t height, uint32_t pitch, uint32_t rowPitch, uint8_t* source, uint8_t* destination, DXGI_FORMAT format)
 	{
-		MessageHandler::logDebug("capture_frame()");
-
-		D3D11_TEXTURE2D_DESC StagingDesc;
-		ID3D11Texture2D* pBackBuffer = NULL;
-		pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)& pBackBuffer);
-		pBackBuffer->GetDesc(&StagingDesc);
-		StagingDesc.Usage = D3D11_USAGE_STAGING;
-		StagingDesc.BindFlags = 0;
-		StagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-		ID3D11Texture2D* pBackBufferStaging = NULL;
-		HRESULT hr = _deviceDX11->CreateTexture2D(&StagingDesc, NULL, &pBackBufferStaging);
-		_contextDX11->CopyResource(pBackBufferStaging, pBackBuffer);
-		D3D11_MAPPED_SUBRESOURCE mapped;
-		hr = _contextDX11->Map(pBackBufferStaging, 0, D3D11_MAP_READ, 0, &mapped);
-		if (FAILED(hr))
+		// From Reshade.
+		for (uint32_t y = 0; y < height; y++)
 		{
-			MessageHandler::logError("Failed to map staging resource with screenshot capture!");
-			std::vector<uint8_t> failed;
-			return failed;
-		}
-		Globals::instance().getScreenshotController().setBufferSize(StagingDesc.Width, StagingDesc.Height);
-		std::vector<uint8_t> fbdata(StagingDesc.Width * StagingDesc.Height * 4);
-		uint8_t* buffer = fbdata.data();
-		auto mapped_data = static_cast<uint8_t*>(mapped.pData);
-		const UINT pitch = StagingDesc.Width * 4;
-		for (UINT y = 0; y < StagingDesc.Height; y++)
-		{
-			// From Reshade.
-			if (StagingDesc.Format == DXGI_FORMAT_R10G10B10A2_UNORM || StagingDesc.Format == DXGI_FORMAT_R10G10B10A2_UINT)
+			if (format == DXGI_FORMAT_R10G10B10A2_UNORM || format == DXGI_FORMAT_R10G10B10A2_UINT)
 			{
 				for (uint32_t x = 0; x < pitch; x += 4)
 				{
-					const uint32_t rgba = *reinterpret_cast<const uint32_t*>(mapped_data + x);
+					const uint32_t rgba = *reinterpret_cast<const uint32_t*>(source + x);
 					// Divide by 4 to get 10-bit range (0-1023) into 8-bit range (0-255)
-					buffer[x + 0] = ((rgba & 0x3FF) / 4) & 0xFF;
-					buffer[x + 1] = (((rgba & 0xFFC00) >> 10) / 4) & 0xFF;
-					buffer[x + 2] = (((rgba & 0x3FF00000) >> 20) / 4) & 0xFF;
-					buffer[x + 3] = 0xFF;
+					destination[x + 0] = ((rgba & 0x3FF) / 4) & 0xFF;
+					destination[x + 1] = (((rgba & 0xFFC00) >> 10) / 4) & 0xFF;
+					destination[x + 2] = (((rgba & 0x3FF00000) >> 20) / 4) & 0xFF;
+					destination[x + 3] = 0xFF;
 				}
 			}
 			else
 			{
-				memcpy(buffer, mapped_data, min(pitch, static_cast<UINT>(mapped.RowPitch)));
+				memcpy(destination, source, pitch);
 
-				for (UINT x = 0; x < pitch; x += 4)
+				for (uint32_t x = 0; x < pitch; x += 4)
 				{
-					buffer[x + 3] = 0xFF;
+					destination[x + 3] = 0xFF;
 
-					if (StagingDesc.Format == DXGI_FORMAT_B8G8R8A8_UNORM || StagingDesc.Format == DXGI_FORMAT_B8G8R8A8_UNORM_SRGB ||
-						StagingDesc.Format == DXGI_FORMAT_B8G8R8X8_UNORM || StagingDesc.Format == DXGI_FORMAT_B8G8R8X8_UNORM_SRGB ||
-						StagingDesc.Format == DXGI_FORMAT_B8G8R8A8_TYPELESS || StagingDesc.Format == DXGI_FORMAT_B8G8R8X8_TYPELESS)
+					if (format == DXGI_FORMAT_B8G8R8A8_UNORM || format == DXGI_FORMAT_B8G8R8A8_UNORM_SRGB ||
+						format == DXGI_FORMAT_B8G8R8X8_UNORM || format == DXGI_FORMAT_B8G8R8X8_UNORM_SRGB ||
+						format == DXGI_FORMAT_B8G8R8A8_TYPELESS || format == DXGI_FORMAT_B8G8R8X8_TYPELESS)
 					{
-						std::swap(buffer[x + 0], buffer[x + 2]);
+						std::swap(destination[x + 0], destination[x + 2]);
 					}
 				}
 			}
-			buffer += pitch;
-			mapped_data += mapped.RowPitch;
+			destination += pitch;
+			source += rowPitch;
 		}
+	}
+	
+
+	std::vector<uint8_t> capture_frame_DX11(IDXGISwapChain* pSwapChain)
+	{
+		MessageHandler::logDebug("capture_frame_DX11()");
+
+		std::vector<uint8_t> failed;
+		D3D11_TEXTURE2D_DESC StagingDesc;
+		ID3D11Texture2D* pBackBuffer = nullptr;
+		if(FAILED(pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer)))
+		{
+			MessageHandler::logError("Failed to grab back buffer for Direct3D11 screenshot capture");
+			return failed;
+		}
+		pBackBuffer->GetDesc(&StagingDesc);
+
+		StagingDesc.Usage = D3D11_USAGE_STAGING;
+		StagingDesc.BindFlags = 0;
+		StagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+		CComPtr<ID3D11Texture2D> pBackBufferStaging = nullptr;
+		if(FAILED(_deviceDX11->CreateTexture2D(&StagingDesc, nullptr, &pBackBufferStaging)))
+		{
+			MessageHandler::logError("Failed to create system memory texture for Direct3D11 screenshot capture");
+			return failed;
+		}
+		Globals::instance().getScreenshotController().setBufferSize(StagingDesc.Width, StagingDesc.Height);
+
+		_contextDX11->CopyResource(pBackBufferStaging, pBackBuffer);
+		
+		D3D11_MAPPED_SUBRESOURCE mapped;
+		if (FAILED(_contextDX11->Map(pBackBufferStaging, 0, D3D11_MAP_READ, 0, &mapped)))
+		{
+			MessageHandler::logError("Failed to map staging resource with screenshot capture!");
+			return failed;
+		}
+		std::vector<uint8_t> fbdata(StagingDesc.Width * StagingDesc.Height * 4);
+		uint8_t* buffer = fbdata.data();
+		auto mapped_data = static_cast<uint8_t*>(mapped.pData);
+		const uint32_t pitch = StagingDesc.Width * 4;
+		copyBackBufferBytes(StagingDesc.Height, pitch, mapped.RowPitch, mapped_data, buffer, StagingDesc.Format);
+		
 		_contextDX11->Unmap(pBackBufferStaging, 0);
-		pBackBufferStaging->Release();
 		pBackBuffer->Release();
+		return fbdata;
+	}
+
+
+	void setTransitionState(ID3D12Resource* resource, D3D12_RESOURCE_STATES from, D3D12_RESOURCE_STATES to, ID3D12GraphicsCommandList* commandList)
+	{
+		D3D12_RESOURCE_BARRIER transition = { D3D12_RESOURCE_BARRIER_TYPE_TRANSITION };
+		transition.Transition.pResource = resource;
+		transition.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+		transition.Transition.StateBefore = from;
+		transition.Transition.StateAfter = to;
+		commandList->ResourceBarrier(1, &transition);
+	}
+	
+
+	std::vector<uint8_t> capture_frame_DX12(IDXGISwapChain* pSwapChain)
+	{
+		MessageHandler::logDebug("capture_frame_DX12()");
+
+		// Get buffer index
+		CComQIPtr<IDXGISwapChain3> pSwapChain3 = pSwapChain;
+		const UINT backBufferIdx = pSwapChain3->GetCurrentBackBufferIndex();
+		
+		// get swapchain desc.
+		CComQIPtr<IDXGISwapChain1> pSwapChain1 = pSwapChain;
+		DXGI_SWAP_CHAIN_DESC1 swapChainDesc;
+		pSwapChain1->GetDesc1(&swapChainDesc);
+		Globals::instance().getScreenshotController().setBufferSize(swapChainDesc.Width, swapChainDesc.Height);
+		std::vector<uint8_t> failed;
+		
+		// From Reshade & DirectXTK12/ScreenGrab
+		const uint32_t pitch = swapChainDesc.Width * 4;
+		const uint32_t rowPitch = (pitch + D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1u) & ~(D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1u);
+
+		D3D12_RESOURCE_DESC desc = { D3D12_RESOURCE_DIMENSION_BUFFER };
+		desc.Width = swapChainDesc.Height * rowPitch;
+		desc.Height = 1;
+		desc.DepthOrArraySize = 1;
+		desc.MipLevels = 1;
+		desc.SampleDesc = { 1, 0 };
+		desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+		D3D12_HEAP_PROPERTIES props = { D3D12_HEAP_TYPE_READBACK };
+
+		CComPtr<ID3D12Resource> intermediate;
+		if (FAILED(_deviceDX12->CreateCommittedResource(&props, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&intermediate))))
+		{
+			MessageHandler::logError("Failed to create system memory texture for Direct3D12 screenshot capture");
+			return failed;
+		}
+
+		// Create a command allocator
+		CComPtr<ID3D12CommandAllocator> commandAlloc;
+		if (FAILED(_deviceDX12->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAlloc))))
+		{
+			MessageHandler::logError("Failed to create a command allocator for Direct3D12 screenshot capture");
+			return failed;
+		}
+
+		// Spin up a new command list
+		CComPtr<ID3D12GraphicsCommandList> commandList;
+		if (FAILED(_deviceDX12->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAlloc, nullptr, IID_PPV_ARGS(&commandList))))
+		{
+			MessageHandler::logError("Failed to create a command list for Direct3D12 screenshot capture");
+			return failed;
+		}
+
+		// Create a fence
+		CComPtr<ID3D12Fence> fence;
+		if (FAILED(_deviceDX12->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))))
+		{
+			MessageHandler::logError("Failed to create a fence for Direct3D12 screenshot capture");
+			return failed;
+		}
+
+		CComPtr<ID3D12Resource> pBackBuffer = nullptr;
+		pSwapChain->GetBuffer(backBufferIdx, __uuidof(ID3D12Resource), (LPVOID*)&pBackBuffer);
+		
+		setTransitionState(pBackBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_COPY_SOURCE, commandList);
+		// setup copy heaps
+		D3D12_TEXTURE_COPY_LOCATION srcLocation = { pBackBuffer };
+		srcLocation.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+		srcLocation.SubresourceIndex = 0;
+
+		D3D12_TEXTURE_COPY_LOCATION dstLocation = { intermediate };
+		dstLocation.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+		dstLocation.PlacedFootprint.Footprint.Width = swapChainDesc.Width;
+		dstLocation.PlacedFootprint.Footprint.Height = swapChainDesc.Height;
+		dstLocation.PlacedFootprint.Footprint.Depth = 1;
+		dstLocation.PlacedFootprint.Footprint.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		dstLocation.PlacedFootprint.Footprint.RowPitch = rowPitch;
+
+		commandList->CopyTextureRegion(&dstLocation, 0, 0, 0, &srcLocation, nullptr);
+		setTransitionState(pBackBuffer, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_PRESENT, commandList);
+
+		// execute the command list
+		commandList->Close();
+		ID3D12CommandList* const listsToExecute[] = { commandList };
+		_commandQueueDX12->ExecuteCommandLists(1, listsToExecute);
+
+		// signal and wait for the fence
+		_commandQueueDX12->Signal(fence, 1);
+		while(fence->GetCompletedValue()<1)
+		{
+			SwitchToThread();
+		}
+		
+		// copy the data
+		uint8_t* mappedData;
+		if(FAILED(intermediate->Map(0, nullptr, reinterpret_cast<void**>(&mappedData))))
+		{
+			MessageHandler::logError("Failed to map staging resource with screenshot capture!");
+			return failed;
+		}
+		std::vector<uint8_t> fbdata(swapChainDesc.Height * pitch);
+		uint8_t* buffer = fbdata.data();
+		copyBackBufferBytes(swapChainDesc.Height, pitch, rowPitch, mappedData, buffer, swapChainDesc.Format);
+		intermediate->Unmap(0, nullptr);
 		return fbdata;
 	}
 }

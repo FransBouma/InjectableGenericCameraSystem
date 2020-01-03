@@ -83,11 +83,6 @@ namespace IGCS
 
 	void ScreenshotController::setBufferSize(int width, int height)
 	{
-		if (_state != ScreenshotControllerState::Off)
-		{
-			// ignore
-			return;
-		}
 		_framebufferHeight = height;
 		_framebufferWidth = width;
 	}
@@ -95,7 +90,7 @@ namespace IGCS
 
 	void ScreenshotController::startSingleShot()
 	{
-		MessageHandler::logDebug("strtSingleShot start.");
+		MessageHandler::logDebug("startSingleShot start.");
 		reset();
 		_typeOfShot = ScreenshotType::SingleShot;
 		_state = ScreenshotControllerState::Grabbing;
@@ -107,6 +102,7 @@ namespace IGCS
 		// done
 	}
 
+	
 	void ScreenshotController::startHorizontalPanoramaShot(Camera camera, float totalFoV, float overlapPercentagePerPanoShot, float currentFoV, bool isTestRun)
 	{
 		reset();
@@ -215,26 +211,36 @@ namespace IGCS
 	{
 		bool saveSuccessful = false;
 		string filename = "";
+		time_t t = time(nullptr);
+		tm tm;
+		localtime_s(&tm, &t);
+		const string prefix = _typeOfShot == ScreenshotType::SingleShot
+							                      ? _hostExeFilename.string() + Utils::formatString("_%.4d-%.2d-%.2d-%.2d-%.2d-%.2d_", (tm.tm_year + 1900), (tm.tm_mon + 1),
+							                                                                        tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec)
+							                      : "";
 		switch (_filetype)
 		{
-			case ScreenshotFiletype::Bmp:
-				filename = Utils::formatString("%s\\%d.bmp", destinationFolder.c_str(), frameNumber);
-				saveSuccessful = stbi_write_bmp(filename.c_str(), _framebufferWidth, _framebufferHeight, 4, data.data()) != 0;
-				break;
-			case ScreenshotFiletype::Jpeg:
-				filename = Utils::formatString("%s\\%d.jpg", destinationFolder.c_str(), frameNumber);
-				saveSuccessful = stbi_write_jpg(filename.c_str(), _framebufferWidth, _framebufferHeight, 4, data.data(), IGCS_JPG_SCREENSHOT_QUALITY) != 0;
-				break;
-			case ScreenshotFiletype::Png:
-				filename = Utils::formatString("%s\\%d.png", destinationFolder.c_str(), frameNumber);
-				saveSuccessful = stbi_write_png(filename.c_str(), _framebufferWidth, _framebufferHeight, 8, data.data(), 4 * _framebufferWidth) != 0;
-				break;
+		case ScreenshotFiletype::Bmp:
+			filename = Utils::formatString("%s\\%s%d.bmp", destinationFolder.c_str(), prefix.c_str(), frameNumber);
+			saveSuccessful = stbi_write_bmp(filename.c_str(), _framebufferWidth, _framebufferHeight, 4, data.data()) != 0;
+			break;
+		case ScreenshotFiletype::Jpeg:
+			filename = Utils::formatString("%s\\%s%d.jpg", destinationFolder.c_str(), prefix.c_str(), frameNumber);
+			saveSuccessful = stbi_write_jpg(filename.c_str(), _framebufferWidth, _framebufferHeight, 4, data.data(), IGCS_JPG_SCREENSHOT_QUALITY) != 0;
+			break;
+		case ScreenshotFiletype::Png:
+			filename = Utils::formatString("%s\\%s%d.png", destinationFolder.c_str(), prefix.c_str(), frameNumber);
+			saveSuccessful = stbi_write_png(filename.c_str(), _framebufferWidth, _framebufferHeight, 4, data.data(), 4 * _framebufferWidth) != 0;
+			break;
+		default:
+			// nothing
+			return;
 		}
 		if (saveSuccessful)
 		{
 			MessageHandler::logDebug("Successfully wrote screenshot of dimensions %dx%d to... %s", _framebufferWidth, _framebufferHeight, filename.c_str());
 		}
-		else 
+		else
 		{
 			MessageHandler::logDebug("Failed to write screenshot of dimensions %dx%d to... %s", _framebufferWidth, _framebufferHeight, filename.c_str());
 		}
@@ -246,9 +252,11 @@ namespace IGCS
 		time_t t = time(nullptr);
 		tm tm;
 		localtime_s(&tm, &t);
-		string optionalBackslash = (_rootFolder.ends_with('\\')) ? "" : "\\";
-		string folderName = Utils::formatString("%s%s%.4d-%.2d-%.2d-%.2d-%.2d-%.2d", _rootFolder.c_str(), optionalBackslash.c_str(), (tm.tm_year + 1900), (tm.tm_mon+1), tm.tm_mday, 
-																					 tm.tm_hour, tm.tm_min, tm.tm_sec);
+		const string optionalBackslash = (_rootFolder.ends_with('\\')) ? "" : "\\";
+		string folderName = _typeOfShot == ScreenshotType::SingleShot
+								? Utils::formatString("%s%s%", _rootFolder.c_str(), optionalBackslash.c_str())
+								: Utils::formatString("%s%s%.4d-%.2d-%.2d-%.2d-%.2d-%.2d", _rootFolder.c_str(), optionalBackslash.c_str(), (tm.tm_year + 1900), 
+																						  (tm.tm_mon + 1), tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 		mkdir(folderName.c_str());
 		return folderName;
 	}

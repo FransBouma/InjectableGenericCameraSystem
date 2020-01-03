@@ -98,7 +98,7 @@ namespace IGCS
 
 	enum class ScreenshotFiletype : short
 	{
-		Bmp,
+		Bmp=0,
 		Jpeg,
 		Png,
 
@@ -124,6 +124,8 @@ namespace IGCS
 		PanoOverlapPercentage = 12,
 		LightfieldDistance = 13,
 		LightfieldShotCount = 14,
+		ShotFileType = 15,
+		
 		// add more here
 	};
 

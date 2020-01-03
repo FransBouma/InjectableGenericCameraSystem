@@ -57,6 +57,7 @@ namespace IGCS
 		void startLightfieldShot(Camera camera, float distancePerStep, int amountOfShots, bool isTestRun);
 		void storeGrabbedShot(std::vector<uint8_t>);
 		void setBufferSize(int width, int height);
+		void setFileType(ScreenshotFiletype filetype) { _filetype = filetype; }
 		ScreenshotControllerState getState() { return _state; }
 		void reset();
 		bool shouldTakeShot();		// returns true if a shot should be taken, false otherwise. 
