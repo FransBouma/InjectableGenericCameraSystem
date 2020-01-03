@@ -42,17 +42,6 @@ namespace IGCSClient
 	{
 		private static MainForm _mainWindow;
 
-		[DllImport("Shcore.dll")]
-		static extern int SetProcessDpiAwareness(int PROCESS_DPI_AWARENESS);
-
-		// According to https://msdn.microsoft.com/en-us/library/windows/desktop/dn280512(v=vs.85).aspx
-		private enum DpiAwareness
-		{
-			None = 0,
-			SystemAware = 1,
-			PerMonitorAware = 2
-		}
-
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
@@ -61,9 +50,6 @@ namespace IGCSClient
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-
-			SetProcessDpiAwareness((int)DpiAwareness.PerMonitorAware);
-
 			Application.SetUnhandledExceptionMode(UnhandledExceptionMode.Automatic, true);
 			// wire event handler for unhandled exceptions, so these will be shown in our own exception viewer.
 			Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
