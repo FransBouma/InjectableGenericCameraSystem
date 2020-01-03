@@ -40,8 +40,8 @@ namespace IGCSClient.Controls
 			this._verboseCheckBox = new System.Windows.Forms.CheckBox();
 			this._mainToolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.panelControl2 = new System.Windows.Forms.Panel();
-			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this._clearButton = new System.Windows.Forms.Button();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.panelControl2.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
@@ -82,6 +82,16 @@ namespace IGCSClient.Controls
 			this.panelControl2.Size = new System.Drawing.Size(661, 32);
 			this.panelControl2.TabIndex = 3;
 			// 
+			// _clearButton
+			// 
+			this._clearButton.Location = new System.Drawing.Point(5, 4);
+			this._clearButton.Name = "_clearButton";
+			this._clearButton.Size = new System.Drawing.Size(54, 22);
+			this._clearButton.TabIndex = 6;
+			this._clearButton.Text = "Clear";
+			this._clearButton.UseVisualStyleBackColor = true;
+			this._clearButton.Click += new System.EventHandler(this.btnClear_Click);
+			// 
 			// groupBox1
 			// 
 			this.groupBox1.Controls.Add(this._outputTextBox);
@@ -93,19 +103,10 @@ namespace IGCSClient.Controls
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Application log";
 			// 
-			// _clearButton
-			// 
-			this._clearButton.Location = new System.Drawing.Point(5, 4);
-			this._clearButton.Name = "_clearButton";
-			this._clearButton.Size = new System.Drawing.Size(54, 22);
-			this._clearButton.TabIndex = 6;
-			this._clearButton.Text = "Clear";
-			this._clearButton.UseVisualStyleBackColor = true;
-			this._clearButton.Click += new System.EventHandler(this.btnClear_Click);
-			// 
 			// ApplicationOutput
 			// 
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.panelControl2);
 			this.Name = "ApplicationOutput";

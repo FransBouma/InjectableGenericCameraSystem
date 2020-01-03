@@ -87,7 +87,6 @@ namespace IGCSClient.Forms
 			AppStateSingleton.Instance().SaveRecentProcessList();
 			base.OnClosing(e);
 		}
-
 		
 
 		private void HandleDllInjected()
