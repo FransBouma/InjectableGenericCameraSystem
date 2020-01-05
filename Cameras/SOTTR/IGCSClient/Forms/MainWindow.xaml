@@ -1,0 +1,54 @@
+﻿<Window
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:IGCSClient.Forms"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+			 xmlns:Controls="clr-namespace:IGCSClient.Controls" x:Class="IGCSClient.Forms.MainWindow"
+			 ui:ThemeManager.IsThemeAware="True"
+			 ui:WindowHelper.UseModernWindowStyle="True"
+             mc:Ignorable="d" Height="592" Width="800" Loaded="MainWindow_OnLoaded">
+	<DockPanel>
+		<StatusBar DockPanel.Dock="Bottom" Height="25">
+			<StatusBarItem Padding="3, 3, 10,3">
+				<TextBlock Name="_clientToDllConnectedSBLabel">Not connected</TextBlock>
+			</StatusBarItem>
+			<StatusBarItem Padding="3, 3, 10,3">
+				<TextBlock Name="_dllToClientConnectedSBLabel">Not connected</TextBlock>
+			</StatusBarItem>
+			<StatusBarItem HorizontalAlignment="Right" Margin="0, 0, 5, 0">
+				<TextBlock Name="_copyRightSBLabel">
+					<Hyperlink NavigateUri="https://github.com/FransBouma/InjectableGenericCameraSystem" RequestNavigate="Hyperlink_OnRequestNavigate" Foreground="{DynamicResource UriForecolorKey}">
+						Powered by IGCS. ©2020 Frans 'Otis_Inf' Bouma
+					</Hyperlink>
+				</TextBlock>
+			</StatusBarItem>
+		</StatusBar>
+		<TabControl DockPanel.Dock="Top">
+			<TabItem Header="General">
+				<ui:SimpleStackPanel Margin="12" Spacing="24">
+
+					<TextBlock Text="My first ModernWPF app" Style="{StaticResource HeaderTextBlockStyle}" />
+					<Button Content="I am a button" />
+				</ui:SimpleStackPanel>
+			</TabItem>
+			<TabItem Header="Hotsampling">
+				<ui:SimpleStackPanel Margin="12" Spacing="24">
+
+					<Button Content="I am an accent button" Style="{StaticResource AccentButtonStyle}" />
+					<ui:ToggleSwitch HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Width="768"/>
+				</ui:SimpleStackPanel>
+			</TabItem>
+			<TabItem Header="Configuration"/>
+			<TabItem Header="Key-bindings"/>
+			<TabItem Header="Theme">
+				<Controls:ThemePage Padding="15" />
+			</TabItem>
+			<TabItem Header="Log"/>
+			<TabItem Header="About"/>
+		</TabControl>
+	</DockPanel>
+</Window>
+
+	

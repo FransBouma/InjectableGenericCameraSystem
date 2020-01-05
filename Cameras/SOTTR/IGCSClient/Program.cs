@@ -38,7 +38,7 @@ using IGCSClient.GameSpecific.Classes;
 
 namespace IGCSClient
 {
-	static class Program
+	static class WinformsProgram
 	{
 		private static MainForm _mainWindow;
 
@@ -46,7 +46,7 @@ namespace IGCSClient
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main()
+		static void WinformsMain()
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);

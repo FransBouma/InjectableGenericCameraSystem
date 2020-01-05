@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -37,6 +38,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using IGCSClient.Interfaces;
 using IGCSClient.NamedPipeSubSystem;
+using IGCSClient.Themes;
+using ModernWpf;
 using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
 using SD.Tools.BCLExtensions.SystemRelated;
 
@@ -213,18 +216,34 @@ namespace IGCSClient.Classes
 		public void SaveSettingsToIni()
 		{
 			var iniFile = new IniFileHandler(ConstantsEnums.IniFilename);
-			foreach(var setting in _settings)
-			{
-				iniFile.Write(setting.Name, setting.GetValueAsString(), "CameraSettings");
-			}
+			//foreach(var setting in _settings)
+			//{
+			//	iniFile.Write(setting.Name, setting.GetValueAsString(), "CameraSettings");
+			//}
 
-			foreach(ISetting binding in _keyBindings)
-			{
-				iniFile.Write(binding.Name, binding.GetValueAsString(), "KeyBindings");
-			}
+			//foreach(ISetting binding in _keyBindings)
+			//{
+			//	iniFile.Write(binding.Name, binding.GetValueAsString(), "KeyBindings");
+			//}
 
 			// other settings
 			iniFile.Write("PreferredRenderAPI", ((int)_preferredRenderApiKind).ToString(), "MiscSettings");
+			ApplicationTheme? currentTheme = ThemeManager.Current.ApplicationTheme;
+			int themeID = -1;	// not defined, so use default.
+			if(currentTheme != null)
+			{
+				themeID = (int)currentTheme.Value;
+			}
+			iniFile.Write("ThemeID", themeID.ToString(), "MiscSettings");
+			System.Windows.Media.Color? accentColor = ThemeManager.Current.AccentColor;
+			if(accentColor == null)
+			{
+				iniFile.DeleteKey("AccentColor", "MiscSettings");
+			}
+			else
+			{
+				iniFile.Write("AccentColor", accentColor.ToString(), "MiscSettings");
+			}
 		}
 
 
@@ -245,6 +264,17 @@ namespace IGCSClient.Classes
 
 				// other settings
 				_preferredRenderApiKind = (RenderAPIKind)Convert.ToInt32(iniFile.Read("PreferredRenderAPI", "MiscSettings"));
+				var themeID = Convert.ToInt32(iniFile.Read("ThemeID", "MiscSettings"));
+				if(themeID >= 0)
+				{
+					ThemeManager.Current.ApplicationTheme = (ApplicationTheme)themeID;
+				}
+
+				var accentColor = iniFile.Read("AccentColor", "MiscSettings");
+				if(!string.IsNullOrWhiteSpace(accentColor))
+				{
+					ThemeManager.Current.AccentColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(accentColor);
+				}
 			}
 		}
 

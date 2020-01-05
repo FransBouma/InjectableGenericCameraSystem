@@ -12,15 +12,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using IGCSClient.Themes;
 
-namespace WpfGui
+namespace IGCSClient.Controls
 {
 	/// <summary>
-	/// Interaction logic for MainWindow.xaml
+	/// Interaction logic for ThemePage.xaml
 	/// </summary>
-	public partial class MainWindow : Window
+	public partial class ThemePage : UserControl
 	{
-		public MainWindow()
+		public ThemePage()
 		{
 			InitializeComponent();
 		}

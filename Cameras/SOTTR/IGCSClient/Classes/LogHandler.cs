@@ -134,6 +134,10 @@ namespace IGCSClient.Classes
 		/// <param name="args">The args to pass to the string formatter.</param>
 		public void LogLine(string lineToLog, string source, bool isVerboseMessage, bool isDebug, bool isError, params object[] args)
 		{
+			if(_outputControl == null)
+			{
+				return;
+			}
 			if(_outputControl.InvokeRequired)
 			{
 				_outputControl.Invoke(_outputControl.LogLineFunc, new object[] {lineToLog, source, isVerboseMessage, isDebug, isError, args});
