@@ -30,7 +30,7 @@
 				<ui:SimpleStackPanel Margin="12" Spacing="24">
 
 					<TextBlock Text="My first ModernWPF app" Style="{StaticResource HeaderTextBlockStyle}" />
-					<Button Content="I am a button" />
+					<Button Content="I am a button" Click="ButtonBase_OnClick" />
 				</ui:SimpleStackPanel>
 			</TabItem>
 			<TabItem Header="Hotsampling">
@@ -45,7 +45,9 @@
 			<TabItem Header="Theme">
 				<Controls:ThemePage Padding="15" />
 			</TabItem>
-			<TabItem Header="Log"/>
+			<TabItem Header="Log">
+				<Controls:ApplicationOutputPage Padding="15" x:Name="_logControl"/>
+			</TabItem>
 			<TabItem Header="About"/>
 		</TabControl>
 	</DockPanel>

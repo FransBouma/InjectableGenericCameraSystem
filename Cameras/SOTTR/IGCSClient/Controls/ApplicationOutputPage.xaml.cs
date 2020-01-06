@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
 // Copyright(c) 2019, Frans Bouma
 // All rights reserved.
@@ -25,27 +25,34 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 using System;
-using System.Drawing;
-using System.Windows.Forms;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
 namespace IGCSClient.Controls
 {
 	/// <summary>
-	/// General output window for application feedback.
+	/// Interaction logic for ApplicationOutputPage.xaml
 	/// </summary>
-	public partial class ApplicationOutput : UserControl
+	public partial class ApplicationOutputPage : UserControl
 	{
-		public LogLineDelegate LogLineFunc;
+		public ApplicationOutput.LogLineDelegate LogLineFunc;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ApplicationOutput"/> class.
-		/// </summary>
-		public ApplicationOutput()
+		public ApplicationOutputPage()
 		{
 			InitializeComponent();
-			LogLineFunc = (lineToLog, source, isDebug, isError, args) => LogLine(lineToLog, source, isDebug, isError, args);
+			LogLineFunc = LogLine;
 		}
 
 
@@ -102,19 +109,13 @@ namespace IGCSClient.Controls
 			}
 			string debugPrefix = string.Empty;
 #endif
-			Font currentFont = _outputTextBox.Font;
-			// display Source
 			if(!string.IsNullOrEmpty(source))
 			{
-				_outputTextBox.SelectionFont = new Font(currentFont, FontStyle.Bold);
-				_outputTextBox.AppendText(string.Format("{0}::", source));
-				_outputTextBox.SelectionFont = currentFont;
+				_outputTextBox.Text += string.Format("{0}::", source);
 			}
-
-			var currentColor = _outputTextBox.SelectionColor;
 			if(isError)
 			{
-				_outputTextBox.SelectionColor = Color.Red;
+				_outputTextBox.Text += ">>>>>> ERROR <<<<<< ";
 			}
 			// strip trailing zeros, which might be there due to c style string passing from dll to client
 			string stringToLog = lineToLog.TrimEnd('\0');
@@ -122,20 +123,13 @@ namespace IGCSClient.Controls
 			{
 				stringToLog = string.Format(lineToLog, args);
 			}
-			_outputTextBox.AppendText(string.Format("{0}{1}{2}", debugPrefix, stringToLog, Environment.NewLine));
-			_outputTextBox.SelectionColor = currentColor;
+			_outputTextBox.Text += string.Format("{0}{1}{2}", debugPrefix, stringToLog, Environment.NewLine);
 		}
 
 
-		/// <summary>
-		/// Handles the Click event of the btnClear control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void btnClear_Click(object sender, EventArgs e)
+		private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
 		{
-			_outputTextBox.Clear();
-			Application.DoEvents();
+			_outputTextBox.Text = string.Empty;
 		}
 	}
 }

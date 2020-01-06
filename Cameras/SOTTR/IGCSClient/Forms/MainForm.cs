@@ -48,7 +48,7 @@ namespace IGCSClient.Forms
 		public MainForm()
 		{
 			InitializeComponent();
-			LogHandlerSingleton.Instance().Setup(_logControl);
+			//LogHandlerSingleton.Instance().Setup(_logControl);
 			this.MinimumSize = this.Size;
 		}
 

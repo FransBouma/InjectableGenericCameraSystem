@@ -65,7 +65,8 @@
 					<Thickness x:Key="ContentDialogTitleMargin">24,0,24,12</Thickness>
 				</Style.Resources>
 			</Style>
-            <SolidColorBrush x:Key="UriForecolorKey" Color="#FF00A2FF"/>
+            <SolidColorBrush x:Key="UriForecolorKey" Color="#FF0072FF"/>
+			
         </ResourceDictionary>
 	</Application.Resources>
 </Application>

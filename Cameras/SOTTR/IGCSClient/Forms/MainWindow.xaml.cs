@@ -27,6 +27,7 @@ namespace IGCSClient.Forms
 		public MainWindow()
 		{
 			InitializeComponent();
+			LogHandlerSingleton.Instance().Setup(_logControl);
 		}
 
 
@@ -103,6 +104,13 @@ namespace IGCSClient.Forms
 		private void Hyperlink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
 		{
 			Process.Start(e.Uri.ToString());
+		}
+
+
+		private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+		{
+			var processViewer = new ProcessSelectorWPF(AppStateSingleton.Instance().GetRecentProcessesList());
+			processViewer.ShowDialog();
 		}
 	}
 }

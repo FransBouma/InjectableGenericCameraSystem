@@ -69,7 +69,7 @@ namespace IGCSClient.Classes
 			_pipeServer.MessageReceived += _pipeServer_MessageReceived;
 			_pipeServer.ClientConnectionEstablished += _pipeServer_ClientConnectionEstablished;
 			_pipeClient.ConnectedToPipe += _pipeClient_ConnectedToPipe;
-			LogHandlerSingleton.Instance().LogLine("Named pipe enabled.", "System", true, true);
+			LogHandlerSingleton.Instance().LogLine("Named pipe enabled.", "System", true);
 		}
 
 

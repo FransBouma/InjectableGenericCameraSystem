@@ -252,15 +252,15 @@ namespace IGCSClient.Classes
 			var iniFile = new IniFileHandler(ConstantsEnums.IniFilename);
 			if(iniFile.FileExists())
 			{
-				foreach(var setting in _settings)
-				{
-					setting.SetValueFromString(iniFile.Read(setting.Name, "CameraSettings"));
-				}
+				//foreach(var setting in _settings)
+				//{
+				//	setting.SetValueFromString(iniFile.Read(setting.Name, "CameraSettings"));
+				//}
 
-				foreach(var binding in _keyBindings)
-				{
-					binding.SetValueFromString(iniFile.Read(binding.Name, "KeyBindings"));
-				}
+				//foreach(var binding in _keyBindings)
+				//{
+				//	binding.SetValueFromString(iniFile.Read(binding.Name, "KeyBindings"));
+				//}
 
 				// other settings
 				_preferredRenderApiKind = (RenderAPIKind)Convert.ToInt32(iniFile.Read("PreferredRenderAPI", "MiscSettings"));

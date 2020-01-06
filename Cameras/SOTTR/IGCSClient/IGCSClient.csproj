@@ -116,6 +116,9 @@
     <Compile Include="Classes\KeyCombination.cs" />
     <Compile Include="Classes\MessageHandler.cs" />
     <Compile Include="Classes\Win32Wrapper.cs" />
+    <Compile Include="Controls\ApplicationOutputPage.xaml.cs">
+      <DependentUpon>ApplicationOutputPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\GeneralTabControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -154,6 +157,9 @@
     </Compile>
     <Compile Include="Forms\ProcessSelector.Designer.cs">
       <DependentUpon>ProcessSelector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProcessSelectorWPF.xaml.cs">
+      <DependentUpon>ProcessSelectorWPF.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forms\SimpleExceptionViewerWPF.xaml.cs">
       <DependentUpon>SimpleExceptionViewerWPF.xaml</DependentUpon>
@@ -323,6 +329,10 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\ApplicationOutputPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\ThemePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -336,6 +346,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Forms\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forms\ProcessSelectorWPF.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
