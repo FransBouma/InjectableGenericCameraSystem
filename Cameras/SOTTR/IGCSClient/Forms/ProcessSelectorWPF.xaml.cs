@@ -32,17 +32,9 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using IGCSClient.Classes;
 
 namespace IGCSClient.Forms
 {
@@ -63,7 +55,7 @@ namespace IGCSClient.Forms
 			var keyColumns = new DataColumn[1];
 			keyColumns[0] = _boundProcessList.Columns.Add("ProcessID", typeof(int));
 			_boundProcessList.PrimaryKey = keyColumns;
-			_boundProcessList.Columns.Add("ModuleIcon", typeof(Image));
+			_boundProcessList.Columns.Add("ModuleIcon", typeof(ImageSource));
 			_boundProcessList.Columns.Add("ProcessName");
 			_boundProcessList.Columns.Add("WindowTitle");
 			_boundProcessList.Columns.Add("FileName");
@@ -77,6 +69,7 @@ namespace IGCSClient.Forms
 		private void ProcessSelectorWPF_OnLoaded(object sender, RoutedEventArgs e)
 		{
 			RefreshProcessList();
+			_processGrid.Focus();
 		}
 
 		
@@ -96,7 +89,7 @@ namespace IGCSClient.Forms
 					{
 						row = _boundProcessList.NewRow();
 						row[0] = process.Id;
-						//row[1] = System.Drawing.Icon.ExtractAssociatedIcon(process.MainModule.FileName).ToBitmap();
+						row[1] = System.Drawing.Icon.ExtractAssociatedIcon(process.MainModule.FileName).ToBitmapImage();
 						row[2] = process.MainModule.ModuleName;
 						row[3] = process.MainWindowTitle;
 						row[4] = process.MainModule.FileName;
@@ -119,13 +112,12 @@ namespace IGCSClient.Forms
 					}
 				}
 			}
-			//if (_processGrid.RowCount > 0)
-			//{
-			//	_processGrid.ClearSelection();
-			//	_processGrid.CurrentCell = _processGrid.Rows[0].Cells[1];
-			//}
+			if (_boundProcessList.Rows.Count > 0)
+			{
+				_processGrid.SelectedIndex = 0;
+			}
 		}
-
+		
 
 		private bool IsRecentProcess(string processName)
 		{
@@ -138,18 +130,19 @@ namespace IGCSClient.Forms
 			RefreshProcessList();
 		}
 
+
 		private void _selectButton_Click(object sender, RoutedEventArgs e)
 		{
 			this.SelectedProcess = null;
-			//if (_processGrid.SelectedRows.Count > 0)
-			//{
-			//	var selectedRow = (DataRowView)_processGrid.SelectedRows[0].DataBoundItem;
+			if(_processGrid.SelectedIndex >= 0)
+			{
+				var selectedRow = (DataRowView)_processGrid.SelectedItem;
 
-			//	if (this.SelectedProcess == null || this.SelectedProcess.HasExited || this.SelectedProcess.Id != (int)selectedRow[0])
-			//	{
-			//		this.SelectedProcess = Process.GetProcessById((int)selectedRow[0]);
-			//	}
-			//}
+				if(this.SelectedProcess == null || this.SelectedProcess.HasExited || this.SelectedProcess.Id != (int)selectedRow[0])
+				{
+					this.SelectedProcess = Process.GetProcessById((int)selectedRow[0]);
+				}
+			}
 			this.DialogResult = true;
 			this.Close();
 		}

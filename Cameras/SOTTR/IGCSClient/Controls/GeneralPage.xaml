@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="IGCSClient.Controls.GeneralPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			 xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:local="clr-namespace:IGCSClient.Controls"
+			 mc:Ignorable="d" Loaded="GeneralPage_OnLoaded"
+			 Style="{StaticResource ControlPageStyle}" Height="454" Width="720">
+	<DockPanel>
+		<GroupBox Header="Process and DLL selection" Height="288" DockPanel.Dock="Top">
+			<StackPanel Margin="0,0,0,0">
+				<HeaderedContentControl Header="Process to inject to" Margin="0, 0, 0, 10">
+					<DockPanel>
+						<Button HorizontalAlignment="Right" DockPanel.Dock="Right" Name="_selectProcessButton" Width="80" Click="_selectProcessButton_Click">Select...</Button>
+						<TextBox Name="_processNameTextBox" IsReadOnly="true"/>
+					</DockPanel>
+				</HeaderedContentControl>
+
+				<HeaderedContentControl Header="DLL to inject" Margin="0, 0, 0, 10">
+					<DockPanel>
+						<Button HorizontalAlignment="Right" DockPanel.Dock="Right" Name="_browseForDllButton" Width="80" Click="_browseForDllButton_Click">Browse...</Button>
+						<TextBox Name="_dllFilenameTextBox" IsReadOnly="true"/>
+					</DockPanel>
+				</HeaderedContentControl>
+
+				<HeaderedContentControl Header="Render API used" Margin="0, 0, 0, 10">
+					<ComboBox Name="_renderAPIComboBox" ></ComboBox>
+				</HeaderedContentControl>
+				<Button Name="_injectButton" IsEnabled="False" Style="{StaticResource AccentButtonStyle}">Inject DLL</Button>
+			</StackPanel>
+		</GroupBox>
+		<GroupBox Header="Attached process info" Height="148" DockPanel.Dock="Top"/>
+	</DockPanel>
+</UserControl>

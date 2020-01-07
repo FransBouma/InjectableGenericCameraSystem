@@ -8,7 +8,7 @@
 			 xmlns:Controls="clr-namespace:IGCSClient.Controls" x:Class="IGCSClient.Forms.MainWindow"
 			 ui:ThemeManager.IsThemeAware="True"
 			 ui:WindowHelper.UseModernWindowStyle="True"
-             mc:Ignorable="d" Height="592" Width="800" Loaded="MainWindow_OnLoaded">
+             mc:Ignorable="d" Height="569.025" Width="825" Loaded="MainWindow_OnLoaded" WindowStartupLocation="CenterScreen">
 	<DockPanel>
 		<StatusBar DockPanel.Dock="Bottom" Height="25">
 			<StatusBarItem Padding="3, 3, 10,3">
@@ -27,25 +27,21 @@
 		</StatusBar>
 		<TabControl DockPanel.Dock="Top">
 			<TabItem Header="General">
-				<ui:SimpleStackPanel Margin="12" Spacing="24">
-
-					<TextBlock Text="My first ModernWPF app" Style="{StaticResource HeaderTextBlockStyle}" />
-					<Button Content="I am a button" Click="ButtonBase_OnClick" />
-				</ui:SimpleStackPanel>
+				<Controls:GeneralPage Padding="15" Width="Auto" Height="Auto"/>
 			</TabItem>
 			<TabItem Header="Hotsampling">
 				<ui:SimpleStackPanel Margin="12" Spacing="24">
-
+					<Button Content="I am a button" Click="ButtonBase_OnClick" />
 					<Button Content="I am an accent button" Style="{StaticResource AccentButtonStyle}" />
 					<ui:ToggleSwitch HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Width="768"/>
 				</ui:SimpleStackPanel>
 			</TabItem>
 			<TabItem Header="Configuration"/>
 			<TabItem Header="Key-bindings"/>
-			<TabItem Header="Theme">
+			<TabItem Header="Theme" Width="Auto" Height="Auto">
 				<Controls:ThemePage Padding="15" />
 			</TabItem>
-			<TabItem Header="Log">
+			<TabItem Header="Log" Width="Auto" Height="Auto">
 				<Controls:ApplicationOutputPage Padding="15" x:Name="_logControl"/>
 			</TabItem>
 			<TabItem Header="About"/>

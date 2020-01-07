@@ -119,6 +119,9 @@
     <Compile Include="Controls\ApplicationOutputPage.xaml.cs">
       <DependentUpon>ApplicationOutputPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\GeneralPage.xaml.cs">
+      <DependentUpon>GeneralPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\GeneralTabControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -330,6 +333,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Controls\ApplicationOutputPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\GeneralPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

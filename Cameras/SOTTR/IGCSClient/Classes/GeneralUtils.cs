@@ -34,12 +34,26 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Diagnostics;
+using System.Drawing;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace IGCSClient.Classes
 {
 	public static class GeneralUtils
 	{
+		public static ImageSource ToBitmapImage(this Icon toConvert)
+		{
+			using (Bitmap bmp = toConvert.ToBitmap())
+			{
+				var stream = new MemoryStream();
+				bmp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+				return BitmapFrame.Create(stream);
+			}
+		}
+
+
 		/// <summary>
 		/// Converts the passed in payload value to a byte array which is ready to be send over the pipe
 		/// </summary>

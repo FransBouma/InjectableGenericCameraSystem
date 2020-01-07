@@ -10,7 +10,7 @@
              mc:Ignorable="d" Height="333.349" Width="545.873" WindowStyle="ToolWindow" Loaded="SimpleExceptionViewerWPF_OnLoaded" WindowStartupLocation="CenterScreen">
 	<Grid>
 		<GroupBox Header="General exception information" Height="231" VerticalAlignment="Top" Margin="10,0">
-			<TextBlock Margin="0,0,0,0" Name="_exceptionTextBlock"></TextBlock>
+			<TextBox IsReadOnly="true" Margin="0,0,0,0" Name="_exceptionTextBlock" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"></TextBox>
 		</GroupBox>
 		<Button Name="_okButton" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Bottom" Click="_okButton_OnClick">OK</Button>
 		<Button Name="_detailsButton" IsEnabled="False" HorizontalAlignment="Left" Margin="77,0,0,10" VerticalAlignment="Bottom" Click="_detailsButton_OnClick">Details...</Button>
