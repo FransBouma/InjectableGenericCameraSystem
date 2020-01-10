@@ -59,7 +59,6 @@ namespace IGCSClient.Forms
 		}
 
 
-
 		protected override void OnClosing(CancelEventArgs e)
 		{
 			AppStateSingleton.Instance().SaveSettingsToIni();
@@ -82,7 +81,7 @@ namespace IGCSClient.Forms
 			AppStateSingleton.Instance().LoadRecentProcessList();
 			MessageHandlerSingleton.Instance().ConnectedToNamedPipeFunc = () => HandleConnectedToPipe();
 			MessageHandlerSingleton.Instance().ClientConnectionReceivedFunc = () => HandleConnectionReceived();
-			//_generalTabControl.UpdateSelectedRenderAPI();
+			_generalTabControl.UpdateSelectedRenderAPI();
 
 			// Disable all tabs, except general, log and about.
 			//_hotsamplingTab.Enabled = false;
@@ -106,28 +105,44 @@ namespace IGCSClient.Forms
 			//_hotsamplingControl.BindData();
 
 			//// Send preferred rendering API. 
-			//AppStateSingleton.Instance().PreferredRenderApiKind = _generalTabControl.SelectedRenderAPI;
-			//MessageHandlerSingleton.Instance().SendDXGIHookActionForPreferredRenderAPI(_generalTabControl.SelectedRenderAPI);
+			AppStateSingleton.Instance().PreferredRenderApiKind = _generalTabControl.SelectedRenderAPI;
+			MessageHandlerSingleton.Instance().SendDXGIHookActionForPreferredRenderAPI(_generalTabControl.SelectedRenderAPI);
 		}
 
 
 		private void HandleConnectionReceived()
 		{
-			LogHandlerSingleton.Instance().LogLine("DLL Connected to our named pipe.", "System", true, true);
-
-			//_dllToClientConnectedSBLabel.Text = "Client->Camera dll active";
+			LogHandlerSingleton.Instance().LogLine("DLL Connected to our named pipe.", "System", true);
+			SetTextOnTextBlock(_clientToDllConnectedSBLabel, "Client->Camera dll active");
 		}
 
 		
 		private void HandleConnectedToPipe()
 		{
-			LogHandlerSingleton.Instance().LogLine("Connected to the DLL's named pipe", "System", true, true);
-			AppStateSingleton.Instance().SendSettings();
-			AppStateSingleton.Instance().SendKeyBindings();
-			LogHandlerSingleton.Instance().LogLine("Initial settings sent", "System", true, true);
-			//_clientToDllConnectedSBLabel.Text = "Camera dll->client active";
+			LogHandlerSingleton.Instance().LogLine("Connected to the DLL's named pipe", "System", true);
+#warning >>>>>>>>>>>> IMPLEMENT
+			//AppStateSingleton.Instance().SendSettings();
+			//AppStateSingleton.Instance().SendKeyBindings();
+			LogHandlerSingleton.Instance().LogLine("Initial settings sent", "System", true);
+			SetTextOnTextBlock(_dllToClientConnectedSBLabel, "Camera dll->client active");
 		}
 
+
+		private void SetTextOnTextBlock(TextBlock toSet, string toPass)
+		{
+			if(toSet == null)
+			{
+				return;
+			}
+			if(toSet.CheckAccess())
+			{
+				toSet.Text = toPass;
+			}
+			else
+			{
+				toSet.Dispatcher?.Invoke(()=>toSet.Text = toPass);
+			}
+		}
 
 		private void Hyperlink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
 		{
@@ -135,8 +150,16 @@ namespace IGCSClient.Forms
 		}
 
 
-		private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+		private void _generalTabControl_OnDllInjected(object sender, EventArgs e)
 		{
+			HandleDllInjected();
+		}
+
+
+		private void _generalTabControl_OnAttachedProcessExited(object sender, EventArgs e)
+		{
+			// Attached process died, we should too
+			this.Close();
 		}
 	}
 }

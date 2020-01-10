@@ -36,6 +36,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Forms;
@@ -45,6 +46,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using IGCSClient.Classes;
 using IGCSClient.Forms;
+using IGCSClient.GameSpecific.Classes;
 using SD.Tools.BCLExtensions.SystemRelated;
 using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
@@ -69,7 +71,31 @@ namespace IGCSClient.Controls
 		public GeneralPage()
 		{
 			InitializeComponent();
+			_selectedProcess = null;
+			_supportedRenderApis = new List<RenderAPIKind>();
+			if(GameSpecificConstants.GameSupportsDX11)
+			{
+				_supportedRenderApis.Add(RenderAPIKind.Direct3D11);
+			}
+			if(GameSpecificConstants.GameSupportsDX12)
+			{
+				_supportedRenderApis.Add(RenderAPIKind.Direct3D12);
+			}
+			if(GameSpecificConstants.GameSupportsVulkan)
+			{
+				_supportedRenderApis.Add(RenderAPIKind.Other);
+			}
 		}
+
+
+		/// <summary>
+		/// Updates the combobox selection with the preferred render api from the ini file, which is loaded after this control has been shown and initialized.
+		/// </summary>
+		public void UpdateSelectedRenderAPI()
+		{
+			_renderAPIComboBox.SelectedValue = AppStateSingleton.Instance().PreferredRenderApiKind;
+		}
+
 
 		private void _selectProcessButton_Click(object sender, RoutedEventArgs e)
 		{
@@ -91,33 +117,44 @@ namespace IGCSClient.Controls
 
 		private void _browseForDllButton_Click(object sender, RoutedEventArgs e)
 		{
-
+			var openDllToInjectDialog = new OpenFileDialog();
+			openDllToInjectDialog.Multiselect = false;
+			openDllToInjectDialog.Title = "Please select the dll to inject";
+			openDllToInjectDialog.DefaultExt = "dll";
+			openDllToInjectDialog.Filter = "Dll files|*.dll";
+			openDllToInjectDialog.InitialDirectory = Environment.CurrentDirectory;
+			var result = openDllToInjectDialog.ShowDialog();
+			if(result==DialogResult.Cancel)
+			{
+				return;
+			}
+			_dllFilenameTextBox.Text = openDllToInjectDialog.FileName;
+			_dllFilenameTextBox.ToolTip = openDllToInjectDialog.FileName;
 		}
 
 
 		private void GeneralPage_OnLoaded(object sender, RoutedEventArgs e)
 		{
-			//_renderAPIComboBox.DataSource = _supportedRenderApis.Select(value => new
-			//																	 {
-			//																		 (Attribute.GetCustomAttribute(value.GetType()?.GetField(value.ToString()), 
-			//																									   typeof(DescriptionAttribute)) as DescriptionAttribute)?.Description,
-			//																		 value
-			//																	 })
-			//													.OrderBy(item => item.value)
-			//													.ToList();
-			//_renderAPIComboBox.DisplayMember = "Description";
-			//_renderAPIComboBox.ValueMember = "value";
-			//if(_supportedRenderApis.Count <= 1)
-			//{
-			//	// disable combo box
-			//	_renderAPIComboBox.Enabled = false;
-			//	_renderAPILabel.Enabled = false;
-			//}
+			_renderAPIComboBox.ItemsSource = _supportedRenderApis.Select(value => new
+																				  {
+																					  (Attribute.GetCustomAttribute(value.GetType()?.GetField(value.ToString()), 
+																													typeof(DescriptionAttribute)) as DescriptionAttribute)?.Description, 
+																					  value
+																				  }).OrderBy(item => item.value)
+																 .ToList();
+			_renderAPIComboBox.DisplayMemberPath = "Description";
+			_renderAPIComboBox.SelectedValuePath = "value";
+			if(_supportedRenderApis.Count <= 1)
+			{
+				// disable combo box
+				_renderAPIComboBox.IsEnabled = false;
+			}
 			LoadDefaultNamesFromConfigFile();
 			FindDefaultProcess();
 			DisplayProcessInfoForInjection();
 			DisplayAttachedProcessInUI();
 		}
+
 
 		private void LoadDefaultNamesFromConfigFile()
 		{
@@ -215,15 +252,15 @@ namespace IGCSClient.Controls
 			var attachedProcess = AppStateSingleton.Instance().AttachedProcess;
 			if(attachedProcess == null)
 			{
-				//_injectDllGroupBox.Visible = true;
-				//_attachedProcessInfoGroupBox.Visible = false;
+				_injectDllGroupBox.Visibility = Visibility.Visible;
+				_attachedProcessInfoGroupBox.Visibility = Visibility.Hidden;
 				return;
 			}
-			//_attachedProcessInfoGroupBox.Visible = true;
-			//_injectDllGroupBox.Visible = false;
-			//_executableIconPictureBox.Image = System.Drawing.Icon.ExtractAssociatedIcon(attachedProcess.MainModule.FileName).ToBitmap();
-			//_executableTextBox.Text = attachedProcess.MainModule.FileName;
-			//_windowTitleTextBox.Text = attachedProcess.MainWindowTitle;
+			_injectDllGroupBox.Visibility = Visibility.Collapsed;
+			_attachedProcessInfoGroupBox.Visibility = Visibility.Visible;
+			_executableIconImage.Source = System.Drawing.Icon.ExtractAssociatedIcon(attachedProcess.MainModule.FileName).ToBitmapImage();
+			_executableTextBox.Text = attachedProcess.MainModule.FileName;
+			_windowTitleTextBox.Text = attachedProcess.MainWindowTitle;
 		}
 		
 
@@ -239,6 +276,18 @@ namespace IGCSClient.Controls
 			return (_selectedProcess!=null && File.Exists(_dllFilenameTextBox.Text) && selectedFileExtension.ToLowerInvariant()==".dll");
 		}
 		
+
+		private void _processNameTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+		{
+			EnableDisableInjectButton();
+		}
+
+
+		private void _dllFilenameTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+		{
+			EnableDisableInjectButton();
+		}
+
 
 		private void _injectButton_Click(object sender, EventArgs e)
 		{
@@ -262,9 +311,9 @@ namespace IGCSClient.Controls
 			}
 			else
 			{
-				//MessageBox.Show(this, string.Format("Injection failed when performing:{0}{1}{0}The following error occurred:{0}{2}", 
-				//									Environment.NewLine, injector.LastActionPerformed, new Win32Exception(injector.LastError).Message), "Injection result", 
-				//				MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(string.Format("Injection failed when performing:{0}{1}{0}The following error occurred:{0}{2}",
+													Environment.NewLine, injector.LastActionPerformed, new Win32Exception(injector.LastError).Message), "Injection result",
+								MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -276,7 +325,7 @@ namespace IGCSClient.Controls
 		}
 
 
-		private void _rehookXInput_Click(object sender, EventArgs e)
+		private void _rehookXInputButton_OnClick(object sender, RoutedEventArgs e)
 		{
 			MessageHandlerSingleton.Instance().SendRehookXInputAction();
 		}

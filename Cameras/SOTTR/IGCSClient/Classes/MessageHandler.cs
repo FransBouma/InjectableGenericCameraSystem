@@ -149,10 +149,10 @@ namespace IGCSClient.Classes
 					LogHandlerSingleton.Instance().LogLine(asciiEncoding.GetString(e.Value, 1, e.Value.Length-1), string.Empty);
 					break;
 				case MessageType.DebugTextMessage:
-					LogHandlerSingleton.Instance().LogLine(asciiEncoding.GetString(e.Value, 1, e.Value.Length-1), "Camera dll", true, true);
+					LogHandlerSingleton.Instance().LogLine(asciiEncoding.GetString(e.Value, 1, e.Value.Length-1), "Camera dll", true);
 					break;
 				case MessageType.ErrorTextMessage:
-					LogHandlerSingleton.Instance().LogLine(asciiEncoding.GetString(e.Value, 1, e.Value.Length-1), "Camera dll", true, false, true);
+					LogHandlerSingleton.Instance().LogLine(asciiEncoding.GetString(e.Value, 1, e.Value.Length-1), "Camera dll", false, true);
 					break;
 				// rest are ignored.
 			}

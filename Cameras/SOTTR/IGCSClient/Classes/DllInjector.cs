@@ -52,7 +52,7 @@ namespace IGCSClient.Classes
 			uint dllLengthToPassInBytes = (uint)((dllPathNameToInject.Length + 1) * Marshal.SizeOf(typeof(char)));
 
 			this.LastActionPerformed = "Opening the host process";
-			LogHandlerSingleton.Instance().LogLine("Opening the host process", "DllInjector", true, true);
+			LogHandlerSingleton.Instance().LogLine("Opening the host process", "DllInjector", true);
 			IntPtr processHandle = Win32Wrapper.OpenProcess(ProcessAccessFlags.CreateThread | ProcessAccessFlags.QueryInformation | ProcessAccessFlags.VirtualMemoryOperation |
 															ProcessAccessFlags.VirtualMemoryWrite | ProcessAccessFlags.VirtualMemoryRead, 
 															false, (uint)processId);
@@ -64,7 +64,7 @@ namespace IGCSClient.Classes
 			}
 
 			this.LastActionPerformed = "Obtaining the address of LoadLibraryA";
-			LogHandlerSingleton.Instance().LogLine("Obtaining the address of LoadLibraryA", "DllInjector", true, true);
+			LogHandlerSingleton.Instance().LogLine("Obtaining the address of LoadLibraryA", "DllInjector", true);
 			IntPtr loadLibraryAddress = Win32Wrapper.GetProcAddress(Win32Wrapper.GetModuleHandle("kernel32.dll"), "LoadLibraryA");
 			if(loadLibraryAddress==IntPtr.Zero)
 			{
@@ -73,7 +73,7 @@ namespace IGCSClient.Classes
 			}
 
 			this.LastActionPerformed = "Allocating memory in the host process for the dll filename";
-			LogHandlerSingleton.Instance().LogLine("Allocating memory in the host process for the dll filename", "DllInjector", true, true);
+			LogHandlerSingleton.Instance().LogLine("Allocating memory in the host process for the dll filename", "DllInjector", true);
 			IntPtr memoryInTargetProcess = Win32Wrapper.VirtualAllocEx(processHandle, IntPtr.Zero, dllLengthToPassInBytes, AllocationType.Commit | AllocationType.Reserve, 
 																	   MemoryProtection.ReadWrite);
 			if(memoryInTargetProcess==IntPtr.Zero)
@@ -85,7 +85,7 @@ namespace IGCSClient.Classes
 			Thread.Sleep(500);
 
 			this.LastActionPerformed = "Writing dll filename into memory allocated in host process";
-			LogHandlerSingleton.Instance().LogLine("Writing dll filename into memory allocated in host process", "DllInjector", true, true);
+			LogHandlerSingleton.Instance().LogLine("Writing dll filename into memory allocated in host process", "DllInjector", true);
 			IntPtr bytesWritten;
 			var bytesToWrite = Encoding.Default.GetBytes(dllPathNameToInject);
 			bool result = Win32Wrapper.WriteProcessMemory(processHandle, memoryInTargetProcess, bytesToWrite, dllLengthToPassInBytes, out bytesWritten);
@@ -95,10 +95,8 @@ namespace IGCSClient.Classes
 				return false;
 			}
 
-			Thread.Sleep(500);
-
 			this.LastActionPerformed = "Creating a thread in the host process to load the dll";
-			LogHandlerSingleton.Instance().LogLine("Creating a thread in the host process to load the dll", "DllInjector", true, true);
+			LogHandlerSingleton.Instance().LogLine("Creating a thread in the host process to load the dll", "DllInjector", true);
 			IntPtr remoteThreadHandle = Win32Wrapper.CreateRemoteThread(processHandle, IntPtr.Zero, 0, loadLibraryAddress, memoryInTargetProcess, 0, IntPtr.Zero);
 			if(remoteThreadHandle==IntPtr.Zero)
 			{
@@ -114,7 +112,7 @@ namespace IGCSClient.Classes
 			}
 
 			this.LastActionPerformed = "Done";
-			LogHandlerSingleton.Instance().LogLine("Injection completed", "DllInjector", true, true);
+			LogHandlerSingleton.Instance().LogLine("Injection completed", "DllInjector", true);
 			return true;
 		}
 

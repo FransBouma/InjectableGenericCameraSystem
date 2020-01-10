@@ -27,52 +27,87 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using IGCSClient.Classes;
-using IGCSClient.Forms;
-using IGCSClient.GameSpecific.Classes;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using IGCSClient.Interfaces;
+using SD.Tools.BCLExtensions.SystemRelated;
 
-namespace IGCSClient
+namespace IGCSClient.Controls
 {
 	/// <summary>
-	/// Interaction logic for App.xaml
+	/// Interaction logic for FloatInputWPF.xaml
 	/// </summary>
-	public partial class App : Application
+	public partial class FloatInputWPF : UserControl, IInputControl<float>
 	{
-		private static MainWindow _mainWindow;
+		private bool _suppressEvents = false;
 
+		public event EventHandler ValueChanged;
 
-		private void App_OnStartup(object sender, StartupEventArgs e)
+		public FloatInputWPF()
 		{
-			Application.Current.DispatcherUnhandledException += Application_DispatcherUnhandledException;
-			_mainWindow = new MainWindow();
-			Init();
-			_mainWindow.Show();
+			InitializeComponent();
+		}
+		
+
+		public void Setup(double minValue, double maxValue, int scale, double increment)
+		{
+			// Necessary to suppress events as setting the minimum sets the value too.
+			_suppressEvents = true;
+			_sliderControl.Maximum = maxValue;
+			_sliderControl.Minimum = minValue;
+			_sliderControl.AutoToolTipPrecision = scale;
+			_sliderControl.SmallChange = increment;
+			_sliderControl.LargeChange = increment;
+			_suppressEvents = false;
+		}
+
+
+		public void SetValueFromString(string valueAsString, float defaultValue)
+		{
+			if(!Single.TryParse(valueAsString, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out var valueToSet))
+			{
+				valueToSet = defaultValue;
+			}
+			this.Value = valueToSet;
+		}
+
+
+		private void _sliderControl_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+		{
+			if(_suppressEvents)
+			{
+				return;
+			}
+			this.ValueChanged.RaiseEvent(this);
 		}
 
 		
-		private static void Init()
+
+		#region Properties
+		/// <inheritdoc/>
+		public float Value
 		{
-			SettingFactory.InitializeSettings();
-			SettingFactory.InitializeKeyBindings();
+			get { return Convert.ToSingle(_sliderControl.Value); }
+			set { _sliderControl.Value = Convert.ToDouble(value); }
 		}
 
 
-		private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+		public string Header
 		{
-			e.Handled = true;
-			if(_mainWindow == null || _mainWindow.Dispatcher==null)
-			{
-				SimpleExceptionViewerWPF.Show(null, e.Exception, "An unhandled exception occurred.");
-			}
-			else
-			{
-				_mainWindow.Dispatcher?.Invoke(new Action<Exception>((a) => SimpleExceptionViewerWPF.Show(_mainWindow, a, "An Unhandled exception occurred.")), e.Exception);
-			}
+			get { return _headerControl.Header?.ToString() ?? string.Empty; }
+			set { _headerControl.Header = value; }
 		}
+		#endregion
 	}
 }

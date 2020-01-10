@@ -5,38 +5,39 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:IGCSClient.Forms"
              xmlns:ui="http://schemas.modernwpf.com/2019"
-			 xmlns:Controls="clr-namespace:IGCSClient.Controls" x:Class="IGCSClient.Forms.MainWindow"
+			 xmlns:Controls="clr-namespace:IGCSClient.Controls" 
+			 xmlns:GameSpecificControls="clr-namespace:IGCSClient.GameSpecific.Controls" x:Class="IGCSClient.Forms.MainWindow"
 			 ui:ThemeManager.IsThemeAware="True"
 			 ui:WindowHelper.UseModernWindowStyle="True"
              mc:Ignorable="d" Height="569.025" Width="825" Loaded="MainWindow_OnLoaded" WindowStartupLocation="CenterScreen">
 	<DockPanel>
 		<StatusBar DockPanel.Dock="Bottom" Height="25">
 			<StatusBarItem Padding="3, 3, 10,3">
-				<TextBlock Name="_clientToDllConnectedSBLabel">Not connected</TextBlock>
+				<TextBlock x:Name="_clientToDllConnectedSBLabel"><Run Text="Not connected"/></TextBlock>
 			</StatusBarItem>
 			<StatusBarItem Padding="3, 3, 10,3">
-				<TextBlock Name="_dllToClientConnectedSBLabel">Not connected</TextBlock>
+				<TextBlock x:Name="_dllToClientConnectedSBLabel"><Run Text="Not connected"/></TextBlock>
 			</StatusBarItem>
 			<StatusBarItem HorizontalAlignment="Right" Margin="0, 0, 5, 0">
-				<TextBlock Name="_copyRightSBLabel">
-					<Hyperlink NavigateUri="https://github.com/FransBouma/InjectableGenericCameraSystem" RequestNavigate="Hyperlink_OnRequestNavigate" Foreground="{DynamicResource UriForecolorKey}">
-						Powered by IGCS. ©2020 Frans 'Otis_Inf' Bouma
-					</Hyperlink>
-				</TextBlock>
+				<TextBlock x:Name="_copyRightSBLabel"><Hyperlink NavigateUri="https://github.com/FransBouma/InjectableGenericCameraSystem" RequestNavigate="Hyperlink_OnRequestNavigate" Foreground="{DynamicResource UriForecolorKey}"><Run Text="Powered by IGCS. ©2020 Frans 'Otis_Inf' Bouma"/></Hyperlink></TextBlock>
 			</StatusBarItem>
 		</StatusBar>
 		<TabControl DockPanel.Dock="Top">
 			<TabItem Header="General">
-				<Controls:GeneralPage Padding="15" Width="Auto" Height="Auto"/>
+				<Controls:GeneralPage Padding="15" Width="Auto" Height="Auto" x:Name="_generalTabControl" DllInjected="_generalTabControl_OnDllInjected" AttachedProcessExited="_generalTabControl_OnAttachedProcessExited"/>
 			</TabItem>
 			<TabItem Header="Hotsampling">
 				<ui:SimpleStackPanel Margin="12" Spacing="24">
-					<Button Content="I am a button" Click="ButtonBase_OnClick" />
+					<Button Content="I am a button"/>
 					<Button Content="I am an accent button" Style="{StaticResource AccentButtonStyle}" />
 					<ui:ToggleSwitch HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Width="768"/>
 				</ui:SimpleStackPanel>
 			</TabItem>
-			<TabItem Header="Configuration"/>
+			<TabItem Header="Configuration">
+				<ScrollViewer>
+					<GameSpecificControls:ConfigurationPage Margin="15"/>
+				</ScrollViewer>
+			</TabItem>
 			<TabItem Header="Key-bindings"/>
 			<TabItem Header="Theme" Width="Auto" Height="Auto">
 				<Controls:ThemePage Padding="15" />
@@ -44,7 +45,21 @@
 			<TabItem Header="Log" Width="Auto" Height="Auto">
 				<Controls:ApplicationOutputPage Padding="15" x:Name="_logControl"/>
 			</TabItem>
-			<TabItem Header="About"/>
+			<TabItem Header="About">
+				<ScrollViewer>
+					<StackPanel Margin="15">
+						<Expander Header="About Injectable Generic Camera System" Margin="0,0,0,10" IsExpanded="True">
+							<TextBlock TextWrapping="Wrap"><Run Text="This camera is powered by Injectable Generic Camera System (IGCS)."/><LineBreak/><Run Text="Copyright (c) 2020 Otis_Inf (Frans Bouma). All rights reserved."/><LineBreak/><Hyperlink NavigateUri="https://github.com/FransBouma/InjectableGenericCameraSystem" RequestNavigate="Hyperlink_OnRequestNavigate" Foreground="{DynamicResource UriForecolorKey}"><Run Text="https://github.com/FransBouma/InjectableGenericCameraSystem"/></Hyperlink><LineBreak/><LineBreak/><Run Text="Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:"/><LineBreak/><LineBreak/><Run Text="1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer."/><LineBreak/><Run Text="2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution."/><LineBreak/><LineBreak/><Run Text="THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."/></TextBlock>
+						</Expander>
+						<Expander Header="About MinHook" Margin="0,0,0,10">
+							<TextBlock TextWrapping="Wrap"><Run Text="IGCS uses MinHook, copyright (c) 2009-2017 Tsuda Kageyu. All rights reserved."/><LineBreak/><LineBreak/><Run Text="Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:"/><LineBreak/><LineBreak/><Run Text="1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer."/><LineBreak/><Run Text="2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution."/><LineBreak/><LineBreak/><Run Text="THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."/></TextBlock>
+						</Expander>
+						<Expander Header="Special thanks" Margin="0,0,0,10">
+							<TextBlock TextWrapping="Wrap"><Run Text="Special thanks to:"/><LineBreak/><Run Text="1. Crosire, for creating and opening the Reshade sourcecode. It was a great help with grabbing screenshots on DX12!"/><LineBreak/><Run Text="2. The users of my camera's, you all are a great inspiration to make the best camera tools possible!"/><LineBreak/></TextBlock>
+						</Expander>
+					</StackPanel>
+				</ScrollViewer>
+			</TabItem>
 		</TabControl>
 	</DockPanel>
 </Window>

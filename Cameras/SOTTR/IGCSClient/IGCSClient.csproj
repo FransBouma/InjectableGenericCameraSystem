@@ -119,6 +119,9 @@
     <Compile Include="Controls\ApplicationOutputPage.xaml.cs">
       <DependentUpon>ApplicationOutputPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\FloatInputWPF.xaml.cs">
+      <DependentUpon>FloatInputWPF.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\GeneralPage.xaml.cs">
       <DependentUpon>GeneralPage.xaml</DependentUpon>
     </Compile>
@@ -169,6 +172,9 @@
     </Compile>
     <Compile Include="GameSpecific\Classes\GameSpecificConstants.cs" />
     <Compile Include="GameSpecific\Classes\SettingFactory.cs" />
+    <Compile Include="GameSpecific\Controls\ConfigurationPage.xaml.cs">
+      <DependentUpon>ConfigurationPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GameSpecific\Controls\KeyBindingEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -336,6 +342,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\FloatInputWPF.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\GeneralPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -361,6 +371,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Forms\SimpleExceptionViewerWPF.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GameSpecific\Controls\ConfigurationPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
