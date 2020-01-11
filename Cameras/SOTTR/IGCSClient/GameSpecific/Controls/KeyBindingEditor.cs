@@ -54,75 +54,75 @@ namespace IGCSClient.GameSpecific.Controls
 			{
 				switch(binding.ID)
 				{
-					case KeyBindingType.BlockInputToGame:
-						binding.Setup(_blockInputInput);
-						break;
-					case KeyBindingType.EnableDisableCamera:
-						binding.Setup(_enableDisableCameraInput);
-						break;
-					case KeyBindingType.DecreaseFoV:
-						binding.Setup(_decreaseFoVInput);
-						break;
-					case KeyBindingType.IncreaseFoV:
-						binding.Setup(_increaseFoVInput);
-						break;
-					case KeyBindingType.ResetFoV:
-						binding.Setup(_resetFoVInput);
-						break;
-					case KeyBindingType.LockUnlockCameraMovement:
-						binding.Setup(_lockUnlockCameraMovementInput);
-						break;
-					case KeyBindingType.MoveCameraLeft:
-						binding.Setup(_moveCameraLeftInput);
-						break;
-					case KeyBindingType.MoveCameraRight:
-						binding.Setup(_moveCameraRightInput);
-						break;
-					case KeyBindingType.MoveCameraForward:
-						binding.Setup(_moveCameraForwardInput);
-						break;
-					case KeyBindingType.MoveCameraBackward:
-						binding.Setup(_moveCameraBackwardInput);
-						break;
-					case KeyBindingType.MoveCameraUp:
-						binding.Setup(_moveCameraUpInput);
-						break;
-					case KeyBindingType.MoveCameraDown:
-						binding.Setup(_moveCameraDownInput);
-						break;
-					case KeyBindingType.RotateCameraUp:
-						binding.Setup(_rotateCameraUpInput);
-						break;
-					case KeyBindingType.RotateCameraDown:
-						binding.Setup(_rotateCameraDownInput);
-						break;
-					case KeyBindingType.RotateCameraLeft:
-						binding.Setup(_rotateCameraLeftInput);
-						break;
-					case KeyBindingType.RotateCameraRight:
-						binding.Setup(_rotateCameraRightInput);
-						break;
-					case KeyBindingType.TiltCameraLeft:
-						binding.Setup(_tiltCameraLeftInput);
-						break;
-					case KeyBindingType.TiltCameraRight:
-						binding.Setup(_tiltCameraRightInput);
-						break;
-					case KeyBindingType.TestMultiShotSetup:
-						binding.Setup(_testMultiShotSetupInput);
-						break;
-					case KeyBindingType.TakeShot:
-						binding.Setup(_takeShotInput);
-						break;
-					case KeyBindingType.TakeMultiShot:
-						binding.Setup(_takeMultiShotInput);
-						break;
-					case KeyBindingType.ToggleHUD:
-						binding.Setup(_toggleHUDInput);
-						break;
-					case KeyBindingType.PauseUnpauseGame:
-						binding.Setup(_pauseUnPauseInput);
-						break;
+					//case KeyBindingType.BlockInputToGame:
+					//	binding.Setup(_blockInputInput);
+					//	break;
+					//case KeyBindingType.EnableDisableCamera:
+					//	binding.Setup(_enableDisableCameraInput);
+					//	break;
+					//case KeyBindingType.DecreaseFoV:
+					//	binding.Setup(_decreaseFoVInput);
+					//	break;
+					//case KeyBindingType.IncreaseFoV:
+					//	binding.Setup(_increaseFoVInput);
+					//	break;
+					//case KeyBindingType.ResetFoV:
+					//	binding.Setup(_resetFoVInput);
+					//	break;
+					//case KeyBindingType.LockUnlockCameraMovement:
+					//	binding.Setup(_lockUnlockCameraMovementInput);
+					//	break;
+					//case KeyBindingType.MoveCameraLeft:
+					//	binding.Setup(_moveCameraLeftInput);
+					//	break;
+					//case KeyBindingType.MoveCameraRight:
+					//	binding.Setup(_moveCameraRightInput);
+					//	break;
+					//case KeyBindingType.MoveCameraForward:
+					//	binding.Setup(_moveCameraForwardInput);
+					//	break;
+					//case KeyBindingType.MoveCameraBackward:
+					//	binding.Setup(_moveCameraBackwardInput);
+					//	break;
+					//case KeyBindingType.MoveCameraUp:
+					//	binding.Setup(_moveCameraUpInput);
+					//	break;
+					//case KeyBindingType.MoveCameraDown:
+					//	binding.Setup(_moveCameraDownInput);
+					//	break;
+					//case KeyBindingType.RotateCameraUp:
+					//	binding.Setup(_rotateCameraUpInput);
+					//	break;
+					//case KeyBindingType.RotateCameraDown:
+					//	binding.Setup(_rotateCameraDownInput);
+					//	break;
+					//case KeyBindingType.RotateCameraLeft:
+					//	binding.Setup(_rotateCameraLeftInput);
+					//	break;
+					//case KeyBindingType.RotateCameraRight:
+					//	binding.Setup(_rotateCameraRightInput);
+					//	break;
+					//case KeyBindingType.TiltCameraLeft:
+					//	binding.Setup(_tiltCameraLeftInput);
+					//	break;
+					//case KeyBindingType.TiltCameraRight:
+					//	binding.Setup(_tiltCameraRightInput);
+					//	break;
+					//case KeyBindingType.TestMultiShotSetup:
+					//	binding.Setup(_testMultiShotSetupInput);
+					//	break;
+					//case KeyBindingType.TakeShot:
+					//	binding.Setup(_takeShotInput);
+					//	break;
+					//case KeyBindingType.TakeMultiShot:
+					//	binding.Setup(_takeMultiShotInput);
+					//	break;
+					//case KeyBindingType.ToggleHUD:
+					//	binding.Setup(_toggleHUDInput);
+					//	break;
+					//case KeyBindingType.PauseUnpauseGame:
+					//	binding.Setup(_pauseUnPauseInput);
+					//	break;
 				}
 			}
 		}

@@ -45,18 +45,18 @@ namespace IGCSClient.GameSpecific.Classes
 		public static void InitializeSettings()
 		{
 			var appState = AppStateSingleton.Instance();
-			appState.AddSetting(new FloatSetting(SettingType.FastMovementMultiplier, nameof(SettingType.FastMovementMultiplier), 0.1M, 100.0M, 2, 0.01M, GameSpecificSettingDefaults.FastMovementMultiplier));
-			appState.AddSetting(new FloatSetting(SettingType.SlowMovementMultiplier, nameof(SettingType.SlowMovementMultiplier), 0.001M, 1.0M, 3, 0.001M, GameSpecificSettingDefaults.SlowMovementMultiplier));
-			appState.AddSetting(new FloatSetting(SettingType.UpMovementMultiplier, nameof(SettingType.UpMovementMultiplier), 0.1M, 10.0M, 2, 0.01M, GameSpecificSettingDefaults.UpMovementMultiplier));
-			appState.AddSetting(new FloatSetting(SettingType.MovementSpeed, nameof(SettingType.MovementSpeed), 0.1M, 3.0M, 2, 0.01M, GameSpecificSettingDefaults.MovementSpeed));
+			appState.AddSetting(new FloatSetting(SettingType.FastMovementMultiplier, nameof(SettingType.FastMovementMultiplier), 0.1, 100.0, 2, 0.01, GameSpecificSettingDefaults.FastMovementMultiplier));
+			appState.AddSetting(new FloatSetting(SettingType.SlowMovementMultiplier, nameof(SettingType.SlowMovementMultiplier), 0.001, 1.0, 3, 0.001, GameSpecificSettingDefaults.SlowMovementMultiplier));
+			appState.AddSetting(new FloatSetting(SettingType.UpMovementMultiplier, nameof(SettingType.UpMovementMultiplier), 0.1, 10.0, 2, 0.01, GameSpecificSettingDefaults.UpMovementMultiplier));
+			appState.AddSetting(new FloatSetting(SettingType.MovementSpeed, nameof(SettingType.MovementSpeed), 0.1, 3.0, 2, 0.01, GameSpecificSettingDefaults.MovementSpeed));
 			appState.AddSetting(new DropDownSetting(SettingType.CameraControlDevice, nameof(SettingType.CameraControlDevice),
 													new List<string>()
 													{
 														nameof(CameraDeviceType.KeyboardMouse), nameof(CameraDeviceType.Gamepad), nameof(CameraDeviceType.Both)
 													}, GameSpecificSettingDefaults.CameraControlDevice));
-			appState.AddSetting(new FloatSetting(SettingType.RotationSpeed, nameof(SettingType.RotationSpeed), 0.001M, 0.5M, 3, 0.001M, GameSpecificSettingDefaults.RotationSpeed));
+			appState.AddSetting(new FloatSetting(SettingType.RotationSpeed, nameof(SettingType.RotationSpeed), 0.001, 0.5, 3, 0.001, GameSpecificSettingDefaults.RotationSpeed));
 			appState.AddSetting(new BoolSetting(SettingType.InvertYLookDirection, nameof(SettingType.InvertYLookDirection), GameSpecificSettingDefaults.InvertYLookDirection));
-			appState.AddSetting(new FloatSetting(SettingType.FoVZoomSpeed, nameof(SettingType.FoVZoomSpeed), 0.0001M, 0.01M, 4, 0.0001M, GameSpecificSettingDefaults.FoVZoomSpeed));
+			appState.AddSetting(new FloatSetting(SettingType.FoVZoomSpeed, nameof(SettingType.FoVZoomSpeed), 0.0001, 0.01, 4, 0.0001, GameSpecificSettingDefaults.FoVZoomSpeed));
 			appState.AddSetting(new FolderSetting(SettingType.ShotOutputFolder, nameof(SettingType.ShotOutputFolder), 
 												  Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "Please select the screenshot output directory"));
 			appState.AddSetting(new IntSetting(SettingType.ShotFramesToWait, nameof(SettingType.ShotFramesToWait), 1, 100, 1, GameSpecificSettingDefaults.ShotFramesToWait));
@@ -65,9 +65,9 @@ namespace IGCSClient.GameSpecific.Classes
 																											nameof(ScreenshotType.HorizontalPanorama), 
 																											nameof(ScreenshotType.Lightfield)
 																										}, GameSpecificSettingDefaults.ShotType));
-			appState.AddSetting(new FloatSetting(SettingType.PanoTotalFoV, nameof(SettingType.PanoTotalFoV), 30.0M, 359.0M, 1, 0.1M, GameSpecificSettingDefaults.PanoTotalFoV));
-			appState.AddSetting(new FloatSetting(SettingType.PanoOverlapPercentage, nameof(SettingType.PanoOverlapPercentage), 0.1M, 99.9M, 1, 0.1M, GameSpecificSettingDefaults.PanoOverlapPercentage));
-			appState.AddSetting(new FloatSetting(SettingType.LightfieldDistance, nameof(SettingType.LightfieldDistance), 0.001M, 5.0M, 3, 0.001M, GameSpecificSettingDefaults.LightfieldDistance));
+			appState.AddSetting(new FloatSetting(SettingType.PanoTotalFoV, nameof(SettingType.PanoTotalFoV), 30.0, 359.0, 1, 0.1, GameSpecificSettingDefaults.PanoTotalFoV));
+			appState.AddSetting(new FloatSetting(SettingType.PanoOverlapPercentage, nameof(SettingType.PanoOverlapPercentage), 0.1, 99.9, 1, 0.1, GameSpecificSettingDefaults.PanoOverlapPercentage));
+			appState.AddSetting(new FloatSetting(SettingType.LightfieldDistance, nameof(SettingType.LightfieldDistance), 0.001, 5.0, 3, 0.001, GameSpecificSettingDefaults.LightfieldDistance));
 			appState.AddSetting(new IntSetting(SettingType.LightfieldShotCount, nameof(SettingType.LightfieldShotCount), 0, 60, 1, GameSpecificSettingDefaults.LightfieldShotCount));
 			appState.AddSetting(new DropDownSetting(SettingType.ShotFileType, nameof(SettingType.ShotFileType), new List<string>()
 																												{

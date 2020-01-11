@@ -126,7 +126,13 @@ namespace IGCSClient.Classes
 		{
 			_keyBindings.Add(bindingToAdd);
 		}
-		
+
+
+		public void SendInitialData()
+		{
+			SendSettings();
+			SendKeyBindings();
+		}
 
 		public void SendSettings()
 		{
@@ -216,15 +222,15 @@ namespace IGCSClient.Classes
 		public void SaveSettingsToIni()
 		{
 			var iniFile = new IniFileHandler(ConstantsEnums.IniFilename);
-			//foreach(var setting in _settings)
-			//{
-			//	iniFile.Write(setting.Name, setting.GetValueAsString(), "CameraSettings");
-			//}
+			foreach(var setting in _settings)
+			{
+				iniFile.Write(setting.Name, setting.GetValueAsString(), "CameraSettings");
+			}
 
-			//foreach(ISetting binding in _keyBindings)
-			//{
-			//	iniFile.Write(binding.Name, binding.GetValueAsString(), "KeyBindings");
-			//}
+			foreach(ISetting binding in _keyBindings)
+			{
+				iniFile.Write(binding.Name, binding.GetValueAsString(), "KeyBindings");
+			}
 
 			// other settings
 			iniFile.Write("PreferredRenderAPI", ((int)_preferredRenderApiKind).ToString(), "MiscSettings");
@@ -252,15 +258,15 @@ namespace IGCSClient.Classes
 			var iniFile = new IniFileHandler(ConstantsEnums.IniFilename);
 			if(iniFile.FileExists())
 			{
-				//foreach(var setting in _settings)
-				//{
-				//	setting.SetValueFromString(iniFile.Read(setting.Name, "CameraSettings"));
-				//}
+				foreach(var setting in _settings)
+				{
+					setting.SetValueFromString(iniFile.Read(setting.Name, "CameraSettings"));
+				}
 
-				//foreach(var binding in _keyBindings)
-				//{
-				//	binding.SetValueFromString(iniFile.Read(binding.Name, "KeyBindings"));
-				//}
+				foreach(var binding in _keyBindings)
+				{
+					binding.SetValueFromString(iniFile.Read(binding.Name, "KeyBindings"));
+				}
 
 				// other settings
 				_preferredRenderApiKind = (RenderAPIKind)Convert.ToInt32(iniFile.Read("PreferredRenderAPI", "MiscSettings"));

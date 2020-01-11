@@ -25,53 +25,20 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+using IGCSClient.Classes;
+using ToastNotifications.Core;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IGCSClient.Controls;
-using IGCSClient.Interfaces;
-
-namespace IGCSClient.Classes
+namespace IGCSClient.Controls
 {
-	public class IntSetting : Setting<int>
+	/// <summary>
+	/// Interaction logic for CustomDisplayPart.xaml
+	/// </summary>
+	public partial class CustomDisplayPart : NotificationDisplayPart
 	{
-		#region Members
-		private readonly int _minValue;
-		private readonly int _maxValue;
-		private readonly int _increment;
-		private readonly int _defaultValue;
-		#endregion
-
-
-		public IntSetting(byte id, string name, int minValue, int maxValue, int increment, int defaultValue)
-			: base(id, name, SettingKind.NormalSetting)
+		public CustomDisplayPart(CustomNotification customNotification)
 		{
-			_minValue = minValue;
-			_maxValue = maxValue;
-			_increment = increment;
-			_defaultValue = defaultValue;
-		}
-
-
-		public override void Setup(IInputControl<int> controlToUse)
-		{
-			base.Setup(controlToUse);
-			var controlAsIntInput = controlToUse as IntInputWPF;
-			if(controlAsIntInput == null)
-			{
-				return;
-			}
-			controlAsIntInput.Setup(_minValue, _maxValue, _increment, _defaultValue);
-			controlAsIntInput.Value = _defaultValue;
-		}
-
-
-		protected override int GetDefaultValue()
-		{
-			return _defaultValue;
+			InitializeComponent();
+			Bind(customNotification);
 		}
 	}
 }

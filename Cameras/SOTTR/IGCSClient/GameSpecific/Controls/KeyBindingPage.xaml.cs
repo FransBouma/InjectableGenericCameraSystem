@@ -40,13 +40,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using IGCSClient.Classes;
-using IGCSClient.Interfaces;
 
 namespace IGCSClient.GameSpecific.Controls
 {
-	public partial class ConfigurationPage : UserControl
+	/// <summary>
+	/// Interaction logic for KeyBindingPage.xaml
+	/// </summary>
+	public partial class KeyBindingPage : UserControl
 	{
-		public ConfigurationPage()
+		public KeyBindingPage()
 		{
 			InitializeComponent();
 		}
@@ -54,69 +56,83 @@ namespace IGCSClient.GameSpecific.Controls
 
 		internal void Setup()
 		{
-			var settings = AppStateSingleton.Instance().Settings;
-			foreach(var setting in settings)
+			var keybindings = AppStateSingleton.Instance().KeyBindings;
+			foreach(var binding in keybindings)
 			{
-				switch(setting.ID)
+				switch(binding.ID)
 				{
-					case SettingType.FastMovementMultiplier:
-						setting.Setup(_fastMovementInput);
+					case KeyBindingType.BlockInputToGame:
+						binding.Setup(_blockInputInput);
 						break;
-					case SettingType.SlowMovementMultiplier:
-						setting.Setup(_slowMovementInput);
+					case KeyBindingType.EnableDisableCamera:
+						binding.Setup(_enableDisableCameraInput);
 						break;
-					case SettingType.UpMovementMultiplier:
-						setting.Setup(_upMovementInput);
+					case KeyBindingType.DecreaseFoV:
+						binding.Setup(_decreaseFoVInput);
 						break;
-					case SettingType.MovementSpeed:
-						setting.Setup(_movementSpeedInput);
+					case KeyBindingType.IncreaseFoV:
+						binding.Setup(_increaseFoVInput);
 						break;
-					case SettingType.CameraControlDevice:
-						setting.Setup(_cameraControlDeviceInput);
+					case KeyBindingType.ResetFoV:
+						binding.Setup(_resetFoVInput);
 						break;
-					case SettingType.RotationSpeed:
-						setting.Setup(_rotationSpeedInput);
+					case KeyBindingType.LockUnlockCameraMovement:
+						binding.Setup(_lockUnlockCameraMovementInput);
 						break;
-					case SettingType.InvertYLookDirection:
-						setting.Setup(_invertYInput);
+					case KeyBindingType.MoveCameraLeft:
+						binding.Setup(_moveCameraLeftInput);
 						break;
-					case SettingType.FoVZoomSpeed:
-						setting.Setup(_fovSpeedInput);
+					case KeyBindingType.MoveCameraRight:
+						binding.Setup(_moveCameraRightInput);
 						break;
-					case SettingType.ShotOutputFolder:
-						setting.Setup(_shotOutputFolderInput);
+					case KeyBindingType.MoveCameraForward:
+						binding.Setup(_moveCameraForwardInput);
 						break;
-					case SettingType.ShotFramesToWait:
-						setting.Setup(_frameWaitInput);
+					case KeyBindingType.MoveCameraBackward:
+						binding.Setup(_moveCameraBackwardInput);
 						break;
-					case SettingType.ShotType:
-						setting.Setup(_shotTypeInput);
+					case KeyBindingType.MoveCameraUp:
+						binding.Setup(_moveCameraUpInput);
 						break;
-					case SettingType.PanoTotalFoV:
-						setting.Setup(_panoFovInput);
+					case KeyBindingType.MoveCameraDown:
+						binding.Setup(_moveCameraDownInput);
 						break;
-					case SettingType.PanoOverlapPercentage:
-						setting.Setup(_panoOverlapInput);
+					case KeyBindingType.RotateCameraUp:
+						binding.Setup(_rotateCameraUpInput);
 						break;
-					case SettingType.LightfieldDistance:
-						setting.Setup(_lightfieldDistanceInput);
+					case KeyBindingType.RotateCameraDown:
+						binding.Setup(_rotateCameraDownInput);
 						break;
-					case SettingType.LightfieldShotCount:
-						setting.Setup(_lightfieldShotCountInput);
+					case KeyBindingType.RotateCameraLeft:
+						binding.Setup(_rotateCameraLeftInput);
 						break;
-					case SettingType.ShotFileType:
-						setting.Setup(_shotFileTypeInput);
+					case KeyBindingType.RotateCameraRight:
+						binding.Setup(_rotateCameraRightInput);
+						break;
+					case KeyBindingType.TiltCameraLeft:
+						binding.Setup(_tiltCameraLeftInput);
+						break;
+					case KeyBindingType.TiltCameraRight:
+						binding.Setup(_tiltCameraRightInput);
+						break;
+					case KeyBindingType.TestMultiShotSetup:
+						binding.Setup(_testMultiShotSetupInput);
+						break;
+					case KeyBindingType.TakeShot:
+						binding.Setup(_takeShotInput);
+						break;
+					case KeyBindingType.TakeMultiShot:
+						binding.Setup(_takeMultiShotInput);
+						break;
+					case KeyBindingType.ToggleHUD:
+						binding.Setup(_toggleHUDInput);
+						break;
+					case KeyBindingType.PauseUnpauseGame:
+						binding.Setup(_pauseUnPauseInput);
 						break;
 				}
 			}
 		}
-
-
-		private void _shotTypeInput_OnValueChanged(object sender, EventArgs e)
-		{
-			var control = (IInputControl<int>)sender;
-			_horizontalPanoramaSettingsGroup.Visibility = (control.Value == ScreenshotType.HorizontalPanorama) ? Visibility.Visible : Visibility.Hidden;
-			_lightfieldSettingsGroup.Visibility = (control.Value == ScreenshotType.Lightfield) ? Visibility.Visible : Visibility.Collapsed;
-		}
 	}
 }
+

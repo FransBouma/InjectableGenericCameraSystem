@@ -7,33 +7,58 @@
 			 xmlns:ui="http://schemas.modernwpf.com/2019"
 			 xmlns:controls="clr-namespace:IGCSClient.Controls"
 			 Style="{StaticResource ControlPageStyle}"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d" d:DesignWidth="800" Height="1171.55">
 	<ui:SimpleStackPanel Orientation="Vertical">
 		<ui:SimpleStackPanel Orientation="Horizontal">
 			<GroupBox Header="Camera movement options">
 				<ui:SimpleStackPanel Orientation="Vertical">
-					<controls:FloatInputWPF Header="Fast movement multiplier" x:Name="_fastMovementInput"/>
-					<controls:FloatInputWPF Header="Slow movement multiplier" x:Name="_slowMovementInput"/>
-					<controls:FloatInputWPF Header="Up movement multiplier" x:Name="_upMovementInput"/>
-					<controls:FloatInputWPF Header="Movement speed" x:Name="_movementSpeedInput"/>
+					<controls:FloatInputSliderWPF Header="Fast movement multiplier" x:Name="_fastMovementInput" Margin="0, 0, 0, 10"/>
+					<controls:FloatInputSliderWPF Header="Slow movement multiplier" x:Name="_slowMovementInput" Margin="0, 0, 0, 10"/>
+					<controls:FloatInputSliderWPF Header="Up movement multiplier" x:Name="_upMovementInput" Margin="0, 0, 0, 10"/>
+					<controls:FloatInputSliderWPF Header="Movement speed" x:Name="_movementSpeedInput" Margin="0, 0, 0, 10"/>
+					<controls:DropDownInputWPF Header="Game control device" x:Name="_cameraControlDeviceInput" Margin="0, 0, 0, 10"/>
 				</ui:SimpleStackPanel>
 			</GroupBox>
 			<ui:SimpleStackPanel Orientation="Vertical">
 				<GroupBox Header="Camera rotation options" Margin="15,0,0,0">
 					<ui:SimpleStackPanel Orientation="Vertical">
-						<controls:FloatInputWPF Header="Rotation speed"/>
-						<HeaderedContentControl Header="Invert Y look direction">
-							<CheckBox></CheckBox>
-						</HeaderedContentControl>
+						<controls:FloatInputSliderWPF Header="Rotation speed" x:Name="_rotationSpeedInput" Margin="0, 0, 0, 10"/>
+						<controls:BoolInputWPF Header="Invert Y look direction" x:Name="_invertYInput" Margin="0, 0, 0, 5"/>
 					</ui:SimpleStackPanel>
 				</GroupBox>
 				<GroupBox Header="Miscellaneous camera options" Margin="15, 0, 0, 0">
 					<ui:SimpleStackPanel Orientation="Vertical">
-						<controls:FloatInputWPF Header="Field of View (FoV) zoom speed" x:Name="_fovSpeedInput"/>
+						<controls:FloatInputSliderWPF Header="Field of View (FoV) zoom speed" x:Name="_fovSpeedInput"/>
 					</ui:SimpleStackPanel>
 				</GroupBox>
+
 			</ui:SimpleStackPanel>
 		</ui:SimpleStackPanel>
+		<GroupBox Header="Screenshot options">
+			<ui:SimpleStackPanel>
+				<controls:FolderInputWPF x:Name="_shotOutputFolderInput" Header="Screenshot output directory" Margin="0, 0, 50, 10"/>
+				<ui:SimpleStackPanel Orientation="Horizontal" Width="Auto">
+					<ui:SimpleStackPanel Orientation="Vertical">
+						<controls:IntInputWPF x:Name="_frameWaitInput" Header="Number of frames to wait between steps" Margin="0, 0, 0, 10"/>
+						<controls:DropDownInputWPF x:Name="_shotTypeInput" Header="Multi-screenshot type"  Margin="0, 0, 0, 10" ValueChanged="_shotTypeInput_OnValueChanged"/>
+						<controls:DropDownInputWPF x:Name="_shotFileTypeInput" Header="Screenshot file type" Margin="0, 0, 0, 10" />
+					</ui:SimpleStackPanel>
+					<StackPanel Orientation="Vertical" Width="Auto">
+						<GroupBox Header="Lightfield shot options" Margin="30,0,0,0" x:Name="_lightfieldSettingsGroup" DockPanel.Dock="Top" VerticalAlignment="Top">
+							<ui:SimpleStackPanel Orientation=" Vertical">
+								<controls:FloatInputWPF x:Name="_lightfieldDistanceInput" Header="Distance between lightfield shots"/>
+								<controls:IntInputWPF x:Name="_lightfieldShotCountInput" Header="Number of shots to take"/>
+							</ui:SimpleStackPanel>
+						</GroupBox>
+						<GroupBox Header="Horizontal panorama shot options" Margin="30, 0, 0,0" x:Name="_horizontalPanoramaSettingsGroup" DockPanel.Dock="Top">
+							<ui:SimpleStackPanel Orientation="Vertical">
+								<controls:FloatInputSliderWPF x:Name="_panoFovInput" Header="Total field of view in panorama (in degrees)"/>
+								<controls:FloatInputSliderWPF x:Name="_panoOverlapInput" Header="Percentage of overlap between shots"/>
+							</ui:SimpleStackPanel>
+						</GroupBox>
+					</StackPanel>
+				</ui:SimpleStackPanel>
+			</ui:SimpleStackPanel>
+		</GroupBox>
 	</ui:SimpleStackPanel>
 </UserControl>

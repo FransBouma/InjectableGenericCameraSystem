@@ -96,6 +96,9 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="ToastNotifications, Version=2.5.1.0, Culture=neutral, PublicKeyToken=e89d9d7314a7c797, processorArchitecture=MSIL">
+      <HintPath>..\packages\ToastNotifications.2.5.1\lib\net40\ToastNotifications.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -103,7 +106,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Classes\AppState.cs" />
-    <Compile Include="Classes\BindableBase.cs" />
+    <Compile Include="Classes\CustomNotification.cs" />
     <Compile Include="Classes\DllCacheData.cs" />
     <Compile Include="Classes\DllInjector.cs" />
     <Compile Include="Classes\Settings\BoolSetting.cs" />
@@ -119,8 +122,20 @@
     <Compile Include="Controls\ApplicationOutputPage.xaml.cs">
       <DependentUpon>ApplicationOutputPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\FloatInputWPF.xaml.cs">
-      <DependentUpon>FloatInputWPF.xaml</DependentUpon>
+    <Compile Include="Controls\BoolInputWPF.xaml.cs">
+      <DependentUpon>BoolInputWPF.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\CustomDisplayPart.xaml.cs">
+      <DependentUpon>CustomDisplayPart.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DropDownInputWPF.xaml.cs">
+      <DependentUpon>DropDownInputWPF.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FloatInputSliderWPF.xaml.cs">
+      <DependentUpon>FloatInputSliderWPF.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FolderInputWPF.xaml.cs">
+      <DependentUpon>FolderInputWPF.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\GeneralPage.xaml.cs">
       <DependentUpon>GeneralPage.xaml</DependentUpon>
@@ -137,11 +152,23 @@
     <Compile Include="Controls\HotsamplingControl.Designer.cs">
       <DependentUpon>HotsamplingControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\FloatInputWPF.xaml.cs">
+      <DependentUpon>FloatInputWPF.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\HotsamplingPage.xaml.cs">
+      <DependentUpon>HotsamplingPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\IntInputWPF.xaml.cs">
+      <DependentUpon>IntInputWPF.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\KeyCombinationInput.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\KeyCombinationInput.Designer.cs">
       <DependentUpon>KeyCombinationInput.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\KeyCombinationInputWPF.xaml.cs">
+      <DependentUpon>KeyCombinationInputWPF.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ThemePage.xaml.cs">
       <DependentUpon>ThemePage.xaml</DependentUpon>
@@ -182,6 +209,10 @@
       <DependentUpon>KeyBindingEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="DesignTime\IntellisenseResources.cs" />
+    <Compile Include="GameSpecific\Controls\KeyBindingPage.xaml.cs">
+      <DependentUpon>KeyBindingPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Interfaces\IFloatSettingControl.cs" />
     <Compile Include="Interfaces\ISetting.cs" />
     <Compile Include="Classes\LogHandler.cs" />
     <Compile Include="Classes\Settings\Setting.cs" />
@@ -342,11 +373,43 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\FloatInputWPF.xaml">
+    <Page Include="Controls\BoolInputWPF.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\CustomDisplayPart.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\DropDownInputWPF.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\FloatInputSliderWPF.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\FolderInputWPF.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\GeneralPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\FloatInputWPF.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\HotsamplingPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\IntInputWPF.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\KeyCombinationInputWPF.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -375,6 +438,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="GameSpecific\Controls\ConfigurationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GameSpecific\Controls\KeyBindingPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

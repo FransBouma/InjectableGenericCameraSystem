@@ -32,6 +32,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -44,6 +45,12 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using IGCSClient.Classes;
 using IGCSClient.GameSpecific.Classes;
+using ModernWpf.Controls;
+using ModernWpf.Controls.Primitives;
+using ToastNotifications;
+using ToastNotifications.Core;
+using ToastNotifications.Lifetime;
+using ToastNotifications.Position;
 
 namespace IGCSClient.Forms
 {
@@ -52,10 +59,19 @@ namespace IGCSClient.Forms
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		private Notifier _notificationNotifier;
+
 		public MainWindow()
 		{
 			InitializeComponent();
 			LogHandlerSingleton.Instance().Setup(_logControl);
+			TabItemHelper.SetIcon(_generalTab, new SymbolIcon(Symbol.Repair));
+			TabItemHelper.SetIcon(_hotSamplingTab, new SymbolIcon(Symbol.FullScreen));
+			TabItemHelper.SetIcon(_configurationTab, new SymbolIcon(Symbol.Setting));
+			TabItemHelper.SetIcon(_themeTab, new SymbolIcon(Symbol.Highlight));
+			TabItemHelper.SetIcon(_keybindingsTab, new SymbolIcon(Symbol.Keyboard));
+			TabItemHelper.SetIcon(_logTab, new SymbolIcon(Symbol.OpenFile));
+			TabItemHelper.SetIcon(_aboutTab, new SymbolIcon(Symbol.People));
 		}
 
 
@@ -63,18 +79,30 @@ namespace IGCSClient.Forms
 		{
 			AppStateSingleton.Instance().SaveSettingsToIni();
 			AppStateSingleton.Instance().SaveRecentProcessList();
+			_notificationNotifier.Dispose();
 			base.OnClosing(e);
 		}
 
 
 		private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
 		{
+			_notificationNotifier = new Notifier(cfg =>
+												 {
+													 cfg.PositionProvider = new PrimaryScreenPositionProvider(corner: Corner.TopLeft,
+																									   offsetX: 10,  
+																									   offsetY: 10);
+
+													 cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(notificationLifetime: TimeSpan.FromSeconds(3),
+																													  maximumNotificationCount: MaximumNotificationCount.FromCount(6));
+
+													 cfg.Dispatcher = Application.Current.Dispatcher;
+													 cfg.DisplayOptions.TopMost = true;
+												 });
 			this.Title = string.Format("{0} (v{1}). By {2}", GameSpecificConstants.ClientWindowTitle, GameSpecificConstants.CameraVersion, GameSpecificConstants.CameraCredits);
-			//FillAboutTab();
 
 			// First setup the controls 
-			//_settingsEditor.Setup();
-			//_keyBindingsEditor.Setup();
+			_configurationEditor.Setup();
+			_keyBindingsEditor.Setup();
 
 			// then load the values from the ini file (if any) so the controls are already there.
 			AppStateSingleton.Instance().LoadFromIni();
@@ -84,29 +112,30 @@ namespace IGCSClient.Forms
 			_generalTabControl.UpdateSelectedRenderAPI();
 
 			// Disable all tabs, except general, log and about.
-			//_hotsamplingTab.Enabled = false;
-			//_settingsTab.Enabled = false;
-			//_keyBindingsTab.Enabled = false;
+			//_hotSamplingTab.IsEnabled = false;
+			_configurationTab.IsEnabled = false;
+			_keybindingsTab.IsEnabled = false;
 
-			//var notificationWindow = new NotificationWindow();
-			//MessageHandlerSingleton.Instance().NotificationLogFunc = s => notificationWindow.AddNotification(s);
-			//notificationWindow.Show(this);
-
+			MessageHandlerSingleton.Instance().NotificationLogFunc = s => DisplayNotification(s);
 		}
-		
+
+
+		private void DisplayNotification(string notification)
+		{
+			//_notificationNotifier.ShowInformation(notification, new MessageOptions() { ShowCloseButton = false});
+			_notificationNotifier.ShowCustomMessage(notification);
+		}
+
 
 		private void HandleDllInjected()
 		{
 			// enable all tabs
-			//_hotsamplingTab.Enabled = true;
-			//_settingsTab.Enabled = true;
-			//_keyBindingsTab.Enabled = true;
+			//_hotSamplingTab.IsEnabled = true;
+			_configurationTab.IsEnabled = true;
+			_keybindingsTab.IsEnabled = true;
 			//// show the resolutions on the hotsampling tab
 			//_hotsamplingControl.BindData();
-
-			//// Send preferred rendering API. 
 			AppStateSingleton.Instance().PreferredRenderApiKind = _generalTabControl.SelectedRenderAPI;
-			MessageHandlerSingleton.Instance().SendDXGIHookActionForPreferredRenderAPI(_generalTabControl.SelectedRenderAPI);
 		}
 
 
@@ -119,10 +148,18 @@ namespace IGCSClient.Forms
 		
 		private void HandleConnectedToPipe()
 		{
+			// Send preferred rendering API.
+			MessageHandlerSingleton.Instance().SendDXGIHookActionForPreferredRenderAPI(AppStateSingleton.Instance().PreferredRenderApiKind);
+
 			LogHandlerSingleton.Instance().LogLine("Connected to the DLL's named pipe", "System", true);
-#warning >>>>>>>>>>>> IMPLEMENT
-			//AppStateSingleton.Instance().SendSettings();
-			//AppStateSingleton.Instance().SendKeyBindings();
+			if(this.CheckAccess())
+			{
+				AppStateSingleton.Instance().SendInitialData();
+			}
+			else
+			{
+				this.Dispatcher?.Invoke(()=>AppStateSingleton.Instance().SendInitialData());
+			}
 			LogHandlerSingleton.Instance().LogLine("Initial settings sent", "System", true);
 			SetTextOnTextBlock(_dllToClientConnectedSBLabel, "Camera dll->client active");
 		}
@@ -161,5 +198,11 @@ namespace IGCSClient.Forms
 			// Attached process died, we should too
 			this.Close();
 		}
+
+		private void Button_Click(object sender, RoutedEventArgs e)
+		{
+			DisplayNotification("Blabalablaaaaaa!");
+		}
 	}
 }
+

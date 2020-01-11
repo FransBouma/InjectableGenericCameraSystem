@@ -61,7 +61,7 @@ namespace IGCSClient.Classes
 
 		public KeyCombination()
 		{
-			_textualRepresentation = "Press a key";
+			_textualRepresentation = string.Empty;
 			_altPressed = false;
 			_ctrlPressed = false;
 			_shiftPressed = false;
@@ -192,11 +192,6 @@ namespace IGCSClient.Classes
 			if(_keyCode > 0)
 			{
 				builder.Append(GetTextualRepresentationOfKeyCode());
-			}
-
-			if(builder.Length <= 0)
-			{
-				builder.Append("Press a key");
 			}
 			_textualRepresentation = builder.ToString();
 		}

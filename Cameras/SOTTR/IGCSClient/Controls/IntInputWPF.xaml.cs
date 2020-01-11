@@ -27,7 +27,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,56 +48,36 @@ namespace IGCSClient.Controls
 	/// <summary>
 	/// Interaction logic for IntInputWPF.xaml
 	/// </summary>
-	public partial class FloatInputWPF : UserControl, IInputControl<float>, IFloatSettingControl
+	public partial class IntInputWPF : UserControl, IInputControl<int>
 	{
 		private bool _suppressEvents = false;
-		private float _defaultValue;
+		private int _defaultValue;
 
 		public event EventHandler ValueChanged;
-		
-		private class CustomNumberFormatter : INumberBoxNumberFormatter
-		{
-			public string FormatDouble(double value)
-			{
-				return value.ToString("F" + this.Scale);
-			}
 
-			public double? ParseDouble(string text)
-			{
-				if (double.TryParse(text, out double result))
-				{
-					return Math.Round(result, this.Scale);
-				}
-				return null;
-			}
-
-			public int Scale { get; set; }
-		}
-
-		public FloatInputWPF()
+		public IntInputWPF()
 		{
 			InitializeComponent();
 		}
 
 
-		public void Setup(double minValue, double maxValue, int scale, double increment, double defaultValue)
+		public void Setup(int minValue, int maxValue, int increment, int defaultValue)
 		{
 			// Necessary to suppress events as setting the minimum sets the value too.
-			_numberControl.NumberFormatter = new CustomNumberFormatter() { Scale =  scale};
 			_suppressEvents = true;
 			_numberControl.Maximum = maxValue;
 			_numberControl.Minimum = minValue;
 			_numberControl.AcceptsExpression = false;
 			_numberControl.SmallChange = increment;
 			_numberControl.LargeChange = increment;
-			_defaultValue = Convert.ToSingle(defaultValue);
+			_defaultValue = defaultValue;
 			_suppressEvents = false;
 		}
 		
 		
-		public void SetValueFromString(string valueAsString, float defaultValue)
+		public void SetValueFromString(string valueAsString, int defaultValue)
 		{
-			if(!Single.TryParse(valueAsString, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out var valueToSet))
+			if(!Int32.TryParse(valueAsString, out var valueToSet))
 			{
 				valueToSet = defaultValue;
 			}
@@ -113,21 +92,25 @@ namespace IGCSClient.Controls
 				return;
 			}
 
-			if(float.IsNaN(this.Value))
+			try
 			{
+				var currentValue = this.Value;
+			}
+			catch
+			{
+				// overflow, reset to default.
 				this.Value = _defaultValue;
 				return;
 			}
-
 			this.ValueChanged.RaiseEvent(this);
 		}
 
 
 		#region Properties
 		/// <inheritdoc/>
-		public float Value
+		public int Value
 		{
-			get { return Convert.ToSingle(_numberControl.Value); }
+			get { return Convert.ToInt32(_numberControl.Value); }
 			set { _numberControl.Value = value; }
 		}
 

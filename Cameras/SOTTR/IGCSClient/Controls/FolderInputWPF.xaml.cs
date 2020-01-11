@@ -27,7 +27,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,100 +34,84 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using IGCSClient.Interfaces;
-using ModernWpf.Controls;
 using SD.Tools.BCLExtensions.SystemRelated;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace IGCSClient.Controls
 {
 	/// <summary>
-	/// Interaction logic for IntInputWPF.xaml
+	/// Interaction logic for FolderInputWPF.xaml
 	/// </summary>
-	public partial class FloatInputWPF : UserControl, IInputControl<float>, IFloatSettingControl
+	public partial class FolderInputWPF : UserControl, IInputControl<string>
 	{
-		private bool _suppressEvents = false;
-		private float _defaultValue;
-
-		public event EventHandler ValueChanged;
+		#region Members
+		private string _description;
+		#endregion
 		
-		private class CustomNumberFormatter : INumberBoxNumberFormatter
-		{
-			public string FormatDouble(double value)
-			{
-				return value.ToString("F" + this.Scale);
-			}
+		public event EventHandler ValueChanged;
 
-			public double? ParseDouble(string text)
-			{
-				if (double.TryParse(text, out double result))
-				{
-					return Math.Round(result, this.Scale);
-				}
-				return null;
-			}
-
-			public int Scale { get; set; }
-		}
-
-		public FloatInputWPF()
+		public FolderInputWPF()
 		{
 			InitializeComponent();
+			_description = string.Empty;
 		}
 
 
-		public void Setup(double minValue, double maxValue, int scale, double increment, double defaultValue)
+		public void Setup(string initialFolder, string description)
 		{
-			// Necessary to suppress events as setting the minimum sets the value too.
-			_numberControl.NumberFormatter = new CustomNumberFormatter() { Scale =  scale};
-			_suppressEvents = true;
-			_numberControl.Maximum = maxValue;
-			_numberControl.Minimum = minValue;
-			_numberControl.AcceptsExpression = false;
-			_numberControl.SmallChange = increment;
-			_numberControl.LargeChange = increment;
-			_defaultValue = Convert.ToSingle(defaultValue);
-			_suppressEvents = false;
+			this.Value = initialFolder;
+			_description = description;
+		}
+
+
+		public void SetValueFromString(string valueAsString, string defaultValue)
+		{
+			this.Value = valueAsString ?? defaultValue;
 		}
 		
-		
-		public void SetValueFromString(string valueAsString, float defaultValue)
+
+		private void _folderTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
 		{
-			if(!Single.TryParse(valueAsString, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out var valueToSet))
-			{
-				valueToSet = defaultValue;
-			}
-			this.Value = valueToSet;
-		}
-
-
-		private void _numberControl_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
-		{
-			if(_suppressEvents)
-			{
-				return;
-			}
-
-			if(float.IsNaN(this.Value))
-			{
-				this.Value = _defaultValue;
-				return;
-			}
-
 			this.ValueChanged.RaiseEvent(this);
+		}
+		
+
+		private void _browseForFolderButton_OnClick(object sender, RoutedEventArgs e)
+		{
+			using(var folderBrowser = new System.Windows.Forms.FolderBrowserDialog())
+			{
+				if(!string.IsNullOrWhiteSpace(this.Value))
+				{
+					folderBrowser.SelectedPath = this.Value;
+				}
+
+				if(!string.IsNullOrWhiteSpace(_description))
+				{
+					folderBrowser.Description = _description;
+				}
+
+				var result = folderBrowser.ShowDialog();
+				if(result == DialogResult.OK)
+				{
+					this.Value = folderBrowser.SelectedPath;
+				}
+			}
 		}
 
 
 		#region Properties
 		/// <inheritdoc/>
-		public float Value
+		public string Value
 		{
-			get { return Convert.ToSingle(_numberControl.Value); }
-			set { _numberControl.Value = value; }
+			get { return _folderTextBox.Text; }
+			set { _folderTextBox.Text = value; }
 		}
 
 		public string Header

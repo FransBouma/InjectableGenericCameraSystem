@@ -33,6 +33,8 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using IGCSClient.Classes;
 
@@ -129,6 +131,31 @@ namespace IGCSClient.Forms
 		{
 			RefreshProcessList();
 		}
+		
+
+		private void _processGrid_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+		{
+			var row = ItemsControl.ContainerFromElement((DataGrid)sender, e.OriginalSource as DependencyObject) as DataGridRow;
+
+			if(row == null)
+			{
+				return;
+			}
+
+			var selectedRow = (DataRowView)_processGrid.SelectedItem;
+
+			if(this.SelectedProcess == null || this.SelectedProcess.HasExited || this.SelectedProcess.Id != (int)selectedRow[0])
+			{
+				this.SelectedProcess = Process.GetProcessById((int)selectedRow[0]);
+			}
+
+			if(this.SelectedProcess != null)
+			{
+				this.DialogResult = true;
+				this.Close();
+			}
+		}
+
 
 
 		private void _selectButton_Click(object sender, RoutedEventArgs e)

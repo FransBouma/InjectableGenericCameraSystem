@@ -16,7 +16,7 @@
 			<ColumnDefinition Width="151*"/>
 		</Grid.ColumnDefinitions>
 		<DataGrid CanUserResizeRows="False" Margin="0,0,0,52" Name="_processGrid" AutoGenerateColumns="False" IsReadOnly="true" Grid.ColumnSpan="3" GridLinesVisibility="Horizontal" 
-				  SelectionMode="Single">
+				  SelectionMode="Single" MouseDoubleClick="_processGrid_OnMouseDoubleClick">
 			<DataGrid.Resources>
 				<Style TargetType="{x:Type DataGridCell}">
 					<Setter Property="BorderThickness" Value="0" />

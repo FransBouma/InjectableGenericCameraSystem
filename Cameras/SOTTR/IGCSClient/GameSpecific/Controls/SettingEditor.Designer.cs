@@ -46,10 +46,10 @@
 			this._lightfieldControlsPanel = new System.Windows.Forms.Panel();
 			this.label14 = new System.Windows.Forms.Label();
 			this.label15 = new System.Windows.Forms.Label();
+			this.label16 = new System.Windows.Forms.Label();
 			this.label11 = new System.Windows.Forms.Label();
 			this.label10 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
-			this.label16 = new System.Windows.Forms.Label();
 			this._panoFovInput = new IGCSClient.Controls.FloatInput();
 			this._panoOverlapInput = new IGCSClient.Controls.FloatInput();
 			this._lightfieldDistanceInput = new IGCSClient.Controls.FloatInput();
@@ -203,7 +203,7 @@
 			this.groupBox4.Controls.Add(this.label9);
 			this.groupBox4.Location = new System.Drawing.Point(4, 167);
 			this.groupBox4.Name = "groupBox4";
-			this.groupBox4.Size = new System.Drawing.Size(589, 184);
+			this.groupBox4.Size = new System.Drawing.Size(589, 322);
 			this.groupBox4.TabIndex = 3;
 			this.groupBox4.TabStop = false;
 			this.groupBox4.Text = "Screenshot options";
@@ -214,7 +214,7 @@
 			this._horizontalPanoramaControlsPanel.Controls.Add(this.label12);
 			this._horizontalPanoramaControlsPanel.Controls.Add(this._panoOverlapInput);
 			this._horizontalPanoramaControlsPanel.Controls.Add(this.label13);
-			this._horizontalPanoramaControlsPanel.Location = new System.Drawing.Point(2, 121);
+			this._horizontalPanoramaControlsPanel.Location = new System.Drawing.Point(2, 191);
 			this._horizontalPanoramaControlsPanel.Name = "_horizontalPanoramaControlsPanel";
 			this._horizontalPanoramaControlsPanel.Size = new System.Drawing.Size(581, 54);
 			this._horizontalPanoramaControlsPanel.TabIndex = 4;
@@ -266,6 +266,15 @@
 			this.label15.TabIndex = 0;
 			this.label15.Text = "Number of shots to take";
 			// 
+			// label16
+			// 
+			this.label16.AutoSize = true;
+			this.label16.Location = new System.Drawing.Point(12, 102);
+			this.label16.Name = "label16";
+			this.label16.Size = new System.Drawing.Size(100, 13);
+			this.label16.TabIndex = 0;
+			this.label16.Text = "Screenshot file type";
+			// 
 			// label11
 			// 
 			this.label11.AutoSize = true;
@@ -292,15 +301,6 @@
 			this.label9.Size = new System.Drawing.Size(137, 13);
 			this.label9.TabIndex = 0;
 			this.label9.Text = "Screenshot output directory";
-			// 
-			// label16
-			// 
-			this.label16.AutoSize = true;
-			this.label16.Location = new System.Drawing.Point(12, 102);
-			this.label16.Name = "label16";
-			this.label16.Size = new System.Drawing.Size(100, 13);
-			this.label16.TabIndex = 0;
-			this.label16.Text = "Screenshot file type";
 			// 
 			// _panoFovInput
 			// 
@@ -440,7 +440,7 @@
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
 			this.Name = "SettingEditor";
-			this.Size = new System.Drawing.Size(601, 360);
+			this.Size = new System.Drawing.Size(616, 517);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
 			this.groupBox2.ResumeLayout(false);

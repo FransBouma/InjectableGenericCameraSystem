@@ -25,53 +25,59 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using IGCSClient.Controls;
-using IGCSClient.Interfaces;
+using ToastNotifications;
+using ToastNotifications.Core;
 
 namespace IGCSClient.Classes
 {
-	public class IntSetting : Setting<int>
+	/// <summary>
+	/// Example from ToastNotifications
+	/// </summary>
+	public class CustomNotification : NotificationBase, INotifyPropertyChanged
 	{
-		#region Members
-		private readonly int _minValue;
-		private readonly int _maxValue;
-		private readonly int _increment;
-		private readonly int _defaultValue;
-		#endregion
+		private CustomDisplayPart _displayPart;
+		private string _message;
 
+		public event PropertyChangedEventHandler PropertyChanged;
 
-		public IntSetting(byte id, string name, int minValue, int maxValue, int increment, int defaultValue)
-			: base(id, name, SettingKind.NormalSetting)
+		public CustomNotification(string message) : base(message, null)
 		{
-			_minValue = minValue;
-			_maxValue = maxValue;
-			_increment = increment;
-			_defaultValue = defaultValue;
+			Message = message;
 		}
 
-
-		public override void Setup(IInputControl<int> controlToUse)
+		public new string Message
 		{
-			base.Setup(controlToUse);
-			var controlAsIntInput = controlToUse as IntInputWPF;
-			if(controlAsIntInput == null)
+			get
 			{
-				return;
+				return _message;
 			}
-			controlAsIntInput.Setup(_minValue, _maxValue, _increment, _defaultValue);
-			controlAsIntInput.Value = _defaultValue;
+			set
+			{
+				_message = value;
+				OnPropertyChanged();
+			}
 		}
 
-
-		protected override int GetDefaultValue()
+		protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = null)
 		{
-			return _defaultValue;
+			var handler = PropertyChanged;
+			if (handler != null)
+				handler.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		public override NotificationDisplayPart DisplayPart => _displayPart ?? (_displayPart = new CustomDisplayPart(this));
+	}
+
+	
+
+	public static class CustomMessageExtensions
+	{
+		public static void ShowCustomMessage(this Notifier notifier, string message)
+		{
+			notifier.Notify<CustomNotification>(() => new CustomNotification(message));
 		}
 	}
 }

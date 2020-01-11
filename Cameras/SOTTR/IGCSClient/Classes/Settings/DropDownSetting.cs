@@ -58,7 +58,7 @@ namespace IGCSClient.Classes
 		public override void Setup(IInputControl<int> controlToUse)
 		{
 			base.Setup(controlToUse);
-			DropDownInput controlAsDropDown = controlToUse as DropDownInput;
+			var controlAsDropDown = controlToUse as DropDownInputWPF;
 			if(controlAsDropDown == null)
 			{
 				return;

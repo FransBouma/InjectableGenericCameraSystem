@@ -52,7 +52,7 @@ namespace IGCSClient.Classes
 		public override void Setup(IInputControl<KeyCombination> controlToUse)
 		{
 			base.Setup(controlToUse);
-			KeyCombinationInput controlAsCombinationInput = controlToUse as KeyCombinationInput;
+			var controlAsCombinationInput = controlToUse as KeyCombinationInputWPF;
 			if(controlAsCombinationInput == null)
 			{
 				return;

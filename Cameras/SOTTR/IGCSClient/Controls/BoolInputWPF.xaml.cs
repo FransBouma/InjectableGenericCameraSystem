@@ -25,53 +25,67 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using IGCSClient.Controls;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 using IGCSClient.Interfaces;
+using SD.Tools.BCLExtensions.SystemRelated;
 
-namespace IGCSClient.Classes
+namespace IGCSClient.Controls
 {
-	public class IntSetting : Setting<int>
+	/// <summary>
+	/// Interaction logic for BoolInputWPF.xaml
+	/// </summary>
+	public partial class BoolInputWPF : UserControl, IInputControl<bool>
 	{
-		#region Members
-		private readonly int _minValue;
-		private readonly int _maxValue;
-		private readonly int _increment;
-		private readonly int _defaultValue;
-		#endregion
+		public event EventHandler ValueChanged;
 
-
-		public IntSetting(byte id, string name, int minValue, int maxValue, int increment, int defaultValue)
-			: base(id, name, SettingKind.NormalSetting)
+		public BoolInputWPF()
 		{
-			_minValue = minValue;
-			_maxValue = maxValue;
-			_increment = increment;
-			_defaultValue = defaultValue;
+			InitializeComponent();
 		}
 
-
-		public override void Setup(IInputControl<int> controlToUse)
+				
+		private void _checkboxControl_Checked(object sender, EventArgs e)
 		{
-			base.Setup(controlToUse);
-			var controlAsIntInput = controlToUse as IntInputWPF;
-			if(controlAsIntInput == null)
+			this.ValueChanged.RaiseEvent(this);
+		}
+
+		
+		public void SetValueFromString(string valueAsString, bool defaultValue)
+		{
+			if(!Boolean.TryParse(valueAsString, out var valueToSet))
 			{
-				return;
+				valueToSet = defaultValue;
 			}
-			controlAsIntInput.Setup(_minValue, _maxValue, _increment, _defaultValue);
-			controlAsIntInput.Value = _defaultValue;
+			this.Value = valueToSet;
 		}
+		
 
-
-		protected override int GetDefaultValue()
+		#region Properties
+		/// <inheritdoc/>
+		public bool Value
 		{
-			return _defaultValue;
+			get { return _checkboxControl.IsChecked.HasValue && _checkboxControl.IsChecked.Value; }
+			set { _checkboxControl.IsChecked = value; }
 		}
+
+		public string Header
+		{
+			get { return _headerControl.Header?.ToString() ?? string.Empty; }
+			set { _headerControl.Header = value; }
+		}
+		#endregion
 	}
 }

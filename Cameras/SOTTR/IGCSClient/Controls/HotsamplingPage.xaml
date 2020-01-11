@@ -1,0 +1,62 @@
+﻿<UserControl x:Class="IGCSClient.Controls.HotsamplingPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:IGCSClient.Controls"
+			 Style="{StaticResource ControlPageStyle}"
+			 xmlns:ui="http://schemas.modernwpf.com/2019"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel Orientation="Horizontal">
+		<TreeView Width="250">
+			<TreeViewItem>
+				Root item
+				<TreeViewItem>Item 1</TreeViewItem>
+				<TreeViewItem>Item 1</TreeViewItem>
+				<TreeViewItem>Item 1</TreeViewItem>
+				<TreeViewItem>Item 1</TreeViewItem>
+			</TreeViewItem>
+		</TreeView>
+		<StackPanel Margin="10, 0, 0,0">
+            <GroupBox Header="New resolution to set">
+                <ui:SimpleStackPanel Orientation="Horizontal">
+                    <ui:SimpleStackPanel>
+                        <HeaderedContentControl Header="Width">
+                            <ui:NumberBox Width="75"/>
+						</HeaderedContentControl>
+						<HeaderedContentControl Header="Height">
+							<ui:NumberBox Width="75"/>
+						</HeaderedContentControl>
+						<Button Margin="0,10,0,0">Set</Button>
+					</ui:SimpleStackPanel>
+                    <ui:SimpleStackPanel Margin="20,0,0,0">
+						<HeaderedContentControl Header="Aspect ratio">
+							<TextBox IsReadOnly="true"/>
+						</HeaderedContentControl>
+						<HeaderedContentControl Header="Window borders">
+							<CheckBox/>
+						</HeaderedContentControl>
+					</ui:SimpleStackPanel>
+				</ui:SimpleStackPanel>
+			</GroupBox>
+            <GroupBox Header="Active window resolution">
+				<ui:SimpleStackPanel Orientation="Horizontal">
+					<ui:SimpleStackPanel>
+						<HeaderedContentControl Header="Width">
+							<TextBox IsReadOnly="true"/>
+						</HeaderedContentControl>
+						<HeaderedContentControl Header="Height">
+							<TextBox IsReadOnly="true"/>
+						</HeaderedContentControl>
+					</ui:SimpleStackPanel>
+					<ui:SimpleStackPanel Margin="20,0,0,0">
+						<HeaderedContentControl Header="Aspect ratio">
+							<TextBox IsReadOnly="true"/>
+						</HeaderedContentControl>
+					</ui:SimpleStackPanel>
+				</ui:SimpleStackPanel>
+			</GroupBox>
+		</StackPanel>
+    </StackPanel>
+</UserControl>

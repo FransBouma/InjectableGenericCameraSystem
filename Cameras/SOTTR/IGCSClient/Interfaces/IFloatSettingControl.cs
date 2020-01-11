@@ -25,31 +25,18 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
- 
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
-namespace IGCSClient.Classes
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace IGCSClient.Interfaces
 {
-    /// <summary>
-    /// From ModernWPF. Used for bindings in WPF
-    /// </summary>
-    public abstract class BindableBase : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void RaisePropertyChanged([CallerMemberName]string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public void Set<T>(ref T storage, T value, [CallerMemberName]string propertyName = null)
-        {
-            if (!Equals(storage, value))
-            {
-                storage = value;
-                RaisePropertyChanged(propertyName);
-            }
-        }
-    }
+	interface IFloatSettingControl
+	{
+		void Setup(double minValue, double maxValue, int scale, double increment, double defaultValue);
+		float Value { get; set; }
+	}
 }

@@ -41,61 +41,38 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using IGCSClient.Interfaces;
-using ModernWpf.Controls;
 using SD.Tools.BCLExtensions.SystemRelated;
 
 namespace IGCSClient.Controls
 {
 	/// <summary>
-	/// Interaction logic for IntInputWPF.xaml
+	/// Interaction logic for FloatInputWPF.xaml
 	/// </summary>
-	public partial class FloatInputWPF : UserControl, IInputControl<float>, IFloatSettingControl
+	public partial class FloatInputSliderWPF : UserControl, IInputControl<float>, IFloatSettingControl
 	{
 		private bool _suppressEvents = false;
-		private float _defaultValue;
 
 		public event EventHandler ValueChanged;
-		
-		private class CustomNumberFormatter : INumberBoxNumberFormatter
-		{
-			public string FormatDouble(double value)
-			{
-				return value.ToString("F" + this.Scale);
-			}
 
-			public double? ParseDouble(string text)
-			{
-				if (double.TryParse(text, out double result))
-				{
-					return Math.Round(result, this.Scale);
-				}
-				return null;
-			}
-
-			public int Scale { get; set; }
-		}
-
-		public FloatInputWPF()
+		public FloatInputSliderWPF()
 		{
 			InitializeComponent();
 		}
-
+		
 
 		public void Setup(double minValue, double maxValue, int scale, double increment, double defaultValue)
 		{
 			// Necessary to suppress events as setting the minimum sets the value too.
-			_numberControl.NumberFormatter = new CustomNumberFormatter() { Scale =  scale};
 			_suppressEvents = true;
-			_numberControl.Maximum = maxValue;
-			_numberControl.Minimum = minValue;
-			_numberControl.AcceptsExpression = false;
-			_numberControl.SmallChange = increment;
-			_numberControl.LargeChange = increment;
-			_defaultValue = Convert.ToSingle(defaultValue);
+			_sliderControl.Maximum = maxValue;
+			_sliderControl.Minimum = minValue;
+			_sliderControl.AutoToolTipPrecision = scale;
+			_sliderControl.SmallChange = increment;
+			_sliderControl.LargeChange = increment;
 			_suppressEvents = false;
 		}
-		
-		
+
+
 		public void SetValueFromString(string valueAsString, float defaultValue)
 		{
 			if(!Single.TryParse(valueAsString, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out var valueToSet))
@@ -106,30 +83,25 @@ namespace IGCSClient.Controls
 		}
 
 
-		private void _numberControl_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+		private void _sliderControl_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
 		{
 			if(_suppressEvents)
 			{
 				return;
 			}
-
-			if(float.IsNaN(this.Value))
-			{
-				this.Value = _defaultValue;
-				return;
-			}
-
 			this.ValueChanged.RaiseEvent(this);
 		}
 
+		
 
 		#region Properties
 		/// <inheritdoc/>
 		public float Value
 		{
-			get { return Convert.ToSingle(_numberControl.Value); }
-			set { _numberControl.Value = value; }
+			get { return Convert.ToSingle(_sliderControl.Value); }
+			set { _sliderControl.Value = Convert.ToDouble(value); }
 		}
+
 
 		public string Header
 		{

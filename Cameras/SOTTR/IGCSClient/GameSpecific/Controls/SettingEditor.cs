@@ -55,54 +55,54 @@ namespace IGCSClient.GameSpecific.Controls
 			{
 				switch(setting.ID)
 				{
-					case SettingType.FastMovementMultiplier:
-						setting.Setup(_fastMovementInput);
-						break;
-					case SettingType.SlowMovementMultiplier:
-						setting.Setup(_slowMovementInput);
-						break;
-					case SettingType.UpMovementMultiplier:
-						setting.Setup(_upMovementInput);
-						break;
-					case SettingType.MovementSpeed:
-						setting.Setup(_movementSpeedInput);
-						break;
-					case SettingType.CameraControlDevice:
-						setting.Setup(_cameraControlDeviceInput);
-						break;
-					case SettingType.RotationSpeed:
-						setting.Setup(_rotationSpeedInput);
-						break;
-					case SettingType.InvertYLookDirection:
-						setting.Setup(_invertYInput);
-						break;
-					case SettingType.FoVZoomSpeed:
-						setting.Setup(_fovSpeedInput);
-						break;
-					case SettingType.ShotOutputFolder:
-						setting.Setup(_shotOutputFolderInput);
-						break;
-					case SettingType.ShotFramesToWait:
-						setting.Setup(_frameWaitInput);
-						break;
-					case SettingType.ShotType:
-						setting.Setup(_shotTypeInput);
-						break;
-					case SettingType.PanoTotalFoV:
-						setting.Setup(_panoFovInput);
-						break;
-					case SettingType.PanoOverlapPercentage:
-						setting.Setup(_panoOverlapInput);
-						break;
-					case SettingType.LightfieldDistance:
-						setting.Setup(_lightfieldDistanceInput);
-						break;
-					case SettingType.LightfieldShotCount:
-						setting.Setup(_lightfieldShotCountInput);
-						break;
-					case SettingType.ShotFileType:
-						setting.Setup(_shotFileTypeInput);
-						break;
+					//case SettingType.FastMovementMultiplier:
+					//	setting.Setup(_fastMovementInput);
+					//	break;
+					//case SettingType.SlowMovementMultiplier:
+					//	setting.Setup(_slowMovementInput);
+					//	break;
+					//case SettingType.UpMovementMultiplier:
+					//	setting.Setup(_upMovementInput);
+					//	break;
+					//case SettingType.MovementSpeed:
+					//	setting.Setup(_movementSpeedInput);
+					//	break;
+					//case SettingType.CameraControlDevice:
+					//	setting.Setup(_cameraControlDeviceInput);
+					//	break;
+					//case SettingType.RotationSpeed:
+					//	setting.Setup(_rotationSpeedInput);
+					//	break;
+					//case SettingType.InvertYLookDirection:
+					//	setting.Setup(_invertYInput);
+					//	break;
+					//case SettingType.FoVZoomSpeed:
+					//	setting.Setup(_fovSpeedInput);
+					//	break;
+					//case SettingType.ShotOutputFolder:
+					//	setting.Setup(_shotOutputFolderInput);
+					//	break;
+					//case SettingType.ShotFramesToWait:
+					//	setting.Setup(_frameWaitInput);
+					//	break;
+					//case SettingType.ShotType:
+					//	setting.Setup(_shotTypeInput);
+					//	break;
+					//case SettingType.PanoTotalFoV:
+					//	setting.Setup(_panoFovInput);
+					//	break;
+					//case SettingType.PanoOverlapPercentage:
+					//	setting.Setup(_panoOverlapInput);
+					//	break;
+					//case SettingType.LightfieldDistance:
+					//	setting.Setup(_lightfieldDistanceInput);
+					//	break;
+					//case SettingType.LightfieldShotCount:
+					//	setting.Setup(_lightfieldShotCountInput);
+					//	break;
+					//case SettingType.ShotFileType:
+					//	setting.Setup(_shotFileTypeInput);
+					//	break;
 				}
 			}
 		}

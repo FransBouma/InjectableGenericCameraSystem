@@ -40,15 +40,15 @@ namespace IGCSClient.Classes
 	public class FloatSetting : Setting<float>
 	{
 		#region Members
-		private readonly decimal _minValue;
-		private readonly decimal _maxValue;
+		private readonly double _minValue;
+		private readonly double _maxValue;
 		private readonly int _scale;
-		private readonly decimal _increment;
+		private readonly double _increment;
 		private readonly float _defaultValue;
 		#endregion
 
 
-		public FloatSetting(byte id, string name, decimal minValue, decimal maxValue, int scale, decimal increment, float defaultValue)
+		public FloatSetting(byte id, string name, double minValue, double maxValue, int scale, double increment, float defaultValue)
 			: base(id, name, SettingKind.NormalSetting)
 		{
 			_minValue = minValue;
@@ -62,12 +62,12 @@ namespace IGCSClient.Classes
 		public override void Setup(IInputControl<float> controlToUse)
 		{
 			base.Setup(controlToUse);
-			FloatInput controlAsFloatInput = controlToUse as FloatInput;
+			var controlAsFloatInput = controlToUse as IFloatSettingControl;
 			if(controlAsFloatInput == null)
 			{
 				return;
 			}
-			controlAsFloatInput.Setup(_minValue, _maxValue, _scale, _increment);
+			controlAsFloatInput.Setup(_minValue, _maxValue, _scale, _increment, _defaultValue);
 			controlAsFloatInput.Value = _defaultValue;
 		}
 

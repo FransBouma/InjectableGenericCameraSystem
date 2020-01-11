@@ -55,7 +55,7 @@ namespace IGCSClient.Classes
 		public override void Setup(IInputControl<string> controlToUse)
 		{
 			base.Setup(controlToUse);
-			FolderInput controlAsFolderInput = controlToUse as FolderInput;
+			var controlAsFolderInput = controlToUse as FolderInputWPF;
 			if(controlAsFolderInput == null)
 			{
 				return;

@@ -375,7 +375,7 @@ namespace IGCS::DXGIHooker
 			return false;
 		}
 		
-		MessageHandler::logDebug("DXGI hooks set (using DX12)");
+		MessageHandler::logLine("DXGI hooks set (using DX12)");
 		return true;
 	}
 	
@@ -449,7 +449,7 @@ namespace IGCS::DXGIHooker
 		pTmpContext->Release();
 		pTmpSwapChain->Release();
 
-		MessageHandler::logDebug("DXGI hooks set (Using DX11)");
+		MessageHandler::logLine("DXGI hooks set (Using DX11)");
 		_direct3D11Available = true;
 		return true;
 	}
