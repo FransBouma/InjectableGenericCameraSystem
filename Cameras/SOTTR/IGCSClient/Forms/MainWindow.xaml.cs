@@ -72,6 +72,8 @@ namespace IGCSClient.Forms
 			TabItemHelper.SetIcon(_keybindingsTab, new SymbolIcon(Symbol.Keyboard));
 			TabItemHelper.SetIcon(_logTab, new SymbolIcon(Symbol.OpenFile));
 			TabItemHelper.SetIcon(_aboutTab, new SymbolIcon(Symbol.People));
+			this.MinHeight = this.Height;
+			this.MinWidth = this.Width;
 		}
 
 
@@ -130,11 +132,11 @@ namespace IGCSClient.Forms
 		private void HandleDllInjected()
 		{
 			// enable all tabs
-			//_hotSamplingTab.IsEnabled = true;
+			_hotSamplingTab.IsEnabled = true;
 			_configurationTab.IsEnabled = true;
 			_keybindingsTab.IsEnabled = true;
-			//// show the resolutions on the hotsampling tab
-			//_hotsamplingControl.BindData();
+			// show the resolutions on the hotsampling tab
+			_hotsamplingControl.BindData();
 			AppStateSingleton.Instance().PreferredRenderApiKind = _generalTabControl.SelectedRenderAPI;
 		}
 

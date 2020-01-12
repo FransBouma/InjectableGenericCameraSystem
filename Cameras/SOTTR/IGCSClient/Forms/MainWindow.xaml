@@ -33,7 +33,7 @@
 				<Controls:GeneralPage Padding="15" Width="Auto" Height="Auto" x:Name="_generalTabControl" DllInjected="_generalTabControl_OnDllInjected" AttachedProcessExited="_generalTabControl_OnAttachedProcessExited"/>
 			</TabItem>
 			<TabItem Header="Hotsampling" Name="_hotSamplingTab">
-				<Controls:HotsamplingPage Padding="15" />
+				<Controls:HotsamplingPage Padding="15" x:Name="_hotsamplingControl" />
 			</TabItem>
 			<TabItem Header="Configuration" Name="_configurationTab">
 				<ScrollViewer>

@@ -130,7 +130,7 @@ namespace IGCSClient.Controls
 			int newWidth = (int)(width * factor);
 			int newHeight = (int)(height * factor);
 			var node = parentNode.Nodes.Add(Guid.NewGuid().ToString(), string.Format("{0} x {1} ({2:##.##}x)", newWidth, newHeight, factor));
-			node.Tag = new Resolution(ar, newWidth, newHeight);
+			//node.Tag = new Resolution(ar, newWidth, newHeight);
 			node.ImageIndex = (int)IconIndex.Monitor;
 			node.SelectedImageIndex = (int)(int)IconIndex.Monitor;
 		}
@@ -323,94 +323,6 @@ namespace IGCSClient.Controls
 			int verticalResolution = (int)_newHeightUpDown.Value;
 			_setResolutionButton.Enabled = (horizontalResolution > 640 && verticalResolution > 480);
 			_aspectRatioTextBox.Text = CalculateAspectRatio(horizontalResolution, verticalResolution).ToString();
-		}
-	}
-
-
-	public struct AspectRatio
-	{
-		public AspectRatio(int horizontal, int vertical)
-		{
-			this.Horizontal = horizontal;
-			this.Vertical = vertical;
-		}
-
-		/// <summary>
-		/// Factor used for calculating the height using a width
-		/// </summary>
-		public decimal ARFactorHeight
-		{
-			get { return (decimal)Vertical / (decimal)Horizontal; }
-		}
-		/// <summary>
-		/// Factor used for calculating the width using a height
-		/// </summary>
-		public decimal ARFactorWidth
-		{
-			get { return (decimal)Horizontal / (decimal)Vertical; }
-		}
-		public int Horizontal { get; }
-		public int Vertical { get; }
-
-		public override string ToString()
-		{
-			return string.Format("{0}:{1}", Horizontal, Vertical);
-		}
-
-
-		// these are generated
-		public override bool Equals(object obj)
-		{
-			return obj is AspectRatio ratio &&
-				   Horizontal == ratio.Horizontal &&
-				   Vertical == ratio.Vertical;
-		}
-
-		// these are generated
-		public override int GetHashCode()
-		{
-			var hashCode = 1211898032;
-			hashCode = hashCode * -1521134295 + Horizontal.GetHashCode();
-			hashCode = hashCode * -1521134295 + Vertical.GetHashCode();
-			return hashCode;
-		}
-	}
-
-
-	/// <summary>
-	/// Simple struct to use for a resolution.
-	/// </summary>
-	public struct Resolution
-	{
-		public Resolution(AspectRatio ar, int horizontalResolution, int verticalResolution)
-		{
-			AR = ar;
-			HorizontalResolution = horizontalResolution;
-			VerticalResolution = verticalResolution;
-		}
-
-		public AspectRatio AR { get;  }
-		public int HorizontalResolution { get; }
-		public int VerticalResolution { get; }
-
-
-		// these are generated
-		public override bool Equals(object obj)
-		{
-			return obj is Resolution resolution &&
-				   AR.Equals(resolution.AR) &&
-				   HorizontalResolution == resolution.HorizontalResolution &&
-				   VerticalResolution == resolution.VerticalResolution;
-		}
-
-		// these are generated
-		public override int GetHashCode()
-		{
-			var hashCode = 1445329852;
-			hashCode = hashCode * -1521134295 + AR.GetHashCode();
-			hashCode = hashCode * -1521134295 + HorizontalResolution.GetHashCode();
-			hashCode = hashCode * -1521134295 + VerticalResolution.GetHashCode();
-			return hashCode;
 		}
 	}
 }

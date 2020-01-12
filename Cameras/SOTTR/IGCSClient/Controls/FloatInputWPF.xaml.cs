@@ -78,6 +78,7 @@ namespace IGCSClient.Controls
 		public FloatInputWPF()
 		{
 			InitializeComponent();
+			DataObject.AddCopyingHandler(_numberControl, (s, e) => { if (e.IsDragDrop) e.CancelCommand(); });
 		}
 
 

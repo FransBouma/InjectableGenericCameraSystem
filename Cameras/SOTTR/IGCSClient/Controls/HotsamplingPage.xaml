@@ -8,55 +8,71 @@
 			 xmlns:ui="http://schemas.modernwpf.com/2019"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel Orientation="Horizontal">
-		<TreeView Width="250">
-			<TreeViewItem>
-				Root item
-				<TreeViewItem>Item 1</TreeViewItem>
-				<TreeViewItem>Item 1</TreeViewItem>
-				<TreeViewItem>Item 1</TreeViewItem>
-				<TreeViewItem>Item 1</TreeViewItem>
-			</TreeViewItem>
+    <Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="245"/>
+			<ColumnDefinition Width="5"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
+		<TreeView Grid.Column="0" x:Name="_resolutionTreeView" SelectedItemChanged="_resolutionTreeView_OnSelectedItemChanged">
+			<TreeView.Resources>
+				<ResourceDictionary Source="/ModernWpf;component/DensityStyles/Compact.xaml"/>
+			</TreeView.Resources>
+			<TreeView.ItemTemplate>
+				<HierarchicalDataTemplate ItemsSource="{Binding}">
+					<!-- Content presenter for the list of IGrouping objects. Binding is done to the Key property on the IGrouping class -->
+					<TextBlock FontWeight="Bold" Text="{Binding Path=Key}"/>
+					<HierarchicalDataTemplate.ItemTemplate>
+						<DataTemplate>
+							<!-- Content presenter for the list of objects in each grouping. Binding is done to the Description property on the custom class -->
+							<TextBlock FontStyle="Italic" Text="{Binding Path=Description}"/>
+						</DataTemplate>
+					</HierarchicalDataTemplate.ItemTemplate>
+				</HierarchicalDataTemplate>
+			</TreeView.ItemTemplate>
 		</TreeView>
-		<StackPanel Margin="10, 0, 0,0">
-            <GroupBox Header="New resolution to set">
-                <ui:SimpleStackPanel Orientation="Horizontal">
-                    <ui:SimpleStackPanel>
-                        <HeaderedContentControl Header="Width">
-                            <ui:NumberBox Width="75"/>
-						</HeaderedContentControl>
-						<HeaderedContentControl Header="Height">
-							<ui:NumberBox Width="75"/>
-						</HeaderedContentControl>
-						<Button Margin="0,10,0,0">Set</Button>
+		<GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="{DynamicResource SystemControlBackgroundListLowBrush}"/>
+		<ScrollViewer Grid.Column="2" HorizontalScrollBarVisibility="Auto">
+			<StackPanel Margin="10, 0, 0,0">
+	            <GroupBox Header="New resolution to set">
+	                <ui:SimpleStackPanel>
+						<ui:SimpleStackPanel Orientation="Horizontal">
+	                        <HeaderedContentControl Header="Width">
+	                            <ui:NumberBox Name="_newWidthBox" Width="100" ValueChanged="_newWidthBox_OnValueChanged"/>
+							</HeaderedContentControl>
+							<HeaderedContentControl Header="Height" Margin="10,0,0,0">
+								<ui:NumberBox Name="_newHeightBox" Width="100" ValueChanged="_newHeightBox_OnValueChanged"/>
+							</HeaderedContentControl>
+							<HeaderedContentControl Header="Aspect ratio" Margin="10,0,0,0">
+								<TextBox Name="_aspectRatioTextBox" IsReadOnly="true"/>
+							</HeaderedContentControl>
+							<Button Margin="10,0,0,0" VerticalAlignment="Bottom" Name="_setResolutionButton" IsEnabled="False" Click="_setResolutionButton_OnClick">Set</Button>
+						</ui:SimpleStackPanel>
+						<ui:SimpleStackPanel Margin="0,10,0,0" Orientation="Horizontal">
+							<HeaderedContentControl Header="Use window borders">
+								<CheckBox Name="_useWindowBordersCheckBox"/>
+							</HeaderedContentControl>
+							<HeaderedContentControl Header="Switch to game after resizing" Margin="10,0,0,0">
+								<CheckBox Name="_switchAfterResizingCheckBox" IsChecked="True"/>
+							</HeaderedContentControl>
+						</ui:SimpleStackPanel>
 					</ui:SimpleStackPanel>
-                    <ui:SimpleStackPanel Margin="20,0,0,0">
-						<HeaderedContentControl Header="Aspect ratio">
-							<TextBox IsReadOnly="true"/>
-						</HeaderedContentControl>
-						<HeaderedContentControl Header="Window borders">
-							<CheckBox/>
-						</HeaderedContentControl>
-					</ui:SimpleStackPanel>
-				</ui:SimpleStackPanel>
-			</GroupBox>
-            <GroupBox Header="Active window resolution">
-				<ui:SimpleStackPanel Orientation="Horizontal">
-					<ui:SimpleStackPanel>
+				</GroupBox>
+	            <GroupBox Header="Active window resolution">
+					<ui:SimpleStackPanel Orientation="Horizontal">
 						<HeaderedContentControl Header="Width">
-							<TextBox IsReadOnly="true"/>
+							<TextBox IsReadOnly="true" Name="_currentWidthTextBox"/>
 						</HeaderedContentControl>
-						<HeaderedContentControl Header="Height">
-							<TextBox IsReadOnly="true"/>
+						<HeaderedContentControl Header="Height" Margin="10,0,0,0">
+							<TextBox IsReadOnly="true" Name="_currentHeightTextBox"/>
 						</HeaderedContentControl>
+						<HeaderedContentControl Header="Aspect ratio" Margin="10,0,0,0">
+							<TextBox IsReadOnly="true" Name="_currentARTextBox"/>
+						</HeaderedContentControl>
+						<Button Margin="10,0,0,0" VerticalAlignment="Bottom" Name="_switchToGameWindowButton" Click="_switchToGameWindowButton_OnClick">Switch to window</Button>
 					</ui:SimpleStackPanel>
-					<ui:SimpleStackPanel Margin="20,0,0,0">
-						<HeaderedContentControl Header="Aspect ratio">
-							<TextBox IsReadOnly="true"/>
-						</HeaderedContentControl>
-					</ui:SimpleStackPanel>
-				</ui:SimpleStackPanel>
-			</GroupBox>
-		</StackPanel>
-    </StackPanel>
+				</GroupBox>
+			</StackPanel>
+		</ScrollViewer>
+	</Grid>
 </UserControl>

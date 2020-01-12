@@ -66,11 +66,11 @@
     <ApplicationIcon>IGCSIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ModernWpf, Version=0.7.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ModernWpfUI.0.7.3\lib\net45\ModernWpf.dll</HintPath>
+    <Reference Include="ModernWpf, Version=0.7.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ModernWpfUI.0.7.4\lib\net45\ModernWpf.dll</HintPath>
     </Reference>
-    <Reference Include="ModernWpf.Controls, Version=0.7.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ModernWpfUI.0.7.3\lib\net45\ModernWpf.Controls.dll</HintPath>
+    <Reference Include="ModernWpf.Controls, Version=0.7.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ModernWpfUI.0.7.4\lib\net45\ModernWpf.Controls.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -122,6 +122,7 @@
     <Compile Include="Controls\ApplicationOutputPage.xaml.cs">
       <DependentUpon>ApplicationOutputPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Classes\AspectRatio.cs" />
     <Compile Include="Controls\BoolInputWPF.xaml.cs">
       <DependentUpon>BoolInputWPF.xaml</DependentUpon>
     </Compile>
@@ -170,6 +171,7 @@
     <Compile Include="Controls\KeyCombinationInputWPF.xaml.cs">
       <DependentUpon>KeyCombinationInputWPF.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Classes\Resolution.cs" />
     <Compile Include="Controls\ThemePage.xaml.cs">
       <DependentUpon>ThemePage.xaml</DependentUpon>
     </Compile>
@@ -456,11 +458,11 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\System.Runtime.WindowsRuntime.4.6.0\build\net451\System.Runtime.WindowsRuntime.targets" Condition="Exists('..\packages\System.Runtime.WindowsRuntime.4.6.0\build\net451\System.Runtime.WindowsRuntime.targets')" />
+  <Import Project="..\packages\System.Runtime.WindowsRuntime.4.7.0\build\net451\System.Runtime.WindowsRuntime.targets" Condition="Exists('..\packages\System.Runtime.WindowsRuntime.4.7.0\build\net451\System.Runtime.WindowsRuntime.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\System.Runtime.WindowsRuntime.4.6.0\build\net451\System.Runtime.WindowsRuntime.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Runtime.WindowsRuntime.4.6.0\build\net451\System.Runtime.WindowsRuntime.targets'))" />
+    <Error Condition="!Exists('..\packages\System.Runtime.WindowsRuntime.4.7.0\build\net451\System.Runtime.WindowsRuntime.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Runtime.WindowsRuntime.4.7.0\build\net451\System.Runtime.WindowsRuntime.targets'))" />
   </Target>
 </Project>
