@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -38,27 +38,16 @@ namespace IGCSClient.Classes
 	/// </summary>
 	public class CustomNotification : NotificationBase, INotifyPropertyChanged
 	{
+		#region Members
 		private CustomDisplayPart _displayPart;
 		private string _message;
 
 		public event PropertyChangedEventHandler PropertyChanged;
+		#endregion
 
 		public CustomNotification(string message) : base(message, null)
 		{
 			Message = message;
-		}
-
-		public new string Message
-		{
-			get
-			{
-				return _message;
-			}
-			set
-			{
-				_message = value;
-				OnPropertyChanged();
-			}
 		}
 
 		protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = null)
@@ -68,16 +57,18 @@ namespace IGCSClient.Classes
 				handler.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
+		#region Properties
 		public override NotificationDisplayPart DisplayPart => _displayPart ?? (_displayPart = new CustomDisplayPart(this));
-	}
-
-	
-
-	public static class CustomMessageExtensions
-	{
-		public static void ShowCustomMessage(this Notifier notifier, string message)
+		
+		public new string Message
 		{
-			notifier.Notify<CustomNotification>(() => new CustomNotification(message));
+			get { return _message; }
+			set
+			{
+				_message = value;
+				OnPropertyChanged();
+			}
 		}
+		#endregion
 	}
 }

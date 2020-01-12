@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -27,12 +27,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using IGCSClient.NamedPipeSubSystem;
-using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
 
 namespace IGCSClient.Classes
 {
@@ -161,19 +157,13 @@ namespace IGCSClient.Classes
 		
 		private void _pipeClient_ConnectedToPipe(object sender, EventArgs e)
 		{
-			if(this.ConnectedToNamedPipeFunc != null)
-			{
-				this.ConnectedToNamedPipeFunc();
-			}
+			this.ConnectedToNamedPipeFunc?.Invoke();
 		}
 
 
 		private void _pipeServer_ClientConnectionEstablished(object sender, EventArgs e)
 		{
-			if(this.ClientConnectionReceivedFunc != null)
-			{
-				this.ClientConnectionReceivedFunc();
-			}
+			this.ClientConnectionReceivedFunc?.Invoke();
 		}
 
 

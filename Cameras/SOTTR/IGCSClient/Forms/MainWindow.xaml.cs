@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -30,25 +30,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using IGCSClient.Classes;
 using IGCSClient.GameSpecific.Classes;
 using ModernWpf.Controls;
 using ModernWpf.Controls.Primitives;
 using ToastNotifications;
-using ToastNotifications.Core;
 using ToastNotifications.Lifetime;
 using ToastNotifications.Position;
 
@@ -88,15 +77,12 @@ namespace IGCSClient.Forms
 
 		private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
 		{
+			_sbHyperlink.NavigateUri = new Uri(ConstantsEnums.IGCSRootURL);
 			_notificationNotifier = new Notifier(cfg =>
 												 {
-													 cfg.PositionProvider = new PrimaryScreenPositionProvider(corner: Corner.TopLeft,
-																									   offsetX: 10,  
-																									   offsetY: 10);
-
+													 cfg.PositionProvider = new PrimaryScreenPositionProvider(corner: Corner.TopLeft, offsetX: 10, offsetY: 10);
 													 cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(notificationLifetime: TimeSpan.FromSeconds(3),
 																													  maximumNotificationCount: MaximumNotificationCount.FromCount(6));
-
 													 cfg.Dispatcher = Application.Current.Dispatcher;
 													 cfg.DisplayOptions.TopMost = true;
 												 });
@@ -114,7 +100,7 @@ namespace IGCSClient.Forms
 			_generalTabControl.UpdateSelectedRenderAPI();
 
 			// Disable all tabs, except general, log and about.
-			//_hotSamplingTab.IsEnabled = false;
+			_hotSamplingTab.IsEnabled = false;
 			_configurationTab.IsEnabled = false;
 			_keybindingsTab.IsEnabled = false;
 
@@ -124,7 +110,6 @@ namespace IGCSClient.Forms
 
 		private void DisplayNotification(string notification)
 		{
-			//_notificationNotifier.ShowInformation(notification, new MessageOptions() { ShowCloseButton = false});
 			_notificationNotifier.ShowCustomMessage(notification);
 		}
 
@@ -183,7 +168,8 @@ namespace IGCSClient.Forms
 			}
 		}
 
-		private void Hyperlink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
+
+		private void _sbHyperlink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
 		{
 			Process.Start(e.Uri.ToString());
 		}
@@ -197,13 +183,8 @@ namespace IGCSClient.Forms
 
 		private void _generalTabControl_OnAttachedProcessExited(object sender, EventArgs e)
 		{
-			// Attached process died, we should too
+			// Attached process died, we should too. So sad...
 			this.Close();
-		}
-
-		private void Button_Click(object sender, RoutedEventArgs e)
-		{
-			DisplayNotification("Blabalablaaaaaa!");
 		}
 	}
 }

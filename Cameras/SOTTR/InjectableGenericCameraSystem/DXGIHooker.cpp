@@ -276,7 +276,6 @@ namespace IGCS::DXGIHooker
 		WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProcForDX12TmpWindow, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, _T("IGCS TmpWindow"), nullptr };
 		::RegisterClassEx(&wc);
 		HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("IGCS TmpWindow"), WS_OVERLAPPEDWINDOW, 100, 100, 100, 100, NULL, NULL, wc.hInstance, NULL);
-
 		D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 		IDXGIFactory4* pTmpDXGIFactory;
@@ -368,6 +367,7 @@ namespace IGCS::DXGIHooker
 		pTmpSwapChain->Release();
 
 		CloseWindow(hwnd);
+		DestroyWindow(hwnd);		// we otherwise keep a tiny little cute window in the taskbar.
 
 		if(hooksFailed)
 		{

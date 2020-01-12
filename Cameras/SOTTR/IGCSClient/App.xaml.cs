@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -26,25 +26,17 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
-using IGCSClient.Classes;
 using IGCSClient.Forms;
 using IGCSClient.GameSpecific.Classes;
 
 namespace IGCSClient
 {
-	/// <summary>
-	/// Interaction logic for App.xaml
+	/// App starting point
 	/// </summary>
 	public partial class App : Application
 	{
 		private static MainWindow _mainWindow;
-
 
 		private void App_OnStartup(object sender, StartupEventArgs e)
 		{

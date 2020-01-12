@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -33,21 +33,12 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using IGCSClient.Classes;
 using IGCSClient.Forms;
 using IGCSClient.GameSpecific.Classes;
-using SD.Tools.BCLExtensions.SystemRelated;
 using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -114,6 +105,7 @@ namespace IGCSClient.Controls
 				_dllFilenameTextBox.Text = AppStateSingleton.Instance().GetDllNameForSelectedProcess(_selectedProcess?.MainModule?.ModuleName) ?? string.Empty;
 			}
 		}
+
 
 		private void _browseForDllButton_Click(object sender, RoutedEventArgs e)
 		{
@@ -189,8 +181,7 @@ namespace IGCSClient.Controls
 			// all clear. 
 			_dllFilenameTextBox.Text = _defaultDllName;
 		}
-
-			
+		
 
 		private void FindDefaultProcess()
 		{
@@ -236,14 +227,8 @@ namespace IGCSClient.Controls
 
 		private void DisplayProcessInfoForInjection()
 		{
-			if(_selectedProcess==null)
-			{
-				_processNameTextBox.Text = "Please select a process...";
-			}
-			else
-			{
-				_processNameTextBox.Text = string.Format("({0}) {1} ({2})", _selectedProcess.Id,  _selectedProcess.MainModule.ModuleName, _selectedProcess.MainWindowTitle);
-			}
+			_processNameTextBox.Text = _selectedProcess==null ? "Please select a process..." 
+															  : string.Format("({0}) {1} ({2})", _selectedProcess.Id, _selectedProcess.MainModule.ModuleName, _selectedProcess.MainWindowTitle);
 		}
 		
 
@@ -320,7 +305,7 @@ namespace IGCSClient.Controls
 
 		private void _selectedProcess_Exited(object sender, EventArgs e)
 		{
-			// process has died, we should too.
+			// process has died, we should too. So sad.
 			this.AttachedProcessExited.RaiseEvent(this);
 		}
 

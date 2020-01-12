@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -27,75 +27,48 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using IGCSClient.Interfaces;
-using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
-using SD.Tools.BCLExtensions.SystemRelated;
+using ToastNotifications;
 
-namespace IGCSClient.Controls
+namespace IGCSClient.Classes
 {
 	/// <summary>
-	/// Input control to specify a floating point value.
+	/// Various extension methods used in the project
 	/// </summary>
-	public partial class FloatInput : UserControl, IInputControl<float>
+	public static class ExtensionMethods
 	{
-		private bool _suppressEvents = false;
-
-		public event EventHandler ValueChanged;
-
-		public FloatInput()
+		/// <summary>
+		/// Shows a custom message using the toastnotifications system.
+		/// </summary>
+		/// <param name="notifier"></param>
+		/// <param name="message"></param>
+		public static void ShowCustomMessage(this Notifier notifier, string message)
 		{
-			InitializeComponent();
+			notifier.Notify<CustomNotification>(() => new CustomNotification(message));
 		}
 
 
-		public void Setup(decimal minValue, decimal maxValue, int scale, decimal increment)
+		/// <summary>
+		/// Raises the event which is represented by the handler specified. 
+		/// </summary>
+		/// <typeparam name="T">type of the event args</typeparam>
+		/// <param name="handler">The handler of the event to raise.</param>
+		/// <param name="sender">The sender of the event.</param>
+		/// <param name="arguments">The arguments to pass to the handler.</param>
+		public static void RaiseEvent<T>(this EventHandler<T> handler, object sender, T arguments)
+			where T : System.EventArgs
 		{
-			// Necessary to suppress events as setting the minimum sets the value too.
-			_suppressEvents = true;
-			_inputControl.Maximum = maxValue;
-			_inputControl.Minimum = minValue;
-			_inputControl.DecimalPlaces = scale;
-			_inputControl.Increment = increment;
-			_suppressEvents = false;
+			handler?.Invoke(sender, arguments);
 		}
-
-
-		public void SetValueFromString(string valueAsString, float defaultValue)
-		{
-			if(!Single.TryParse(valueAsString, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out var valueToSet))
-			{
-				valueToSet = defaultValue;
-			}
-			this.Value = valueToSet;
-		}
-
 		
-		private void _inputControl_ValueChanged(object sender, EventArgs e)
-		{
-			if(_suppressEvents)
-			{
-				return;
-			}
-			this.ValueChanged.RaiseEvent(this);
-		}
 
-
-		#region Properties
-		/// <inheritdoc/>
-		public float Value
+		/// <summary>
+		/// Raises the event on the handler passed in with default empty arguments
+		/// </summary>
+		/// <param name="handler">The handler.</param>
+		/// <param name="sender">The sender.</param>
+		public static void RaiseEvent(this EventHandler handler, object sender)
 		{
-			get { return Convert.ToSingle(_inputControl.Value); }
-			set { _inputControl.Value = Convert.ToDecimal(value); }
+			handler?.Invoke(sender, EventArgs.Empty);
 		}
-		#endregion
 	}
 }

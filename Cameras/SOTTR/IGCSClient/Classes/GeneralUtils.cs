@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -35,7 +35,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Diagnostics;
 using System.Drawing;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -43,6 +42,30 @@ namespace IGCSClient.Classes
 {
 	public static class GeneralUtils
 	{
+		/// <summary>
+		/// Clamps a NaN in newValue to the value in oldValue, as well as any value smalled than 0, otherwise newValue is returned.
+		/// </summary>
+		/// <param name="oldValue"></param>
+		/// <param name="newValue"></param>
+		/// <returns></returns>
+		public static double ClampNaN(double oldValue, double newValue)
+		{
+			double valueToSet = newValue;
+			if(Double.IsNaN(newValue))
+			{
+				valueToSet = oldValue;
+			}
+			else
+			{
+				if(newValue < 0)
+				{
+					valueToSet = 0;
+				}
+			}
+			return valueToSet;
+		}
+
+
 		public static ImageSource ToBitmapImage(this Icon toConvert)
 		{
 			using (Bitmap bmp = toConvert.ToBitmap())
@@ -67,42 +90,33 @@ namespace IGCSClient.Classes
 				return null;
 			}
 
-			PayloadType typeOfPayload = PayloadType.Undefined;
 			byte[] payloadInBytes;
 			switch(Type.GetTypeCode(typeof(T)))
 			{
 				case TypeCode.Boolean:
 					payloadInBytes = BitConverter.GetBytes((bool)Convert.ChangeType(payload, typeof(bool)));
-					typeOfPayload = PayloadType.Bool;
 					break;
 				case TypeCode.Byte:
 					payloadInBytes = new byte[1] { (byte)Convert.ChangeType(payload, typeof(byte)) };
-					typeOfPayload = PayloadType.Byte;
 					break;
 				case TypeCode.Int16:
 					payloadInBytes = BitConverter.GetBytes((short)Convert.ChangeType(payload, typeof(short)));
-					typeOfPayload = PayloadType.Int16;
 					break;
 				case TypeCode.Int32:
 					payloadInBytes = BitConverter.GetBytes((int)Convert.ChangeType(payload, typeof(int)));
-					typeOfPayload = PayloadType.Int32;
 					break;
 				case TypeCode.Int64:
 					payloadInBytes = BitConverter.GetBytes((long)Convert.ChangeType(payload, typeof(long)));
-					typeOfPayload = PayloadType.Int64;
 					break;
 				case TypeCode.Single:
 					payloadInBytes = BitConverter.GetBytes((float)Convert.ChangeType(payload, typeof(float)));
-					typeOfPayload = PayloadType.Float;
 					break;
 				case TypeCode.Double:
 					payloadInBytes = BitConverter.GetBytes((double)Convert.ChangeType(payload, typeof(double)));
-					typeOfPayload = PayloadType.Double;
 					break;
 				case TypeCode.String:
 					// exception for string, as we can't marshal that to unmanaged memory
 					payloadInBytes = Encoding.ASCII.GetBytes(payload as string);
-					typeOfPayload = PayloadType.AsciiString;
 					break;
 				case TypeCode.Object:
 					// if it's a random object we serialize it to bytes. Not going to use it in IGCS, but just in case. 

@@ -6,7 +6,6 @@
 			 xmlns:ui="http://schemas.modernwpf.com/2019"
              xmlns:local="clr-namespace:IGCSClient.Controls"
 			 xmlns:presets="clr-namespace:IGCSClient.Themes" 
-			 xmlns:system="clr-namespace:System;assembly=mscorlib"
 			 mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
 			 Style="{StaticResource ControlPageStyle}">

@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -61,9 +61,6 @@ namespace IGCSClient.Forms
 			_boundProcessList.Columns.Add("ProcessName");
 			_boundProcessList.Columns.Add("WindowTitle");
 			_boundProcessList.Columns.Add("FileName");
-
-
-			//_processGrid.AutoGenerateColumns = false;
 			_processGrid.ItemsSource = _boundProcessList.DefaultView;
 		}
 
@@ -78,7 +75,6 @@ namespace IGCSClient.Forms
 		private void RefreshProcessList()
 		{
 			_boundProcessList.Clear();
-			DataRow row;
 			Process currentProcess = Process.GetCurrentProcess();
 
 			foreach (Process process in Process.GetProcesses())
@@ -89,7 +85,7 @@ namespace IGCSClient.Forms
 					// E.g. games usually are started with an exe that logs into steam, egs etc. and then starts the actual exe which can have the same name. 
 					if (process.SessionId == currentProcess.SessionId && process.Id != currentProcess.Id && !string.IsNullOrWhiteSpace(process.MainWindowTitle))
 					{
-						row = _boundProcessList.NewRow();
+						var row = _boundProcessList.NewRow();
 						row[0] = process.Id;
 						row[1] = System.Drawing.Icon.ExtractAssociatedIcon(process.MainModule.FileName).ToBitmapImage();
 						row[2] = process.MainModule.ModuleName;
@@ -155,8 +151,7 @@ namespace IGCSClient.Forms
 				this.Close();
 			}
 		}
-
-
+		
 
 		private void _selectButton_Click(object sender, RoutedEventArgs e)
 		{
@@ -173,6 +168,7 @@ namespace IGCSClient.Forms
 			this.DialogResult = true;
 			this.Close();
 		}
+
 
 		private void _cancelButton_Click(object sender, RoutedEventArgs e)
 		{

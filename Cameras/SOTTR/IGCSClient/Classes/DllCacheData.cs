@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -30,6 +30,9 @@ using System;
 
 namespace IGCSClient.Classes
 {
+	/// <summary>
+	/// Simple class which is used to cache a dll and last used date to preselect a dll with a selected exe if needed.
+	/// </summary>
 	internal class DllCacheData
 	{
 		internal DllCacheData(string dllName, DateTime lastUsedDate)

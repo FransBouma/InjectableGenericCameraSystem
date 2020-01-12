@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -28,13 +28,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO.Pipes;
 using System.Threading;
 using IGCSClient.Classes;
-using IGCSClient.Interfaces;
-using SD.Tools.BCLExtensions.SystemRelated;
 
 namespace IGCSClient.NamedPipeSubSystem
 {

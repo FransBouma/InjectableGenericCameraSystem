@@ -17,6 +17,6 @@
 				<TextBox IsReadOnly="true" DockPanel.Dock="Bottom" Name="_stackTraceTextBox" TextWrapping="Wrap"></TextBox>
 			</DockPanel>
 		</GroupBox>
-		<Button VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0, 0, 0, 10" Click="ButtonBase_OnClick">Close</Button>
+		<Button Name="_closeButton" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0, 0, 0, 10" Click="_closeButton_OnClick">Close</Button>
 	</Grid>
 </Window>

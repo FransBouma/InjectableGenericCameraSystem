@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -26,38 +26,27 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace IGCSClient.Controls
 {
 	/// <summary>
-	/// Interaction logic for ApplicationOutputPage.xaml
+	/// Application output/log control
 	/// </summary>
 	public partial class ApplicationOutputPage : UserControl
 	{
-		public ApplicationOutput.LogLineDelegate LogLineFunc;
+		#region Members
+		public LogLineDelegate LogLineFunc;
+		public delegate void LogLineDelegate(string lineToLog, string source, bool appendNewLine, bool isError, params object[] args);
+		#endregion
 
 		public ApplicationOutputPage()
 		{
 			InitializeComponent();
 			LogLineFunc = LogLine;
 		}
-
-
-		public delegate void LogLineDelegate(string lineToLog, string source, bool appendNewLine, bool isError, params object[] args);
-
+		
 
 		/// <summary>
 		/// Logs the line in LineToLog in the output window, based on the verbose setting isVerboseMessage, which means that the line is not logged
@@ -70,8 +59,7 @@ namespace IGCSClient.Controls
 		{
 			LogLine(lineToLog, source, false, false, args);
 		}
-
-
+		
 
 		/// <summary>
 		/// Logs the given line to the output window. Based on the verbose checkbox and the VerboseMessage flag the message is logged or not.

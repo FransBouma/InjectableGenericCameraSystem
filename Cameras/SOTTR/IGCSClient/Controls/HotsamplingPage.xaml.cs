@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -28,17 +28,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using IGCSClient.Classes;
 using IGCSClient.GameSpecific.Classes;
 using ModernWpf.Controls;
@@ -287,39 +278,14 @@ namespace IGCSClient.Controls
 
 		private void _newWidthBox_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
 		{
-			double valueToSet = args.NewValue;
-			if(Double.IsNaN(args.NewValue))
-			{
-				valueToSet = args.OldValue;
-			}
-			else
-			{
-				if(args.NewValue < 0)
-				{
-					valueToSet = 0;
-				}
-			}
-
-			_newWidthBox.Value = valueToSet;
+			_newWidthBox.Value = GeneralUtils.ClampNaN(args.OldValue, args.NewValue);
 			HandleResolutionValueChanged();
 		}
 
 
 		private void _newHeightBox_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
 		{
-			double valueTSet = args.NewValue;
-			if(Double.IsNaN(args.NewValue))
-			{
-				valueTSet = args.OldValue;
-			}
-			else
-			{
-				if(args.NewValue < 0)
-				{
-					valueTSet = 0;
-				}
-			}
-			_newHeightBox.Value = valueTSet;
+			_newHeightBox.Value = GeneralUtils.ClampNaN(args.OldValue, args.NewValue);
 			HandleResolutionValueChanged();
 		}
 
@@ -334,6 +300,14 @@ namespace IGCSClient.Controls
 		{
 			// focus the attached application's window
 			Win32Wrapper.SetForegroundWindow(_gameWindowHwnd);
+		}
+
+
+		private void _refreshButton_OnClick(object sender, RoutedEventArgs e)
+		{
+			GetActiveGameWindowInfo();
+			var screenWithGameWindow = Screen.FromHandle(_gameWindowHwnd);
+			BuildResolutionTree(screenWithGameWindow.Bounds);
 		}
 	}
 }

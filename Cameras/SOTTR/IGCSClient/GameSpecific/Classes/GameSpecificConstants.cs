@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -33,7 +33,7 @@ namespace IGCSClient.GameSpecific.Classes
 	internal static class GameSpecificConstants
 	{
 		public const string ClientWindowTitle = "Shadow of the Tomb Raider tools";
-		public const string CameraVersion = "1.0.4";
+		public const string CameraVersion = "1.0.5";
 		public const string CameraCredits = "Otis_Inf";
 		public const bool HotsamplingRequiresEXITSIZEMOVE = false;
 		public const bool GameSupportsDX11 = true;

@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -29,19 +29,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using IGCSClient.Interfaces;
-using IGCSClient.NamedPipeSubSystem;
-using IGCSClient.Themes;
 using ModernWpf;
-using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
-using SD.Tools.BCLExtensions.SystemRelated;
 
 namespace IGCSClient.Classes
 {
@@ -133,6 +125,7 @@ namespace IGCSClient.Classes
 			SendSettings();
 			SendKeyBindings();
 		}
+
 
 		public void SendSettings()
 		{

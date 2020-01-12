@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -26,17 +26,25 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace IGCSClient.Interfaces
 {
+	/// <summary>
+	/// Interface for a float setting control, which can be e.g. a slider or a numeric input control.
+	/// </summary>
 	interface IFloatSettingControl
 	{
+		/// <summary>
+		/// Setup the control with the values specified
+		/// </summary>
+		/// <param name="minValue">The minimum value allowed</param>
+		/// <param name="maxValue">The maximum value allowed</param>
+		/// <param name="scale">The scale (decimal digits)</param>
+		/// <param name="increment">The increment factor per increase/decrease</param>
+		/// <param name="defaultValue">The default value for the setting</param>
 		void Setup(double minValue, double maxValue, int scale, double increment, double defaultValue);
+		/// <summary>
+		/// Gets/sets the value the setting currently has.
+		/// </summary>
 		float Value { get; set; }
 	}
 }

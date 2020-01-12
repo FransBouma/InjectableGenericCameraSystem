@@ -74,12 +74,6 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="SD.Tools.Algorithmia, Version=1.4.0.0, Culture=neutral, PublicKeyToken=8ede9265bbb8e107, processorArchitecture=MSIL">
-      <HintPath>..\packages\SD.Tools.Algorithmia.1.4.0\lib\net452\SD.Tools.Algorithmia.dll</HintPath>
-    </Reference>
-    <Reference Include="SD.Tools.BCLExtensions, Version=1.2.2.0, Culture=neutral, PublicKeyToken=a3f87088dcb994e1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SD.Tools.BCLExtensions.1.2.2\lib\net452\SD.Tools.BCLExtensions.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -106,9 +100,12 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Classes\AppState.cs" />
+    <Compile Include="Classes\ArgumentVerifier.cs" />
+    <Compile Include="Classes\ContainerEventArgs.cs" />
     <Compile Include="Classes\CustomNotification.cs" />
     <Compile Include="Classes\DllCacheData.cs" />
     <Compile Include="Classes\DllInjector.cs" />
+    <Compile Include="Classes\ExtensionMethods.cs" />
     <Compile Include="Classes\Settings\BoolSetting.cs" />
     <Compile Include="Classes\Settings\DropDownSetting.cs" />
     <Compile Include="Classes\Settings\FolderSetting.cs" />
@@ -141,18 +138,6 @@
     <Compile Include="Controls\GeneralPage.xaml.cs">
       <DependentUpon>GeneralPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\GeneralTabControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\GeneralTabControl.Designer.cs">
-      <DependentUpon>GeneralTabControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\HotsamplingControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\HotsamplingControl.Designer.cs">
-      <DependentUpon>HotsamplingControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="Controls\FloatInputWPF.xaml.cs">
       <DependentUpon>FloatInputWPF.xaml</DependentUpon>
     </Compile>
@@ -161,12 +146,6 @@
     </Compile>
     <Compile Include="Controls\IntInputWPF.xaml.cs">
       <DependentUpon>IntInputWPF.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\KeyCombinationInput.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\KeyCombinationInput.Designer.cs">
-      <DependentUpon>KeyCombinationInput.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\KeyCombinationInputWPF.xaml.cs">
       <DependentUpon>KeyCombinationInputWPF.xaml</DependentUpon>
@@ -181,18 +160,6 @@
     <Compile Include="Forms\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Forms\NotificationWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\NotificationWindow.Designer.cs">
-      <DependentUpon>NotificationWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ProcessSelector.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ProcessSelector.Designer.cs">
-      <DependentUpon>ProcessSelector.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\ProcessSelectorWPF.xaml.cs">
       <DependentUpon>ProcessSelectorWPF.xaml</DependentUpon>
     </Compile>
@@ -204,12 +171,6 @@
     <Compile Include="GameSpecific\Controls\ConfigurationPage.xaml.cs">
       <DependentUpon>ConfigurationPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="GameSpecific\Controls\KeyBindingEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="GameSpecific\Controls\KeyBindingEditor.Designer.cs">
-      <DependentUpon>KeyBindingEditor.cs</DependentUpon>
-    </Compile>
     <Compile Include="DesignTime\IntellisenseResources.cs" />
     <Compile Include="GameSpecific\Controls\KeyBindingPage.xaml.cs">
       <DependentUpon>KeyBindingPage.xaml</DependentUpon>
@@ -219,125 +180,19 @@
     <Compile Include="Classes\LogHandler.cs" />
     <Compile Include="Classes\Settings\Setting.cs" />
     <Compile Include="ConstantsEnums.cs" />
-    <Compile Include="Controls\ApplicationOutput.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\ApplicationOutput.Designer.cs">
-      <DependentUpon>ApplicationOutput.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\FolderInput.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\FolderInput.Designer.cs">
-      <DependentUpon>FolderInput.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\DropDownInput.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\DropDownInput.Designer.cs">
-      <DependentUpon>DropDownInput.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\BoolInput.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\BoolInput.Designer.cs">
-      <DependentUpon>BoolInput.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\IntInput.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\IntInput.Designer.cs">
-      <DependentUpon>IntInput.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\FloatInput.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\FloatInput.Designer.cs">
-      <DependentUpon>FloatInput.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GameSpecific\Controls\SettingEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="GameSpecific\Controls\SettingEditor.Designer.cs">
-      <DependentUpon>SettingEditor.cs</DependentUpon>
-    </Compile>
     <Compile Include="Classes\IGCSMessage.cs" />
-    <Compile Include="Forms\ExceptionViewer.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SimpleExceptionViewer.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\SimpleExceptionViewer.Designer.cs">
-      <DependentUpon>SimpleExceptionViewer.cs</DependentUpon>
-    </Compile>
     <Compile Include="Classes\GeneralUtils.cs" />
     <Compile Include="Interfaces\IInputControl.cs" />
     <Compile Include="NamedPipeSubsystem\NamedPipeClient.cs" />
     <Compile Include="NamedPipeSubsystem\NamedPipeStreamBase.cs" />
     <Compile Include="NamedPipeSubsystem\NamedPipeStreamConnection.cs" />
     <Compile Include="NamedPipeSubsystem\NamedPipeServer.cs" />
-    <Compile Include="Forms\MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Themes\AccentColorPicker.xaml.cs">
       <DependentUpon>AccentColorPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="Themes\AppTheme.cs" />
     <Compile Include="Themes\InverseAppThemeConverter.cs" />
-    <EmbeddedResource Include="Controls\ApplicationOutput.resx">
-      <DependentUpon>ApplicationOutput.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\FolderInput.resx">
-      <DependentUpon>FolderInput.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\DropDownInput.resx">
-      <DependentUpon>DropDownInput.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\BoolInput.resx">
-      <DependentUpon>BoolInput.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\GeneralTabControl.resx">
-      <DependentUpon>GeneralTabControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\HotsamplingControl.resx">
-      <DependentUpon>HotsamplingControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\IntInput.resx">
-      <DependentUpon>IntInput.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\FloatInput.resx">
-      <DependentUpon>FloatInput.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\KeyCombinationInput.resx">
-      <DependentUpon>KeyCombinationInput.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\NotificationWindow.resx">
-      <DependentUpon>NotificationWindow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ProcessSelector.resx">
-      <DependentUpon>ProcessSelector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GameSpecific\Controls\KeyBindingEditor.resx">
-      <DependentUpon>KeyBindingEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GameSpecific\Controls\SettingEditor.resx">
-      <DependentUpon>SettingEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ExceptionViewer.resx">
-      <DependentUpon>ExceptionViewer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\SimpleExceptionViewer.resx">
-      <DependentUpon>SimpleExceptionViewer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -354,12 +209,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Folder_16x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\StatusWarning_16x.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="IGCSIcon.ico" />

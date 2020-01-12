@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -27,11 +27,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
 
 namespace IGCSClient.Interfaces
 {
@@ -50,8 +45,7 @@ namespace IGCSClient.Interfaces
 		/// The value edited
 		/// </summary>
 		T Value { get; set; }
-
-
+		
 		/// <summary>
 		/// Sets the value in the control from the value as string specified. 
 		/// </summary>

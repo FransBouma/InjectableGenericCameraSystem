@@ -33,8 +33,8 @@
 			<controls:KeyCombinationInputWPF Header="Test multi-screenshot setup" x:Name="_testMultiShotSetupInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 			<controls:KeyCombinationInputWPF Header="Take screenshot" x:Name="_takeShotInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 			<controls:KeyCombinationInputWPF Header="Take multi-screenshot" x:Name="_takeMultiShotInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
-			<controls:KeyCombinationInputWPF Header="Toggle HUD" x:Name="_toggleHUDInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
-			<controls:KeyCombinationInputWPF Header="Pause / unpause the game" x:Name="_pauseUnPauseInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
+			<controls:KeyCombinationInputWPF Header="Toggle HUD" x:Name="_toggleHUDInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10" Visibility="Collapsed"/>
+			<controls:KeyCombinationInputWPF Header="Pause / unpause the game" x:Name="_pauseUnPauseInput" Width="300" HorizontalAlignment="Left" Visibility="Collapsed" Margin="0,0,0,10"/>
 		</StackPanel>
 	</StackPanel>
 </UserControl>

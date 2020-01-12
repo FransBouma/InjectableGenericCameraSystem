@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -27,16 +27,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace IGCSClient.Forms
 {
 	/// <summary>
-	/// Interaction logic for ExceptionViewerWPF.xaml
+	/// Generic exception viewer
 	/// </summary>
 	public partial class ExceptionViewerWPF : Window
 	{
@@ -83,7 +79,7 @@ namespace IGCSClient.Forms
 		}
 
 
-		private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+		private void _closeButton_OnClick(object sender, RoutedEventArgs e)
 		{
 			this.Close();
 		}

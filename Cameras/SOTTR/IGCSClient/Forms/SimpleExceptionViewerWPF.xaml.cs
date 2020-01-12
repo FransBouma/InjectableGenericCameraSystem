@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -27,10 +27,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using Clipboard = System.Windows.Clipboard;
 using MessageBox = System.Windows.MessageBox;
@@ -38,7 +35,7 @@ using MessageBox = System.Windows.MessageBox;
 namespace IGCSClient.Forms
 {
 	/// <summary>
-	/// Interaction logic for SimpleExceptionViewerWPF.xaml
+	/// Simple dialog which is used to display a less intrusive exception dialog to the user. 
 	/// </summary>
 	public partial class SimpleExceptionViewerWPF : Window
 	{

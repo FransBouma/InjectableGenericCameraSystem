@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -27,16 +27,15 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace IGCSClient.Classes
 {
+	/// <summary>
+	/// Class which injects a dll in a given process.
+	/// </summary>
     internal class DllInjector
     {
 		/// <summary>
@@ -86,9 +85,8 @@ namespace IGCSClient.Classes
 
 			this.LastActionPerformed = "Writing dll filename into memory allocated in host process";
 			LogHandlerSingleton.Instance().LogLine("Writing dll filename into memory allocated in host process", "DllInjector", true);
-			IntPtr bytesWritten;
 			var bytesToWrite = Encoding.Default.GetBytes(dllPathNameToInject);
-			bool result = Win32Wrapper.WriteProcessMemory(processHandle, memoryInTargetProcess, bytesToWrite, dllLengthToPassInBytes, out bytesWritten);
+			bool result = Win32Wrapper.WriteProcessMemory(processHandle, memoryInTargetProcess, bytesToWrite, dllLengthToPassInBytes, out var bytesWritten);
 			if(!result || (bytesWritten.ToInt32()!=bytesToWrite.Length+1))
 			{
 				this.LastError = Marshal.GetLastWin32Error();
@@ -116,6 +114,8 @@ namespace IGCSClient.Classes
 			return true;
 		}
 
+
+		#region Properties
 		/// <summary>
 		/// If PerformInjection returns false, this property contains the last error code returned by GetLastError()
 		/// </summary>
@@ -124,5 +124,6 @@ namespace IGCSClient.Classes
 		/// The last action performed by the injector. Needed for error reporting.
 		/// </summary>
 		public string LastActionPerformed {get;set;}
-    }
+		#endregion
+	}
 }
