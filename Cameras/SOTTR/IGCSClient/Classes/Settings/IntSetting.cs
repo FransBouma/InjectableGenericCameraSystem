@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -26,16 +26,14 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using IGCSClient.Controls;
 using IGCSClient.Interfaces;
 
 namespace IGCSClient.Classes
 {
+	/// <summary>
+	/// Represents a numeric setting including control.
+	/// </summary>
 	public class IntSetting : Setting<int>
 	{
 		#region Members
@@ -59,12 +57,12 @@ namespace IGCSClient.Classes
 		public override void Setup(IInputControl<int> controlToUse)
 		{
 			base.Setup(controlToUse);
-			IntInput controlAsIntInput = controlToUse as IntInput;
+			var controlAsIntInput = controlToUse as IntInputWPF;
 			if(controlAsIntInput == null)
 			{
 				return;
 			}
-			controlAsIntInput.Setup(_minValue, _maxValue, _increment);
+			controlAsIntInput.Setup(_minValue, _maxValue, _increment, _defaultValue);
 			controlAsIntInput.Value = _defaultValue;
 		}
 

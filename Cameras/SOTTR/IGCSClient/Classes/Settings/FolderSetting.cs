@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -26,16 +26,14 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using IGCSClient.Controls;
 using IGCSClient.Interfaces;
 
 namespace IGCSClient.Classes
 {
+	/// <summary>
+	/// Represents a folder/directory setting including control
+	/// </summary>
 	public class FolderSetting : Setting<string>
 	{
 		#region Members
@@ -55,7 +53,7 @@ namespace IGCSClient.Classes
 		public override void Setup(IInputControl<string> controlToUse)
 		{
 			base.Setup(controlToUse);
-			FolderInput controlAsFolderInput = controlToUse as FolderInput;
+			var controlAsFolderInput = controlToUse as FolderInputWPF;
 			if(controlAsFolderInput == null)
 			{
 				return;

@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -31,14 +31,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using IGCSClient.Interfaces;
-using IGCSClient.NamedPipeSubSystem;
-using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
-using SD.Tools.BCLExtensions.SystemRelated;
+using ModernWpf;
 
 namespace IGCSClient.Classes
 {
@@ -123,7 +118,14 @@ namespace IGCSClient.Classes
 		{
 			_keyBindings.Add(bindingToAdd);
 		}
-		
+
+
+		public void SendInitialData()
+		{
+			SendSettings();
+			SendKeyBindings();
+		}
+
 
 		public void SendSettings()
 		{
@@ -225,6 +227,22 @@ namespace IGCSClient.Classes
 
 			// other settings
 			iniFile.Write("PreferredRenderAPI", ((int)_preferredRenderApiKind).ToString(), "MiscSettings");
+			ApplicationTheme? currentTheme = ThemeManager.Current.ApplicationTheme;
+			int themeID = -1;	// not defined, so use default.
+			if(currentTheme != null)
+			{
+				themeID = (int)currentTheme.Value;
+			}
+			iniFile.Write("ThemeID", themeID.ToString(), "MiscSettings");
+			System.Windows.Media.Color? accentColor = ThemeManager.Current.AccentColor;
+			if(accentColor == null)
+			{
+				iniFile.DeleteKey("AccentColor", "MiscSettings");
+			}
+			else
+			{
+				iniFile.Write("AccentColor", accentColor.ToString(), "MiscSettings");
+			}
 		}
 
 
@@ -245,6 +263,17 @@ namespace IGCSClient.Classes
 
 				// other settings
 				_preferredRenderApiKind = (RenderAPIKind)Convert.ToInt32(iniFile.Read("PreferredRenderAPI", "MiscSettings"));
+				var themeID = Convert.ToInt32(iniFile.Read("ThemeID", "MiscSettings"));
+				if(themeID >= 0)
+				{
+					ThemeManager.Current.ApplicationTheme = (ApplicationTheme)themeID;
+				}
+
+				var accentColor = iniFile.Read("AccentColor", "MiscSettings");
+				if(!string.IsNullOrWhiteSpace(accentColor))
+				{
+					ThemeManager.Current.AccentColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(accentColor);
+				}
 			}
 		}
 

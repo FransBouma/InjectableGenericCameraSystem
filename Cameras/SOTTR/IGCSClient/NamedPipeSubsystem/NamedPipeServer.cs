@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -31,8 +31,7 @@ using System.Collections.Generic;
 using System.IO.Pipes;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
-using SD.Tools.BCLExtensions.SystemRelated;
+using IGCSClient.Classes;
 
 namespace IGCSClient.NamedPipeSubSystem
 {
@@ -127,7 +126,7 @@ namespace IGCSClient.NamedPipeSubSystem
 			if(asyncState.IsConnected)
 			{
 				NamedPipeStreamConnection clientConnection = new NamedPipeStreamConnection(asyncState, this.PipeName);
-				clientConnection.MessageReceived += new EventHandler<ContainerEventArgs<byte[]>>(Connection_MessageReceived);
+				clientConnection.MessageReceived += Connection_MessageReceived;
 				clientConnection.Disconnected += Connection_Disconnected;
 
 				lock(_connectionsSemaphore)

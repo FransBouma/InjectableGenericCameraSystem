@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -27,12 +27,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using IGCSClient.NamedPipeSubSystem;
-using SD.Tools.Algorithmia.GeneralDataStructures.EventArguments;
 
 namespace IGCSClient.Classes
 {
@@ -69,7 +65,7 @@ namespace IGCSClient.Classes
 			_pipeServer.MessageReceived += _pipeServer_MessageReceived;
 			_pipeServer.ClientConnectionEstablished += _pipeServer_ClientConnectionEstablished;
 			_pipeClient.ConnectedToPipe += _pipeClient_ConnectedToPipe;
-			LogHandlerSingleton.Instance().LogLine("Named pipe enabled.", "System", true, true);
+			LogHandlerSingleton.Instance().LogLine("Named pipe enabled.", "System", true);
 		}
 
 
@@ -149,10 +145,10 @@ namespace IGCSClient.Classes
 					LogHandlerSingleton.Instance().LogLine(asciiEncoding.GetString(e.Value, 1, e.Value.Length-1), string.Empty);
 					break;
 				case MessageType.DebugTextMessage:
-					LogHandlerSingleton.Instance().LogLine(asciiEncoding.GetString(e.Value, 1, e.Value.Length-1), "Camera dll", true, true);
+					LogHandlerSingleton.Instance().LogLine(asciiEncoding.GetString(e.Value, 1, e.Value.Length-1), "Camera dll", true);
 					break;
 				case MessageType.ErrorTextMessage:
-					LogHandlerSingleton.Instance().LogLine(asciiEncoding.GetString(e.Value, 1, e.Value.Length-1), "Camera dll", true, false, true);
+					LogHandlerSingleton.Instance().LogLine(asciiEncoding.GetString(e.Value, 1, e.Value.Length-1), "Camera dll", false, true);
 					break;
 				// rest are ignored.
 			}
@@ -161,19 +157,13 @@ namespace IGCSClient.Classes
 		
 		private void _pipeClient_ConnectedToPipe(object sender, EventArgs e)
 		{
-			if(this.ConnectedToNamedPipeFunc != null)
-			{
-				this.ConnectedToNamedPipeFunc();
-			}
+			this.ConnectedToNamedPipeFunc?.Invoke();
 		}
 
 
 		private void _pipeServer_ClientConnectionEstablished(object sender, EventArgs e)
 		{
-			if(this.ClientConnectionReceivedFunc != null)
-			{
-				this.ClientConnectionReceivedFunc();
-			}
+			this.ClientConnectionReceivedFunc?.Invoke();
 		}
 
 

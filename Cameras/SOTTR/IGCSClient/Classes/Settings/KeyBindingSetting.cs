@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -26,16 +26,14 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using IGCSClient.Controls;
 using IGCSClient.Interfaces;
 
 namespace IGCSClient.Classes
 {
+	/// <summary>
+	/// Represents a keybinding setting including a control
+	/// </summary>
 	public class KeyBindingSetting : Setting<KeyCombination>
 	{
 		#region Members
@@ -52,7 +50,7 @@ namespace IGCSClient.Classes
 		public override void Setup(IInputControl<KeyCombination> controlToUse)
 		{
 			base.Setup(controlToUse);
-			KeyCombinationInput controlAsCombinationInput = controlToUse as KeyCombinationInput;
+			var controlAsCombinationInput = controlToUse as KeyCombinationInputWPF;
 			if(controlAsCombinationInput == null)
 			{
 				return;

@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -27,13 +27,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Windows.Controls;
 using IGCSClient.Interfaces;
-using SD.Tools.Algorithmia.UtilityClasses;
 
 namespace IGCSClient.Classes
 {
@@ -78,7 +73,7 @@ namespace IGCSClient.Classes
 		public virtual void SendValueAsMessage()
 		{
 			MessageHandlerSingleton.Instance().SendSettingMessage(this.ID, GeneralUtils.ConvertToByteArray(this.Value));
-			LogHandlerSingleton.Instance().LogLine("Setting value sent: ID: {0}. Value: {1}", "Setting", true, true, this.ID, this.GetValueAsString());
+			LogHandlerSingleton.Instance().LogLine("Setting value sent: ID: {0}. Value: {1}", "Setting", true, this.ID, this.GetValueAsString());
 		}
 
 

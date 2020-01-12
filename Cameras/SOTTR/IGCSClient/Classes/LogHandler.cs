@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -26,14 +26,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
 using IGCSClient.Controls;
-using SD.Tools.Algorithmia.UtilityClasses;
 
 namespace IGCSClient.Classes
 {
@@ -61,35 +54,20 @@ namespace IGCSClient.Classes
 	public sealed class LogHandler
 	{
 		#region Members
-		private ApplicationOutput _outputControl;
+		private ApplicationOutputPage _outputControl;
 		#endregion
 
-		internal LogHandler()
-		{
-		}
+		internal LogHandler() { }
 
 
 		/// <summary>
 		/// Sets the output control to log the messages on we're receiving.
 		/// </summary>
 		/// <param name="outputControl"></param>
-		public void Setup(ApplicationOutput outputControl)
+		public void Setup(ApplicationOutputPage outputControl)
 		{
 			ArgumentVerifier.CantBeNull(outputControl, nameof(outputControl));
 			_outputControl = outputControl;
-		}
-
-
-		/// <summary>
-		/// Logs the line in LineToLog in the output window, no verbose specification, which means that the line is logged
-		/// even when the verbose checkbox is disabled.
-		/// </summary>
-		/// <param name="lineToLog">Line to log which can contain format characters</param>
-		/// <param name="source">Source description of the line</param>
-		/// <param name="args">The args to pass to the string formatter.</param>
-		public void LogLine(string lineToLog, string source, params object[] args)
-		{
-			LogLine(lineToLog, source, false, false, false, args);
 		}
 
 
@@ -99,11 +77,10 @@ namespace IGCSClient.Classes
 		/// </summary>
 		/// <param name="lineToLog">Line to log which can contain format characters</param>
 		/// <param name="source">Source description of the line</param>
-		/// <param name="isVerboseMessage">Flag to signal if the line is a VerboseMessage, which means it is only logged when the Verbose checkbox is set</param>
 		/// <param name="args">The args to pass to the string formatter.</param>
-		public void LogLine(string lineToLog, string source, bool isVerboseMessage, params object[] args)
+		public void LogLine(string lineToLog, string source, params object[] args)
 		{
-			LogLine(lineToLog, source, isVerboseMessage, false, false, args);
+			LogLine(lineToLog, source, false, false, args);
 		}
 		
 
@@ -113,12 +90,11 @@ namespace IGCSClient.Classes
 		/// </summary>
 		/// <param name="lineToLog">Line to log which can contain format characters</param>
 		/// <param name="source">Source description of the line</param>
-		/// <param name="isVerboseMessage">Flag to signal if the line is a VerboseMessage, which means it is only logged when the Verbose checkbox is set</param>
 		/// <param name="isDebug">Flag to signal that the message is a debug message. Debug messages are only shown in debug builds.</param>
 		/// <param name="args">The args to pass to the string formatter.</param>
-		public void LogLine(string lineToLog, string source, bool isVerboseMessage, bool isDebug, params object[] args)
+		public void LogLine(string lineToLog, string source, bool isDebug, params object[] args)
 		{
-			LogLine(lineToLog, source, isVerboseMessage, isDebug, false, args);
+			LogLine(lineToLog, source, isDebug, false, args);
 		}
 
 
@@ -128,19 +104,22 @@ namespace IGCSClient.Classes
 		/// </summary>
 		/// <param name="lineToLog">Line to log which can contain format characters</param>
 		/// <param name="source">Source description of the line</param>
-		/// <param name="isVerboseMessage">Flag to signal if the line is a VerboseMessage, which means it is only logged when the Verbose checkbox is set</param>
 		/// <param name="isDebug">Flag to signal that the message is a debug message. Debug messages are only shown in debug builds.</param>
 		/// <param name="isError">if set to <c>true</c> [is error].</param>
 		/// <param name="args">The args to pass to the string formatter.</param>
-		public void LogLine(string lineToLog, string source, bool isVerboseMessage, bool isDebug, bool isError, params object[] args)
+		public void LogLine(string lineToLog, string source, bool isDebug, bool isError, params object[] args)
 		{
-			if(_outputControl.InvokeRequired)
+			if(_outputControl == null)
 			{
-				_outputControl.Invoke(_outputControl.LogLineFunc, new object[] {lineToLog, source, isVerboseMessage, isDebug, isError, args});
+				return;
+			}
+			if(_outputControl.CheckAccess())
+			{
+				_outputControl.LogLine(lineToLog, source, isDebug, isError, args);
 			}
 			else
 			{
-				_outputControl.LogLine(lineToLog, source, isVerboseMessage, isDebug, isError, args);
+				_outputControl.Dispatcher?.Invoke(_outputControl.LogLineFunc, new object[] {lineToLog, source, isDebug, isError, args});
 			}
 		}
 

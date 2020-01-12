@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -30,10 +30,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace IGCSClient.Classes
 {
+	/// <summary>
+	/// Simple class which represents a keycombination, like CTRL-S
+	/// </summary>
 	public class KeyCombination
 	{
 		#region Members
@@ -61,7 +63,7 @@ namespace IGCSClient.Classes
 
 		public KeyCombination()
 		{
-			_textualRepresentation = "Press a key";
+			_textualRepresentation = string.Empty;
 			_altPressed = false;
 			_ctrlPressed = false;
 			_shiftPressed = false;
@@ -192,11 +194,6 @@ namespace IGCSClient.Classes
 			if(_keyCode > 0)
 			{
 				builder.Append(GetTextualRepresentationOfKeyCode());
-			}
-
-			if(builder.Length <= 0)
-			{
-				builder.Append("Press a key");
 			}
 			_textualRepresentation = builder.ToString();
 		}
