@@ -75,40 +75,8 @@ namespace IGCSClient.GameSpecific.Controls
 					case SettingType.FoVZoomSpeed:
 						setting.Setup(_fovSpeedInput);
 						break;
-					case SettingType.ShotOutputFolder:
-						setting.Setup(_shotOutputFolderInput);
-						break;
-					case SettingType.ShotFramesToWait:
-						setting.Setup(_frameWaitInput);
-						break;
-					case SettingType.ShotType:
-						setting.Setup(_shotTypeInput);
-						break;
-					case SettingType.PanoTotalFoV:
-						setting.Setup(_panoFovInput);
-						break;
-					case SettingType.PanoOverlapPercentage:
-						setting.Setup(_panoOverlapInput);
-						break;
-					case SettingType.LightfieldDistance:
-						setting.Setup(_lightfieldDistanceInput);
-						break;
-					case SettingType.LightfieldShotCount:
-						setting.Setup(_lightfieldShotCountInput);
-						break;
-					case SettingType.ShotFileType:
-						setting.Setup(_shotFileTypeInput);
-						break;
 				}
 			}
-		}
-
-
-		private void _shotTypeInput_OnValueChanged(object sender, EventArgs e)
-		{
-			var control = (IInputControl<int>)sender;
-			_horizontalPanoramaSettingsGroup.Visibility = (control.Value == ScreenshotType.HorizontalPanorama) ? Visibility.Visible : Visibility.Hidden;
-			_lightfieldSettingsGroup.Visibility = (control.Value == ScreenshotType.Lightfield) ? Visibility.Visible : Visibility.Collapsed;
 		}
 	}
 }

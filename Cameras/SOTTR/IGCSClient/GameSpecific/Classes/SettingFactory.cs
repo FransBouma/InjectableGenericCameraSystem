@@ -57,23 +57,6 @@ namespace IGCSClient.GameSpecific.Classes
 			appState.AddSetting(new FloatSetting(SettingType.RotationSpeed, nameof(SettingType.RotationSpeed), 0.001, 0.5, 3, 0.001, GameSpecificSettingDefaults.RotationSpeed));
 			appState.AddSetting(new BoolSetting(SettingType.InvertYLookDirection, nameof(SettingType.InvertYLookDirection), GameSpecificSettingDefaults.InvertYLookDirection));
 			appState.AddSetting(new FloatSetting(SettingType.FoVZoomSpeed, nameof(SettingType.FoVZoomSpeed), 0.0001, 0.01, 4, 0.0001, GameSpecificSettingDefaults.FoVZoomSpeed));
-			appState.AddSetting(new FolderSetting(SettingType.ShotOutputFolder, nameof(SettingType.ShotOutputFolder), 
-												  Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "Please select the screenshot output directory"));
-			appState.AddSetting(new IntSetting(SettingType.ShotFramesToWait, nameof(SettingType.ShotFramesToWait), 1, 100, 1, GameSpecificSettingDefaults.ShotFramesToWait));
-			appState.AddSetting(new DropDownSetting(SettingType.ShotType, nameof(SettingType.ShotType), new List<string>()
-																										{
-																											nameof(ScreenshotType.HorizontalPanorama), 
-																											nameof(ScreenshotType.Lightfield)
-																										}, GameSpecificSettingDefaults.ShotType));
-			appState.AddSetting(new FloatSetting(SettingType.PanoTotalFoV, nameof(SettingType.PanoTotalFoV), 30.0, 359.0, 1, 0.1, GameSpecificSettingDefaults.PanoTotalFoV));
-			appState.AddSetting(new FloatSetting(SettingType.PanoOverlapPercentage, nameof(SettingType.PanoOverlapPercentage), 0.1, 99.9, 1, 0.1, GameSpecificSettingDefaults.PanoOverlapPercentage));
-			appState.AddSetting(new FloatSetting(SettingType.LightfieldDistance, nameof(SettingType.LightfieldDistance), 0.001, 5.0, 3, 0.001, GameSpecificSettingDefaults.LightfieldDistance));
-			appState.AddSetting(new IntSetting(SettingType.LightfieldShotCount, nameof(SettingType.LightfieldShotCount), 0, 60, 1, GameSpecificSettingDefaults.LightfieldShotCount));
-			appState.AddSetting(new DropDownSetting(SettingType.ShotFileType, nameof(SettingType.ShotFileType), new List<string>()
-																												{
-																													nameof(ScreenshotFileType.Bmp), nameof(ScreenshotFileType.Jpeg), 
-																													nameof(ScreenshotFileType.Png)
-																												}, GameSpecificSettingDefaults.ShotFileType));
 		}
 
 
@@ -98,9 +81,6 @@ namespace IGCSClient.GameSpecific.Classes
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.RotateCameraRight, nameof(KeyBindingType.RotateCameraRight), new KeyCombination(GameSpecificKeyBindingDefaults.RotateCameraRightDefault)));
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.TiltCameraLeft, nameof(KeyBindingType.TiltCameraLeft), new KeyCombination(GameSpecificKeyBindingDefaults.TiltCameraLeftDefault)));
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.TiltCameraRight, nameof(KeyBindingType.TiltCameraRight), new KeyCombination(GameSpecificKeyBindingDefaults.TiltCameraRightDefault)));
-			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.TestMultiShotSetup, nameof(KeyBindingType.TestMultiShotSetup), new KeyCombination(GameSpecificKeyBindingDefaults.TestMultiShotSetupDefault)));
-			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.TakeShot, nameof(KeyBindingType.TakeShot), new KeyCombination(GameSpecificKeyBindingDefaults.TakeShotDefault)));
-			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.TakeMultiShot, nameof(KeyBindingType.TakeMultiShot), new KeyCombination(false, true, false, GameSpecificKeyBindingDefaults.TakeMultiShotDefault)));
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.ToggleHUD, nameof(KeyBindingType.ToggleHUD), new KeyCombination(GameSpecificKeyBindingDefaults.ToggleHUDDefault)));
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.PauseUnpauseGame, nameof(KeyBindingType.PauseUnpauseGame), new KeyCombination(GameSpecificKeyBindingDefaults.PauseUnpauseGameDefault)));
 		}

@@ -84,7 +84,7 @@
 								</TextBlock>
 						</Expander>
 						<Expander Header="Special thanks" Margin="0,0,0,10">
-							<TextBlock TextWrapping="Wrap"><Run Text="Special thanks to:"/><LineBreak/><Run Text="1. Crosire, for creating and opening the Reshade sourcecode. It was a great help with grabbing screenshots on DX12!"/><LineBreak/><Run Text="2. The users of my camera's, you all are a great inspiration to make the best camera tools possible!"/><LineBreak/></TextBlock>
+							<TextBlock TextWrapping="Wrap"><Run Text="Special thanks to:"/><LineBreak/><Run Text="The users of my camera's, you all are a great inspiration to make the best camera tools possible!"/><LineBreak/></TextBlock>
 						</Expander>
 					</StackPanel>
 				</ScrollViewer>

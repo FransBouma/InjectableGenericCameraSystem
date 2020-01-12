@@ -63,9 +63,6 @@ namespace IGCS
 	#define IGCS_KEY_BLOCK_INPUT					VK_DECIMAL
 	#define IGCS_KEY_HUD_TOGGLE						VK_DELETE
 	#define IGCS_KEY_TIMESTOP						VK_NUMPAD0
-	#define IGCS_KEY_TEST_SHOT_SETUP				VK_END
-	#define IGCS_KEY_TAKE_SCREENSHOT				VK_PAUSE
-	#define IGCS_KEY_TAKE_MULTISHOT					VK_END		// With control
 
 	#define IGCS_BUTTON_FOV_DECREASE	Gamepad::button_t::UP
 	#define IGCS_BUTTON_FOV_INCREASE	Gamepad::button_t::DOWN
@@ -74,8 +71,6 @@ namespace IGCS
 	#define IGCS_BUTTON_TILT_RIGHT		Gamepad::button_t::RIGHT
 	#define IGCS_BUTTON_FASTER			Gamepad::button_t::Y
 	#define IGCS_BUTTON_SLOWER			Gamepad::button_t::X
-
-	#define IGCS_JPG_SCREENSHOT_QUALITY				98
 
 	static const uint8_t jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]
 
@@ -86,25 +81,6 @@ namespace IGCS
 	#define IGCS_PIPENAME_DLL_TO_CLIENT				"\\\\.\\pipe\\IgcsDllToClient"
 	#define IGCS_PIPENAME_CLIENT_TO_DLL				"\\\\.\\pipe\\IgcsClientToDll"
 
-	enum class ScreenshotType : short
-	{
-		HorizontalPanorama,
-		Lightfield,
-
-		// Add more above
-		SingleShot,
-		Amount,
-	};
-
-	enum class ScreenshotFiletype : short
-	{
-		Bmp=0,
-		Jpeg,
-		Png,
-
-		// Add more above
-		Amount,
-	};
 
 
 	enum class SettingType : uint8_t
@@ -117,14 +93,6 @@ namespace IGCS
 		RotationSpeed = 5,
 		InvertYLookDirection = 6,
 		FoVZoomSpeed = 7,
-		ShotOutputFolder = 8,
-		ShotFramesToWait = 9,
-		ShotType = 10,
-		PanoTotalFoV = 11,
-		PanoOverlapPercentage = 12,
-		LightfieldDistance = 13,
-		LightfieldShotCount = 14,
-		ShotFileType = 15,
 		
 		// add more here
 	};
@@ -144,7 +112,5 @@ namespace IGCS
 	enum class ActionMessageType : uint8_t
 	{
 		RehookXInput = 1,
-		HookDXGIUsingDX11=2,
-		HookDXGIUsingDX12=3,
 	};
 }

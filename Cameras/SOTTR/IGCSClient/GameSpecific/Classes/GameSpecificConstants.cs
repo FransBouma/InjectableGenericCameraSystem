@@ -36,9 +36,6 @@ namespace IGCSClient.GameSpecific.Classes
 		public const string CameraVersion = "1.0.5";
 		public const string CameraCredits = "Otis_Inf";
 		public const bool HotsamplingRequiresEXITSIZEMOVE = false;
-		public const bool GameSupportsDX11 = true;
-		public const bool GameSupportsDX12 = true;
-		public const bool GameSupportsVulkan = false;
 	}
 
 
@@ -52,13 +49,6 @@ namespace IGCSClient.GameSpecific.Classes
 		public const float RotationSpeed = 0.01f;
 		public const bool InvertYLookDirection = false;
 		public const float FoVZoomSpeed = 0.001f;
-		public const int ShotFramesToWait = 5;
-		public const int ShotType = 0;
-		public const float PanoTotalFoV = 110.0f;
-		public const float PanoOverlapPercentage = 80.0f;
-		public const float LightfieldDistance = 1.0f;
-		public const int LightfieldShotCount = 45;
-		public const int ShotFileType = 1;
 	}
 
 
@@ -82,9 +72,6 @@ namespace IGCSClient.GameSpecific.Classes
 		public const int RotateCameraRightDefault = (int)Keys.Right;
 		public const int TiltCameraLeftDefault = (int)Keys.NumPad1;
 		public const int TiltCameraRightDefault = (int)Keys.NumPad3;
-		public const int TestMultiShotSetupDefault = (int)Keys.End;
-		public const int TakeShotDefault = (int)Keys.Pause;
-		public const int TakeMultiShotDefault = (int)Keys.End;		// with control
 		public const int ToggleHUDDefault = (int)Keys.Delete;
 		public const int PauseUnpauseGameDefault = (int)Keys.NumPad0;
 	}

@@ -34,7 +34,6 @@
 #include "ActionData.h"
 #include <map>
 #include "Settings.h"
-#include "ScreenshotController.h"
 
 extern "C" uint8_t g_cameraEnabled;
 
@@ -59,11 +58,8 @@ namespace IGCS
 		bool keyboardMouseControlCamera() const { return _settings.cameraControlDevice == DEVICE_ID_KEYBOARD_MOUSE || _settings.cameraControlDevice == DEVICE_ID_ALL; }
 		bool controllerControlsCamera() const { return _settings.cameraControlDevice == DEVICE_ID_GAMEPAD || _settings.cameraControlDevice == DEVICE_ID_ALL; }
 		ActionData* getActionData(ActionType type);
-		ScreenshotController& getScreenshotController() { return _screenshotController; }
-		void reinitializeScreenshotController();
 		void handleSettingMessage(uint8_t payload[], DWORD payloadLength);
 		void handleKeybindingMessage(uint8_t payload[], DWORD payloadLength);
-		void hostExeFilename(std::filesystem::path hostExeFilename) { _screenshotController.hostExeFilename(hostExeFilename); }
 
 	private:
 		void initializeKeyBindings();
@@ -74,6 +70,5 @@ namespace IGCS
 		HWND _mainWindowHandle;
 		Settings _settings;
 		map<ActionType, ActionData*> _keyBindingPerActionType;
-		ScreenshotController _screenshotController;
 	};
 }

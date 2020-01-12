@@ -65,7 +65,6 @@ namespace IGCSClient.Classes
 		private Dictionary<string, DllCacheData> _recentProcessesWithDllsUsed;		// key: process name (blabla.exe), value: dll name (full path) & DateTime last used.
 		private Process _attachedProcess;
 		private IntPtr _attachedProcessMainWindowHwnd;
-		private RenderAPIKind _preferredRenderApiKind;
 		#endregion
 
 
@@ -75,7 +74,6 @@ namespace IGCSClient.Classes
 			_keyBindings = new List<KeyBindingSetting>();
 			_recentProcessesWithDllsUsed = new Dictionary<string, DllCacheData>();
 			_attachedProcessMainWindowHwnd = IntPtr.Zero;
-			_preferredRenderApiKind = RenderAPIKind.Direct3D11;
 		}
 
 
@@ -226,7 +224,6 @@ namespace IGCSClient.Classes
 			}
 
 			// other settings
-			iniFile.Write("PreferredRenderAPI", ((int)_preferredRenderApiKind).ToString(), "MiscSettings");
 			ApplicationTheme? currentTheme = ThemeManager.Current.ApplicationTheme;
 			int themeID = -1;	// not defined, so use default.
 			if(currentTheme != null)
@@ -262,7 +259,6 @@ namespace IGCSClient.Classes
 				}
 
 				// other settings
-				_preferredRenderApiKind = (RenderAPIKind)Convert.ToInt32(iniFile.Read("PreferredRenderAPI", "MiscSettings"));
 				var themeID = Convert.ToInt32(iniFile.Read("ThemeID", "MiscSettings"));
 				if(themeID >= 0)
 				{
@@ -322,12 +318,6 @@ namespace IGCSClient.Classes
 		public Process AttachedProcess
 		{
 			get { return _attachedProcess; }
-		}
-
-		public RenderAPIKind PreferredRenderApiKind
-		{
-			get { return _preferredRenderApiKind; }
-			set { _preferredRenderApiKind = value; }
 		}
 		#endregion
 	}

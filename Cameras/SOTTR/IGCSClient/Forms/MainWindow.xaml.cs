@@ -97,7 +97,6 @@ namespace IGCSClient.Forms
 			AppStateSingleton.Instance().LoadRecentProcessList();
 			MessageHandlerSingleton.Instance().ConnectedToNamedPipeFunc = () => HandleConnectedToPipe();
 			MessageHandlerSingleton.Instance().ClientConnectionReceivedFunc = () => HandleConnectionReceived();
-			_generalTabControl.UpdateSelectedRenderAPI();
 
 			// Disable all tabs, except general, log and about.
 			_hotSamplingTab.IsEnabled = false;
@@ -122,7 +121,6 @@ namespace IGCSClient.Forms
 			_keybindingsTab.IsEnabled = true;
 			// show the resolutions on the hotsampling tab
 			_hotsamplingControl.BindData();
-			AppStateSingleton.Instance().PreferredRenderApiKind = _generalTabControl.SelectedRenderAPI;
 		}
 
 
@@ -135,9 +133,6 @@ namespace IGCSClient.Forms
 		
 		private void HandleConnectedToPipe()
 		{
-			// Send preferred rendering API.
-			MessageHandlerSingleton.Instance().SendDXGIHookActionForPreferredRenderAPI(AppStateSingleton.Instance().PreferredRenderApiKind);
-
 			LogHandlerSingleton.Instance().LogLine("Connected to the DLL's named pipe", "System", true);
 			if(this.CheckAccess())
 			{

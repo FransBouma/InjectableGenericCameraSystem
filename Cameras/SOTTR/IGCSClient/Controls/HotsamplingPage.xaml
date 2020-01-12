@@ -73,7 +73,7 @@
 						</ui:SimpleStackPanel>
 					</GroupBox>
 				</StackPanel>
-				<Button VerticalAlignment="Bottom" Content="Refresh" Margin="10" Name="_refreshButton" Click="_refreshButton_OnClick"/>
+				<Button VerticalAlignment="Bottom" Content="Refresh" Margin="10, 0" Name="_refreshButton" Click="_refreshButton_OnClick"/>
 			</DockPanel>
 		</ScrollViewer>
 	</Grid>

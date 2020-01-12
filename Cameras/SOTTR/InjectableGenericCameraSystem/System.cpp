@@ -38,7 +38,6 @@
 #include "MinHook.h"
 #include "NamedPipeManager.h"
 #include "MessageHandler.h"
-#include "DXGIHooker.h"
 
 namespace IGCS
 {
@@ -62,7 +61,6 @@ namespace IGCS
 		filesystem::path hostExeFilenameAndPath = Utils::obtainHostExeAndPath();
 		_hostExeFilename = hostExeFilenameAndPath.stem();
 		_hostExePath = hostExeFilenameAndPath.parent_path();
-		Globals::instance().hostExeFilename(_hostExeFilename);
 		Globals::instance().gamePad().setInvertLStickY(CONTROLLER_Y_INVERT);
 		Globals::instance().gamePad().setInvertRStickY(CONTROLLER_Y_INVERT);
 		initialize();		// will block till camera is found
@@ -111,8 +109,6 @@ namespace IGCS
 				// it's going to be disabled, make sure things are alright when we give it back to the host
 				CameraManipulator::restoreOriginalValuesAfterCameraDisable();
 				toggleCameraMovementLockState(false);
-				// disable screenshot action
-				Globals::instance().getScreenshotController().reset();
 			}
 			else
 			{
@@ -141,24 +137,6 @@ namespace IGCS
 		if (!g_cameraEnabled)
 		{
 			// camera is disabled. We simply disable all input to the camera movement, by returning now.
-			return;
-		}
-		if (Input::isActionActivated(ActionType::TakeScreenshot))
-		{
-			takeSingleScreenshot();
-			_applyHammerPrevention = true;
-			return;
-		}
-		if (Input::isActionActivated(ActionType::TestMultiShotSetup))
-		{
-			takeMultiShot(true);
-			_applyHammerPrevention = true;
-			return;
-		}
-		if (Input::isActionActivated(ActionType::TakeMultiShot))
-		{
-			takeMultiShot(false);
-			_applyHammerPrevention = true;
 			return;
 		}
 		if (Input::isActionActivated(ActionType::BlockInput))
@@ -377,53 +355,5 @@ namespace IGCS
 	void System::displayCameraState()
 	{
 		MessageHandler::addNotification(g_cameraEnabled ? "Camera enabled" : "Camera disabled");
-	}
-
-
-	void System::takeMultiShot(bool isTestRun)
-	{
-		// first cache the camera state
-		GameSpecific::CameraManipulator::cacheOriginalValuesBeforeMultiShot();
-
-		Settings& settings = Globals::instance().settings();
-		// calls won't return till the process has been completed. 
-		switch (static_cast<ScreenshotType>(settings.typeOfScreenshot))
-		{
-			case ScreenshotType::HorizontalPanorama:
-				{
-					// The total fov of the pano is always given in degrees. So we have to calculate that back to radians for usage with our camera.
-					const float totalPanoAngleInDegrees = Utils::clamp(settings.panoramaTotalAngleDegrees, 30.0f, 360.0f, 110.0f);
-					const float totalPanoAngleInRadians = (totalPanoAngleInDegrees / 180.0f) * DirectX::XM_PI;
-					const float currentFoVInRadians = Utils::clamp(CameraManipulator::getCurrentFoV(), 0.01f, 3.1f, 1.34f);		// clamp it to max 180degrees. 
-					// if total fov is < than current fov, why bother with a pano?
-					if (currentFoVInRadians > 0.0f && currentFoVInRadians < totalPanoAngleInRadians)
-					{
-						// take the shots
-						Globals::instance().getScreenshotController().startHorizontalPanoramaShot(_camera, totalPanoAngleInRadians,
-																									Utils::clamp(settings.panoramaOverlapPercentagePerShot, 0.1f, 99.0f, 70.0f),
-																									currentFoVInRadians, isTestRun);
-					}
-					else
-					{
-						MessageHandler::addNotification("The total panorama angle is smaller than the current field of view, so just take a single screenshot instead.");
-					}
-				}
-				break;
-			case ScreenshotType::Lightfield:
-				Globals::instance().getScreenshotController().startLightfieldShot(_camera, settings.lightFieldDistanceBetweenShots, settings.multiShotNumberOfShotsToTake, isTestRun);
-				break;
-			default:
-				// nothing
-				break;
-		}
-		// restore camera state
-		GameSpecific::CameraManipulator::restoreOriginalValuesAfterMultiShot();
-	}
-
-
-	void System::takeSingleScreenshot()
-	{
-		// calls won't return till the process has been completed. 
-		Globals::instance().getScreenshotController().startSingleShot();
 	}
 }

@@ -102,15 +102,6 @@ namespace IGCSClient.GameSpecific.Controls
 					case KeyBindingType.TiltCameraRight:
 						binding.Setup(_tiltCameraRightInput);
 						break;
-					case KeyBindingType.TestMultiShotSetup:
-						binding.Setup(_testMultiShotSetupInput);
-						break;
-					case KeyBindingType.TakeShot:
-						binding.Setup(_takeShotInput);
-						break;
-					case KeyBindingType.TakeMultiShot:
-						binding.Setup(_takeMultiShotInput);
-						break;
 					case KeyBindingType.ToggleHUD:
 						binding.Setup(_toggleHUDInput);
 						break;

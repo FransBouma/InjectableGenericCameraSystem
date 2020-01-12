@@ -19,14 +19,6 @@ namespace IGCS
 		float rotationSpeed;
 		float fovChangeSpeed;
 		int cameraControlDevice;		// 0==keyboard/mouse, 1 == gamepad, 2 == both, see Defaults.h
-		int multiShotNumberOfFramesToWaitBetweenSteps;
-		float lightFieldDistanceBetweenShots;
-		int multiShotNumberOfShotsToTake;
-		int typeOfScreenshot;
-		float panoramaTotalAngleDegrees;
-		float panoramaOverlapPercentagePerShot;
-		char screenshotFolder[_MAX_PATH + 1] = { 0 };
-		int screenshotFiletype;
 		
 		void setValueFromMessage(uint8_t payload[], DWORD payloadLength)
 		{
@@ -61,30 +53,6 @@ namespace IGCS
 			case SettingType::FoVZoomSpeed:
 				fovChangeSpeed= Utils::floatFromBytes(payload, payloadLength, 2);
 				break;
-			case SettingType::ShotOutputFolder:
-				strncpy_s(screenshotFolder, Utils::stringFromBytes(payload, payloadLength, 2).c_str(), sizeof(screenshotFolder) - 1);
-				break;
-			case SettingType::ShotFramesToWait:
-				multiShotNumberOfFramesToWaitBetweenSteps = Utils::intFromBytes(payload, payloadLength, 2);
-				break;
-			case SettingType::ShotType:
-				typeOfScreenshot = Utils::intFromBytes(payload, payloadLength, 2);
-				break;
-			case SettingType::PanoTotalFoV:
-				panoramaTotalAngleDegrees= Utils::floatFromBytes(payload, payloadLength, 2);
-				break;
-			case SettingType::PanoOverlapPercentage:
-				panoramaOverlapPercentagePerShot= Utils::floatFromBytes(payload, payloadLength, 2);
-				break;
-			case SettingType::LightfieldDistance:
-				lightFieldDistanceBetweenShots = Utils::floatFromBytes(payload, payloadLength, 2);
-				break;
-			case SettingType::LightfieldShotCount:
-				multiShotNumberOfShotsToTake = Utils::intFromBytes(payload, payloadLength, 2);
-				break;
-			case SettingType::ShotFileType:
-				screenshotFiletype = Utils::intFromBytes(payload, payloadLength, 2);
-				break;
 			default:
 				// nothing
 				break;
@@ -102,14 +70,6 @@ namespace IGCS
 			rotationSpeed = DEFAULT_ROTATION_SPEED;
 			fovChangeSpeed = DEFAULT_FOV_SPEED;
 			cameraControlDevice = DEVICE_ID_ALL;
-			multiShotNumberOfFramesToWaitBetweenSteps = 5;
-			lightFieldDistanceBetweenShots = 1.0f;
-			multiShotNumberOfShotsToTake = 45;
-			typeOfScreenshot = (int)ScreenshotType::Lightfield;
-			panoramaTotalAngleDegrees = 110.0f;
-			panoramaOverlapPercentagePerShot = 80.0f;
-			strncpy_s(screenshotFolder, "c:\\", sizeof(screenshotFolder)-1);
-			screenshotFiletype = (int)ScreenshotFiletype::Jpeg;
 		}
 	};
 }

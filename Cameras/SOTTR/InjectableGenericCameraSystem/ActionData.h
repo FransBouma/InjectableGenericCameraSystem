@@ -50,9 +50,6 @@ namespace IGCS
 		RotateRight,
 		TiltLeft,
 		TiltRight,
-		TestMultiShotSetup,
-		TakeScreenshot,
-		TakeMultiShot,
 		HudToggle,
 		Timestop,
 

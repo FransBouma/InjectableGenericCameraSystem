@@ -36,8 +36,6 @@ namespace IGCSClient
 		internal static readonly string ClientToDllNamedPipeName = "IgcsClientToDll";
 		internal static readonly int BufferLength = 4*1024;	// 4KB buffer should be more than enough. We expect to be actively reading whenever things arrive.
 		internal static readonly string IniFilename = "IGCSClientSettings.ini";
-		internal static readonly double NotificationWindowOpacity = 0.7;
-		internal static readonly double NotificationDisplayTimeInSeconds = 2.0;
 		internal static readonly string IGCSSettingsFolder = "IGCS";
 		internal static readonly string RecentlyUsedFilename = "IGCSClientRecentlyUsed.txt";
 		internal static readonly int NumberOfDllCacheEntriesToKeep = 100;
@@ -82,21 +80,6 @@ namespace IGCSClient
 	}
 
 
-	public class ScreenshotType
-	{
-		public const byte HorizontalPanorama = 0;
-		public const byte Lightfield = 1;
-	}
-
-
-	public class ScreenshotFileType
-	{
-		public const byte Bmp = 0;
-		public const byte Jpeg = 1;
-		public const byte Png = 2;
-	}
-
-
 	public class SettingType
 	{
 		public const byte FastMovementMultiplier = 0;
@@ -107,14 +90,6 @@ namespace IGCSClient
 		public const byte RotationSpeed = 5;
 		public const byte InvertYLookDirection = 6;
 		public const byte FoVZoomSpeed = 7;
-		public const byte ShotOutputFolder = 8;
-		public const byte ShotFramesToWait = 9;
-		public const byte ShotType = 10;
-		public const byte PanoTotalFoV = 11;
-		public const byte PanoOverlapPercentage = 12;
-		public const byte LightfieldDistance = 13;
-		public const byte LightfieldShotCount = 14;
-		public const byte ShotFileType = 15;
 
 		// to add more, derived a type of this class and define the next value one higher than the last one in this class.
 	}
@@ -140,11 +115,8 @@ namespace IGCSClient
 		public const byte RotateCameraRight=15;
 		public const byte TiltCameraLeft=16;
 		public const byte TiltCameraRight=17;
-		public const byte TestMultiShotSetup=18;
-		public const byte TakeShot=19;
-		public const byte TakeMultiShot=20;
-		public const byte ToggleHUD=21;
-		public const byte PauseUnpauseGame = 22;
+		public const byte ToggleHUD=18;
+		public const byte PauseUnpauseGame = 19;
 		// to add more, derived a type of this class and define the next value one higher than the last one in this class.
 	}
 
@@ -159,18 +131,5 @@ namespace IGCSClient
 	public class ActionType
 	{
 		public const byte RehookXInput = 1;
-		public const byte HookDXGIUsingDX11 = 2;
-		public const byte HookDXGIUsingDX12 = 3;
-	}
-
-
-	public enum RenderAPIKind : int
-	{
-		[Description("Direct3D 11")]
-		Direct3D11 = 0,
-		[Description("Direct3D 12")]
-		Direct3D12 = 1,
-		[Description("Other")]
-		Other = 2,
 	}
 }

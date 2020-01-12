@@ -53,7 +53,6 @@ namespace IGCSClient.Controls
 		private Process _selectedProcess;
 		private string _defaultProcessName;
 		private string _defaultDllName;
-		private List<RenderAPIKind> _supportedRenderApis;
 
 		public event EventHandler DllInjected;
 		public event EventHandler AttachedProcessExited;
@@ -63,28 +62,6 @@ namespace IGCSClient.Controls
 		{
 			InitializeComponent();
 			_selectedProcess = null;
-			_supportedRenderApis = new List<RenderAPIKind>();
-			if(GameSpecificConstants.GameSupportsDX11)
-			{
-				_supportedRenderApis.Add(RenderAPIKind.Direct3D11);
-			}
-			if(GameSpecificConstants.GameSupportsDX12)
-			{
-				_supportedRenderApis.Add(RenderAPIKind.Direct3D12);
-			}
-			if(GameSpecificConstants.GameSupportsVulkan)
-			{
-				_supportedRenderApis.Add(RenderAPIKind.Other);
-			}
-		}
-
-
-		/// <summary>
-		/// Updates the combobox selection with the preferred render api from the ini file, which is loaded after this control has been shown and initialized.
-		/// </summary>
-		public void UpdateSelectedRenderAPI()
-		{
-			_renderAPIComboBox.SelectedValue = AppStateSingleton.Instance().PreferredRenderApiKind;
 		}
 
 
@@ -127,20 +104,6 @@ namespace IGCSClient.Controls
 
 		private void GeneralPage_OnLoaded(object sender, RoutedEventArgs e)
 		{
-			_renderAPIComboBox.ItemsSource = _supportedRenderApis.Select(value => new
-																				  {
-																					  (Attribute.GetCustomAttribute(value.GetType()?.GetField(value.ToString()), 
-																													typeof(DescriptionAttribute)) as DescriptionAttribute)?.Description, 
-																					  value
-																				  }).OrderBy(item => item.value)
-																 .ToList();
-			_renderAPIComboBox.DisplayMemberPath = "Description";
-			_renderAPIComboBox.SelectedValuePath = "value";
-			if(_supportedRenderApis.Count <= 1)
-			{
-				// disable combo box
-				_renderAPIComboBox.IsEnabled = false;
-			}
 			LoadDefaultNamesFromConfigFile();
 			FindDefaultProcess();
 			DisplayProcessInfoForInjection();
@@ -314,13 +277,5 @@ namespace IGCSClient.Controls
 		{
 			MessageHandlerSingleton.Instance().SendRehookXInputAction();
 		}
-
-
-		#region Properties
-		public RenderAPIKind SelectedRenderAPI
-		{
-			get { return (RenderAPIKind)_renderAPIComboBox.SelectedIndex; }
-		}
-		#endregion
 	}
 }

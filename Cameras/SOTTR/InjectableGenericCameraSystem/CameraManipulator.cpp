@@ -43,7 +43,6 @@ extern "C" {
 namespace IGCS::GameSpecific::CameraManipulator
 {
 	static GameCameraData _originalData;
-	static GameCameraData _preMultiShotData;
 
 	void updateCameraDataInGameData(Camera& camera)
 	{
@@ -196,17 +195,4 @@ namespace IGCS::GameSpecific::CameraManipulator
 	{
 		cacheGameCameraDataInCache(_originalData);
 	}
-
-
-	void restoreOriginalValuesAfterMultiShot()
-	{
-		restoreGameCameraDataWithCachedData(_preMultiShotData);
-	}
-
-
-	void cacheOriginalValuesBeforeMultiShot()
-	{
-		cacheGameCameraDataInCache(_preMultiShotData);
-	}
-
 }

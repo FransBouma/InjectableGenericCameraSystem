@@ -32,9 +32,7 @@
 #include "Console.h"
 #include <string>
 #include "Globals.h"
-#include <vector>
 #include "InputHooker.h"
-#include "DXGIHooker.h"
 
 namespace IGCS
 {
@@ -221,12 +219,6 @@ namespace IGCS
 		{
 		case ActionMessageType::RehookXInput:
 			InputHooker::setXInputHook(true);
-			break;
-		case ActionMessageType::HookDXGIUsingDX11:
-			DXGIHooker::initializeDXGIHookUsingDX11();
-			break;
-		case ActionMessageType::HookDXGIUsingDX12:
-			DXGIHooker::initializeDXGIHookUsingDX12();
 			break;
 		}
 	}

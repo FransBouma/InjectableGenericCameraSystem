@@ -8,7 +8,7 @@
 			 mc:Ignorable="d" Loaded="GeneralPage_OnLoaded"
 			 Style="{StaticResource ControlPageStyle}" Height="561.35" Width="720">
 	<StackPanel>
-		<GroupBox Header="Process and DLL selection" Height="289" DockPanel.Dock="Top" Name="_injectDllGroupBox">
+		<GroupBox Header="Process and DLL selection" Height="231" DockPanel.Dock="Top" Name="_injectDllGroupBox">
 			<StackPanel Margin="0,0,0,0">
 				<HeaderedContentControl Header="Process to inject to" Margin="0, 0, 0, 10">
 					<DockPanel>
@@ -24,9 +24,6 @@
 					</DockPanel>
 				</HeaderedContentControl>
 
-				<HeaderedContentControl Header="Render API used" Margin="0, 0, 0, 10">
-					<ComboBox Name="_renderAPIComboBox" ></ComboBox>
-				</HeaderedContentControl>
 				<Button Name="_injectButton" IsEnabled="True" Style="{StaticResource AccentButtonStyle}" Click="_injectButton_Click">Inject DLL</Button>
 			</StackPanel>
 		</GroupBox>
