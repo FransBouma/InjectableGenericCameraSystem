@@ -84,7 +84,9 @@ namespace IGCS::DXGIHooker
 	HRESULT __stdcall detourDXGIResizeBuffers(IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags)
 	{
 		Globals::instance().getScreenshotController().reset();		// kill off any in-progress screenshot process
-		return hookedDXGIResizeBuffers(pSwapChain, bufferCount, width, height, newFormat, swapChainFlags);
+		auto toReturn= hookedDXGIResizeBuffers(pSwapChain, bufferCount, width, height, newFormat, swapChainFlags);
+		//_initializeDeviceAndContext = true;
+		return toReturn;
 	}
 
 
@@ -275,7 +277,7 @@ namespace IGCS::DXGIHooker
 		// exclusive to the window of the game. 
 		WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProcForDX12TmpWindow, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, _T("IGCS TmpWindow"), nullptr };
 		::RegisterClassEx(&wc);
-		HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("IGCS TmpWindow"), WS_OVERLAPPEDWINDOW, 100, 100, 100, 100, NULL, NULL, wc.hInstance, NULL);
+		HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("IGCS TmpWindow"), WS_OVERLAPPEDWINDOW, 100, 100, 100, 100, Globals::instance().mainWindowHandle(), NULL, wc.hInstance, NULL);
 		D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 		IDXGIFactory4* pTmpDXGIFactory;

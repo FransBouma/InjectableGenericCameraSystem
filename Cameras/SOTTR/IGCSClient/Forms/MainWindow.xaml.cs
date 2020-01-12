@@ -184,7 +184,14 @@ namespace IGCSClient.Forms
 		private void _generalTabControl_OnAttachedProcessExited(object sender, EventArgs e)
 		{
 			// Attached process died, we should too. So sad...
-			this.Close();
+			if(this.CheckAccess())
+			{
+				this.Close();
+			}
+			else
+			{
+				this.Dispatcher?.Invoke(()=>this.Close());
+			}
 		}
 	}
 }

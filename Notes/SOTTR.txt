@@ -1,3 +1,21 @@
+// AR check
+SOTTR.exe+1206CADB - F3 0F59 C2            - mulss xmm0,xmm2
+SOTTR.exe+1206CADF - F3 0F11 46 10         - movss [rsi+10],xmm0
+SOTTR.exe+1206CAE4 - 48 8B 8D D8FFFFFF     - mov rcx,[rbp-00000028]
+SOTTR.exe+1206CAEB - 48 85 C9              - test rcx,rcx
+SOTTR.exe+1206CAEE - 74 05                 - je SOTTR.exe+1206CAF5
+SOTTR.exe+1206CAF0 - E8 6BE3F4EE           - call SOTTR.exe+FBAE60
+SOTTR.exe+1206CAF5 - F3 41 0F10 86 64010000  - movss xmm0,[r14+00000164]
+SOTTR.exe+1206CAFE - F3 0F11 46 14         - movss [rsi+14],xmm0
+SOTTR.exe+1206CB03 - F3 41 0F10 8E 68010000  - movss xmm1,[r14+00000168]
+SOTTR.exe+1206CB0C - EB 63                 - jmp SOTTR.exe+1206CB71
+SOTTR.exe+1206CB0E - F3 41 0F10 86 6C010000  - movss xmm0,[r14+0000016C]
+SOTTR.exe+1206CB17 - EB 09                 - jmp SOTTR.exe+1206CB22
+SOTTR.exe+1206CB19 - F3 41 0F10 86 64010000  - movss xmm0,[r14+00000164]	<<< Load minimal AR (should be 0). replace with xorps xmm0, xmm0
+SOTTR.exe+1206CB22 - F3 0F11 46 14         - movss [rsi+14],xmm0
+SOTTR.exe+1206CB27 - F3 41 0F10 86 70010000  - movss xmm0,[r14+00000170]
+
+
 // Photomode / Ansel coords + quaternion location. Only used when photomode / ansel are active
 // Writes when photomode movement is allowed:
 SOTTR.exe+B12A2F7 - 0F29 8B 10040000      - movaps [rbx+00000410],xmm1

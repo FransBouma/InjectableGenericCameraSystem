@@ -204,6 +204,9 @@ namespace IGCSClient.Controls
 				Win32Wrapper.SendMessage(_gameWindowHwnd, Win32Wrapper.WM_EXITSIZEMOVE, 0, 0);
 			}
 
+			LogHandlerSingleton.Instance().LogLine("Switching resolution on window with hwnd 0x{0} to resolution {1}x{2}", "Hotsampler", _gameWindowHwnd.ToString("x"), 
+												   newHorizontalResolution, newVerticalResolution);
+
 			// remove / add borders
 			uint nStyle = (uint)Win32Wrapper.GetWindowLong(_gameWindowHwnd, Win32Wrapper.GWL_STYLE);
 			nStyle = (nStyle | (Win32Wrapper.WS_THICKFRAME + Win32Wrapper.WS_DLGFRAME + Win32Wrapper.WS_BORDER + Win32Wrapper.WS_MAXIMIZEBOX + Win32Wrapper.WS_MINIMIZEBOX));

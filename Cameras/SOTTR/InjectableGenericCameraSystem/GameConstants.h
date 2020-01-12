@@ -51,6 +51,7 @@ namespace IGCS::GameSpecific
 	// AOB Keys for interceptor's AOB scanner
 	#define CAMERA_ADDRESS_INTERCEPT_KEY				"AOB_CAMERA_ADDRESS_INTERCEPT"
 	#define CAMERA_WRITE1_INTERCEPT_KEY					"AOB_CAMERA_WRITE1_INTERCEPT"
+	#define CAMERA_AR_FIX_INTERCEPT_KEY					"AOB_CAMERA_AR_FIX_INTERCEPT"
 
 	// Indices in the structures read by interceptors 
 	#define QUATERNION_IN_STRUCT_OFFSET					0xA0

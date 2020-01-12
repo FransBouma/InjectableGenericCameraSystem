@@ -132,5 +132,4 @@ exit:
 	jmp qword ptr [_cameraWrite1InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite1Interceptor ENDP
 
-
 END
