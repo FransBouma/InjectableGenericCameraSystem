@@ -188,7 +188,11 @@ namespace IGCSClient.Controls
 
 		private void AddResolutionToRecentlyUsedList(int horizontalResolution, int verticalResolution)
 		{
-			var ar = GeneralUtils.CalculateAspectRatio(horizontalResolution, verticalResolution);
+			// Base the aspect ratio on the string representation we have constructed. This is a bit lame, but it can be the user changes the width or height
+			// manually after selecting a node in the tree so the ar has changed. Calculating it again from width/height is tempting but gives wrong results for 
+			// 21:9 which isn't really 21:9 but 21.5:9 so the AR doesn't match anymore. 
+			var ar = string.IsNullOrEmpty(_aspectRatioTextBox.Text) ? GeneralUtils.CalculateAspectRatio(horizontalResolution, verticalResolution) 
+																	: AspectRatio.FromString(_aspectRatioTextBox.Text);
 			var toAdd = new Resolution(ar, horizontalResolution, verticalResolution, string.Format("{0} x {1} ({2})", horizontalResolution, verticalResolution, ar));
 			this.RecentlyUserResolutions.Remove(toAdd);	// if we've used this one before, remove it from the list as it will be placed at the front.
 			this.RecentlyUserResolutions.Insert(0, toAdd);
@@ -301,6 +305,7 @@ namespace IGCSClient.Controls
 			{
 				SetNewResolutionControlsWithValues((Resolution)item.Content);
 				_recentlyUsedResolutionsFlyout.Hide();
+				PerformHotSampling();
 			}
 		}
 		

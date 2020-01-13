@@ -246,7 +246,10 @@ namespace IGCSClient.Classes
 			int counter = 0;
 			foreach(var r in _recentlyUsedResolutions)
 			{
-				iniFile.Write("Resolution"+counter, string.Format("{0}x{1}", r.HorizontalResolution, r.VerticalResolution), "RecentlyUsedResolutions");
+				// Format: resolution|aspect ratio
+				// resulution: widthxheight
+				// aspect ratio: width:height
+				iniFile.Write("Resolution" + counter, r.ToStringForIniFile(), "RecentlyUsedResolutions");
 				counter++;
 			}
 		}

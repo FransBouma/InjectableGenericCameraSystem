@@ -25,7 +25,9 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
- 
+
+using System;
+
 namespace IGCSClient.Classes
 {
 	/// <summary>
@@ -68,6 +70,23 @@ namespace IGCSClient.Classes
 		{
 			string suffix = string.IsNullOrWhiteSpace(this.Description) || !appendDescription ? string.Empty : string.Format(" ({0})", this.Description);
 			return string.Format("{0}:{1}{2}", this.Horizontal, this.Vertical, suffix);
+		}
+
+
+		/// <summary>
+		/// Converts the string specified (in the format width:height) to a new aspect ratio instance.
+		/// </summary>
+		/// <param name="aspectRatioString"></param>
+		/// <returns></returns>
+		public static AspectRatio FromString(string aspectRatioString)
+		{
+			// format: width:height
+			var elements = aspectRatioString.Split(':');
+			if(elements.Length != 2)
+			{
+				return new AspectRatio(16, 9);
+			}
+			return new AspectRatio(Convert.ToInt32(elements[0]), Convert.ToInt32(elements[1]));
 		}
 
 

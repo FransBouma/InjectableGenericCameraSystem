@@ -51,24 +51,42 @@ namespace IGCSClient.Classes
 		/// <returns></returns>
 		public static Resolution FromString(string resolutionAsString)
 		{
-			var elements = resolutionAsString.Split('x');
+			// format: resolution|aspect ratio. resultion: widthxheight. aspect ratio: widthxheight
+			var elements = resolutionAsString.Split('|');
 			if(elements.Length != 2)
 			{
 				return new Resolution(GeneralUtils.CalculateAspectRatio(1920, 1080), 1920, 1080, "Invalid string input");
 			}
 
-			var horizontalResolution = Convert.ToInt32(elements[0]);
-			var verticalResolution = Convert.ToInt32(elements[1]);
-			var ar = GeneralUtils.CalculateAspectRatio(horizontalResolution, verticalResolution);
+			var resolutionElements = elements[0].Split('x');
+			var horizontalResolution = Convert.ToInt32(resolutionElements[0]);
+			var verticalResolution = Convert.ToInt32(resolutionElements[1]);
+			var ar = AspectRatio.FromString(elements[1]);
 			return new Resolution(ar, horizontalResolution, verticalResolution, string.Format("{0} x {1} ({2})", horizontalResolution, verticalResolution, ar));
+		}
+
+
+		/// <summary>
+		/// Produces a string from this instance's values.
+		/// Format: resolution|aspect ratio.
+		/// resulution: widthxheight.
+		/// aspect ratio: width:height
+		/// </summary>
+		/// <returns></returns>
+		public string ToStringForIniFile()
+		{
+			// Format: resolution|aspect ratio
+			// resulution: widthxheight
+			// aspect ratio: width:height
+			return string.Format("{0}x{1}|{2}", this.HorizontalResolution, this.VerticalResolution, this.AR.ToString(appendDescription: false));
 		}
 
 
 		// these are generated
 		public override bool Equals(object obj)
 		{
+			// no need to compare the aspect ratio too, as it follows from resolution width/height.
 			return obj is Resolution resolution &&
-				   this.AR.Equals(resolution.AR) &&
 				   this.HorizontalResolution == resolution.HorizontalResolution &&
 				   this.VerticalResolution == resolution.VerticalResolution;
 		}
