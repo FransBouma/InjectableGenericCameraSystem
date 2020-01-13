@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:IGCSClient.Controls"
 			 Style="{StaticResource ControlPageStyle}"
 			 xmlns:ui="http://schemas.modernwpf.com/2019"
-             mc:Ignorable="d" d:DesignWidth="800" Height="408">
+             mc:Ignorable="d" d:DesignWidth="800" Height="473">
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="245"/>
@@ -56,9 +56,24 @@
 									<CheckBox Name="_switchAfterResizingCheckBox" IsChecked="True"/>
 								</HeaderedContentControl>
 							</ui:SimpleStackPanel>
+							<ui:SimpleStackPanel Orientation="Horizontal" Margin="0, 10, 0, 0">
+								<Button x:Name="_recentlyUsedResolutionsButton">
+									<ui:SimpleStackPanel Orientation="Horizontal" x:Name="_rurSP">
+										<TextBlock x:Name="_rurTB">Recently used resolutions</TextBlock>
+										<TextBlock FontFamily="Segoe MDL2 Assets" Margin="10, 4, 0, 0" FontSize="12">&#xE70D;</TextBlock>
+									</ui:SimpleStackPanel>
+									<ui:FlyoutService.Flyout>
+										<ui:Flyout Placement="BottomEdgeAlignedLeft" x:Name="_recentlyUsedResolutionsFlyout">
+											<ListBox x:Name="_recentlyUsedResolutionsList" DisplayMemberPath="Description" SelectionMode="Single" 
+													 PreviewMouseDown="_recentlyUsedResolutionsList_OnPreviewMouseDown"/>
+										</ui:Flyout>
+									</ui:FlyoutService.Flyout>
+								</Button>
+								<Button Name="_fakeFullScreen" Margin="10, 0, 0,0" VerticalAlignment="Bottom" Click="_fakeFullScreen_OnClick">Fake fullscreen</Button>
+							</ui:SimpleStackPanel>
 						</ui:SimpleStackPanel>
 					</GroupBox>
-					<GroupBox Header="Active window resolution">
+					<GroupBox Header="Active window resolution" Margin="0, 10, 0, 0">
 						<ui:SimpleStackPanel Orientation="Horizontal">
 							<HeaderedContentControl Header="Width">
 								<TextBox IsReadOnly="true" Name="_currentWidthTextBox"/>

@@ -35,6 +35,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -71,7 +72,7 @@ namespace IGCSClient.Classes
 			using (Bitmap bmp = toConvert.ToBitmap())
 			{
 				var stream = new MemoryStream();
-				bmp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+				bmp.Save(stream, ImageFormat.Png);
 				return BitmapFrame.Create(stream);
 			}
 		}
@@ -149,7 +150,7 @@ namespace IGCSClient.Classes
 
 		public static List<IntPtr> GetProcessWindowHandles(Process process)
 		{
-			List<IntPtr> rootWindows = GetChildWindows(IntPtr.Zero);
+			List<IntPtr> rootWindows = GeneralUtils.GetChildWindows(IntPtr.Zero);
 			List<IntPtr> dsProcRootWindows = new List<IntPtr>();
 			foreach (IntPtr hWnd in rootWindows)
 			{
@@ -169,7 +170,7 @@ namespace IGCSClient.Classes
 			GCHandle listHandle = GCHandle.Alloc(result);
 			try
 			{
-				Win32Wrapper.Win32Callback childProc = new Win32Wrapper.Win32Callback(EnumWindow);
+				Win32Wrapper.Win32Callback childProc = new Win32Wrapper.Win32Callback(GeneralUtils.EnumWindow);
 				Win32Wrapper.EnumChildWindows(parent, childProc, GCHandle.ToIntPtr(listHandle));
 			}
 			finally
@@ -193,6 +194,54 @@ namespace IGCSClient.Classes
 			}
 			list.Add(handle);
 			return true;
+		}
+
+
+		public static AspectRatio CalculateAspectRatio(int width, int height)
+		{
+			if(width <= 0 || height <= 0)
+			{
+				return new AspectRatio(0, 0);
+			}
+
+			// calculate biggest common divisor using Euclides' algorithm: https://en.wikipedia.org/wiki/Euclidean_algorithm
+			// then divide both width and height with that number to get the values for the AR.
+			int biggest, smallest;
+			if(width > height)
+			{
+				biggest = width;
+				smallest = height;
+			}
+			else
+			{
+				biggest = height;
+				smallest = width;
+			}
+
+			int gcd = -1;
+			while(true)
+			{
+				var rest = biggest % smallest;
+				if(rest == 0)
+				{
+					// done
+					gcd = smallest;
+					break;
+				}
+				// not done yet
+				biggest = smallest;
+				smallest = rest;
+			}
+
+			// If not found, pick 16:9
+			var toReturn = (gcd < 0) ? new AspectRatio(16, 9) : new AspectRatio(width/gcd, height/gcd);
+			// we have one exception: 16:10. This will resolve to 8:5, but it's used as '16:10'. So we'll do a check on that and then bump it up.
+			if(toReturn.Equals(new AspectRatio(8, 5)))
+			{
+				toReturn = new AspectRatio(16, 10);
+			}
+			// lots of monitors are 21.5:9 instead of 21:9, we'll leave these as-is.
+			return toReturn;
 		}
 	}
 }

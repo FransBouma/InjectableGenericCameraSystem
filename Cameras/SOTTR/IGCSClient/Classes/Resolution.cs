@@ -25,7 +25,9 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
- 
+
+using System;
+
 namespace IGCSClient.Classes
 {
 	/// <summary>
@@ -40,6 +42,27 @@ namespace IGCSClient.Classes
 			this.VerticalResolution = verticalResolution;
 			this.Description = description;
 		}
+
+
+		/// <summary>
+		/// Creates a new resolution instance with aspect ratio instance from the string specified
+		/// </summary>
+		/// <param name="resolutionAsString">the resolution specified, which is of the format widthxheight</param>
+		/// <returns></returns>
+		public static Resolution FromString(string resolutionAsString)
+		{
+			var elements = resolutionAsString.Split('x');
+			if(elements.Length != 2)
+			{
+				return new Resolution(GeneralUtils.CalculateAspectRatio(1920, 1080), 1920, 1080, "Invalid string input");
+			}
+
+			var horizontalResolution = Convert.ToInt32(elements[0]);
+			var verticalResolution = Convert.ToInt32(elements[1]);
+			var ar = GeneralUtils.CalculateAspectRatio(horizontalResolution, verticalResolution);
+			return new Resolution(ar, horizontalResolution, verticalResolution, string.Format("{0} x {1} ({2})", horizontalResolution, verticalResolution, ar));
+		}
+
 
 		// these are generated
 		public override bool Equals(object obj)

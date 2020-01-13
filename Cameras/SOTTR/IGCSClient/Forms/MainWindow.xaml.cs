@@ -68,6 +68,8 @@ namespace IGCSClient.Forms
 
 		protected override void OnClosing(CancelEventArgs e)
 		{
+			// first make sure the recently used resolutions are persisted
+			AppStateSingleton.Instance().StoreRecentlyUsedResolutions(_hotsamplingControl.RecentlyUserResolutions);
 			AppStateSingleton.Instance().SaveSettingsToIni();
 			AppStateSingleton.Instance().SaveRecentProcessList();
 			_notificationNotifier.Dispose();

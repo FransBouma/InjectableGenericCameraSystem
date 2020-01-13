@@ -27,9 +27,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Input;
 using IGCSClient.Classes;
 using IGCSClient.GameSpecific.Classes;
 using ModernWpf.Controls;
@@ -47,6 +50,7 @@ namespace IGCSClient.Controls
 		private WINDOWINFO _gameWindowInfo;
 		private IntPtr _gameWindowHwnd;
 		private Timer _resolutionRefreshTimer;
+		private Resolution _monitorResolution;
 		#endregion
 
 
@@ -69,14 +73,17 @@ namespace IGCSClient.Controls
 			var screenWithGameWindow = Screen.FromHandle(_gameWindowHwnd);
 			BuildResolutionTree(screenWithGameWindow.Bounds);
 			_resolutionRefreshTimer.Enabled = true;
+			this.RecentlyUserResolutions = new ObservableCollection<Resolution>(AppStateSingleton.Instance().RecentlyUsedResolutions);
+			_recentlyUsedResolutionsList.ItemsSource = this.RecentlyUserResolutions;
 		}
 		
 
 		private void BuildResolutionTree(System.Drawing.Rectangle screenBounds)
 		{
-			var arOfScreen = CalculateAspectRatio(screenBounds.Width, screenBounds.Height);
+			var arOfScreen = GeneralUtils.CalculateAspectRatio(screenBounds.Width, screenBounds.Height);
 			arOfScreen.Description = "Monitor aspect ratio";
-
+			_monitorResolution = new Resolution(arOfScreen, screenBounds.Width, screenBounds.Height, 
+												string.Format("{0} x {1} ({2})", screenBounds.Width, screenBounds.Height, arOfScreen.ToString(false)));
 			// default ARs
 			var defaultARs = new List<AspectRatio>()
 							 {
@@ -126,55 +133,6 @@ namespace IGCSClient.Controls
 		}
 
 
-		private AspectRatio CalculateAspectRatio(int width, int height)
-		{
-			if(width <= 0 || height <= 0)
-			{
-				return new AspectRatio(0, 0);
-			}
-
-			// calculate biggest common divisor using Euclides' algorithm: https://en.wikipedia.org/wiki/Euclidean_algorithm
-			// then divide both width and height with that number to get the values for the AR.
-			int biggest, smallest;
-			if(width > height)
-			{
-				biggest = width;
-				smallest = height;
-			}
-			else
-			{
-				biggest = height;
-				smallest = width;
-			}
-
-			int gcd = -1;
-			while(true)
-			{
-				var rest = biggest % smallest;
-				if(rest == 0)
-				{
-					// done
-					gcd = smallest;
-					break;
-				}
-				// not done yet
-				biggest = smallest;
-				smallest = rest;
-			}
-
-			// If not found, pick 16:9
-			var toReturn = (gcd < 0) ? new AspectRatio(16, 9) : new AspectRatio(width/gcd, height/gcd);
-			// we have one exception: 16:10. This will resolve to 8:5, but it's used as '16:10'. So we'll do a check on that and then bump it up.
-			if(toReturn.Equals(new AspectRatio(8, 5)))
-			{
-				toReturn = new AspectRatio(16, 10);
-			}
-			// lots of monitors are 21.5:9 instead of 21:9, we'll leave these as-is.
-			return toReturn;
-		}
-
-				
-
 		private void PerformHotSampling()
 		{
 			if(_newWidthBox.Value < 100 || _newHeightBox.Value < 100)
@@ -218,13 +176,29 @@ namespace IGCSClient.Controls
 			uFlags = Win32Wrapper.SWP_NOSIZE | Win32Wrapper.SWP_NOMOVE | Win32Wrapper.SWP_NOZORDER | Win32Wrapper.SWP_NOACTIVATE | Win32Wrapper.SWP_NOOWNERZORDER | Win32Wrapper.SWP_NOSENDCHANGING | Win32Wrapper.SWP_FRAMECHANGED;
 			Win32Wrapper.SetWindowPos(_gameWindowHwnd, 0, 0, 0, 0, 0, uFlags);
 
+			AddResolutionToRecentlyUsedList(newHorizontalResolution, newVerticalResolution);
+
 			if(_switchAfterResizingCheckBox.IsChecked==true)
 			{
 				// focus the attached application's window
 				Win32Wrapper.SetForegroundWindow(_gameWindowHwnd);
 			}
 		}
-		
+
+
+		private void AddResolutionToRecentlyUsedList(int horizontalResolution, int verticalResolution)
+		{
+			var ar = GeneralUtils.CalculateAspectRatio(horizontalResolution, verticalResolution);
+			var toAdd = new Resolution(ar, horizontalResolution, verticalResolution, string.Format("{0} x {1} ({2})", horizontalResolution, verticalResolution, ar));
+			this.RecentlyUserResolutions.Remove(toAdd);	// if we've used this one before, remove it from the list as it will be placed at the front.
+			this.RecentlyUserResolutions.Insert(0, toAdd);
+			// remove any resolutions over the maximum. This is at most 1, as we're adding 1 at a time. 
+			while(this.RecentlyUserResolutions.Count > ConstantsEnums.NumberOfResolutionsToKeep)
+			{
+				this.RecentlyUserResolutions.RemoveAt(ConstantsEnums.NumberOfResolutionsToKeep);
+			}
+		}
+
 
 		private void GetActiveGameWindowInfo()
 		{
@@ -239,7 +213,7 @@ namespace IGCSClient.Controls
 			Win32Wrapper.GetWindowInfo(_gameWindowHwnd, ref _gameWindowInfo);
 			_currentWidthTextBox.Text = _gameWindowInfo.rcWindow.Width.ToString();
 			_currentHeightTextBox.Text = _gameWindowInfo.rcWindow.Height.ToString();
-			_currentARTextBox.Text = CalculateAspectRatio(_gameWindowInfo.rcWindow.Width, _gameWindowInfo.rcWindow.Height).ToString(appendDescription:false);
+			_currentARTextBox.Text = GeneralUtils.CalculateAspectRatio(_gameWindowInfo.rcWindow.Width, _gameWindowInfo.rcWindow.Height).ToString(appendDescription:false);
 			if(_newHeightBox.Value <= 0 || _newWidthBox.Value <= 0)
 			{
 				//reset with current window
@@ -255,7 +229,7 @@ namespace IGCSClient.Controls
 			int horizontalResolution = (int)_newWidthBox.Value;
 			int verticalResolution = (int)_newHeightBox.Value;
 			_setResolutionButton.IsEnabled = (horizontalResolution >= 640 && verticalResolution >= 480);
-			_aspectRatioTextBox.Text = CalculateAspectRatio(horizontalResolution, verticalResolution).ToString(appendDescription:false);
+			_aspectRatioTextBox.Text = GeneralUtils.CalculateAspectRatio(horizontalResolution, verticalResolution).ToString(appendDescription:false);
 		}
 
 
@@ -267,9 +241,15 @@ namespace IGCSClient.Controls
 				return;
 			}
 			var selectedResolution = (Resolution)e.NewValue;
+			SetNewResolutionControlsWithValues(selectedResolution);
+		}
+
+
+		private void SetNewResolutionControlsWithValues(Resolution selectedResolution)
+		{
 			_newHeightBox.Value = selectedResolution.VerticalResolution;
 			_newWidthBox.Value = selectedResolution.HorizontalResolution;
-			_aspectRatioTextBox.Text = selectedResolution.AR.ToString(appendDescription:false);
+			_aspectRatioTextBox.Text = selectedResolution.AR.ToString(appendDescription: false);
 		}
 
 
@@ -312,5 +292,28 @@ namespace IGCSClient.Controls
 			var screenWithGameWindow = Screen.FromHandle(_gameWindowHwnd);
 			BuildResolutionTree(screenWithGameWindow.Bounds);
 		}
+
+
+		private void _recentlyUsedResolutionsList_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
+		{
+			var item = ItemsControl.ContainerFromElement(_recentlyUsedResolutionsList, e.OriginalSource as DependencyObject) as ListBoxItem;
+			if (item != null)
+			{
+				SetNewResolutionControlsWithValues((Resolution)item.Content);
+				_recentlyUsedResolutionsFlyout.Hide();
+			}
+		}
+		
+
+		private void _fakeFullScreen_OnClick(object sender, RoutedEventArgs e)
+		{
+			SetNewResolutionControlsWithValues(_monitorResolution);
+			PerformHotSampling();
+		}
+		
+
+		#region Properties
+		public ObservableCollection<Resolution> RecentlyUserResolutions { get; set; }
+		#endregion
 	}
 }

@@ -65,6 +65,7 @@ namespace IGCSClient.Classes
 		private Dictionary<string, DllCacheData> _recentProcessesWithDllsUsed;		// key: process name (blabla.exe), value: dll name (full path) & DateTime last used.
 		private Process _attachedProcess;
 		private IntPtr _attachedProcessMainWindowHwnd;
+		private List<Resolution> _recentlyUsedResolutions;
 		#endregion
 
 
@@ -74,6 +75,7 @@ namespace IGCSClient.Classes
 			_keyBindings = new List<KeyBindingSetting>();
 			_recentProcessesWithDllsUsed = new Dictionary<string, DllCacheData>();
 			_attachedProcessMainWindowHwnd = IntPtr.Zero;
+			_recentlyUsedResolutions = new List<Resolution>();
 		}
 
 
@@ -240,6 +242,13 @@ namespace IGCSClient.Classes
 			{
 				iniFile.Write("AccentColor", accentColor.ToString(), "MiscSettings");
 			}
+
+			int counter = 0;
+			foreach(var r in _recentlyUsedResolutions)
+			{
+				iniFile.Write("Resolution"+counter, string.Format("{0}x{1}", r.HorizontalResolution, r.VerticalResolution), "RecentlyUsedResolutions");
+				counter++;
+			}
 		}
 
 
@@ -269,6 +278,21 @@ namespace IGCSClient.Classes
 				if(!string.IsNullOrWhiteSpace(accentColor))
 				{
 					ThemeManager.Current.AccentColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(accentColor);
+				}
+
+				for(int i = 0; i < ConstantsEnums.NumberOfResolutionsToKeep; i++)
+				{
+					string keyName = "Resolution" + i;
+					if(!iniFile.KeyExists(keyName, "RecentlyUsedResolutions"))
+					{
+						break;
+					}
+
+					var resolutionAsString = iniFile.Read(keyName, "RecentlyUsedResolutions");
+					if(!string.IsNullOrEmpty(resolutionAsString))
+					{
+						_recentlyUsedResolutions.Add(Resolution.FromString(resolutionAsString));
+					}
 				}
 			}
 		}
@@ -304,6 +328,17 @@ namespace IGCSClient.Classes
 		}
 
 
+		public void StoreRecentlyUsedResolutions(IEnumerable<Resolution> recentlyUsedResolutions)
+		{
+			if(recentlyUsedResolutions == null)
+			{
+				return;
+			}
+			_recentlyUsedResolutions.Clear();
+			_recentlyUsedResolutions.AddRange(recentlyUsedResolutions);
+		}
+
+
 		#region Properties
 		public ISetting[] Settings
 		{
@@ -318,6 +353,11 @@ namespace IGCSClient.Classes
 		public Process AttachedProcess
 		{
 			get { return _attachedProcess; }
+		}
+
+		public List<Resolution> RecentlyUsedResolutions
+		{
+			get { return _recentlyUsedResolutions; }
 		}
 		#endregion
 	}
