@@ -38,12 +38,12 @@
 			</TabItem>
 			<TabItem Header="Configuration" Name="_configurationTab">
 				<ScrollViewer>
-					<GameSpecificControls:ConfigurationPage Margin="15" x:Name="_configurationEditor"/>
+					<GameSpecificControls:ConfigurationPage Margin="15" x:Name="_configurationEditor" Width="Auto" Height="Auto"/>
 				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="Key-bindings" Name="_keybindingsTab">
 				<ScrollViewer>
-					<GameSpecificControls:KeyBindingPage Margin="15" x:Name="_keyBindingsEditor"/>
+					<GameSpecificControls:KeyBindingPage Margin="15" x:Name="_keyBindingsEditor" Width="Auto" Height="Auto"/>
 				</ScrollViewer>
 			</TabItem>
 			<TabItem Header="Theme" Name="_themeTab">

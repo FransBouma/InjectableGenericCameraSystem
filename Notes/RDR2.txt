@@ -41,6 +41,20 @@ RDR2.exe+126F12 - 48 83 C4 20           - add rsp,20 { 32 }
 
 // Fov:
 // latest patch:
+RDR2.exe+12A4B3 - F3 0F10 44 24 30      - movss xmm0,[rsp+30]
+RDR2.exe+12A4B9 - F3 0F10 0D 7B061103   - movss xmm1,[RDR2.exe+323AB3C] { (1.00) }
+RDR2.exe+12A4C1 - 0F2F C1               - comiss xmm0,xmm1
+RDR2.exe+12A4C4 - F3 0F10 15 34241103   - movss xmm2,[RDR2.exe+323C900] { (130.00) }
+RDR2.exe+12A4CC - 72 95                 - jb RDR2.exe+12A463
+RDR2.exe+12A4CE - 0F2F C2               - comiss xmm0,xmm2
+RDR2.exe+12A4D1 - 76 09                 - jna RDR2.exe+12A4DC
+RDR2.exe+12A4D3 - 0F2F C1               - comiss xmm0,xmm1
+RDR2.exe+12A4D6 - 72 8B                 - jb RDR2.exe+12A463
+RDR2.exe+12A4D8 - F3 0F5D C2            - minss xmm0,xmm2
+RDR2.exe+12A4DC - F3 0F11 83 80000000   - movss [rbx+00000080],xmm0
+RDR2.exe+12A4E4 - 48 83 C4 20           - add rsp,20 { 32 }
+
+// patch of december:
 RDR2.exe+1289D0 - F3 0F10 15 7C090D03   - movss xmm2,[RDR2.exe+31F9354] { (130.00) }
 RDR2.exe+1289D8 - 72 95                 - jb RDR2.exe+12896F
 RDR2.exe+1289DA - 0F2F C2               - comiss xmm0,xmm2
@@ -86,6 +100,7 @@ RDR2.exe+25BADC8      - 41 89 00              - mov [r8],eax
 RDR2.exe+25BADCB      - C3                    - ret 
 
 // ToD
+// Use AOB: 66 0F 6E 15 ?? ?? ?? ?? 45 33 C9 66 0F 6E 05 ?? ?? ?? ?? BA 70 40 66 59
 RDR2.exe+2E1AA7D - E8 DE9567FF           - call RDR2.exe+2494060
 RDR2.exe+2E1AA82 - 66 0F6E 15 8A815F01   - movd xmm2,[RDR2.exe+4412C14] { (54) }		<< Minutes
 RDR2.exe+2E1AA8A - 45 33 C9              - xor r9d,r9d
@@ -99,6 +114,7 @@ RDR2.exe+2E1AAAB - F3 0F59 15 3D294500   - mulss xmm2,[RDR2.exe+326D3F0] { (0.02
 RDR2.exe+2E1AAB3 - 0F5B C9               - cvtdq2ps xmm1,xmm1
 
 // Pause
+// Use AOB: 8A 05 ?? ?? ?? ?? 88 05 ?? ?? ?? ?? 0F 85 ?? 02 00 00 40 38 3D
 RDR2.exe+2C89A5 - 44 0F29 40 C8         - movaps [rax-38],xmm8
 RDR2.exe+2C89AA - 44 0F29 48 B8         - movaps [rax-48],xmm9
 RDR2.exe+2C89AF - 8A 05 83C4A803        - mov al,[RDR2.exe+3D54E38] { (0) }

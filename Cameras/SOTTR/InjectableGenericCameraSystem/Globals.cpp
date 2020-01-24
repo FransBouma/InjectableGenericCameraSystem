@@ -117,7 +117,8 @@ namespace IGCS
 		_keyBindingPerActionType[ActionType::TiltLeft] = new ActionData("TiltLeft", "Tilt camera left", IGCS_KEY_TILT_LEFT, false, false, false);
 		_keyBindingPerActionType[ActionType::TiltRight] = new ActionData("TiltRight", "Tilt camera right", IGCS_KEY_TILT_RIGHT, false, false, false);
 
-		// Bindings which are often optional. Specify 'false' for available to disable it if the binding should be hidden. 
+		// Bindings which are often optional. Specify 'false' for available to disable it if the binding should be hidden.
+		// To enable the commands, remove the last 'false' in the calls below to make them available for code. (they're currently not available)
 		_keyBindingPerActionType[ActionType::HudToggle] = new ActionData("HudToggle", "Toggle HUD", IGCS_KEY_HUD_TOGGLE, false, false, false, false);
 		_keyBindingPerActionType[ActionType::Timestop] = new ActionData("Timestop", "Pause / unpause the game", IGCS_KEY_TIMESTOP, false, false, false, false);
 	}
