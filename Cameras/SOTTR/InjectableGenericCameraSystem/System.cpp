@@ -158,8 +158,8 @@ namespace IGCS
 		}
 
 		bool altPressed = Utils::altPressed();
-		bool rcontrolPressed = Utils::keyDown(VK_RCONTROL);
-		float multiplier = altPressed ? settings.fastMovementMultiplier : rcontrolPressed ? settings.slowMovementMultiplier : 1.0f;
+		bool controlPressed = Utils::ctrlPressed();
+		float multiplier = altPressed ? settings.fastMovementMultiplier : controlPressed ? settings.slowMovementMultiplier : 1.0f;
 		handleKeyboardCameraMovement(multiplier);
 		handleMouseCameraMovement(multiplier);
 		handleGamePadMovement(multiplier);

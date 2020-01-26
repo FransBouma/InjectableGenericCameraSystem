@@ -60,20 +60,17 @@ namespace IGCS
 	class ActionData
 	{
 	public:
-		ActionData(std::string name, std::string description, int keyCode, bool altRequired, bool ctrlRequired, bool shiftRequired)
-			: ActionData(name, description, keyCode, altRequired, ctrlRequired, shiftRequired, true) { };
-		ActionData(std::string name, std::string description, int keyCode, bool altRequired, bool ctrlRequired, bool shiftRequired, bool available);
+		ActionData(std::string name, int keyCode, bool altRequired, bool ctrlRequired, bool shiftRequired)
+			: ActionData(name, keyCode, altRequired, ctrlRequired, shiftRequired, true) { };
+		ActionData(std::string name, int keyCode, bool altRequired, bool ctrlRequired, bool shiftRequired, bool available);
 		~ActionData();
 
 		bool isActive(bool ignoreAltCtrl);
-		int getIniFileValue();
-		void setValuesFromIniFileValue(int iniFileValue);
 		void clear();
 		void update(uint8_t newKeyCode, bool altRequired, bool ctrlRequired, bool shiftRequired);
 		void setKeyCode(int newKeyCode);
 
 		std::string getName() { return _name; }
-		std::string getDescription() { return _description; }
 		// If false, the action is ignored to be edited / in help. Code isn't anticipating on it either, as it's not supported in this particular camera. 
 		bool getAvailable() { return _available; }
 		bool isValid() { return _keyCode > 0; }
@@ -82,11 +79,7 @@ namespace IGCS
 		void setShiftRequired() { _shiftRequired = true; }
 
 	private:
-		bool ctrlPressed();
-		bool shiftPressed();
-
 		std::string _name;
-		std::string _description;
 		int _keyCode;
 		bool _altRequired;
 		bool _ctrlRequired;

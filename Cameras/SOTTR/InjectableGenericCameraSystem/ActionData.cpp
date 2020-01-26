@@ -33,8 +33,8 @@ using namespace std;
 
 namespace IGCS
 {
-	ActionData::ActionData(string name, string description, int keyCode, bool altRequired, bool ctrlRequired, bool shiftRequired, bool available)
-		: _name{ name }, _description{ description }, _keyCode{ keyCode }, _altRequired{ altRequired }, _ctrlRequired{ ctrlRequired }, _shiftRequired{ shiftRequired },
+	ActionData::ActionData(string name, int keyCode, bool altRequired, bool ctrlRequired, bool shiftRequired, bool available)
+		: _name{ name }, _keyCode{ keyCode }, _altRequired{ altRequired }, _ctrlRequired{ ctrlRequired }, _shiftRequired{ shiftRequired },
 		  _available {available}
 	{
 	}
@@ -45,10 +45,10 @@ namespace IGCS
 	// keys as required, will ignore altCtrlOptional and always test for these keys. 
 	bool ActionData::isActive(bool altCtrlOptional)
 	{
-		bool toReturn = (_available && Utils::keyDown(_keyCode)) && (_shiftRequired==shiftPressed());
+		bool toReturn = (_available && Utils::keyDown(_keyCode)) && (_shiftRequired== Utils::shiftPressed());
 		if((_altRequired || _ctrlRequired) || !altCtrlOptional)
 		{
-			toReturn = toReturn && (Utils::altPressed() == _altRequired) && (ctrlPressed() == _ctrlRequired);
+			toReturn = toReturn && (Utils::altPressed() == _altRequired) && (Utils::ctrlPressed() == _ctrlRequired);
 		}
 		return toReturn;
 	}
@@ -77,30 +77,5 @@ namespace IGCS
 		_altRequired = altRequired;
 		_ctrlRequired = ctrlRequired;
 		_shiftRequired = shiftRequired;
-	}
-
-	bool ActionData::ctrlPressed()
-	{
-		return Utils::keyDown(VK_RCONTROL) || Utils::keyDown(VK_LCONTROL);
-	}
-	
-	bool ActionData::shiftPressed()
-	{
-		return Utils::keyDown(VK_LSHIFT) || Utils::keyDown(VK_RSHIFT);
-	}
-
-	// Returns 4 bytes: first byte is the keycode, second byte is alt required, third byte is cntrl required, forth byte is shift required
-	int ActionData::getIniFileValue()
-	{
-		return (_keyCode & 0xFF) << 24 | ((_altRequired ? 1 : 0) << 16) | ((_ctrlRequired ? 1 : 0) << 8) | ((_shiftRequired ? 1 : 0));
-	}
-
-	// Receives 4 bytes: first byte is the keycode, second byte is alt required, third byte is cntrl required, forth byte is shift required
-	void ActionData::setValuesFromIniFileValue(int iniFileValue)
-	{
-		_keyCode = ((iniFileValue >> 24) & 0xFF);
-		_altRequired = ((iniFileValue >> 16) & 0xFF) == 0x01;
-		_ctrlRequired = ((iniFileValue >> 8) & 0xFF) == 0x01;
-		_shiftRequired = (iniFileValue & 0xFF) == 0x01;
 	}
 }

@@ -20,6 +20,9 @@
     <Filter Include="NamedPipeSubsystem">
       <UniqueIdentifier>{f1f58870-e87f-4c31-a7c5-1b664f37bb1d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{015f7934-e615-4ba8-94dd-68e40a50728b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -34,17 +37,11 @@
     <ClInclude Include="GameConstants.h">
       <Filter>Game Specific</Filter>
     </ClInclude>
-    <ClInclude Include="CameraManipulator.h">
-      <Filter>Game Specific</Filter>
-    </ClInclude>
     <ClInclude Include="InputHooker.h">
       <Filter>Hooking</Filter>
     </ClInclude>
     <ClInclude Include="Gamepad.h">
       <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="Defaults.h">
       <Filter>Main</Filter>
@@ -76,21 +73,24 @@
     <ClInclude Include="Settings.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="GameCameraData.h">
-      <Filter>Main</Filter>
-    </ClInclude>
     <ClInclude Include="NamedPipeManager.h">
       <Filter>NamedPipeSubsystem</Filter>
     </ClInclude>
     <ClInclude Include="MessageHandler.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="CameraManipulator.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCameraData.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InterceptorHelper.cpp">
-      <Filter>Game Specific</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraManipulator.cpp">
       <Filter>Game Specific</Filter>
     </ClCompile>
     <ClCompile Include="InputHooker.cpp">
@@ -98,9 +98,6 @@
     </ClCompile>
     <ClCompile Include="Gamepad.cpp">
       <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>Misc</Filter>
@@ -137,6 +134,12 @@
     </ClCompile>
     <ClCompile Include="MessageHandler.cpp">
       <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraManipulator.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

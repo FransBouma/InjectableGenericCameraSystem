@@ -98,28 +98,28 @@ namespace IGCS
 	void Globals::initializeKeyBindings()
 	{
 		// initialize the bindings with defaults. First the features which are always supported.
-		_keyBindingPerActionType[ActionType::BlockInput] = new ActionData("BlockInput", "Block input to game", IGCS_KEY_BLOCK_INPUT, false, false, false);
-		_keyBindingPerActionType[ActionType::CameraEnable] = new ActionData("CameraEnable", "Enable / Disable camera", IGCS_KEY_CAMERA_ENABLE, false, false, false);
-		_keyBindingPerActionType[ActionType::CameraLock] = new ActionData("CameraLock", "Lock / unlock camera movement", IGCS_KEY_CAMERA_LOCK, false, false, false);
-		_keyBindingPerActionType[ActionType::FovDecrease] = new ActionData("FovDecrease", "Decrease FoV", IGCS_KEY_FOV_DECREASE, false, false, false);
-		_keyBindingPerActionType[ActionType::FovIncrease] = new ActionData("FovIncrease", "Increase FoV", IGCS_KEY_FOV_INCREASE, false, false, false);
-		_keyBindingPerActionType[ActionType::FovReset] = new ActionData("FovReset", "Reset FoV", IGCS_KEY_FOV_RESET, false, false, false);
-		_keyBindingPerActionType[ActionType::MoveBackward] = new ActionData("MoveBackward", "Move camera backward", IGCS_KEY_MOVE_BACKWARD, false, false, false);
-		_keyBindingPerActionType[ActionType::MoveDown] = new ActionData("MoveDown", "Move camera down", IGCS_KEY_MOVE_DOWN, false, false, false);
-		_keyBindingPerActionType[ActionType::MoveForward] = new ActionData("MoveForward", "Move camera forward", IGCS_KEY_MOVE_FORWARD, false, false, false);
-		_keyBindingPerActionType[ActionType::MoveLeft] = new ActionData("MoveLeft", "Move camera left", IGCS_KEY_MOVE_LEFT, false, false, false);
-		_keyBindingPerActionType[ActionType::MoveRight] = new ActionData("MoveRight", "Move camera right", IGCS_KEY_MOVE_RIGHT, false, false, false);
-		_keyBindingPerActionType[ActionType::MoveUp] = new ActionData("MoveUp", "Move camera up", IGCS_KEY_MOVE_UP, false, false, false);
-		_keyBindingPerActionType[ActionType::RotateDown] = new ActionData("RotateDown", "Rotate camera down", IGCS_KEY_ROTATE_DOWN, false, false, false);
-		_keyBindingPerActionType[ActionType::RotateLeft] = new ActionData("RotateLeft", "Rotate camera left", IGCS_KEY_ROTATE_LEFT, false, false, false);
-		_keyBindingPerActionType[ActionType::RotateRight] = new ActionData("RotateRight", "Rotate camera right", IGCS_KEY_ROTATE_RIGHT, false, false, false);
-		_keyBindingPerActionType[ActionType::RotateUp] = new ActionData("RotateUp", "Rotate camera up", IGCS_KEY_ROTATE_UP, false, false, false);
-		_keyBindingPerActionType[ActionType::TiltLeft] = new ActionData("TiltLeft", "Tilt camera left", IGCS_KEY_TILT_LEFT, false, false, false);
-		_keyBindingPerActionType[ActionType::TiltRight] = new ActionData("TiltRight", "Tilt camera right", IGCS_KEY_TILT_RIGHT, false, false, false);
+		_keyBindingPerActionType[ActionType::BlockInput] = new ActionData("BlockInput", IGCS_KEY_BLOCK_INPUT, false, false, false);
+		_keyBindingPerActionType[ActionType::CameraEnable] = new ActionData("CameraEnable", IGCS_KEY_CAMERA_ENABLE, false, false, false);
+		_keyBindingPerActionType[ActionType::CameraLock] = new ActionData("CameraLock", IGCS_KEY_CAMERA_LOCK, false, false, false);
+		_keyBindingPerActionType[ActionType::FovDecrease] = new ActionData("FovDecrease", IGCS_KEY_FOV_DECREASE, false, false, false);
+		_keyBindingPerActionType[ActionType::FovIncrease] = new ActionData("FovIncrease", IGCS_KEY_FOV_INCREASE, false, false, false);
+		_keyBindingPerActionType[ActionType::FovReset] = new ActionData("FovReset", IGCS_KEY_FOV_RESET, false, false, false);
+		_keyBindingPerActionType[ActionType::MoveBackward] = new ActionData("MoveBackward", IGCS_KEY_MOVE_BACKWARD, false, false, false);
+		_keyBindingPerActionType[ActionType::MoveDown] = new ActionData("MoveDown", IGCS_KEY_MOVE_DOWN, false, false, false);
+		_keyBindingPerActionType[ActionType::MoveForward] = new ActionData("MoveForward", IGCS_KEY_MOVE_FORWARD, false, false, false);
+		_keyBindingPerActionType[ActionType::MoveLeft] = new ActionData("MoveLeft", IGCS_KEY_MOVE_LEFT, false, false, false);
+		_keyBindingPerActionType[ActionType::MoveRight] = new ActionData("MoveRight", IGCS_KEY_MOVE_RIGHT, false, false, false);
+		_keyBindingPerActionType[ActionType::MoveUp] = new ActionData("MoveUp", IGCS_KEY_MOVE_UP, false, false, false);
+		_keyBindingPerActionType[ActionType::RotateDown] = new ActionData("RotateDown", IGCS_KEY_ROTATE_DOWN, false, false, false);
+		_keyBindingPerActionType[ActionType::RotateLeft] = new ActionData("RotateLeft", IGCS_KEY_ROTATE_LEFT, false, false, false);
+		_keyBindingPerActionType[ActionType::RotateRight] = new ActionData("RotateRight", IGCS_KEY_ROTATE_RIGHT, false, false, false);
+		_keyBindingPerActionType[ActionType::RotateUp] = new ActionData("RotateUp", IGCS_KEY_ROTATE_UP, false, false, false);
+		_keyBindingPerActionType[ActionType::TiltLeft] = new ActionData("TiltLeft", IGCS_KEY_TILT_LEFT, false, false, false);
+		_keyBindingPerActionType[ActionType::TiltRight] = new ActionData("TiltRight", IGCS_KEY_TILT_RIGHT, false, false, false);
 
 		// Bindings which are often optional. Specify 'false' for available to disable it if the binding should be hidden.
 		// To enable the commands, remove the last 'false' in the calls below to make them available for code. (they're currently not available)
-		_keyBindingPerActionType[ActionType::HudToggle] = new ActionData("HudToggle", "Toggle HUD", IGCS_KEY_HUD_TOGGLE, false, false, false, false);
-		_keyBindingPerActionType[ActionType::Timestop] = new ActionData("Timestop", "Pause / unpause the game", IGCS_KEY_TIMESTOP, false, false, false, false);
+		_keyBindingPerActionType[ActionType::HudToggle] = new ActionData("HudToggle", IGCS_KEY_HUD_TOGGLE, false, false, false, false);
+		_keyBindingPerActionType[ActionType::Timestop] = new ActionData("Timestop", IGCS_KEY_TIMESTOP, false, false, false, false);
 	}
 }

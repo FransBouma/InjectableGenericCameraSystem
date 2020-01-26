@@ -34,15 +34,10 @@ namespace IGCS
 {
 	// System defaults
 	#define FRAME_SLEEP								8		// in milliseconds
-	#define IGCS_OVERLAY_INI_FILENAME				"IGCS_overlay.ini"
-	#define IGCS_SETTINGS_INI_FILENAME				"IGCS_settings.ini"
-	#define IGCS_SETTINGS_SAVE_DELAY				5.0f	// in seconds
-	#define IGCS_SPLASH_DURATION					8.0f	// in seconds
 	#define IGCS_SUPPORT_RAWKEYBOARDINPUT			true	// if set to false, raw keyboard input is ignored.
 	#define IGCS_MAX_MESSAGE_SIZE					4*1024	// in bytes
 
 	// Keyboard system control
-	#define IGCS_KEY_TOGGLE_OVERLAY					VK_INSERT		// With control
 	#define IGCS_KEY_CAMERA_ENABLE					VK_INSERT
 	#define IGCS_KEY_CAMERA_LOCK					VK_HOME
 	#define IGCS_KEY_ROTATE_RIGHT					VK_RIGHT		// yaw

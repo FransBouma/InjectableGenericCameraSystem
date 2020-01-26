@@ -253,7 +253,8 @@ namespace IGCS::Utils
 		LPBYTE ripRelativeValueAddress = locationData->locationInImage() + locationData->customOffset();
 		return  ripRelativeValueAddress + nextOpCodeOffset + *((__int32*)ripRelativeValueAddress);
 	}
-	   
+
+	
 	string formatString(const char* fmt, ...)
 	{
 		va_list args;
@@ -282,16 +283,31 @@ namespace IGCS::Utils
 		return strncmp(a, b, strlen(b)) == 0 ? 1 : 0;
 	}
 
+	
 	bool keyDown(int virtualKeyCode)
 	{
 		return (GetKeyState(virtualKeyCode) & 0x8000);
 	}
 
+	
 	bool altPressed()
 	{
 		return keyDown(VK_LMENU) || keyDown(VK_RMENU);
 	}
 
+	
+	bool ctrlPressed()
+	{
+		return keyDown(VK_LCONTROL) || keyDown(VK_RCONTROL);
+	}
+
+	
+	bool shiftPressed()
+	{
+		return keyDown(VK_LSHIFT) || keyDown(VK_RSHIFT);
+	}
+
+	
 	std::string vkCodeToString(int vkCode)
 	{
 		if (vkCode > 255 || vkCode < 0)
@@ -302,6 +318,7 @@ namespace IGCS::Utils
 		return toReturn;
 	}
 
+	
 	float floatFromBytes(uint8_t byteArray[], DWORD arrayLength, int startIndex)
 	{
 		if(arrayLength<startIndex+4)

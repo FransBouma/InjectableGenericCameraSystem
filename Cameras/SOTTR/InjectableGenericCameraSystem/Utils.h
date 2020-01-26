@@ -67,6 +67,8 @@ namespace IGCS::Utils
 	bool stringStartsWith(const char *a, const char *b);
 	bool keyDown(int virtualKeyCode);
 	bool altPressed();
+	bool ctrlPressed();
+	bool shiftPressed();
 	std::string vkCodeToString(int vkCode);
 	float floatFromBytes(uint8_t byteArray[], DWORD arrayLength, int startIndex);
 	int intFromBytes(uint8_t byteArray[], DWORD arrayLength, int startIndex);
