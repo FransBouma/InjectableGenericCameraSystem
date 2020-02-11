@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="29">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>1</ID>
+      <Description>"Ansel Enhancements. Leave enabled."</Description>
+      <LastState Activated="1"/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>// By Otis_Inf
+// 11-feb-2020
+//////////////////////////////////////////
+[ENABLE]
+
+aobscanmodule(CollisionDetectionRemoval,Gujian3.exe,0F 95 C0 84 C0 74 1B) // should be unique
+aobscanmodule(AnselRangeRemoval,Gujian3.exe,D0 0F 86 F0 00 00 00) // should be unique
+aobscanmodule(AnselEverywhere,Gujian3.exe,80 3B 00 74 55) // should be unique
+
+registersymbol(CollisionDetectionRemoval)
+registersymbol(AnselRangeRemoval)
+registersymbol(AnselEverywhere)
+
+CollisionDetectionRemoval:
+  xor al,al                // was: setne al. if al is 0 the jump is taken which skips collision detection
+  nop
+  test al,al
+
+AnselRangeRemoval+01:
+  jmp Gujian3.exe+57E662   // was: jbe Gujian3.exe+57E662. Take the jmp -&gt; no range check
+  nop
+
+AnselEverywhere:
+  cmp byte ptr [rbx],00
+  nop
+  nop                           // was: je Gujian3.exe+57E7F8
+  cmp byte ptr [rbx+01],00
+  nop
+  nop                           // was: jne Gujian3.exe+57E7F8
+
+
+[DISABLE]
+CollisionDetectionRemoval:
+  setne al
+  test al,al
+
+AnselRangeRemoval+01:
+  jbe Gujian3.exe+57E662
+
+AnselEverywhere:
+  cmp byte ptr [rbx],00
+  je Gujian3.exe+57E7F8
+  cmp byte ptr [rbx+01],00
+  jne Gujian3.exe+57E7F8
+
+
+{
+// ORIGINAL CODE - INJECTION POINT: "Gujian3.exe"+57E4C8
+
+"Gujian3.exe"+57E495: C7 45 D4 FF FF FF FF        -  mov [rbp-2C],FFFFFFFF
+"Gujian3.exe"+57E49C: 89 75 00                    -  mov [rbp+00],esi
+"Gujian3.exe"+57E49F: C7 45 E0 FF FF FF FF        -  mov [rbp-20],FFFFFFFF
+"Gujian3.exe"+57E4A6: C7 45 B8 00 00 80 3F        -  mov [rbp-48],3F800000
+"Gujian3.exe"+57E4AD: E8 9E 0A FE FF              -  call Gujian3.exe+55EF50
+"Gujian3.exe"+57E4B2: 48 8B C8                    -  mov rcx,rax
+"Gujian3.exe"+57E4B5: 4C 8D 45 B0                 -  lea r8,[rbp-50]
+"Gujian3.exe"+57E4B9: 48 8D 54 24 50              -  lea rdx,[rsp+50]
+"Gujian3.exe"+57E4BE: E8 5D 40 CF FF              -  call Gujian3.exe+272520
+"Gujian3.exe"+57E4C3: 48 83 7D 10 00              -  cmp qword ptr [rbp+10],00
+// ---------- INJECTING HERE ----------
+"Gujian3.exe"+57E4C8: 0F 95 C0                    -  setne al
+"Gujian3.exe"+57E4CB: 84 C0                       -  test al,al
+// ---------- DONE INJECTING  ----------
+"Gujian3.exe"+57E4CD: 74 1B                       -  je Gujian3.exe+57E4EA
+"Gujian3.exe"+57E4CF: F3 44 0F 11 54 24 28        -  movss [rsp+28],xmm10
+"Gujian3.exe"+57E4D6: F3 41 0F 10 C1              -  movss xmm0,xmm9
+"Gujian3.exe"+57E4DB: 41 0F 14 C3                 -  unpcklps xmm0,xmm11
+"Gujian3.exe"+57E4DF: F2 0F 11 03                 -  movsd [rbx],xmm0
+"Gujian3.exe"+57E4E3: 8B 44 24 28                 -  mov eax,[rsp+28]
+"Gujian3.exe"+57E4E7: 89 43 08                    -  mov [rbx+08],eax
+"Gujian3.exe"+57E4EA: F3 0F 10 33                 -  movss xmm6,[rbx]
+"Gujian3.exe"+57E4EE: F3 0F 10 4B 04              -  movss xmm1,[rbx+04]
+"Gujian3.exe"+57E4F3: F3 0F 10 43 08              -  movss xmm0,[rbx+08]
+}
+{
+// ORIGINAL CODE - INJECTION POINT: "Gujian3.exe"+57E56C
+
+"Gujian3.exe"+57E53F: 0F 28 C6                    -  movaps xmm0,xmm6
+"Gujian3.exe"+57E542: F3 0F 59 C6                 -  mulss xmm0,xmm6
+"Gujian3.exe"+57E546: F3 0F 58 D0                 -  addss xmm2,xmm0
+"Gujian3.exe"+57E54A: 41 0F 28 C8                 -  movaps xmm1,xmm8
+"Gujian3.exe"+57E54E: F3 41 0F 59 C8              -  mulss xmm1,xmm8
+"Gujian3.exe"+57E553: F3 0F 58 D1                 -  addss xmm2,xmm1
+"Gujian3.exe"+57E557: F3 44 0F 10 8F E0 00 00 00  -  movss xmm9,[rdi+000000E0]
+"Gujian3.exe"+57E560: 41 0F 28 C1                 -  movaps xmm0,xmm9
+"Gujian3.exe"+57E564: F3 41 0F 59 C1              -  mulss xmm0,xmm9
+"Gujian3.exe"+57E569: 0F 2F D0                    -  comiss xmm2,xmm0
+// ---------- INJECTING HERE ----------
+"Gujian3.exe"+57E56C: 0F 86 F0 00 00 00           -  jbe Gujian3.exe+57E662
+// ---------- DONE INJECTING  ----------
+"Gujian3.exe"+57E572: F3 0F 10 2D 72 4C 58 02     -  movss xmm5,[Gujian3.exe+2B031EC]
+"Gujian3.exe"+57E57A: 0F 28 DA                    -  movaps xmm3,xmm2
+"Gujian3.exe"+57E57D: 0F 28 E2                    -  movaps xmm4,xmm2
+"Gujian3.exe"+57E580: F3 0F 52 E2                 -  rsqrtss xmm4,xmm2
+"Gujian3.exe"+57E584: F3 0F 59 DD                 -  mulss xmm3,xmm5
+"Gujian3.exe"+57E588: 0F 28 C4                    -  movaps xmm0,xmm4
+"Gujian3.exe"+57E58B: F3 0F 59 C4                 -  mulss xmm0,xmm4
+"Gujian3.exe"+57E58F: 0F 28 CB                    -  movaps xmm1,xmm3
+"Gujian3.exe"+57E592: F3 0F 59 C8                 -  mulss xmm1,xmm0
+"Gujian3.exe"+57E596: 0F 28 D5                    -  movaps xmm2,xmm5
+}
+{
+// ORIGINAL CODE - INJECTION POINT: "Gujian3.exe"+57E79E
+
+"Gujian3.exe"+57E779: B9 E8 00 00 00        -  mov ecx,000000E8
+"Gujian3.exe"+57E77E: E8 DD DD 24 00        -  call Gujian3.exe+7CC560
+"Gujian3.exe"+57E783: 48 85 C0              -  test rax,rax
+"Gujian3.exe"+57E786: 74 0D                 -  je Gujian3.exe+57E795
+"Gujian3.exe"+57E788: 48 8B C8              -  mov rcx,rax
+"Gujian3.exe"+57E78B: E8 50 F3 FF FF        -  call Gujian3.exe+57DAE0
+"Gujian3.exe"+57E790: 48 8B D8              -  mov rbx,rax
+"Gujian3.exe"+57E793: EB 02                 -  jmp Gujian3.exe+57E797
+"Gujian3.exe"+57E795: 33 DB                 -  xor ebx,ebx
+"Gujian3.exe"+57E797: 48 89 1D 1A BE 02 03  -  mov [Gujian3.exe+35AA5B8],rbx
+// ---------- INJECTING HERE ----------
+"Gujian3.exe"+57E79E: 80 3B 00              -  cmp byte ptr [rbx],00
+"Gujian3.exe"+57E7A1: 74 55                 -  je Gujian3.exe+57E7F8
+// ---------- DONE INJECTING  ----------
+"Gujian3.exe"+57E7A3: 80 7B 01 00           -  cmp byte ptr [rbx+01],00
+"Gujian3.exe"+57E7A7: 75 4F                 -  jne Gujian3.exe+57E7F8
+"Gujian3.exe"+57E7A9: 0F 10 83 C0 00 00 00  -  movups xmm0,[rbx+000000C0]
+"Gujian3.exe"+57E7B0: 48 8B CB              -  mov rcx,rbx
+"Gujian3.exe"+57E7B3: 0F 11 07              -  movups [rdi],xmm0
+"Gujian3.exe"+57E7B6: 8B 83 D0 00 00 00     -  mov eax,[rbx+000000D0]
+"Gujian3.exe"+57E7BC: 89 47 10              -  mov [rdi+10],eax
+"Gujian3.exe"+57E7BF: C6 43 01 01           -  mov byte ptr [rbx+01],01
+"Gujian3.exe"+57E7C3: C7 43 04 01 00 00 00  -  mov [rbx+04],00000001
+"Gujian3.exe"+57E7CA: E8 01 F7 FF FF        -  call Gujian3.exe+57DED0
+}
+
+</AssemblerScript>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>7</ID>
+      <Description>"AR correction for non-16:9 screens (might zoom). Leave enabled"</Description>
+      <LastState Activated="1"/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>// By Otis_Inf
+// 11-feb-2020
+//////////////////////////////////////////
+[ENABLE]
+
+aobscanmodule(ARCorrection,Gujian3.exe,73 3B F3 41 0F 11 10) // should be unique
+registersymbol(ARCorrection)
+
+ARCorrection:
+  jmp Gujian3.exe+52DCD0
+
+
+[DISABLE]
+
+ARCorrection:
+  jae Gujian3.exe+52DCD0
+
+{
+// ORIGINAL CODE - INJECTION POINT: "Gujian3.exe"+52DC93
+
+"Gujian3.exe"+52DC7B: CC                       -  int 3
+"Gujian3.exe"+52DC7C: CC                       -  int 3
+"Gujian3.exe"+52DC7D: CC                       -  int 3
+"Gujian3.exe"+52DC7E: CC                       -  int 3
+"Gujian3.exe"+52DC7F: CC                       -  int 3
+"Gujian3.exe"+52DC80: F3 0F 10 49 04           -  movss xmm1,[rcx+04]
+"Gujian3.exe"+52DC85: F3 0F 10 11              -  movss xmm2,[rcx]
+"Gujian3.exe"+52DC89: 0F 28 C1                 -  movaps xmm0,xmm1
+"Gujian3.exe"+52DC8C: F3 0F 59 C3              -  mulss xmm0,xmm3
+"Gujian3.exe"+52DC90: 0F 2F D0                 -  comiss xmm2,xmm0
+// ---------- INJECTING HERE ----------
+"Gujian3.exe"+52DC93: 73 3B                    -  jae Gujian3.exe+52DCD0
+"Gujian3.exe"+52DC95: F3 41 0F 11 10           -  movss [r8],xmm2
+// ---------- DONE INJECTING  ----------
+"Gujian3.exe"+52DC9A: F3 0F 10 01              -  movss xmm0,[rcx]
+"Gujian3.exe"+52DC9E: F3 0F 5E C3              -  divss xmm0,xmm3
+"Gujian3.exe"+52DCA2: F3 41 0F 11 40 04        -  movss [r8+04],xmm0
+"Gujian3.exe"+52DCA8: F3 0F 10 49 04           -  movss xmm1,[rcx+04]
+"Gujian3.exe"+52DCAD: C7 02 00 00 00 00        -  mov [rdx],00000000
+"Gujian3.exe"+52DCB3: F3 0F 5C C8              -  subss xmm1,xmm0
+"Gujian3.exe"+52DCB7: 0F 57 C0                 -  xorps xmm0,xmm0
+"Gujian3.exe"+52DCBA: F3 0F 59 0D 2A 55 5D 02  -  mulss xmm1,[Gujian3.exe+2B031EC]
+"Gujian3.exe"+52DCC2: 0F 2F C8                 -  comiss xmm1,xmm0
+"Gujian3.exe"+52DCC5: 77 03                    -  ja Gujian3.exe+52DCCA
+}
+</AssemblerScript>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>5</ID>
+      <Description>"Toggle cutscene timestop (Ctrl-Numpad0: pause, Alt-numpad 0: continue)."</Description>
+      <VariableType>Byte</VariableType>
+      <Address>[Gujian3.exe+2D47F68]</Address>
+      <Offsets>
+        <Offset>5C</Offset>
+      </Offsets>
+      <Hotkeys>
+        <Hotkey>
+          <Action>Set Value</Action>
+          <Keys>
+            <Key>17</Key>
+            <Key>96</Key>
+          </Keys>
+          <Value>2</Value>
+          <ID>0</ID>
+        </Hotkey>
+        <Hotkey>
+          <Action>Set Value</Action>
+          <Keys>
+            <Key>18</Key>
+            <Key>96</Key>
+          </Keys>
+          <Value>1</Value>
+          <ID>1</ID>
+        </Hotkey>
+      </Hotkeys>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>6</ID>
+      <Description>"------------------------------------------------------------------"</Description>
+      <LastState Value="" RealAddress="00000000"/>
+      <Color>FF0000</Color>
+      <GroupHeader>1</GroupHeader>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>2</ID>
+      <Description>"By Otis_Inf. 11-feb-2020. FRAMED. Screenshot Community. https://framedsc.github.io"</Description>
+      <LastState Value="" RealAddress="00000000"/>
+      <Color>FF0000</Color>
+      <GroupHeader>1</GroupHeader>
+    </CheatEntry>
+  </CheatEntries>
+  <UserdefinedSymbols/>
+</CheatTable>

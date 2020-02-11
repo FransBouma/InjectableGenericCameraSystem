@@ -16,7 +16,7 @@
 [ENABLE]
 aobscanmodule(RemovePMCoordRange,RDR2.exe,E8 ?? ?? ?? ?? 45 33 C0 48 8D 55 B0 48 8D 4B 20) // should be unique
 aobscanmodule(RemovePMRotationRange,RDR2.exe,E8 ?? ?? ?? ?? F3 0F 10 4D 30 48 8D 55 F0) // should be unique
-aobscanmodule(RemovePMBlackBars,RDR2.exe, 0F 86 83 04 00 00)
+aobscanmodule(RemovePMBlackBars,RDR2.exe, 0F 86 6E 03 00 00)
 
 RemovePMCoordRange:
   nop
@@ -33,7 +33,7 @@ RemovePMRotationRange:
   nop
 
 RemovePMBlackBars:
-  db E9 84 04 00 00 90                         // jmp RDR2.exe+51D290 and a NOP
+  db E9 6F 03 00 00 90                         // jmp RDR2.exe+51D290 and a NOP
 
 registersymbol(RemovePMCoordRange)
 registersymbol(RemovePMRotationRange)
@@ -41,13 +41,13 @@ registersymbol(RemovePMBlackBars)
 
 [DISABLE]
 RemovePMCoordRange:
-  db E8 53 F9 FF FF
+  db E8 FF F8 FF FF
 
 RemovePMRotationRange:
-  db E8 8C A0 00 00
+  db E8 FC A6 00 00
 
 RemovePMBlackBars:
-  db 0F 86 83 04 00 00
+  db 0F 86 6E 03 00 00
 
 
 unregistersymbol(RemovePMCoordRange)
@@ -101,7 +101,7 @@ RDR2.exe+11D821 - F3 0F10 55 48         - movss xmm2,[rbp+48]
     <CheatEntry>
       <ID>14</ID>
       <Description>"Override photomode freecam FOV (Toggle: F7. Zoom in: Numpad+ Zoom out: Numpad-)"</Description>
-      <LastState/>
+      <LastState Activated="1"/>
       <VariableType>Auto Assembler Script</VariableType>
       <AssemblerScript>/////////////////////////
 // By Otis_Inf. All rights reserved.
@@ -112,7 +112,7 @@ RDR2.exe+11D821 - F3 0F10 55 48         - movss xmm2,[rbp+48]
 /////////////////////////
 
 [ENABLE]
-aobscanmodule(FoVIntercept,RDR2.exe,F3 0F 11 83 80 00 00 00 48 83 C4 20 5B C3 CC) // should be unique
+aobscanmodule(FoVIntercept,RDR2.exe,F3 0F 10 44 24 30 F3 0F 10 0D ?? ?? ?? ?? 0F 2F C1 F3 0F 10 15 ?? ?? ?? ?? 72 95)
 alloc(newmem,$1000,"RDR2.exe"+128440)
 
 label(code)
@@ -131,7 +131,7 @@ code:
 fovAddress:
 dq 0
 
-FoVIntercept:
+FoVIntercept+29:
   jmp newmem
   nop
   nop
@@ -140,7 +140,7 @@ return:
 
 [DISABLE]
 
-FoVIntercept:
+FoVIntercept+29:
   db F3 0F 11 83 80 00 00 00
 
 unregistersymbol(fovAddress)
@@ -148,31 +148,20 @@ unregistersymbol(FoVIntercept)
 dealloc(newmem)
 
 {
-// ORIGINAL CODE - INJECTION POINT: "RDR2.exe"+128440
-
-"RDR2.exe"+128417: F3 0F 10 44 24 30        -  movss xmm0,[rsp+30]
-"RDR2.exe"+12841D: F3 0F 10 0D 27 41 0C 03  -  movss xmm1,[RDR2.exe+31EC54C]
-"RDR2.exe"+128425: 0F 2F C1                 -  comiss xmm0,xmm1
-"RDR2.exe"+128428: F3 0F 10 15 84 5D 0C 03  -  movss xmm2,[RDR2.exe+31EE1B4]
-"RDR2.exe"+128430: 72 95                    -  jb RDR2.exe+1283C7
-"RDR2.exe"+128432: 0F 2F C2                 -  comiss xmm0,xmm2
-"RDR2.exe"+128435: 76 09                    -  jna RDR2.exe+128440
-"RDR2.exe"+128437: 0F 2F C1                 -  comiss xmm0,xmm1
-"RDR2.exe"+12843A: 72 8B                    -  jb RDR2.exe+1283C7
-"RDR2.exe"+12843C: F3 0F 5D C2              -  minss xmm0,xmm2
-// ---------- INJECTING HERE ----------
-"RDR2.exe"+128440: F3 0F 11 83 80 00 00 00  -  movss [rbx+00000080],xmm0
-// ---------- DONE INJECTING  ----------
-"RDR2.exe"+128448: 48 83 C4 20              -  add rsp,20
-"RDR2.exe"+12844C: 5B                       -  pop rbx
-"RDR2.exe"+12844D: C3                       -  ret 
-"RDR2.exe"+12844E: CC                       -  int 3 
-"RDR2.exe"+12844F: 4B 48                    -  dec r8
-"RDR2.exe"+128451: 89 5C 24 08              -  mov [rsp+08],ebx
-"RDR2.exe"+128455: 57                       -  push rdi
-"RDR2.exe"+128456: 48 83 EC 20              -  sub rsp,20
-"RDR2.exe"+12845A: 0F B7 81 EC 00 00 00     -  movzx eax,word ptr [rcx+000000EC]
-"RDR2.exe"+128461: 48 8D 99 D0 06 00 00     -  lea rbx,[rcx+000006D0]
+RDR2.exe+12A4B3 - F3 0F10 44 24 30      - movss xmm0,[rsp+30]
+RDR2.exe+12A4B9 - F3 0F10 0D 7B061103   - movss xmm1,[RDR2.exe+323AB3C]
+RDR2.exe+12A4C1 - 0F2F C1               - comiss xmm0,xmm1
+RDR2.exe+12A4C4 - F3 0F10 15 34241103   - movss xmm2,[RDR2.exe+323C900]
+RDR2.exe+12A4CC - 72 95                 - jb RDR2.exe+12A463
+RDR2.exe+12A4CE - 0F2F C2               - comiss xmm0,xmm2
+RDR2.exe+12A4D1 - 76 09                 - jna RDR2.exe+12A4DC
+RDR2.exe+12A4D3 - 0F2F C1               - comiss xmm0,xmm1
+RDR2.exe+12A4D6 - 72 8B                 - jb RDR2.exe+12A463
+RDR2.exe+12A4D8 - F3 0F5D C2            - minss xmm0,xmm2
+RDR2.exe+12A4DC - F3 0F11 83 80000000   - movss [rbx+00000080],xmm0     // Write FOV
+RDR2.exe+12A4E4 - 48 83 C4 20           - add rsp,20
+RDR2.exe+12A4E8 - 5B                    - pop rbx
+RDR2.exe+12A4E9 - C3                    - ret
 }
 </AssemblerScript>
       <Hotkeys>
@@ -188,6 +177,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>9</ID>
           <Description>"FoV value"</Description>
+          <LastState Value="51,25251389" RealAddress="17603CABEE0"/>
           <VariableType>Float</VariableType>
           <Address>fovAddress</Address>
           <Offsets>
@@ -217,7 +207,7 @@ dealloc(newmem)
     <CheatEntry>
       <ID>22</ID>
       <Description>"Weather control (leave enabled)"</Description>
-      <LastState Activated="1"/>
+      <LastState/>
       <VariableType>Auto Assembler Script</VariableType>
       <AssemblerScript>/////////////////////////
 // By Otis_Inf. All rights reserved.
@@ -275,6 +265,9 @@ return:
 WeatherIntercept:
   db 8B 83 5C 41 00 00
 
+WeatherFromIntercept:
+  db 8B 81 18 3F 00 00
+
 unregistersymbol(WeatherIntercept)
 dealloc(newmem)
 
@@ -310,7 +303,6 @@ dealloc(newmem)
         <CheatEntry>
           <ID>23</ID>
           <Description>"Weather type (0-21: various weather types. -1 (FFFFFFFF): 0ff)"</Description>
-          <LastState Value="FFFFFFFF" RealAddress="7FF6487856BC"/>
           <ShowAsHex>1</ShowAsHex>
           <VariableType>4 Bytes</VariableType>
           <Address>weatherAddress</Address>
@@ -378,7 +370,6 @@ dealloc(newmem)
             <CheatEntry>
               <ID>52</ID>
               <Description>"From weather"</Description>
-              <LastState Value="6" RealAddress="7FF648785478"/>
               <VariableType>4 Bytes</VariableType>
               <Address>weatherFromAddress</Address>
               <Offsets>
@@ -388,7 +379,6 @@ dealloc(newmem)
             <CheatEntry>
               <ID>53</ID>
               <Description>"To weather"</Description>
-              <LastState Value="2" RealAddress="7FF64878547C"/>
               <VariableType>4 Bytes</VariableType>
               <Address>weatherFromAddress</Address>
               <Offsets>
@@ -398,7 +388,6 @@ dealloc(newmem)
             <CheatEntry>
               <ID>54</ID>
               <Description>"Interpolation factor (0: from weather, 1: to weather)"</Description>
-              <LastState Value="0.7226333618" RealAddress="7FF648785480"/>
               <VariableType>Float</VariableType>
               <Address>weatherFromAddress</Address>
               <Offsets>
@@ -412,7 +401,7 @@ dealloc(newmem)
     <CheatEntry>
       <ID>8</ID>
       <Description>"Enable hotsampling. Leave enabled. Use Borderless Windowed in settings"</Description>
-      <LastState Activated="1"/>
+      <LastState/>
       <VariableType>Auto Assembler Script</VariableType>
       <AssemblerScript>/////////////////////////
 // By Otis_Inf. All rights reserved.
@@ -424,8 +413,8 @@ dealloc(newmem)
 
 [ENABLE]
 
-aobscanmodule(EnableHotsampling,RDR2.exe,FF 90 10 01 00 00 84 C0 74 05) // should be unique
-aobscanmodule(AlwaysResize,RDR2.exe,75 0F 8B 45 E4) // should be unique
+aobscanmodule(EnableHotsampling,RDR2.exe,FF 90 10 01 00 00 84 C0 74 05 4D 85 E4) // can match with another block, check if it's the right one!
+aobscanmodule(AlwaysResize,RDR2.exe,75 0? 8B 45 ?? 39 05) // should be unique
 aobscanmodule(InterceptPreferredRes, RDR2.exe, 8B 41 20 89 02 8B 41 24 41 89 00 C3)
 alloc(newmem,$1000,"RDR2.exe"+263167B)
 
@@ -440,7 +429,7 @@ registersymbol(InterceptPreferredRes)
 newmem:
 
 code:
-  // call qword ptr [rax+00000100]
+  // call qword ptr [rax+00000110]
   // always succeed
   mov al, 01
   // RBX contains resolution as forced by SRWE. low 2 bytes is width, high 2 bytes of low dword is height.
@@ -539,7 +528,7 @@ RDR2.exe+25CC1FB - C3                    - ret
     <CheatEntry>
       <ID>16</ID>
       <Description>"Remove black bars in cinematic parts"</Description>
-      <LastState/>
+      <LastState Activated="1"/>
       <VariableType>Auto Assembler Script</VariableType>
       <AssemblerScript>/////////////////////////
 // By Otis_Inf. All rights reserved.
@@ -582,18 +571,25 @@ RDR2.exe+2C742A - 40 38 3D 049B5403     - cmp [RDR2.exe+3810F35],dil
 </AssemblerScript>
     </CheatEntry>
     <CheatEntry>
-      <ID>13</ID>
+      <ID>57</ID>
       <Description>"Time of day: Hour. 0-23. Setting the value outside this range crashes the game"</Description>
-      <LastState Value="12" RealAddress="7FF648792C10"/>
+      <LastState Value="8" RealAddress="7FF660F09AC0"/>
       <VariableType>2 Bytes</VariableType>
-      <Address>RDR2.exe+4412C10</Address>
+      <Address>RDR2.exe+4469AC0</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>60</ID>
+      <Description>"Time of day: Minutes. 0-59. Setting the value outside this range crashes the game"</Description>
+      <LastState Value="31" RealAddress="7FF660F09AC4"/>
+      <VariableType>2 Bytes</VariableType>
+      <Address>RDR2.exe+4469AC4</Address>
     </CheatEntry>
     <CheatEntry>
       <ID>17</ID>
       <Description>"Pause game. Ctrl+Numpad0: set to 1 (paused). Alt-Numpad0: set to 0 (unpaused)"</Description>
-      <LastState Value="0" RealAddress="7FF649B4B7B3"/>
+      <LastState Value="0" RealAddress="7FF6622BEB83"/>
       <VariableType>Byte</VariableType>
-      <Address>RDR2.exe+57CB7B3</Address>
+      <Address>RDR2.exe+581EB83</Address>
       <Hotkeys>
         <Hotkey>
           <Action>Set Value</Action>
@@ -686,13 +682,6 @@ dealloc(newmem)
       </Hotkeys>
     </CheatEntry>
     <CheatEntry>
-      <ID>50</ID>
-      <Description>"Active aspect ratio"</Description>
-      <LastState Value="1.600000024" RealAddress="7FF647EA261C"/>
-      <VariableType>Float</VariableType>
-      <Address>RDR2.exe+3B2261C</Address>
-    </CheatEntry>
-    <CheatEntry>
       <ID>10</ID>
       <Description>"--------------------------------------------------------------------------------------"</Description>
       <LastState Value="" RealAddress="00000000"/>
@@ -701,7 +690,7 @@ dealloc(newmem)
     </CheatEntry>
     <CheatEntry>
       <ID>11</ID>
-      <Description>"By Otis_Inf. v0.6. 14-nov-2019. Thanks to Hattiwatti for hotsampling &amp; weather locations"</Description>
+      <Description>"By Otis_Inf. v0.12. 15-jan-2020. Thanks to Hattiwatti for hotsampling &amp; weather locations"</Description>
       <LastState Value="" RealAddress="00000000"/>
       <Color>FF0000</Color>
       <GroupHeader>1</GroupHeader>

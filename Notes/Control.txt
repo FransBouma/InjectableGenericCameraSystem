@@ -15,7 +15,22 @@ input_rmdwin10_f.dll+8857 - CC                    - int 3
 
 // enable free camera in main game:
 // Search for 'Free camera' in string references. 
-// Latest patch:
+// Latest patch
+Control_DX12.exe+3454E0 - 48 8D 4D E0           - lea rcx,[rbp-20]
+Control_DX12.exe+3454E4 - FF 15 9EDC9D00        - call qword ptr [Control_DX12.exe+D23188] { ->physics_rmdwin10_f.physics::updateApexCamera }
+Control_DX12.exe+3454EA - 48 63 0D B3CBE700     - movsxd  rcx,dword ptr [Control_DX12.exe+11C20A4] { (0) }
+Control_DX12.exe+3454F1 - 48 8D 15 982DA500     - lea rdx,[Control_DX12.exe+D98290] { ("Current camera") }
+Control_DX12.exe+3454F8 - 48 8B 0C CF           - mov rcx,[rdi+rcx*8]
+Control_DX12.exe+3454FC - E8 CF0D0000           - call Control_DX12.exe+3462D0
+Control_DX12.exe+345501 - 48 8D 15 782DA500     - lea rdx,[Control_DX12.exe+D98280] { ("Free camera") }
+Control_DX12.exe+345508 - 48 8B 0D A1CBE700     - mov rcx,[Control_DX12.exe+11C20B0] { (171AE0732B0) }
+Control_DX12.exe+34550F - E8 BC0D0000           - call Control_DX12.exe+3462D0
+Control_DX12.exe+345514 - 48 8D 15 552DA500     - lea rdx,[Control_DX12.exe+D98270] { ("Player camera") }
+Control_DX12.exe+34551B - 48 8B 0D 36CBE700     - mov rcx,[Control_DX12.exe+11C2058] { (171AE27A1F0) }
+Control_DX12.exe+345522 - E8 A90D0000           - call Control_DX12.exe+3462D0
+Control_DX12.exe+345527 - 80 3D 0299E900 00     - cmp byte ptr [Control_DX12.exe+11DEE30],00 { (0),0 }
+
+// October patch:
 Control_DX12.exe+336340 - 48 8D 4D E0           - lea rcx,[rbp-20]
 Control_DX12.exe+336344 - FF 15 26DE9C00        - call qword ptr [Control_DX12.exe+D04170] { ->physics_rmdwin10_f.physics::updateApexCamera }
 Control_DX12.exe+33634A - 48 63 0D 2B22E600     - movsxd  rcx,dword ptr [Control_DX12.exe+119857C]		>>> Address for free camera: set to 1 to enable. DX11: Control_DX11.exe+33634A - 48 63 0D 8B21E600     - movsxd  rcx,dword ptr [Control_DX11.exe+11984DC] { (0) }
@@ -48,7 +63,18 @@ Control_DX12.exe+3277C6 - 0F84 54010000         - je Control_DX12.exe+327920
 Control_DX12.exe+3277CC - 45 33 E4              - xor r12d,r12d
 
 // how to obtain the cameracomponentstate base address: 
-// Latest patch:
+// latest patch
+Control_DX12.exe+55919B - 48 8B 44 24 30        - mov rax,[rsp+30]
+Control_DX12.exe+5591A0 - C6 00 00              - mov byte ptr [rax],00 { 0 }
+Control_DX12.exe+5591A3 - C7 46 60 00000000     - mov [rsi+60],00000000 { 0 }
+Control_DX12.exe+5591AA - 48 63 05 F38EC600     - movsxd  rax,dword ptr [Control_DX12.exe+11C20A4] { (0) }
+Control_DX12.exe+5591B1 - 48 8D 0D 486EAAFF     - lea rcx,[Control_DX12.exe] { (9460301) }
+Control_DX12.exe+5591B8 - 48 8B 8C C1 A8201C01  - mov rcx,[rcx+rax*8+011C20A8]				<< hardcoded static address. 
+Control_DX12.exe+5591C0 - 33 D2                 - xor edx,edx
+Control_DX12.exe+5591C2 - 48 85 C9              - test rcx,rcx
+Control_DX12.exe+5591C5 - 74 19                 - je Control_DX12.exe+5591E0
+Control_DX12.exe+5591C7 - 48 8D 55 C7           - lea rdx,[rbp-39]
+// October patch
 Control_DX12.exe+548975 - 0F82 C7FEFFFF         - jb Control_DX12.exe+548842
 Control_DX12.exe+54897B - 48 8B 44 24 30        - mov rax,[rsp+30]
 Control_DX12.exe+548980 - C6 00 00              - mov byte ptr [rax],00 { 0 }
@@ -222,6 +248,14 @@ coregame_rmdwin10_f.dll+AA143 - EB 04                 - jmp coregame_rmdwin10_f.
 
 // Allow any resolution (SRWE)
 // latest patch:
+coregame_rmdwin10_f.dll+AC26F - 8B 83 18010000        - mov eax,[rbx+00000118]
+coregame_rmdwin10_f.dll+AC275 - 48 8D 54 24 20        - lea rdx,[rsp+20]
+coregame_rmdwin10_f.dll+AC27A - 0F10 8B B0000000      - movups xmm1,[rbx+000000B0]
+coregame_rmdwin10_f.dll+AC281 - 41 B8 01000000        - mov r8d,00000001					>> Change to mov r8d, 0. 
+coregame_rmdwin10_f.dll+AC287 - 89 84 24 98000000     - mov [rsp+00000098],eax
+coregame_rmdwin10_f.dll+AC28E - 0F29 44 24 20         - movaps [rsp+20],xmm0
+coregame_rmdwin10_f.dll+AC293 - 48 8B CB              - mov rcx,rbx
+// october patch:
 coregame_rmdwin10_f.dll+A761F - 8B 83 18010000        - mov eax,[rbx+00000118]
 coregame_rmdwin10_f.dll+A7625 - 48 8D 54 24 20        - lea rdx,[rsp+20]
 coregame_rmdwin10_f.dll+A762A - 0F10 8B B0000000      - movups xmm1,[rbx+000000B0]
@@ -352,7 +386,19 @@ This has the downside that it isn't picked up immediately, you have to enable/di
 
 // Alternative timestop
 // Pausing r::Timer. 
-// Latest patch:
+// latest patch
+Control_DX12.exe+3294FC - FF 15 1EC19F00        - call qword ptr [Control_DX12.exe+D25620] { ->rl_rmdwin10_f.r::ScratchPad::garbageCollection }
+Control_DX12.exe+329502 - FF 15 20C19F00        - call qword ptr [Control_DX12.exe+D25628] { ->rl_rmdwin10_f.r::ScratchPad::freeAll }
+Control_DX12.exe+329508 - BA 02000000           - mov edx,00000002 { 2 }
+Control_DX12.exe+32950D - 48 8B 0D 048CE900     - mov rcx,[Control_DX12.exe+11C2118]    <<<<<<< Read r::Timer global instance. DX11: offset 31A389, offset is 1166F88
+Control_DX12.exe+329514 - E8 37E20900           - call Control_DX12.exe+3C7750
+Control_DX12.exe+329519 - BA 01000000           - mov edx,00000001 { 1 }
+Control_DX12.exe+32951E - 48 8B 0D F38BE900     - mov rcx,[Control_DX12.exe+11C2118] { (2809FE969D0) }
+Control_DX12.exe+329525 - E8 26E20900           - call Control_DX12.exe+3C7750
+Control_DX12.exe+32952A - 48 8B 05 E7D89F00     - mov rax,[Control_DX12.exe+D26E18] { (7FFCCCDA7938) }
+Control_DX12.exe+329531 - 48 8B 08              - mov rcx,[rax]
+Control_DX12.exe+329534 - F3 0F10 71 10         - movss xmm6,[rcx+10]
+// October patch:
 Control_DX12.exe+31A4F8 - FF 15 1AC19E00        - call qword ptr [Control_DX12.exe+D06618] { ->rl_rmdwin10_f.r::ScratchPad::garbageCollection }
 Control_DX12.exe+31A4FE - FF 15 1CC19E00        - call qword ptr [Control_DX12.exe+D06620] { ->rl_rmdwin10_f.r::ScratchPad::freeAll }
 Control_DX12.exe+31A504 - BA 02000000           - mov edx,00000002 { 2 }
@@ -414,7 +460,18 @@ rend::RenderOptions::RenderVectorBlur   (bool)  -> setting to 0 switches off mot
 rend::RenderOptions::ScreenSpaceAntialiasing (bool) -> 0 -> no AA
 
 // Don't pause when focus loss
-// latest patch: 
+coregame_rmdwin10_f.dll+ABFE4 - 48 8B D9              - mov rbx,rcx
+coregame_rmdwin10_f.dll+ABFE7 - 48 8B 05 FA854F00     - mov rax,[coregame_rmdwin10_f.dll+5A45E8] { (7FFD095C6790) }
+coregame_rmdwin10_f.dll+ABFEE - 44 88 81 9B000000     - mov [rcx+0000009B],r8l					<< Always write 1 here.
+coregame_rmdwin10_f.dll+ABFF5 - 48 8B 10              - mov rdx,[rax]
+coregame_rmdwin10_f.dll+ABFF8 - 44 88 42 39           - mov [rdx+39],r8l
+coregame_rmdwin10_f.dll+ABFFC - 48 8B 49 70           - mov rcx,[rcx+70]
+coregame_rmdwin10_f.dll+AC000 - 48 8B 01              - mov rax,[rcx]
+coregame_rmdwin10_f.dll+AC003 - FF 90 88000000        - call qword ptr [rax+00000088]
+coregame_rmdwin10_f.dll+AC009 - 0FB6 8B 9B000000      - movzx ecx,byte ptr [rbx+0000009B]
+coregame_rmdwin10_f.dll+AC010 - 48 8B F0              - mov rsi,rax
+coregame_rmdwin10_f.dll+AC013 - 84 C9                 - test cl,cl
+// October patch: 
 coregame_rmdwin10_f.dll+A738B - 48 83 EC 40           - sub rsp,40 { 64 }
 coregame_rmdwin10_f.dll+A738F - 44 0FB6 42 04         - movzx r8d,byte ptr [rdx+04]
 coregame_rmdwin10_f.dll+A7394 - 48 8B D9              - mov rbx,rcx
@@ -441,7 +498,22 @@ coregame_rmdwin10_f.dll+A9AC3 - FF 90 88000000        - call qword ptr [rax+0000
 coregame_rmdwin10_f.dll+A9AC9 - 0FB6 8B 9B000000      - movzx ecx,byte ptr [rbx+0000009B]
 
 // Outline hide (Contributed by Pigeon)
-// Latest patch:
+// Latest patch
+Control_DX12.exe+ACECB - 80 7D 40 00           - cmp byte ptr [rbp+40],00 { 0 }
+Control_DX12.exe+ACECF - 0F84 83020000         - je Control_DX12.exe+AD158
+Control_DX12.exe+ACED5 - 49 8B 85 90030000     - mov rax,[r13+00000390]
+Control_DX12.exe+ACEDC - 80 38 00              - cmp byte ptr [rax],00 { 0 }
+Control_DX12.exe+ACEDF - 0F84 73020000         - je Control_DX12.exe+AD158				>> Change to jmp to hide outlines. DX11: same
+Control_DX12.exe+ACEE5 - 45 84 FF              - test r15l,r15l
+Control_DX12.exe+ACEE8 - 0F85 6A020000         - jne Control_DX12.exe+AD158
+Control_DX12.exe+ACEEE - 49 8B 85 70010000     - mov rax,[r13+00000170]
+Control_DX12.exe+ACEF5 - 8B 90 D0010000        - mov edx,[rax+000001D0]
+Control_DX12.exe+ACEFB - 8B C2                 - mov eax,edx
+Control_DX12.exe+ACEFD - C1 F8 1F              - sar eax,1F { 31 }
+Control_DX12.exe+ACF00 - 83 E0 01              - and eax,01 { 1 }
+Control_DX12.exe+ACF03 - FF C0                 - inc eax
+
+// october patch:
 Control_DX12.exe+AD19D - 0F82 95020000         - jb Control_DX12.exe+AD438
 Control_DX12.exe+AD1A3 - 84 C0                 - test al,al
 Control_DX12.exe+AD1A5 - 0F84 8D020000         - je Control_DX12.exe+AD438

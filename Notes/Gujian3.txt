@@ -1,0 +1,196 @@
+Gujian3
+================
+
+Ansel struct: 
+AnselSDK64.dll+1C50 - 0F28 05 798F0900      - movaps xmm0,[AnselSDK64.dll+9ABD0] { (-0.01) }
+AnselSDK64.dll+1C57 - 0F11 01               - movups [rcx],xmm0
+AnselSDK64.dll+1C5A - 0F28 0D 7F8F0900      - movaps xmm1,[AnselSDK64.dll+9ABE0] { (0.01) }
+AnselSDK64.dll+1C61 - 0F11 49 10            - movups [rcx+10],xmm1
+AnselSDK64.dll+1C65 - 0F28 05 848F0900      - movaps xmm0,[AnselSDK64.dll+9ABF0] { (0) }
+AnselSDK64.dll+1C6C - 0F11 41 20            - movups [rcx+20],xmm0
+AnselSDK64.dll+1C70 - 0F28 0D 898F0900      - movaps xmm1,[AnselSDK64.dll+9AC00] { (0) }
+AnselSDK64.dll+1C77 - 0F11 49 30            - movups [rcx+30],xmm1
+AnselSDK64.dll+1C7B - 0F28 05 8E8F0900      - movaps xmm0,[AnselSDK64.dll+9AC10] { (7FFC684EEC10) }
+AnselSDK64.dll+1C82 - 0F11 41 40            - movups [rcx+40],xmm0
+AnselSDK64.dll+1C86 - 0F28 0D 938F0900      - movaps xmm1,[AnselSDK64.dll+9AC20] { (0) }
+AnselSDK64.dll+1C8D - 0F11 49 50            - movups [rcx+50],xmm1
+AnselSDK64.dll+1C91 - 0F28 05 988F0900      - movaps xmm0,[AnselSDK64.dll+9AC30] { (7FF6E210E760) }
+AnselSDK64.dll+1C98 - 0F11 41 60            - movups [rcx+60],xmm0
+AnselSDK64.dll+1C9C - 0F28 0D 9D8F0900      - movaps xmm1,[AnselSDK64.dll+9AC40] { (7FF6E1C1E230) }
+AnselSDK64.dll+1CA3 - 0F11 49 70            - movups [rcx+70],xmm1
+AnselSDK64.dll+1CA7 - 0F28 05 A28F0900      - movaps xmm0,[AnselSDK64.dll+9AC50] { (1) }
+AnselSDK64.dll+1CAE - 0F11 81 80000000      - movups [rcx+00000080],xmm0
+AnselSDK64.dll+1CB5 - C3                    - ret 
+
+
+Ansel can enable function in game: (startSessionCallback)
+Gujian3.exe+57E760 - 48 89 5C 24 08        - mov [rsp+08],rbx
+Gujian3.exe+57E765 - 57                    - push rdi
+Gujian3.exe+57E766 - 48 83 EC 20           - sub rsp,20 { 32 }
+Gujian3.exe+57E76A - 48 8B 1D 47BE0203     - mov rbx,[Gujian3.exe+35AA5B8] { (29D10C46D00) }
+Gujian3.exe+57E771 - 48 8B F9              - mov rdi,rcx
+Gujian3.exe+57E774 - 48 85 DB              - test rbx,rbx
+Gujian3.exe+57E777 - 75 25                 - jne Gujian3.exe+57E79E
+Gujian3.exe+57E779 - B9 E8000000           - mov ecx,000000E8 { 232 }
+Gujian3.exe+57E77E - E8 DDDD2400           - call Gujian3.exe+7CC560
+Gujian3.exe+57E783 - 48 85 C0              - test rax,rax
+Gujian3.exe+57E786 - 74 0D                 - je Gujian3.exe+57E795
+Gujian3.exe+57E788 - 48 8B C8              - mov rcx,rax
+Gujian3.exe+57E78B - E8 50F3FFFF           - call Gujian3.exe+57DAE0
+Gujian3.exe+57E790 - 48 8B D8              - mov rbx,rax
+Gujian3.exe+57E793 - EB 02                 - jmp Gujian3.exe+57E797
+Gujian3.exe+57E795 - 33 DB                 - xor ebx,ebx
+Gujian3.exe+57E797 - 48 89 1D 1ABE0203     - mov [Gujian3.exe+35AA5B8],rbx { (29D10C46D00) }
+Gujian3.exe+57E79E - 80 3B 00              - cmp byte ptr [rbx],00 
+Gujian3.exe+57E7A1 - 74 55                 - je Gujian3.exe+57E7F8						<< NOP for ansel everywhere
+Gujian3.exe+57E7A3 - 80 7B 01 00           - cmp byte ptr [rbx+01],00
+Gujian3.exe+57E7A7 - 75 4F                 - jne Gujian3.exe+57E7F8						<< NOP for ansel everywhere
+Gujian3.exe+57E7A9 - 0F10 83 C0000000      - movups xmm0,[rbx+000000C0]
+Gujian3.exe+57E7B0 - 48 8B CB              - mov rcx,rbx
+Gujian3.exe+57E7B3 - 0F11 07               - movups [rdi],xmm0
+Gujian3.exe+57E7B6 - 8B 83 D0000000        - mov eax,[rbx+000000D0]
+Gujian3.exe+57E7BC - 89 47 10              - mov [rdi+10],eax
+Gujian3.exe+57E7BF - C6 43 01 01           - mov byte ptr [rbx+01],01 { 1 }
+Gujian3.exe+57E7C3 - C7 43 04 01000000     - mov [rbx+04],00000001 { 1 }
+Gujian3.exe+57E7CA - E8 01F7FFFF           - call Gujian3.exe+57DED0
+Gujian3.exe+57E7CF - E8 EC100300           - call Gujian3.exe+5AF8C0
+Gujian3.exe+57E7D4 - 0FB6 88 11080000      - movzx ecx,byte ptr [rax+00000811]
+Gujian3.exe+57E7DB - 88 8B E4000000        - mov [rbx+000000E4],cl
+Gujian3.exe+57E7E1 - C6 80 11080000 00     - mov byte ptr [rax+00000811],00 { 0 }
+Gujian3.exe+57E7E8 - B8 01000000           - mov eax,00000001 { 1 }
+Gujian3.exe+57E7ED - 48 8B 5C 24 30        - mov rbx,[rsp+30]
+Gujian3.exe+57E7F2 - 48 83 C4 20           - add rsp,20 { 32 }
+Gujian3.exe+57E7F6 - 5F                    - pop rdi
+Gujian3.exe+57E7F7 - C3                    - ret 
+Gujian3.exe+57E7F8 - 33 C0                 - xor eax,eax
+Gujian3.exe+57E7FA - 48 8B 5C 24 30        - mov rbx,[rsp+30]
+Gujian3.exe+57E7FF - 48 83 C4 20           - add rsp,20 { 32 }
+Gujian3.exe+57E803 - 5F                    - pop rdi
+Gujian3.exe+57E804 - C3                    - ret 
+
+
+Update Camera:
+Gujian3.exe+57E29F - F3 44 0F11 5C 24 44   - movss [rsp+44],xmm11
+Gujian3.exe+57E2A6 - F3 44 0F11 54 24 48   - movss [rsp+48],xmm10
+Gujian3.exe+57E2AD - 48 8B CB              - mov rcx,rbx
+Gujian3.exe+57E2B0 - FF 15 922DA400        - call qword ptr [Gujian3.exe+FC1048] <<<<<<<< Call to update camera
+Gujian3.exe+57E2B6 - 48 8D 0D FB768102     - lea rcx,[Gujian3.exe+2D959B8] { (29C95348600) }
+Gujian3.exe+57E2BD - E8 EE7FBCFF           - call Gujian3.exe+1462B0
+Gujian3.exe+57E2C2 - 4C 8B F0              - mov r14,rax
+Gujian3.exe+57E2C5 - F3 0F10 43 08         - movss xmm0,[rbx+08]
+Gujian3.exe+57E2CA - F3 0F10 4B 04         - movss xmm1,[rbx+04]
+Gujian3.exe+57E2CF - F3 0F10 3B            - movss xmm7,[rbx]
+Gujian3.exe+57E2D3 - F3 0F11 44 24 28      - movss [rsp+28],xmm0
+Gujian3.exe+57E2D9 - 0F28 C7               - movaps xmm0,xmm7
+Gujian3.exe+57E2DC - 0F14 C1               - unpcklps xmm0,xmm1
+Gujian3.exe+57E2DF - F2 0F11 44 24 30      - movsd [rsp+30],xmm0
+Gujian3.exe+57E2E5 - 8B 4C 24 28           - mov ecx,[rsp+28]
+
+//...
+
+Range remover: 
+Gujian3.exe+57E54E - F3 41 0F59 C8         - mulss xmm1,xmm8
+Gujian3.exe+57E553 - F3 0F58 D1            - addss xmm2,xmm1
+Gujian3.exe+57E557 - F3 44 0F10 8F E0000000  - movss xmm9,[rdi+000000E0]
+Gujian3.exe+57E560 - 41 0F28 C1            - movaps xmm0,xmm9
+Gujian3.exe+57E564 - F3 41 0F59 C1         - mulss xmm0,xmm9
+Gujian3.exe+57E569 - 0F2F D0               - comiss xmm2,xmm0
+Gujian3.exe+57E56C - 0F86 F0000000         - jbe Gujian3.exe+57E662						<< REPLACE with JMP Gujian3.exe+57E662 + NOP
+Gujian3.exe+57E572 - F3 0F10 2D 724C5802   - movss xmm5,[Gujian3.exe+2B031EC] { (0.50) }
+Gujian3.exe+57E57A - 0F28 DA               - movaps xmm3,xmm2
+Gujian3.exe+57E57D - 0F28 E2               - movaps xmm4,xmm2
+Gujian3.exe+57E580 - F3 0F52 E2            - rsqrtss xmm4,xmm2
+Gujian3.exe+57E584 - F3 0F59 DD            - mulss xmm3,xmm5
+Gujian3.exe+57E588 - 0F28 C4               - movaps xmm0,xmm4
+
+
+// Collision detection:
+Gujian3.exe+57E4B5 - 4C 8D 45 B0           - lea r8,[rbp-50]
+Gujian3.exe+57E4B9 - 48 8D 54 24 50        - lea rdx,[rsp+50]
+Gujian3.exe+57E4BE - E8 5D40CFFF           - call Gujian3.exe+272520					<< Either nop THIS
+Gujian3.exe+57E4C3 - 48 83 7D 10 00        - cmp qword ptr [rbp+10],00 { 0 }
+Gujian3.exe+57E4C8 - 0F95 C0               - setne al									<< OR replace with xor al, al + NOP (preferable)
+Gujian3.exe+57E4CB - 84 C0                 - test al,al
+Gujian3.exe+57E4CD - 74 1B                 - je Gujian3.exe+57E4EA						<< OR change this to JMP
+Gujian3.exe+57E4CF - F3 44 0F11 54 24 28   - movss [rsp+28],xmm10
+Gujian3.exe+57E4D6 - F3 41 0F10 C1         - movss xmm0,xmm9
+Gujian3.exe+57E4DB - 41 0F14 C3            - unpcklps xmm0,xmm11
+Gujian3.exe+57E4DF - F2 0F11 03            - movsd [rbx],xmm0
+Gujian3.exe+57E4E3 - 8B 44 24 28           - mov eax,[rsp+28]
+Gujian3.exe+57E4E7 - 89 43 08              - mov [rbx+08],eax
+Gujian3.exe+57E4EA - F3 0F10 33            - movss xmm6,[rbx]
+
+// timestop:
+
+Gujian3.exe+186CA0 - 48 83 EC 28           - sub rsp,28 { 40 }
+Gujian3.exe+186CA4 - 48 8B 05 BD12BC02     - mov rax,[Gujian3.exe+2D47F68] { (179CBCCF388) }
+Gujian3.exe+186CAB - 48 85 C0              - test rax,rax
+Gujian3.exe+186CAE - 74 24                 - je Gujian3.exe+186CD4
+Gujian3.exe+186CB0 - 48 83 38 00           - cmp qword ptr [rax],00 { 0 }
+Gujian3.exe+186CB4 - 74 1E                 - je Gujian3.exe+186CD4
+Gujian3.exe+186CB6 - BA 01000000           - mov edx,00000001 { 1 }
+Gujian3.exe+186CBB - E8 600EF2FF           - call Gujian3.exe+A7B20
+Gujian3.exe+186CC0 - 48 8B 0D A112BC02     - mov rcx,[Gujian3.exe+2D47F68] { (179CBCCF388) }
+Gujian3.exe+186CC7 - 48 8B 09              - mov rcx,[rcx]
+Gujian3.exe+186CCA - 85 C0                 - test eax,eax
+Gujian3.exe+186CCC - 0F95 C2               - setne dl
+Gujian3.exe+186CCF - E8 8C004100           - call Gujian3.exe+596D60			>> Sets byte from 1 to 2 (paused) and back (1) 
+Gujian3.exe+186CD4 - 33 C0                 - xor eax,eax
+Gujian3.exe+186CD6 - 48 83 C4 28           - add rsp,28 { 40 }
+Gujian3.exe+186CDA - C3                    - ret 
+which calls ->
+Gujian3.exe+596D60 - 48 83 79 38 00        - cmp qword ptr [rcx+38],00 { 0 }
+Gujian3.exe+596D65 - 74 2C                 - je Gujian3.exe+596D93
+Gujian3.exe+596D67 - 84 D2                 - test dl,dl
+Gujian3.exe+596D69 - 74 14                 - je Gujian3.exe+596D7F
+Gujian3.exe+596D6B - 83 79 5C 01           - cmp dword ptr [rcx+5C],01 { 1 }
+Gujian3.exe+596D6F - 75 22                 - jne Gujian3.exe+596D93
+Gujian3.exe+596D71 - 48 8B 01              - mov rax,[rcx]
+Gujian3.exe+596D74 - C7 41 5C 02000000     - mov [rcx+5C],00000002 { 2 }			<<< PAUSED
+Gujian3.exe+596D7B - 48 FF 60 38           - jmp qword ptr [rax+38]
+Gujian3.exe+596D7F - 83 79 5C 02           - cmp dword ptr [rcx+5C],02 { 2 }
+Gujian3.exe+596D83 - 75 0E                 - jne Gujian3.exe+596D93
+Gujian3.exe+596D85 - 48 8B 01              - mov rax,[rcx]
+Gujian3.exe+596D88 - C7 41 5C 01000000     - mov [rcx+5C],00000001 { 1 }			<<< CONTINUE
+Gujian3.exe+596D8F - 48 FF 60 40           - jmp qword ptr [rax+40]
+Gujian3.exe+596D93 - C3                    - ret 
+
+// Resolution in cutscene:
+Gujian3.exe+698360 - 42 8D 04 01           - lea eax,[rcx+r8]
+Gujian3.exe+698364 - 89 0D 3ABE6602        - mov [Gujian3.exe+2D041A4],ecx { (0) }
+Gujian3.exe+69836A - 89 15 38BE6602        - mov [Gujian3.exe+2D041A8],edx { (60) }
+Gujian3.exe+698370 - 89 05 36BE6602        - mov [Gujian3.exe+2D041AC],eax { (1920) }
+Gujian3.exe+698376 - 42 8D 04 0A           - lea eax,[rdx+r9]
+Gujian3.exe+69837A - 89 05 30BE6602        - mov [Gujian3.exe+2D041B0],eax { (1140) }
+Gujian3.exe+698380 - 8B 44 24 28           - mov eax,[rsp+28]
+Gujian3.exe+698384 - 89 05 92080203        - mov [Gujian3.exe+36B8C1C],eax { (-16777216) }
+Gujian3.exe+69838A - C3                    - ret 
+
+// AR in cutscene:
+Gujian3.exe+596659 - 74 0E                 - je Gujian3.exe+596669
+Gujian3.exe+59665B - 8B 05 2BFF7F02        - mov eax,[Gujian3.exe+2D9658C] { (1200) }
+Gujian3.exe+596661 - 8B 0D 21FF7F02        - mov ecx,[Gujian3.exe+2D96588] { (1920) }
+Gujian3.exe+596667 - EB 04                 - jmp Gujian3.exe+59666D
+Gujian3.exe+596669 - 33 C0                 - xor eax,eax
+Gujian3.exe+59666B - 8B C8                 - mov ecx,eax
+Gujian3.exe+59666D - F3 0F10 1D B7A25601   - movss xmm3,[Gujian3.exe+1B0092C] : AR... 16:9. Changing it will stretch the viewport.
+Gujian3.exe+596675 - 66 0F6E C1            - movd xmm0,ecx
+Gujian3.exe+596679 - 66 0F6E C8            - movd xmm1,eax
+Gujian3.exe+59667D - 4C 8D 44 24 60        - lea r8,[rsp+60]
+Gujian3.exe+596682 - 48 8D 54 24 68        - lea rdx,[rsp+68]
+Gujian3.exe+596687 - 48 8D 4C 24 70        - lea rcx,[rsp+70]
+Gujian3.exe+59668C - 0F5B C0               - cvtdq2ps xmm0,xmm0
+Gujian3.exe+59668F - 0F5B C9               - cvtdq2ps xmm1,xmm1
+Gujian3.exe+596692 - F3 0F11 44 24 70      - movss [rsp+70],xmm0
+
+// which ends up here. 
+Gujian3.exe+52DC85 - F3 0F10 11            - movss xmm2,[rcx]
+Gujian3.exe+52DC89 - 0F28 C1               - movaps xmm0,xmm1
+Gujian3.exe+52DC8C - F3 0F59 C3            - mulss xmm0,xmm3
+Gujian3.exe+52DC90 - 0F2F D0               - comiss xmm2,xmm0
+Gujian3.exe+52DC93 - 73 3B                 - jae Gujian3.exe+52DCD0		<<< Replace with JMP to always have the right AR in cutscenes. 
+Gujian3.exe+52DC95 - F3 41 0F11 10         - movss [r8],xmm2
+Gujian3.exe+52DC9A - F3 0F10 01            - movss xmm0,[rcx]
+Gujian3.exe+52DC9E - F3 0F5E C3            - divss xmm0,xmm3
+Gujian3.exe+52DCA2 - F3 41 0F11 40 04      - movss [r8+04],xmm0
+Gujian3.exe+52DCA8 - F3 0F10 49 04         - movss xmm1,[rcx+04]

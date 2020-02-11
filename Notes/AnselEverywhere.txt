@@ -1,0 +1,67 @@
+How to get the Ansel Configuration structure in memory: 
+In cheat engine, go into Memory viewer, then click View -> Enumerate DLLs and Symbols. Then expand Ansel64SDK.dll and double click AnselSDK64::getConfiguration
+This brings you to:
+AnselSDK64.dll+1850 - 0F28 05 799F0100      - movaps xmm0,[AnselSDK64.dll+1B7D0] { (-0,01) }
+AnselSDK64.dll+1857 - 0F11 01               - movups [rcx],xmm0
+AnselSDK64.dll+185A - 0F28 0D 7F9F0100      - movaps xmm1,[AnselSDK64.dll+1B7E0] { (0,01) }
+AnselSDK64.dll+1861 - 0F11 49 10            - movups [rcx+10],xmm1
+AnselSDK64.dll+1865 - 0F28 05 849F0100      - movaps xmm0,[AnselSDK64.dll+1B7F0] { (0) }
+AnselSDK64.dll+186C - 0F11 41 20            - movups [rcx+20],xmm0
+AnselSDK64.dll+1870 - 0F28 0D 899F0100      - movaps xmm1,[AnselSDK64.dll+1B800] { (0,01) }
+AnselSDK64.dll+1877 - 0F11 49 30            - movups [rcx+30],xmm1
+AnselSDK64.dll+187B - 0F28 05 8E9F0100      - movaps xmm0,[AnselSDK64.dll+1B810] { (0) }
+AnselSDK64.dll+1882 - 0F11 41 40            - movups [rcx+40],xmm0
+AnselSDK64.dll+1886 - 0F28 0D 939F0100      - movaps xmm1,[AnselSDK64.dll+1B820] { (0) }
+AnselSDK64.dll+188D - 0F11 49 50            - movups [rcx+50],xmm1
+AnselSDK64.dll+1891 - 0F28 05 989F0100      - movaps xmm0,[AnselSDK64.dll+1B830] { (7FF68F2EDD90) }
+AnselSDK64.dll+1898 - 0F11 41 60            - movups [rcx+60],xmm0
+AnselSDK64.dll+189C - 0F28 0D 9D9F0100      - movaps xmm1,[AnselSDK64.dll+1B840] { (7FF68F2EE050) }
+AnselSDK64.dll+18A3 - 0F11 49 70            - movups [rcx+70],xmm1
+AnselSDK64.dll+18A7 - 0F28 05 A29F0100      - movaps xmm0,[AnselSDK64.dll+1B850] { (256) }
+AnselSDK64.dll+18AE - 0F11 81 80000000      - movups [rcx+00000080],xmm0
+AnselSDK64.dll+18B5 - C3                    - ret 
+The memory that's filled there is this struct:
+
+struct Configuration
+{
+    nv::Vec3 right, up, forward;
+    // The speed at which camera moves in the world
+    float translationalSpeedInWorldUnitsPerSecond;
+    // The speed at which camera rotates 
+    float rotationalSpeedInDegreesPerSecond;
+    // How many frames it takes for camera update to be reflected in a rendered frame
+    uint32_t captureLatency;
+    uint32_t captureSettleLatency;
+    float metersInWorldUnit;
+    bool isCameraOffcenteredProjectionSupported;
+    bool isCameraTranslationSupported;
+    bool isCameraRotationSupported;
+    bool isCameraFovSupported;
+    const char* titleNameUtf8;
+    FovType fovType;
+
+    void* userPointer;
+    void* gameWindowHandle;
+
+    StartSessionCallback startSessionCallback;
+    StopSessionCallback stopSessionCallback;
+
+    StartCaptureCallback startCaptureCallback;
+    StopCaptureCallback stopCaptureCallback;
+    bool unused2;
+    bool unused1;
+    uint64_t sdkVersion;
+};
+
+(comments removed for brevity)
+The important thing is startSessionCallback
+So you now go into memory viewer, and go to address (memory): AnselSDK64.dll+1B7D0, view as 8bytes hex
+You can figure out where the startSessionCallback address is located from there (AnselSDK64.dll+1B7F4)
+Copy the address and go to it in disassembler view
+That's the function that's called when you enable ansel. Go into the menu in the game, then set a break point at the start of that function, then go into the game and enable ansel. You should break in cheat engine. Step through the function, which likely has a couple of tests and jump relatives based on the results.
+Nop all jump relatives. The function should now return 1 even when you enable it in the menu
+DONE!
+(deleted the timestop info, that's not working in cutscenes)
+
+------------
+Then updatecamera in AnselSDK64 and break there -> follow back to see where it ends up
