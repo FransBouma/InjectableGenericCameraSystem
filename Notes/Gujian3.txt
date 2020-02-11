@@ -194,3 +194,19 @@ Gujian3.exe+52DC9A - F3 0F10 01            - movss xmm0,[rcx]
 Gujian3.exe+52DC9E - F3 0F5E C3            - divss xmm0,xmm3
 Gujian3.exe+52DCA2 - F3 41 0F11 40 04      - movss [r8+04],xmm0
 Gujian3.exe+52DCA8 - F3 0F10 49 04         - movss xmm1,[rcx+04]
+
+// Photomode range remover
+Gujian3.exe+165A37 - F3 0F59 C0            - mulss xmm0,xmm0
+Gujian3.exe+165A3B - F3 0F58 D1            - addss xmm2,xmm1
+Gujian3.exe+165A3F - F3 0F58 D0            - addss xmm2,xmm0
+Gujian3.exe+165A43 - F3 0F11 55 28         - movss [rbp+28],xmm2
+Gujian3.exe+165A48 - F3 0F51 45 28         - sqrtss xmm0,[rbp+28]
+Gujian3.exe+165A4D - 0F2F C6               - comiss xmm0,xmm6
+Gujian3.exe+165A50 - 0F86 83000000         - jbe Gujian3.exe+165AD9			<< REPLACE with JMP
+Gujian3.exe+165A56 - 0F2F 35 B7D79902      - comiss xmm6,[Gujian3.exe+2B03214] { (1,00) }
+Gujian3.exe+165A5D - 76 7A                 - jna Gujian3.exe+165AD9
+Gujian3.exe+165A5F - 48 8D 4D B0           - lea rcx,[rbp-50]
+Gujian3.exe+165A63 - E8 083DFFFF           - call Gujian3.exe+159770
+Gujian3.exe+165A68 - 8B 45 B8              - mov eax,[rbp-48]
+Gujian3.exe+165A6B - F2 0F10 45 B0         - movsd xmm0,[rbp-50]
+

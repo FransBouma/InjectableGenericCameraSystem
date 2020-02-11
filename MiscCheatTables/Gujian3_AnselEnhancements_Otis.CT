@@ -14,10 +14,12 @@
 aobscanmodule(CollisionDetectionRemoval,Gujian3.exe,0F 95 C0 84 C0 74 1B) // should be unique
 aobscanmodule(AnselRangeRemoval,Gujian3.exe,D0 0F 86 F0 00 00 00) // should be unique
 aobscanmodule(AnselEverywhere,Gujian3.exe,80 3B 00 74 55) // should be unique
+aobscanmodule(PMRangeRemover,Gujian3.exe,0F 86 83 00 00 00 0F 2F) // should be unique
 
 registersymbol(CollisionDetectionRemoval)
 registersymbol(AnselRangeRemoval)
 registersymbol(AnselEverywhere)
+registersymbol(PMRangeRemover)
 
 CollisionDetectionRemoval:
   xor al,al                // was: setne al. if al is 0 the jump is taken which skips collision detection
@@ -36,6 +38,9 @@ AnselEverywhere:
   nop
   nop                           // was: jne Gujian3.exe+57E7F8
 
+PMRangeRemover:
+  jmp Gujian3.exe+165AD9
+  nop
 
 [DISABLE]
 CollisionDetectionRemoval:
@@ -51,6 +56,9 @@ AnselEverywhere:
   cmp byte ptr [rbx+01],00
   jne Gujian3.exe+57E7F8
 
+
+PMRangeRemover:
+  jbe Gujian3.exe+165AD9
 
 {
 // ORIGINAL CODE - INJECTION POINT: "Gujian3.exe"+57E4C8
@@ -135,13 +143,39 @@ AnselEverywhere:
 "Gujian3.exe"+57E7C3: C7 43 04 01 00 00 00  -  mov [rbx+04],00000001
 "Gujian3.exe"+57E7CA: E8 01 F7 FF FF        -  call Gujian3.exe+57DED0
 }
+{
+// ORIGINAL CODE - INJECTION POINT: "Gujian3.exe"+165A50
 
+"Gujian3.exe"+165A25: F3 0F 59 C9              -  mulss xmm1,xmm1
+"Gujian3.exe"+165A29: F3 0F 11 55 B4           -  movss [rbp-4C],xmm2
+"Gujian3.exe"+165A2E: F3 0F 11 45 B8           -  movss [rbp-48],xmm0
+"Gujian3.exe"+165A33: F3 0F 59 D2              -  mulss xmm2,xmm2
+"Gujian3.exe"+165A37: F3 0F 59 C0              -  mulss xmm0,xmm0
+"Gujian3.exe"+165A3B: F3 0F 58 D1              -  addss xmm2,xmm1
+"Gujian3.exe"+165A3F: F3 0F 58 D0              -  addss xmm2,xmm0
+"Gujian3.exe"+165A43: F3 0F 11 55 28           -  movss [rbp+28],xmm2
+"Gujian3.exe"+165A48: F3 0F 51 45 28           -  sqrtss xmm0,[rbp+28]
+"Gujian3.exe"+165A4D: 0F 2F C6                 -  comiss xmm0,xmm6
+// ---------- INJECTING HERE ----------
+"Gujian3.exe"+165A50: 0F 86 83 00 00 00        -  jbe Gujian3.exe+165AD9
+// ---------- DONE INJECTING  ----------
+"Gujian3.exe"+165A56: 0F 2F 35 B7 D7 99 02     -  comiss xmm6,[Gujian3.exe+2B03214]
+"Gujian3.exe"+165A5D: 76 7A                    -  jna Gujian3.exe+165AD9
+"Gujian3.exe"+165A5F: 48 8D 4D B0              -  lea rcx,[rbp-50]
+"Gujian3.exe"+165A63: E8 08 3D FF FF           -  call Gujian3.exe+159770
+"Gujian3.exe"+165A68: 8B 45 B8                 -  mov eax,[rbp-48]
+"Gujian3.exe"+165A6B: F2 0F 10 45 B0           -  movsd xmm0,[rbp-50]
+"Gujian3.exe"+165A70: F3 0F 10 4D B0           -  movss xmm1,[rbp-50]
+"Gujian3.exe"+165A75: 89 45 C8                 -  mov [rbp-38],eax
+"Gujian3.exe"+165A78: 8B 83 DC 05 00 00        -  mov eax,[rbx+000005DC]
+"Gujian3.exe"+165A7E: F2 0F 11 45 C0           -  movsd [rbp-40],xmm0
+}
 </AssemblerScript>
     </CheatEntry>
     <CheatEntry>
       <ID>7</ID>
       <Description>"AR correction for non-16:9 screens (might zoom). Leave enabled"</Description>
-      <LastState Activated="1"/>
+      <LastState/>
       <VariableType>Auto Assembler Script</VariableType>
       <AssemblerScript>// By Otis_Inf
 // 11-feb-2020
@@ -228,11 +262,301 @@ ARCorrection:
     </CheatEntry>
     <CheatEntry>
       <ID>2</ID>
-      <Description>"By Otis_Inf. 11-feb-2020. FRAMED. Screenshot Community. https://framedsc.github.io"</Description>
+      <Description>"By Otis_Inf. v1.0.1. 11-feb-2020. FRAMED. Screenshot Community. https://framedsc.github.io"</Description>
       <LastState Value="" RealAddress="00000000"/>
       <Color>FF0000</Color>
       <GroupHeader>1</GroupHeader>
     </CheatEntry>
   </CheatEntries>
+  <CheatCodes>
+    <CodeEntry>
+      <Description>Change of je Gujian3.exe+3146BD</Description>
+      <AddressString>Gujian3.exe+314660</AddressString>
+      <Before>
+        <Byte>81</Byte>
+        <Byte>38</Byte>
+        <Byte>01</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Before>
+      <Actual>
+        <Byte>74</Byte>
+        <Byte>5B</Byte>
+      </Actual>
+      <After>
+        <Byte>F2</Byte>
+        <Byte>0F</Byte>
+        <Byte>10</Byte>
+        <Byte>02</Byte>
+        <Byte>F2</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of call Gujian3.exe+159450</Description>
+      <AddressString>Gujian3.exe+1A9074</AddressString>
+      <Before>
+        <Byte>0F</Byte>
+        <Byte>11</Byte>
+        <Byte>74</Byte>
+        <Byte>24</Byte>
+        <Byte>40</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>D7</Byte>
+        <Byte>03</Byte>
+        <Byte>FB</Byte>
+        <Byte>FF</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>CE</Byte>
+        <Byte>0F</Byte>
+        <Byte>57</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of call Gujian3.exe+346AF0</Description>
+      <AddressString>Gujian3.exe+3FAA30</AddressString>
+      <Before>
+        <Byte>0F</Byte>
+        <Byte>11</Byte>
+        <Byte>4C</Byte>
+        <Byte>24</Byte>
+        <Byte>44</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>BB</Byte>
+        <Byte>C0</Byte>
+        <Byte>F4</Byte>
+        <Byte>FF</Byte>
+      </Actual>
+      <After>
+        <Byte>F3</Byte>
+        <Byte>0F</Byte>
+        <Byte>10</Byte>
+        <Byte>4C</Byte>
+        <Byte>24</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of call Gujian3.exe+323EB0</Description>
+      <AddressString>Gujian3.exe+78823C</AddressString>
+      <Before>
+        <Byte>41</Byte>
+        <Byte>0C</Byte>
+        <Byte>49</Byte>
+        <Byte>8B</Byte>
+        <Byte>CF</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>6F</Byte>
+        <Byte>BC</Byte>
+        <Byte>B9</Byte>
+        <Byte>FF</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>8D</Byte>
+        <Byte>54</Byte>
+        <Byte>24</Byte>
+        <Byte>50</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of setae al</Description>
+      <AddressString>Gujian3.exe+601743</AddressString>
+      <Before>
+        <Byte>58</Byte>
+        <Byte>D9</Byte>
+        <Byte>0F</Byte>
+        <Byte>2F</Byte>
+        <Byte>DA</Byte>
+      </Before>
+      <Actual>
+        <Byte>0F</Byte>
+        <Byte>93</Byte>
+        <Byte>C0</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>83</Byte>
+        <Byte>C4</Byte>
+        <Byte>30</Byte>
+        <Byte>5F</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of seta bl</Description>
+      <AddressString>Gujian3.exe+57AABB</AddressString>
+      <Before>
+        <Byte>FF</Byte>
+        <Byte>0F</Byte>
+        <Byte>2F</Byte>
+        <Byte>70</Byte>
+        <Byte>08</Byte>
+      </Before>
+      <Actual>
+        <Byte>0F</Byte>
+        <Byte>97</Byte>
+        <Byte>C3</Byte>
+      </Actual>
+      <After>
+        <Byte>08</Byte>
+        <Byte>1D</Byte>
+        <Byte>10</Byte>
+        <Byte>FA</Byte>
+        <Byte>02</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of jae Gujian3.exe+4D5832</Description>
+      <AddressString>Gujian3.exe+4D582A</AddressString>
+      <Before>
+        <Byte>02</Byte>
+        <Byte>41</Byte>
+        <Byte>0F</Byte>
+        <Byte>2F</Byte>
+        <Byte>FA</Byte>
+      </Before>
+      <Actual>
+        <Byte>73</Byte>
+        <Byte>06</Byte>
+      </Actual>
+      <After>
+        <Byte>41</Byte>
+        <Byte>0F</Byte>
+        <Byte>28</Byte>
+        <Byte>FA</Byte>
+        <Byte>EB</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of jna Gujian3.exe+4D583C</Description>
+      <AddressString>Gujian3.exe+4D5836</AddressString>
+      <Before>
+        <Byte>0A</Byte>
+        <Byte>41</Byte>
+        <Byte>0F</Byte>
+        <Byte>2F</Byte>
+        <Byte>F9</Byte>
+      </Before>
+      <Actual>
+        <Byte>76</Byte>
+        <Byte>04</Byte>
+      </Actual>
+      <After>
+        <Byte>41</Byte>
+        <Byte>0F</Byte>
+        <Byte>28</Byte>
+        <Byte>F9</Byte>
+        <Byte>F3</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of call Gujian3.exe+7EB680</Description>
+      <AddressString>Gujian3.exe+165B49</AddressString>
+      <Before>
+        <Byte>D0</Byte>
+        <Byte>F3</Byte>
+        <Byte>0F</Byte>
+        <Byte>59</Byte>
+        <Byte>C8</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>32</Byte>
+        <Byte>5B</Byte>
+        <Byte>68</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>0F</Byte>
+        <Byte>10</Byte>
+        <Byte>45</Byte>
+        <Byte>CC</Byte>
+        <Byte>0F</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of jbe Gujian3.exe+165AD9</Description>
+      <AddressString>Gujian3.exe+165A50</AddressString>
+      <Before>
+        <Byte>45</Byte>
+        <Byte>28</Byte>
+        <Byte>0F</Byte>
+        <Byte>2F</Byte>
+        <Byte>C6</Byte>
+      </Before>
+      <Actual>
+        <Byte>0F</Byte>
+        <Byte>86</Byte>
+        <Byte>83</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>0F</Byte>
+        <Byte>2F</Byte>
+        <Byte>35</Byte>
+        <Byte>B7</Byte>
+        <Byte>D7</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of call Gujian3.exe+314580</Description>
+      <AddressString>Gujian3.exe+165B7A</AddressString>
+      <Before>
+        <Byte>09</Byte>
+        <Byte>48</Byte>
+        <Byte>8D</Byte>
+        <Byte>57</Byte>
+        <Byte>18</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>01</Byte>
+        <Byte>EA</Byte>
+        <Byte>1A</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>F2</Byte>
+        <Byte>0F</Byte>
+        <Byte>10</Byte>
+        <Byte>07</Byte>
+        <Byte>4C</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of call Gujian3.exe+15CBC0</Description>
+      <AddressString>Gujian3.exe+1569CC</AddressString>
+      <Before>
+        <Byte>75</Byte>
+        <Byte>08</Byte>
+        <Byte>0F</Byte>
+        <Byte>28</Byte>
+        <Byte>C6</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>EF</Byte>
+        <Byte>61</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>0F</Byte>
+        <Byte>28</Byte>
+        <Byte>74</Byte>
+        <Byte>24</Byte>
+        <Byte>20</Byte>
+      </After>
+    </CodeEntry>
+  </CheatCodes>
   <UserdefinedSymbols/>
 </CheatTable>
