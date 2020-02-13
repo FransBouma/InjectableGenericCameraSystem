@@ -15,18 +15,72 @@ MetroExodus.exe+FE001E3 - F3 0F10 4C 24 54      - movss xmm1,[rsp+54]
 MetroExodus.exe+FE001E9 - 66 0F6E C0            - movd xmm0,eax
 
 
-// Game camera: 
-MetroExodus.exe+FDFBF58 - 66 45 0F5A E4         - cvtpd2ps xmm12,xmm12
-MetroExodus.exe+FDFBF5D - 66 45 0F5A D2         - cvtpd2ps xmm10,xmm10
-MetroExodus.exe+FDFBF62 - F3 44 0F11 63 18      - movss [rbx+18],xmm12						<<< WRITE X
-MetroExodus.exe+FDFBF68 - F3 44 0F11 53 1C      - movss [rbx+1C],xmm10						<<< WRITE Y  (Up)
-MetroExodus.exe+FDFBF6E - 45 0FC6 E4 E1         - shufps xmm12,xmm12,-1F { 225 }
-MetroExodus.exe+FDFBF73 - 66 45 0F5A DB         - cvtpd2ps xmm11,xmm11
-MetroExodus.exe+FDFBF78 - 66 0F5A FF            - cvtpd2ps xmm7,xmm7
-MetroExodus.exe+FDFBF7C - F3 44 0F11 5B 20      - movss [rbx+20],xmm11						<<< WRITE Z
-MetroExodus.exe+FDFBF82 - F3 45 0F10 E2         - movss xmm12,xmm10
-MetroExodus.exe+FDFBF87 - F3 44 0F11 4B 24      - movss [rbx+24],xmm9
+// Game camera: // latest patch: Coords are also written when ansel is activated. 
+MetroExodus.exe+FE27FD4 - 44 0F28 94 24 F0000000  - movaps xmm10,[rsp+000000F0]
+MetroExodus.exe+FE27FDD - 44 0F28 8C 24 00010000  - movaps xmm9,[rsp+00000100]
+MetroExodus.exe+FE27FE6 - 44 0F28 84 24 10010000  - movaps xmm8,[rsp+00000110]
+MetroExodus.exe+FE27FEF - 0F28 BC 24 20010000   - movaps xmm7,[rsp+00000120]
+MetroExodus.exe+FE27FF7 - 0F28 B4 24 30010000   - movaps xmm6,[rsp+00000130]
+MetroExodus.exe+FE27FFF - 45 0FC6 E4 39         - shufps xmm12,xmm12,39 { 57 }
+MetroExodus.exe+FE28004 - 44 0F29 25 F40991F1   - movaps [MetroExodus.exe+1738A00],xmm12 // write coords (matrix row 0)
+MetroExodus.exe+FE2800C - F3 0F10 53 48         - movss xmm2,[rbx+48]
+MetroExodus.exe+FE28011 - 0F28 E2               - movaps xmm4,xmm2
+MetroExodus.exe+FE28014 - 44 0F29 64 24 30      - movaps [rsp+30],xmm12
+MetroExodus.exe+FE2801A - 44 0F28 A4 24 D0000000  - movaps xmm12,[rsp+000000D0]
+// write 1 is below in matrix write 2
+// ansel coords write. 
+MetroExodus.exe+123F048A - 0F28 4D B0            - movaps xmm1,[rbp-50]
+MetroExodus.exe+123F048E - 0FC6 DB 27            - shufps xmm3,xmm3,27 { 39 }
+MetroExodus.exe+123F0492 - F3 0F10 DA            - movss xmm3,xmm2
+MetroExodus.exe+123F0496 - 0FC6 DB 39            - shufps xmm3,xmm3,39 { 57 }
+MetroExodus.exe+123F049A - 0F11 1E               - movups [rsi],xmm3				<< Write coords
+MetroExodus.exe+123F049D - F3 0F10 5C 24 6C      - movss xmm3,[rsp+6C]
+MetroExodus.exe+123F04A3 - F3 0F5D 1D 11680DEF   - minss xmm3,[MetroExodus.exe+14C6CBC] { (179,00) }
+MetroExodus.exe+123F04AB - F3 0F11 86 B8040000   - movss [rsi+000004B8],xmm0
+MetroExodus.exe+123F04B3 - 0F28 45 A0            - movaps xmm0,[rbp-60]
+MetroExodus.exe+123F04B7 - F3 0F5F 1D 15610DEF   - maxss xmm3,[MetroExodus.exe+14C65D4] { (0,01) }
+MetroExodus.exe+123F04BF - F3 0F11 9E B4040000   - movss [rsi+000004B4],xmm3
 // rotation matrix is right behind the coords. 
+
+// Latest patch. Matrix writes
+// Ansel writes:
+MetroExodus.exe+123F04B7 - F3 0F5F 1D 15610DEF   - maxss xmm3,[MetroExodus.exe+14C65D4] { (0,01) }
+MetroExodus.exe+123F04BF - F3 0F11 9E B4040000   - movss [rsi+000004B4],xmm3
+MetroExodus.exe+123F04C7 - 0F11 4E 10            - movups [rsi+10],xmm1		<< Row 1
+MetroExodus.exe+123F04CB - 0F28 4D 90            - movaps xmm1,[rbp-70]
+MetroExodus.exe+123F04CF - 0F11 46 20            - movups [rsi+20],xmm0		<< Row 2
+MetroExodus.exe+123F04D3 - 0F11 4E 30            - movups [rsi+30],xmm1		<< Row 3
+MetroExodus.exe+123F04D7 - F3 0F10 86 B4040000   - movss xmm0,[rsi+000004B4]
+MetroExodus.exe+123F04DF - F3 0F59 05 E5600DEF   - mulss xmm0,[MetroExodus.exe+14C65CC] { (0,01) }
+// write of game to matrix (also during ansel!)
+MetroExodus.exe+FE27F6C - F3 44 0F10 C8         - movss xmm9,xmm0
+MetroExodus.exe+FE27F71 - 0F29 35 A80A91F1      - movaps [MetroExodus.exe+1738A20],xmm6 { (-0,02) }
+MetroExodus.exe+FE27F78 - F2 0F10 45 C8         - movsd xmm0,[rbp-38]
+MetroExodus.exe+FE27F7D - 45 0FC6 C9 39         - shufps xmm9,xmm9,39 { 57 }
+MetroExodus.exe+FE27F82 - 66 0F5A D2            - cvtpd2ps xmm2,xmm2
+MetroExodus.exe+FE27F86 - 44 0F29 0D 820A91F1   - movaps [MetroExodus.exe+1738A10],xmm9 { (-0,53) }
+MetroExodus.exe+FE27F8E - F3 0F10 DA            - movss xmm3,xmm2
+MetroExodus.exe+FE27F92 - 45 0FC6 E4 27         - shufps xmm12,xmm12,27 { 39 }
+MetroExodus.exe+FE27F97 - 0FC6 DB 39            - shufps xmm3,xmm3,39 { 57 }
+MetroExodus.exe+FE27F9B - 0F29 5C 24 30         - movaps [rsp+30],xmm3
+MetroExodus.exe+FE27FA0 - 0F29 74 24 30         - movaps [rsp+30],xmm6
+MetroExodus.exe+FE27FA5 - 44 0F29 4C 24 30      - movaps [rsp+30],xmm9
+MetroExodus.exe+FE27FAB - 0F29 1D 7E0A91F1      - movaps [MetroExodus.exe+1738A30],xmm3 { (3F5981F0) }
+MetroExodus.exe+FE27FB2 - 66 0F5A C0            - cvtpd2ps xmm0,xmm0
+// write 2
+MetroExodus.exe+FE2C521 - 0F29 05 D8C490F1      - movaps [MetroExodus.exe+1738A00],xmm0 // coords row
+MetroExodus.exe+FE2C528 - 0F28 45 B0            - movaps xmm0,[rbp-50]
+MetroExodus.exe+FE2C52C - 0F29 0D DDC490F1      - movaps [MetroExodus.exe+1738A10],xmm1 // row 1
+MetroExodus.exe+FE2C533 - 0F28 4D A0            - movaps xmm1,[rbp-60]
+MetroExodus.exe+FE2C537 - 0F29 05 E2C490F1      - movaps [MetroExodus.exe+1738A20],xmm0 // row 2
+MetroExodus.exe+FE2C53E - F3 0F10 05 DAC890F1   - movss xmm0,[MetroExodus.exe+1738E20] { (20000,00) }
+MetroExodus.exe+FE2C546 - 0F29 0D E3C490F1      - movaps [MetroExodus.exe+1738A30],xmm1 // row 3
+MetroExodus.exe+FE2C54D - F3 41 0F10 4D 48      - movss xmm1,[r13+48]
+
+
+
+
+
 
 Ansel callbacks:
 00000001401AAC00 (start session)?
