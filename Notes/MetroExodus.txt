@@ -1,84 +1,114 @@
 Metro Exodus Photomode
 ================================
 
-FoV: (Also game fov)
-MetroExodus.exe+FE001B4 - F3 0F11 9D 10020000   - movss [rbp+00000210],xmm3
-MetroExodus.exe+FE001BC - F3 0F5D D0            - minss xmm2,xmm0
-MetroExodus.exe+FE001C0 - F3 0F10 45 54         - movss xmm0,[rbp+54]
-MetroExodus.exe+FE001C5 - F3 0F5F D3            - maxss xmm2,xmm3
-MetroExodus.exe+FE001C9 - F3 0F11 15 43FB7AF1   - movss [MetroExodus.exe+15AFD14],xmm2
-MetroExodus.exe+FE001D1 - F3 41 0F11 65 48      - movss [r13+48],xmm4												<<< FOV WRITE
-MetroExodus.exe+FE001D7 - F3 0F11 05 415E8BF1   - movss [MetroExodus.exe+16B6020],xmm0
-MetroExodus.exe+FE001DF - 85 C0                 - test eax,eax
-MetroExodus.exe+FE001E1 - 74 13                 - je MetroExodus.exe+FE001F6
-MetroExodus.exe+FE001E3 - F3 0F10 4C 24 54      - movss xmm1,[rsp+54]
-MetroExodus.exe+FE001E9 - 66 0F6E C0            - movd xmm0,eax
+World: x is right, y is up and z is into the screen
 
+Game FoV: (Also game fov)
+MetroExodus.exe+FE2C2A5 - 48 8B 05 042390F1     - mov rax,[MetroExodus.exe+172E5B0] { (888DEB98) }
+MetroExodus.exe+FE2C2AC - 0FB6 95 10020000      - movzx edx,byte ptr [rbp+00000210]
+MetroExodus.exe+FE2C2B3 - 48 8B 48 08           - mov rcx,[rax+08]
+MetroExodus.exe+FE2C2B7 - 48 8B 01              - mov rax,[rcx]
+MetroExodus.exe+FE2C2BA - FF 90 E0010000        - call qword ptr [rax+000001E0]
+MetroExodus.exe+FE2C2C0 - F3 0F10 05 F4A969F1   - movss xmm0,[MetroExodus.exe+14C6CBC] { (179,00) }
+MetroExodus.exe+FE2C2C8 - F3 0F10 65 50         - movss xmm4,[rbp+50]
+MetroExodus.exe+FE2C2CD - F3 0F59 25 3B6182F0   - mulss xmm4,[MetroExodus.exe+652410] <<< FOV read. Always write it. 
+MetroExodus.exe+FE2C2D5 - 8B 44 24 50           - mov eax,[rsp+50]
+MetroExodus.exe+FE2C2D9 - F3 0F10 1D F3A269F1   - movss xmm3,[MetroExodus.exe+14C65D4] { (0,01) }
+MetroExodus.exe+FE2C2E1 - F3 0F11 85 10020000   - movss [rbp+00000210],xmm0
+MetroExodus.exe+FE2C2E9 - F3 0F11 A5 10020000   - movss [rbp+00000210],xmm4
+MetroExodus.exe+FE2C2F1 - 0F28 D4               - movaps xmm2,xmm4
+MetroExodus.exe+FE2C2F4 - F3 0F11 9D 10020000   - movss [rbp+00000210],xmm3
 
-// Game camera: // latest patch: Coords are also written when ansel is activated. 
+// Ansel UpdateCamera call
+MetroExodus.exe+123F02DF - F3 0F11 4C 24 20      - movss [rsp+20],xmm1
+MetroExodus.exe+123F02E5 - F3 0F10 49 18         - movss xmm1,[rcx+18]
+MetroExodus.exe+123F02EA - 48 8D 4C 24 40        - lea rcx,[rsp+40]
+MetroExodus.exe+123F02EF - F3 0F11 44 24 24      - movss [rsp+24],xmm0
+MetroExodus.exe+123F02F5 - F3 0F11 4C 24 28      - movss [rsp+28],xmm1
+MetroExodus.exe+123F02FB - FF 15 57FDB202        - call qword ptr [MetroExodus.exe+14F20058] { ->anselsdk64.dll+1AD0 }
+MetroExodus.exe+123F0301 - 48 8D 4C 24 50        - lea rcx,[rsp+50]
+MetroExodus.exe+123F0306 - FF 15 5CFDB202        - call qword ptr [MetroExodus.exe+14F20068] <<<<<<<< UpdateCamera
+MetroExodus.exe+123F030C - 4C 8D 4C 24 20        - lea r9,[rsp+20]
+MetroExodus.exe+123F0311 - 4C 8D 44 24 30        - lea r8,[rsp+30]
+MetroExodus.exe+123F0316 - 48 8D 54 24 40        - lea rdx,[rsp+40]
+MetroExodus.exe+123F031B - 48 8D 4C 24 5C        - lea rcx,[rsp+5C]
+MetroExodus.exe+123F0320 - FF 15 2AFDB202        - call qword ptr [MetroExodus.exe+14F20050] <<<<<<<< Convert function in Ansel.
+MetroExodus.exe+123F0326 - F3 0F10 44 24 20      - movss xmm0,[rsp+20]
+MetroExodus.exe+123F032C - F3 0F10 4C 24 24      - movss xmm1,[rsp+24]
+MetroExodus.exe+123F0332 - 0F10 56 30            - movups xmm2,[rsi+30]
+MetroExodus.exe+123F0336 - C7 45 BC 00000000     - mov [rbp-44],00000000 { 0 }
+MetroExodus.exe+123F033D - F3 0F11 45 B0         - movss [rbp-50],xmm0
+MetroExodus.exe+123F0342 - F3 0F10 44 24 28      - movss xmm0,[rsp+28]
+MetroExodus.exe+123F0348 - F3 0F11 45 B8         - movss [rbp-48],xmm0
+MetroExodus.exe+123F034D - F3 0F10 44 24 34      - movss xmm0,[rsp+34]
+
+// Game camera: Coords are also written when ansel is activated. 
+// rotation matrix is right behind the coords. Camera is hardcoded on a static address (MetroExodus.exe+1738A00)
+// Coords
 MetroExodus.exe+FE27FD4 - 44 0F28 94 24 F0000000  - movaps xmm10,[rsp+000000F0]
 MetroExodus.exe+FE27FDD - 44 0F28 8C 24 00010000  - movaps xmm9,[rsp+00000100]
 MetroExodus.exe+FE27FE6 - 44 0F28 84 24 10010000  - movaps xmm8,[rsp+00000110]
 MetroExodus.exe+FE27FEF - 0F28 BC 24 20010000   - movaps xmm7,[rsp+00000120]
 MetroExodus.exe+FE27FF7 - 0F28 B4 24 30010000   - movaps xmm6,[rsp+00000130]
-MetroExodus.exe+FE27FFF - 45 0FC6 E4 39         - shufps xmm12,xmm12,39 { 57 }
-MetroExodus.exe+FE28004 - 44 0F29 25 F40991F1   - movaps [MetroExodus.exe+1738A00],xmm12 // write coords (matrix row 0)
+MetroExodus.exe+FE27FFF - 45 0FC6 E4 39         - shufps xmm12,xmm12,39
+MetroExodus.exe+FE28004 - 44 0F29 25 F40991F1   - movaps [MetroExodus.exe+1738A00],xmm12 		<<<<<< write coords 		WRITE1
 MetroExodus.exe+FE2800C - F3 0F10 53 48         - movss xmm2,[rbx+48]
 MetroExodus.exe+FE28011 - 0F28 E2               - movaps xmm4,xmm2
 MetroExodus.exe+FE28014 - 44 0F29 64 24 30      - movaps [rsp+30],xmm12
 MetroExodus.exe+FE2801A - 44 0F28 A4 24 D0000000  - movaps xmm12,[rsp+000000D0]
 // write 1 is below in matrix write 2
-// ansel coords write. 
+// Coords (Ansel only)
 MetroExodus.exe+123F048A - 0F28 4D B0            - movaps xmm1,[rbp-50]
 MetroExodus.exe+123F048E - 0FC6 DB 27            - shufps xmm3,xmm3,27 { 39 }
 MetroExodus.exe+123F0492 - F3 0F10 DA            - movss xmm3,xmm2
 MetroExodus.exe+123F0496 - 0FC6 DB 39            - shufps xmm3,xmm3,39 { 57 }
-MetroExodus.exe+123F049A - 0F11 1E               - movups [rsi],xmm3				<< Write coords
+MetroExodus.exe+123F049A - 0F11 1E               - movups [rsi],xmm3							<< Write coords				WRITE2
 MetroExodus.exe+123F049D - F3 0F10 5C 24 6C      - movss xmm3,[rsp+6C]
-MetroExodus.exe+123F04A3 - F3 0F5D 1D 11680DEF   - minss xmm3,[MetroExodus.exe+14C6CBC] { (179,00) }
+MetroExodus.exe+123F04A3 - F3 0F5D 1D 11680DEF   - minss xmm3,[MetroExodus.exe+14C6CBC]
 MetroExodus.exe+123F04AB - F3 0F11 86 B8040000   - movss [rsi+000004B8],xmm0
 MetroExodus.exe+123F04B3 - 0F28 45 A0            - movaps xmm0,[rbp-60]
-MetroExodus.exe+123F04B7 - F3 0F5F 1D 15610DEF   - maxss xmm3,[MetroExodus.exe+14C65D4] { (0,01) }
-MetroExodus.exe+123F04BF - F3 0F11 9E B4040000   - movss [rsi+000004B4],xmm3
-// rotation matrix is right behind the coords. 
-
-// Latest patch. Matrix writes
-// Ansel writes:
-MetroExodus.exe+123F04B7 - F3 0F5F 1D 15610DEF   - maxss xmm3,[MetroExodus.exe+14C65D4] { (0,01) }
-MetroExodus.exe+123F04BF - F3 0F11 9E B4040000   - movss [rsi+000004B4],xmm3
-MetroExodus.exe+123F04C7 - 0F11 4E 10            - movups [rsi+10],xmm1		<< Row 1
+MetroExodus.exe+123F04B7 - F3 0F5F 1D 15610DEF   - maxss xmm3,[MetroExodus.exe+14C65D4]
+MetroExodus.exe+123F04BF - F3 0F11 9E B4040000   - movss [rsi+000004B4],xmm3					<< Write Fov (Ansel)		WRITE3
+MetroExodus.exe+123F04C7 - 0F11 4E 10            - movups [rsi+10],xmm1							<< Row 1
 MetroExodus.exe+123F04CB - 0F28 4D 90            - movaps xmm1,[rbp-70]
-MetroExodus.exe+123F04CF - 0F11 46 20            - movups [rsi+20],xmm0		<< Row 2
-MetroExodus.exe+123F04D3 - 0F11 4E 30            - movups [rsi+30],xmm1		<< Row 3
+MetroExodus.exe+123F04CF - 0F11 46 20            - movups [rsi+20],xmm0							<< Row 2
+MetroExodus.exe+123F04D3 - 0F11 4E 30            - movups [rsi+30],xmm1							<< Row 3
 MetroExodus.exe+123F04D7 - F3 0F10 86 B4040000   - movss xmm0,[rsi+000004B4]
-MetroExodus.exe+123F04DF - F3 0F59 05 E5600DEF   - mulss xmm0,[MetroExodus.exe+14C65CC] { (0,01) }
+MetroExodus.exe+123F04DF - F3 0F59 05 E5600DEF   - mulss xmm0,[MetroExodus.exe+14C65CC]
 // write of game to matrix (also during ansel!)
 MetroExodus.exe+FE27F6C - F3 44 0F10 C8         - movss xmm9,xmm0
-MetroExodus.exe+FE27F71 - 0F29 35 A80A91F1      - movaps [MetroExodus.exe+1738A20],xmm6 { (-0,02) }
+MetroExodus.exe+FE27F71 - 0F29 35 A80A91F1      - movaps [MetroExodus.exe+1738A20],xmm6  		<< Row 2					WRITE4
 MetroExodus.exe+FE27F78 - F2 0F10 45 C8         - movsd xmm0,[rbp-38]
 MetroExodus.exe+FE27F7D - 45 0FC6 C9 39         - shufps xmm9,xmm9,39 { 57 }
 MetroExodus.exe+FE27F82 - 66 0F5A D2            - cvtpd2ps xmm2,xmm2
-MetroExodus.exe+FE27F86 - 44 0F29 0D 820A91F1   - movaps [MetroExodus.exe+1738A10],xmm9 { (-0,53) }
+MetroExodus.exe+FE27F86 - 44 0F29 0D 820A91F1   - movaps [MetroExodus.exe+1738A10],xmm9			<< Row 1					WRITE5
 MetroExodus.exe+FE27F8E - F3 0F10 DA            - movss xmm3,xmm2
 MetroExodus.exe+FE27F92 - 45 0FC6 E4 27         - shufps xmm12,xmm12,27 { 39 }
 MetroExodus.exe+FE27F97 - 0FC6 DB 39            - shufps xmm3,xmm3,39 { 57 }
 MetroExodus.exe+FE27F9B - 0F29 5C 24 30         - movaps [rsp+30],xmm3
 MetroExodus.exe+FE27FA0 - 0F29 74 24 30         - movaps [rsp+30],xmm6
 MetroExodus.exe+FE27FA5 - 44 0F29 4C 24 30      - movaps [rsp+30],xmm9
-MetroExodus.exe+FE27FAB - 0F29 1D 7E0A91F1      - movaps [MetroExodus.exe+1738A30],xmm3 { (3F5981F0) }
+MetroExodus.exe+FE27FAB - 0F29 1D 7E0A91F1      - movaps [MetroExodus.exe+1738A30],xmm3 		<< Row 3					WRITE6
 MetroExodus.exe+FE27FB2 - 66 0F5A C0            - cvtpd2ps xmm0,xmm0
 // write 2
-MetroExodus.exe+FE2C521 - 0F29 05 D8C490F1      - movaps [MetroExodus.exe+1738A00],xmm0 // coords row
-MetroExodus.exe+FE2C528 - 0F28 45 B0            - movaps xmm0,[rbp-50]
-MetroExodus.exe+FE2C52C - 0F29 0D DDC490F1      - movaps [MetroExodus.exe+1738A10],xmm1 // row 1
-MetroExodus.exe+FE2C533 - 0F28 4D A0            - movaps xmm1,[rbp-60]
-MetroExodus.exe+FE2C537 - 0F29 05 E2C490F1      - movaps [MetroExodus.exe+1738A20],xmm0 // row 2
-MetroExodus.exe+FE2C53E - F3 0F10 05 DAC890F1   - movss xmm0,[MetroExodus.exe+1738E20] { (20000,00) }
-MetroExodus.exe+FE2C546 - 0F29 0D E3C490F1      - movaps [MetroExodus.exe+1738A30],xmm1 // row 3
+MetroExodus.exe+FE2C521 - 0F29 05 D8C490F1      - movaps [MetroExodus.exe+1738A00],xmm0 		<< coords row				WRITE7
+MetroExodus.exe+FE2C528 - 0F28 45 B0            - movaps xmm0,[rbp-50]		
+MetroExodus.exe+FE2C52C - 0F29 0D DDC490F1      - movaps [MetroExodus.exe+1738A10],xmm1 		<< row 1
+MetroExodus.exe+FE2C533 - 0F28 4D A0            - movaps xmm1,[rbp-60]		
+MetroExodus.exe+FE2C537 - 0F29 05 E2C490F1      - movaps [MetroExodus.exe+1738A20],xmm0 		<< row 2
+MetroExodus.exe+FE2C53E - F3 0F10 05 DAC890F1   - movss xmm0,[MetroExodus.exe+1738E20]		
+MetroExodus.exe+FE2C546 - 0F29 0D E3C490F1      - movaps [MetroExodus.exe+1738A30],xmm1 		<< row 3
 MetroExodus.exe+FE2C54D - F3 41 0F10 4D 48      - movss xmm1,[r13+48]
 
-
-
+// Ansel fov write:
+MetroExodus.exe+FE28035 - F3 0F11 5C 24 48      - movss [rsp+48],xmm3
+MetroExodus.exe+FE2803B - F3 0F5F E3            - maxss xmm4,xmm3
+MetroExodus.exe+FE2803F - F3 0F11 25 6D0E91F1   - movss [MetroExodus.exe+1738EB4],xmm4 			<<<<  WRITE FOV
+MetroExodus.exe+FE28047 - F3 0F10 53 4C         - movss xmm2,[rbx+4C]
+MetroExodus.exe+FE2804C - 0F2F D0               - comiss xmm2,xmm0
+MetroExodus.exe+FE2804F - 0F29 64 24 30         - movaps [rsp+30],xmm4
+MetroExodus.exe+FE28054 - 77 08                 - ja MetroExodus.exe+FE2805E
+MetroExodus.exe+FE28056 - F3 0F10 15 3AC690F1   - movss xmm2,[MetroExodus.exe+1734698] { (1,60) }
 
 
 
@@ -146,3 +176,26 @@ MetroExodus.exe+A559265 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
 MetroExodus.exe+A55926A - 48 83 C4 20           - add rsp,20 { 32 }
 MetroExodus.exe+A55926E - 5F                    - pop rdi
 MetroExodus.exe+A55926F - C3                    - ret 
+
+
+// ToD
+000000015094C9FE | 4C:8970 E0                    | mov qword ptr ds:[rax-20],r14           
+000000015094CA02 | 4C:8978 D8                    | mov qword ptr ds:[rax-28],r15           
+000000015094CA06 | 0F2970 C8                     | movaps xmmword ptr ds:[rax-38],xmm6     
+000000015094CA0A | 0F2978 B8                     | movaps xmmword ptr ds:[rax-48],xmm7     
+000000015094CA0E | 44:0F2940 A8                  | movaps xmmword ptr ds:[rax-58],xmm8     
+000000015094CA13 | 48:8B05 961BDEF0              | mov rax,qword ptr ds:[14172E5B0]        
+000000015094CA1A | 48:8B88 40D30000              | mov rcx,qword ptr ds:[rax+D340]         
+000000015094CA21 | 48:2B88 38D30000              | sub rcx,qword ptr ds:[rax+D338]         
+000000015094CA28 | 48:8B80 28D30000              | mov rax,qword ptr ds:[rax+D328] <<< GRAB RAX, which is the ToD struct.
+000000015094CA2F | 48:F7F1                       | div rcx                                 
+000000015094CA32 | 4C:89E8                       | mov rax,r13                             
+000000015094CA35 | 4C:89C1                       | mov rcx,r8                              
+000000015094CA38 | 48:89D5                       | mov rbp,rdx                             
+000000015094CA3B | 48:F7E2                       | mul rdx                                 
+000000015094CA3E | 48:29D5                       | sub rbp,rdx                             
+000000015094CA41 | 48:D1ED                       | shr rbp,1                               
+000000015094CA44 | 48:01D5                       | add rbp,rdx                             
+000000015094CA47 | 48:C1ED 09                    | shr rbp,9                               
+
+
