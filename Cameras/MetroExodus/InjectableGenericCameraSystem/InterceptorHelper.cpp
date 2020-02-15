@@ -50,8 +50,7 @@ extern "C" {
 
 namespace IGCS::GameSpecific::InterceptorHelper
 {
-	static bool _anselSDKFound = false;
-	static DWORD* _todAddress = nullptr;
+	static LPBYTE _gamePauseAddress = nullptr;
 
 	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, map<string, AOBBlock*>& aobBlocks)
 	{
@@ -67,6 +66,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE4_KEY] = new AOBBlock(CAMERA_WRITE4_KEY, "0F 29 35 ?? ?? ?? ?? F2 0F 10 45 C8 45 0F C6 C9 39", 1);
 		// write 5& 6 are relative to write4
 		aobBlocks[CAMERA_WRITE7_KEY] = new AOBBlock(CAMERA_WRITE7_KEY, "0F 29 05 ?? ?? ?? ?? 0F 28 45 B0 0F 29 0D ?? ?? ?? ?? 0F 28 4D A0", 1);
+		aobBlocks[GAME_PAUSE_ADDRESS_KEY] = new AOBBlock(GAME_PAUSE_ADDRESS_KEY, "38 05 | ?? ?? ?? ?? 74 0D 38 05 ?? ?? ?? ?? 75 05 45 30 C0", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -84,6 +84,11 @@ namespace IGCS::GameSpecific::InterceptorHelper
 				CameraManipulator::setFoVAddress(Utils::calculateAbsoluteAddress(aobBlocks[FOV_READ_KEY], 4));
 			}
 		}
+		if(aobBlocks[GAME_PAUSE_ADDRESS_KEY]->found())
+		{
+			_gamePauseAddress = Utils::calculateAbsoluteAddress(aobBlocks[GAME_PAUSE_ADDRESS_KEY], 4);
+		}
+		
 		if (result)
 		{
 			Console::WriteLine("All interception offsets found.");
@@ -168,12 +173,13 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	}
 
 	
-	void adjustTime(int adjustmentValue)
+	void toggleGamePause()
 	{
-		if(nullptr!=_todAddress)
+		if(nullptr==_gamePauseAddress)
 		{
-			*_todAddress = (*_todAddress) + adjustmentValue;
+			return;
 		}
+		*_gamePauseAddress = (*_gamePauseAddress == (BYTE)0) ? (BYTE)1 : (BYTE)0;
 	}
 
 

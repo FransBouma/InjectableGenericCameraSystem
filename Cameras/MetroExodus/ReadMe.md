@@ -19,6 +19,7 @@ Read the enclosed readme for details how to use it.
 	- Free unlimited camera movement and rotation 
 - Ansel everywhere
 - No range limits in photomode / ansel.
+- Game pause/unpause (also during ansel/photomode)
 
 ### Acknowledgements
 This camera uses [MinHook](https://github.com/TsudaKageyu/minhook) by Tsuda Kageyu.

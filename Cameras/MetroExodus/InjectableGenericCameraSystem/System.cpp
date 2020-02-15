@@ -114,6 +114,11 @@ namespace IGCS
 			toggleYLookDirectionState();
 			Sleep(350);		// wait for 350ms to avoid fast keyboard hammering
 		}
+		if (Input::keyDown(IGCS_KEY_TOGGLE_PAUSE))
+		{
+			InterceptorHelper::toggleGamePause();
+			Sleep(350);		// wait for 350ms to avoid fast keyboard hammering
+		}
 		if (Input::keyDown(IGCS_KEY_CAMERA_ENABLE))
 		{
 			if (g_cameraEnabled)
@@ -349,7 +354,7 @@ namespace IGCS
 		Console::WriteLine("ALT + rotate/move                     : Faster rotate / move");
 		Console::WriteLine("Right-CTRL + rotate/move              : Slower rotate / move");
 		Console::WriteLine("Controller A-button + l/r-stick       : Faster rotate / move");
-		Console::WriteLine("Controller X-button + l/r-stick       : Slower rotate / move");
+		Console::WriteLine("Controller LB-button + l/r-stick      : Slower rotate / move");
 		Console::WriteLine("Arrow up/down or r-stick              : Rotate camera up/down");
 		Console::WriteLine("Arrow left/right or r-stick           : Rotate camera left/right");
 		Console::WriteLine("Numpad 8/Numpad 5 or l-stick          : Move camera forward/backward");
@@ -360,6 +365,7 @@ namespace IGCS
 		Console::WriteLine("Numpad * or controller B-button       : Reset FoV");
 		Console::WriteLine("Numpad /                              : Toggle Y look direction");
 		Console::WriteLine("Numpad .                              : Block keyboard/mouse input to game");
+		Console::WriteLine("Numpad 0                              : Toggle game pause");
 		Console::WriteLine("ALT+H                                 : This help");
 		Console::WriteLine("-----------------------------------------------------------------------------", CONSOLE_WHITE);
 		// wait for 350ms to avoid fast keyboard hammering

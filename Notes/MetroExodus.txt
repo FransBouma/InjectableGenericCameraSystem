@@ -198,4 +198,16 @@ MetroExodus.exe+A55926F - C3                    - ret
 000000015094CA44 | 48:01D5                       | add rbp,rdx                             
 000000015094CA47 | 48:C1ED 09                    | shr rbp,9                               
 
+// Game pause:
+MetroExodus.exe+3D20587 - 75 F7           - jne MetroExodus.exe+3D20580
+MetroExodus.exe+3D20589 - 85 C0           - test eax,eax
+MetroExodus.exe+3D2058B - 75 18           - jne MetroExodus.exe+3D205A5
+MetroExodus.exe+3D2058D - 38 05 6183A1FD  - cmp [MetroExodus.exe+17388F4],al  <<< 1 is paused, 0 is unpaused
+MetroExodus.exe+3D20593 - 74 0D           - je MetroExodus.exe+3D205A2
+MetroExodus.exe+3D20595 - 38 05 5A83A1FD  - cmp [MetroExodus.exe+17388F5],al
+MetroExodus.exe+3D2059B - 75 05           - jne MetroExodus.exe+3D205A2
+MetroExodus.exe+3D2059D - 45 30 C0        - xor r8l,r8l
+MetroExodus.exe+3D205A0 - EB 03           - jmp MetroExodus.exe+3D205A5
+
+
 
