@@ -2,7 +2,7 @@ Injectable camera for Metro Exodus
 ============================
 
 Current supported game version: v1.0.1.6+
-Binary download: SOON
+Binary download: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/ME100  
 Camera version: 1.0.0  
 Credits: Otis_Inf. 
 
