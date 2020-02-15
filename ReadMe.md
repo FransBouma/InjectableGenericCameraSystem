@@ -57,6 +57,7 @@ ask, and I might re-upload it.
 * Lords of the Fallen: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/LordsOfTheFallen
 * Mafia III: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Mafia3
 * Metal Gear Solid V: The Phantom Pain: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/MGS5
+* Metro Exodus: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/MetroExodus
 * Prey (2017): https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Prey
 * Resident Evil 2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/ResidentEvil2
 * Ryse: Son of Rome: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/RyseSonOfRome
