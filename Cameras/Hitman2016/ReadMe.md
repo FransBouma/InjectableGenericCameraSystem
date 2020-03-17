@@ -5,6 +5,7 @@ Works in GOTY too, however v1.0.10 of the camera will be the last one that's rel
 editions of the game, and if that happens, that's too bad, sorry. 
 
 Current supported game version: v1.13.2+.  
+Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/Hitman2016_v111  
 Credits: Otis_Inf / Jim2Point0. Special thanks to: One3rd  
 
 ### Acknowledgements
