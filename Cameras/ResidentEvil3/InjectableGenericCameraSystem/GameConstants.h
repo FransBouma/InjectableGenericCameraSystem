@@ -1,6 +1,6 @@
-//////////////////////////	////////	//////////////////////////////////////////////////////////////////////
+//////////////////////////	//////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2019, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -30,23 +30,25 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Resident Evil 2 v1.0"
-	#define CAMERA_VERSION								"1.0.2"
-	#define CAMERA_CREDITS								"Otis_Inf and Jim2Point0"
-	#define GAME_WINDOW_TITLE							"RESIDENT EVIL 2"
+	#define GAME_NAME									"Resident Evil 3 v1.0+"
+	#define CAMERA_VERSION								"1.0.0"
+	#define CAMERA_CREDITS								"Otis_Inf."
+	#define GAME_WINDOW_TITLE							"RESIDENT EVIL 3"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
-	#define INITIAL_YAW_RADIANS							0.0f	// around Y axis	(up)
-	#define INITIAL_ROLL_RADIANS						0.0f	// around Z axis	(into the screen)
+	#define INITIAL_YAW_RADIANS							0.0f	// around Y axis	(out of the screen)
+	#define INITIAL_ROLL_RADIANS						0.0f	// around Z axis	(up)
 	#define CONTROLLER_Y_INVERT							false
+	// These will be overwritten by settings sent by the client. These defines are for initial usage. 
 	#define FASTER_MULTIPLIER							5.0f
 	#define SLOWER_MULTIPLIER							0.07f
 	#define MOUSE_SPEED_CORRECTION						0.2f	// to correct for the mouse-deltas related to normal rotation.
 	#define DEFAULT_MOVEMENT_SPEED						0.05f
 	#define DEFAULT_ROTATION_SPEED						0.01f
-	#define DEFAULT_FOV_SPEED							0.3f	// fov in degrees
+	#define DEFAULT_FOV_SPEED							0.3f
 	#define DEFAULT_UP_MOVEMENT_MULTIPLIER				0.7f
 	#define DEFAULT_FOV									69.0f	// fov in degrees
-	#define RESOLUTION_SCALE_MAX						10.0f
+	#define DEFAULT_RESOLUTION_SCALE					1.0f
+	#define RESOLUTION_SCALE_MAX						5.0f
 	#define RESOLUTION_SCALE_MIN						0.5f
 	// End Mandatory constants
 
@@ -64,14 +66,16 @@ namespace IGCS::GameSpecific
 	#define DOF_FAR_BLUR_STRENGTH_WRITE_KEY				"AOB_DOF_FAR_BLUR_STRENGTH_WRITE"
 	#define HUD_TOGGLE_ADDRESS_KEY						"AOB_HUD_TOGGLE_ADDRESS_KEY"
 	#define VIGNETTE_REMOVAL_ADDRESS_KEY				"AOB_VIGNETTE_REMOVAL_ADDRESS_KEY"
-
+	#define SHARPENING_DISABLE_ADDRESS_KEY				"AOB_SHARPENING_DISABLE_ADDRESS_KEY"
+	
 	// Indices in the structures read by interceptors 
 	#define COORDS_IN_STRUCT_OFFSET						0x80
-	#define QUATERNION_IN_STRUCT_OFFSET					0x90
-	#define FOV_IN_STRUCT_OFFSET						0xA4
-	#define RESOLUTION_SCALE_IN_STRUCT_OFFSET			0x11CC
+	#define QUATERNION_IN_STRUCT_OFFSET					0xA0
+	#define FOV_IN_STRUCT_OFFSET						0xB4
+	#define RESOLUTION_SCALE_IN_STRUCT_OFFSET			0x14B4
 	#define TIMESTOP_FLOAT_OFFSET						0x380		// set float to 1.0 to proceed normally, 0.000001 to pause
 	#define DISPLAYTYPE_IN_STRUCT_OFFSET				0x74
 	#define DOF_SELECTOR_IN_STRUCT_OFFSET				0x4C		// set to 1 for the dof we need.
 	#define HUD_TOGGLE_OFFSET_IN_STRUCT					0x8
+	
 }
