@@ -48,19 +48,19 @@ namespace IGCS
 		void updateFrame();
 		void handleUserInput();
 		void displayCameraState();
-		void toggleCameraMovementLockState(bool newValue);
+		void toggleCameraMovementLockState();
 		void handleKeyboardCameraMovement(float multiplier);
 		void handleMouseCameraMovement(float multiplier);
 		void handleGamePadMovement(float multiplierBase);
 		void waitForCameraStructAddresses();
-		void toggleInputBlockState(bool newValue);
-		void takeMultiShot(bool isTestRun);
-		void takeSingleScreenshot();
+		void toggleInputBlockState();
+		void toggleHud();
+		void toggleGamePause(bool displayNotification = true);
+		void skipFrames();
 
 		Camera _camera;
 		LPBYTE _hostImageAddress;
 		DWORD _hostImageSize;
-		bool _cameraMovementLocked = false;
 		bool _cameraStructFound = false;
 		map<string, AOBBlock*> _aobBlocks;
 		bool _applyHammerPrevention = false;	// set to true by a keyboard action and which triggers a sleep before keyboard handling is performed.

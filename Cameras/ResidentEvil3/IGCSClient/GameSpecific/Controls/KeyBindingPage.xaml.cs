@@ -108,6 +108,9 @@ namespace IGCSClient.GameSpecific.Controls
 					case KeyBindingType.PauseUnpauseGame:
 						binding.Setup(_pauseUnPauseInput);
 						break;
+					case KeyBindingType.SkipFrames:
+						binding.Setup(_skipFramesInput);
+						break;
 				}
 			}
 		}

@@ -76,5 +76,6 @@ namespace IGCSClient.GameSpecific.Classes
 		public const int TiltCameraRightDefault = (int)Keys.NumPad3;
 		public const int ToggleHUDDefault = (int)Keys.Delete;
 		public const int PauseUnpauseGameDefault = (int)Keys.NumPad0;
+		public const int SkipFramesDefault = (int)Keys.PageDown;
 	}
 }

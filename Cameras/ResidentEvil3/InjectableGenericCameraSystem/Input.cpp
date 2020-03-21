@@ -98,10 +98,21 @@ namespace IGCS::Input
 	}
 
 
+	bool isMouseButtonDown(int button)
+	{
+		if (button < 0 || button >= 3)
+		{
+			return false;
+		}
+		return (g_mouseButtonStates[button] & 0xF0) == 0x80;
+	}
+
+
 	void resetMouseDeltas()
 	{
 		_deltaMouseX = 0;
 		_deltaMouseY = 0;
+		g_mouseWheelDelta = 0;
 	}
 
 
@@ -124,6 +135,12 @@ namespace IGCS::Input
 	long getMouseDeltaY()
 	{
 		return _deltaMouseY;
+	}
+
+
+	short getMouseWheelDelta()
+	{
+		return g_mouseWheelDelta;
 	}
 
 

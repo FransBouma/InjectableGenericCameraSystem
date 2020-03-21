@@ -52,6 +52,52 @@
 			<TabItem Header="Log" Name="_logTab">
 				<Controls:ApplicationOutputPage Padding="15" x:Name="_logControl"/>
 			</TabItem>
+			<TabItem Header="Help" Name="_helpTab">
+				<ScrollViewer>
+					<StackPanel Margin="15">
+						<Expander Header="Controls" Margin="0,0,0,10" IsExpanded="True">
+							<TextBlock TextWrapping="Wrap">
+								<Run Text="Keyboard features" FontWeight="Bold"/><LineBreak/>
+								For operating the camera and enable/disable features using the keyboard, please see the Key-bindings tab. 
+								To move / rotate slower, press Ctrl while rotating / moving the camera. To move / rotate faster, press Alt while
+								rotating / moving the camera.
+								<LineBreak/><LineBreak/>
+								<Run Text="Mouse features" FontWeight="Bold"/>
+								<LineBreak/>
+								- No mouse buttons pressed: rotate the camera<LineBreak/>
+								- Left button pressed: move camera up / down / left / right<LineBreak/>
+								- Right button pressed: move camera forward / backward / left / right<LineBreak/>
+								- Both left and right button pressed: tilt camera left / right<LineBreak/>
+								- Mousewheel: increase / decrease FoV<LineBreak/>
+								<LineBreak/>
+								<Run Text="Controller features" FontWeight="Bold"/><LineBreak/>
+								- Left stick: move camera forward / backward / left / right <LineBreak/>
+								- Right stick: rotate camera<LineBreak/>
+								- Left trigger: move camera up<LineBreak/>
+								- Right trigger: move camera down<LineBreak/>
+								- Y button + left / right stick: faster movement / rotation<LineBreak/>
+								- X button + left / right stick: slower movement / rotation<LineBreak/>
+								- D-pad up / down: increase / decrease FoV<LineBreak/>
+								- B button: reset FoV<LineBreak/>
+							</TextBlock>
+						</Expander>
+						<Expander Header="About hotsampling" Margin="0,0,0,10">
+							<TextBlock TextWrapping="Wrap">
+								To take screenshots at higher resolutions than your regular gaming resolution, run the game in windowed mode. To get rid of the window border, on the
+								Hotsampling tab, click 'Fake fullscreen'. To switch to a high resolution, select the resolution and aspect ratio you want from the tree on the Hotsampling 
+								tab and click 'Set'. You can also select one from the list of previous used resolutions if you switch between a given set of resolutions frequently. 
+								<LineBreak/><LineBreak/>
+								The IGCS client will resize the game window to the requested resolution and the game will resize the game framebuffer accordingly, allowing you to take 
+								a shot at a high resolution. To go back to your regular gaming resolution, simply click the 'Fake fullscreen' button again. 
+								<LineBreak/><LineBreak/>
+								On the Configuration tab you'll find a 'Resolution scale' slider. This slider will also increase the resolution of the game's framebuffer, but won't 
+								increase the final image's resolution. You can use both the Resolution scale slider and the hotsampling feature to create truly high-resolution images, 
+								just be aware that the bigger resolution you select, the more video memory you need: the game might crash if you go too far. 
+							</TextBlock>
+						</Expander>
+					</StackPanel>
+				</ScrollViewer>
+			</TabItem>
 			<TabItem Header="About" Name="_aboutTab">
 				<ScrollViewer>
 					<StackPanel Margin="15">

@@ -61,6 +61,7 @@ namespace IGCSClient.Forms
 			TabItemHelper.SetIcon(_keybindingsTab, new SymbolIcon(Symbol.Keyboard));
 			TabItemHelper.SetIcon(_logTab, new SymbolIcon(Symbol.OpenFile));
 			TabItemHelper.SetIcon(_aboutTab, new SymbolIcon(Symbol.People));
+			TabItemHelper.SetIcon(_helpTab, new SymbolIcon(Symbol.Help));
 			this.MinHeight = this.Height;
 			this.MinWidth = this.Width;
 		}

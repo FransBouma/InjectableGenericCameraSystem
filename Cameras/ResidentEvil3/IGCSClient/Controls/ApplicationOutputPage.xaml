@@ -10,7 +10,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
 		<GroupBox Header="Application log" Margin="0,0,0,37">
-			<TextBox Name="_outputTextBox" IsReadOnly="True" Margin="0,0,0,-12" VerticalScrollBarVisibility="Auto"/>
+			<TextBox Name="_outputTextBox" IsReadOnly="True" Margin="0,0,0,-12" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
 		</GroupBox>
 		<Button HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="ButtonBase_OnClick" >Clear</Button>
 	</Grid>

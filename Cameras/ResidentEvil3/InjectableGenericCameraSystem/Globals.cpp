@@ -120,5 +120,6 @@ namespace IGCS
 		_keyBindingPerActionType[ActionType::TiltRight] = new ActionData("TiltRight", IGCS_KEY_TILT_RIGHT, false, false, false);
 		_keyBindingPerActionType[ActionType::HudToggle] = new ActionData("HudToggle", IGCS_KEY_HUD_TOGGLE, false, false, false);
 		_keyBindingPerActionType[ActionType::Timestop] = new ActionData("Timestop", IGCS_KEY_TIMESTOP, false, false, false);
+		_keyBindingPerActionType[ActionType::SkipFrames] = new ActionData("SkipFrames", IGCS_KEY_SKIP_FRAMES, false, false, false);
 	}
 }

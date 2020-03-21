@@ -6,8 +6,7 @@
 			 xmlns:controls="clr-namespace:IGCSClient.Controls"
              xmlns:local="clr-namespace:IGCSClient.GameSpecific.Controls"
 			 Style="{StaticResource ControlPageStyle}"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d" Height="732.27" Width="768.794">
     <StackPanel Orientation="Horizontal">
 		<StackPanel>
 			<controls:KeyCombinationInputWPF Header="Block input to game" x:Name="_blockInputInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
@@ -20,6 +19,7 @@
 			<controls:KeyCombinationInputWPF Header="Move camera up" x:Name="_moveCameraUpInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 			<controls:KeyCombinationInputWPF Header="Move camera down" x:Name="_moveCameraDownInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 			<controls:KeyCombinationInputWPF Header="Pause / unpause the game" x:Name="_pauseUnPauseInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
+			<controls:KeyCombinationInputWPF Header="Skip a few frames when paused" x:Name="_skipFramesInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 		</StackPanel>
 		<StackPanel>
 			<controls:KeyCombinationInputWPF Header="Decrease FoV" x:Name="_decreaseFoVInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>

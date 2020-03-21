@@ -120,6 +120,8 @@ namespace IGCSClient
 		public const byte TiltCameraRight=17;
 		public const byte ToggleHUD=18;
 		public const byte PauseUnpauseGame = 19;
+		public const byte SkipFrames = 20;
+
 		// to add more, derived a type of this class and define the next value one higher than the last one in this class.
 	}
 

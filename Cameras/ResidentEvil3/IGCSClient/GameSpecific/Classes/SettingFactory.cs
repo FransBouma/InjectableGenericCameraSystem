@@ -85,6 +85,7 @@ namespace IGCSClient.GameSpecific.Classes
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.TiltCameraRight, nameof(KeyBindingType.TiltCameraRight), new KeyCombination(GameSpecificKeyBindingDefaults.TiltCameraRightDefault)));
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.ToggleHUD, nameof(KeyBindingType.ToggleHUD), new KeyCombination(GameSpecificKeyBindingDefaults.ToggleHUDDefault)));
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.PauseUnpauseGame, nameof(KeyBindingType.PauseUnpauseGame), new KeyCombination(GameSpecificKeyBindingDefaults.PauseUnpauseGameDefault)));
+			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.SkipFrames, nameof(KeyBindingType.SkipFrames), new KeyCombination(GameSpecificKeyBindingDefaults.SkipFramesDefault)));
 		}
 	}
 }

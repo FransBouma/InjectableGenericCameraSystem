@@ -48,13 +48,20 @@ namespace IGCS
 		static Globals& instance();
 
 		bool inputBlocked() const { return _inputBlocked; }
-		void inputBlocked(bool value) { _inputBlocked = value; }
+		bool cameraMovementLocked() const { return _cameraMovementLocked; }
+		void cameraMovementLocked(bool newValue) { _cameraMovementLocked = newValue; }
 		bool systemActive() const { return _systemActive; }
 		void systemActive(bool value) { _systemActive = value; }
+		bool gamePaused() const { return _gamePaused; }
 		HWND mainWindowHandle() const { return _mainWindowHandle; }
 		void mainWindowHandle(HWND handle) { _mainWindowHandle = handle; }
 		Gamepad& gamePad() { return _gamePad; }
 		Settings& settings() { return _settings; }
+		bool toggleCameraMovementLocked()
+		{
+			_cameraMovementLocked = !_cameraMovementLocked;
+			return _cameraMovementLocked;
+		}
 		bool toggleHudVisible()
 		{
 			_hudVisible = !_hudVisible;
@@ -65,6 +72,11 @@ namespace IGCS
 			_gamePaused = !_gamePaused;
 			return _gamePaused;
 		}
+		bool toggleInputBlocked()
+		{
+			_inputBlocked = !_inputBlocked;
+			return _inputBlocked;
+		}
 		bool keyboardMouseControlCamera() const { return _settings.cameraControlDevice == DEVICE_ID_KEYBOARD_MOUSE || _settings.cameraControlDevice == DEVICE_ID_ALL; }
 		bool controllerControlsCamera() const { return _settings.cameraControlDevice == DEVICE_ID_GAMEPAD || _settings.cameraControlDevice == DEVICE_ID_ALL; }
 		ActionData* getActionData(ActionType type);
@@ -74,7 +86,8 @@ namespace IGCS
 	private:
 		void initializeKeyBindings();
 
-		bool _inputBlocked = false;
+		bool _inputBlocked = true;
+		bool _cameraMovementLocked = false;
 		atomic_bool _systemActive = false;
 		Gamepad _gamePad;
 		HWND _mainWindowHandle;

@@ -45,6 +45,7 @@ extern "C" {
 	void cameraWrite3Interceptor();
 	void cameraWrite4Interceptor();
 	void cameraWrite5Interceptor();
+	void cameraWrite6Interceptor();
 	void resolutionScaleReadInterceptor();
 	void timestopReadInterceptor();
 	void displayTypeInterceptor();
@@ -59,6 +60,7 @@ extern "C" {
 	LPBYTE _cameraWrite3InterceptionContinue = nullptr;
 	LPBYTE _cameraWrite4InterceptionContinue = nullptr;
 	LPBYTE _cameraWrite5InterceptionContinue = nullptr;
+	LPBYTE _cameraWrite6InterceptionContinue = nullptr;
 	LPBYTE _resolutionScaleReadInterceptionContinue = nullptr;
 	LPBYTE _timestopReadInterceptionContinue = nullptr;
 	LPBYTE _displayTypeInterceptionContinue = nullptr;
@@ -76,6 +78,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE3_INTERCEPT_KEY, "F3 0F 10 54 24 58 | F3 0F 11 87 80 00 00 00 F3 0F 11 8F 84 00 00 00 F3 0F 11 97 88 00 00 00", 1);
 		aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE4_INTERCEPT_KEY, "F3 0F 10 96 88 00 00 00 | F3 0F 11 87 80 00 00 00 F3 0F 11 8F 84 00 00 00 F3 0F 11 97 88 00 00 00", 1);
 		aobBlocks[CAMERA_WRITE5_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE5_INTERCEPT_KEY, "0F 10 86 90 00 00 00 0F 11 87 A0 00 00 00 48 8B 43 50", 1);
+		aobBlocks[CAMERA_WRITE6_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE6_INTERCEPT_KEY, "F3 0F 11 B7 A0 00 00 00 F3 44 0F 11 87 A4 00 00 00 F3 44 0F 11 97 A8 00 00 00", 1);
 		aobBlocks[TIMESTOP_READ_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_READ_INTERCEPT_KEY, "F3 0F 59 8B 80 03 00 00 0F 5A C0 F3 0F 11 8B 84 03 00 00", 1);
 		aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY] = new AOBBlock(RESOLUTION_SCALE_INTERCEPT_KEY, "F3 0F 59 80 B4 14 00 00 48 8D 44 24 2C 0F 2F C7", 1);
 		aobBlocks[DISPLAYTYPE_INTERCEPT_KEY] = new AOBBlock(DISPLAYTYPE_INTERCEPT_KEY, "44 0F 29 44 24 60 44 0F 29 4C 24 50 F3 0F 11 45 10", 1);
@@ -115,16 +118,17 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY], 0x18, &_cameraWrite3InterceptionContinue, &cameraWrite3Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY], 0x18, &_cameraWrite4InterceptionContinue, &cameraWrite4Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE5_INTERCEPT_KEY], 0x0E, &_cameraWrite5InterceptionContinue, &cameraWrite5Interceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE6_INTERCEPT_KEY], 0x33, &_cameraWrite6InterceptionContinue, &cameraWrite6Interceptor);
 		GameImageHooker::setHook(aobBlocks[TIMESTOP_READ_INTERCEPT_KEY], 0x13, &_timestopReadInterceptionContinue, &timestopReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY], 0x10, &_resolutionScaleReadInterceptionContinue, &resolutionScaleReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[DISPLAYTYPE_INTERCEPT_KEY], 0x11, &_displayTypeInterceptionContinue, &displayTypeInterceptor);
 		GameImageHooker::setHook(aobBlocks[DOF_SELECTOR_WRITE_INTERCEPT_KEY], 0x19, &_dofSelectorWriteInterceptionContinue, &dofSelectorWriteInterceptor);
 
-		toggleVignetteOff(aobBlocks[VIGNETTE_REMOVAL_ADDRESS_KEY]);
+		toggleVignetteOff(aobBlocks);
 	}
 
 
-	void toggleVignetteOff(AOBBlock* vignetteWriteAddress)
+	void toggleVignetteOff(map<string, AOBBlock*>& aobBlocks)
 	{
 		//re3demo.exe+1AB007AD - 89 83 D4000000        - mov [rbx+000000D4],eax
 		//re3demo.exe+1AB007B3 - 8B 87 38010000        - mov eax,[rdi+00000138]
@@ -157,11 +161,11 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		//re3demo.exe+1AB007F8 - 0F11 83 A0010000      - movups [rbx+000001A0],xmm0
 		// we're not going to re-enable it, so just write over it. xor eax, eax is 31, c0, plus 4 nops
 		BYTE statementBytes[6] = { 0x31, 0xC0, 0x90, 0x90, 0x90, 0x90 };			//re3demo.exe+1AB007BF - 8B 87 3C010000        - mov eax,[rdi+0000013C]				<< Replace with xor eax, eax + 4 nops
-		GameImageHooker::writeRange(vignetteWriteAddress, statementBytes, 6);
+		GameImageHooker::writeRange(aobBlocks[VIGNETTE_REMOVAL_ADDRESS_KEY], statementBytes, 6);
 	}
 
 	
-	void toggleSharpening(AOBBlock* sharpeningAddress, bool enableSharpening)
+	void toggleSharpening(map<string, AOBBlock*>& aobBlocks, bool enableSharpening)
 	{
 		//re3demo.exe+1AEB6B4E - 0F84 BC010000         - je re3demo.exe+1AEB6D10
 		//re3demo.exe+1AEB6B54 - 48 8B 8D 904A0000     - mov rcx,[rbp+00004A90]
@@ -182,20 +186,18 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		{
 			// restore the jump
 			BYTE statementBytes[2] = { 0x74, 0x05 };			//re3demo.exe+1AEB6B6F - 74 05                 - je re3demo.exe+1AEB6B76				<< NOP so it ends up using the jmp to BA2
-			GameImageHooker::writeRange(sharpeningAddress, statementBytes, 2);
+			GameImageHooker::writeRange(aobBlocks[SHARPENING_DISABLE_ADDRESS_KEY], statementBytes, 2);
 
 		}
 		else
 		{
 			// nop the jump.
-			GameImageHooker::nopRange(sharpeningAddress, 2);
+			GameImageHooker::nopRange(aobBlocks[SHARPENING_DISABLE_ADDRESS_KEY], 2);
 		}
 	}
 
 
-	// if hideHud is false, we'll place a 1 at the flag position which signals that the rendering of the hud was successful, which shows the hud.
-	// otherwise we'll place a 0 there which makes the hud disappear.
-	void toggleHud(map<string, AOBBlock*>& aobBlocks, bool hideHud)
+	void toggleHud(map<string, AOBBlock*>& aobBlocks, bool hudVisible)
 	{
 		//re3demo.exe+19BAB3F2 - 49 89 D5              - mov r13,rdx
 		//re3demo.exe+19BAB3F5 - 80 78 08 00           - cmp byte ptr [rax+08],00 { 0 }
@@ -213,7 +215,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		//re3demo.exe+19BAB42F - 80 B9 11020000 00     - cmp byte ptr [rcx+00000211],00 { 0 }
 		LPBYTE drawComponentStructAddress = (LPBYTE) * (__int64*)Utils::calculateAbsoluteAddress(aobBlocks[HUD_TOGGLE_ADDRESS_KEY], 4); //re3demo.exe+19BAB404 - 48 8B 3D ED692BEF     - mov rdi,[re3demo.exe+8E61DF8] 			<<< Read address, add 8, 0 == no HUD, 1 == HUD
 		BYTE* drawComponentResultAddress = reinterpret_cast<BYTE*>(drawComponentStructAddress + HUD_TOGGLE_OFFSET_IN_STRUCT);
-		*drawComponentResultAddress = hideHud ? (BYTE)0 : (BYTE)1;
+		*drawComponentResultAddress = hudVisible ? (BYTE)1 : (BYTE)0;
 	}
 
 

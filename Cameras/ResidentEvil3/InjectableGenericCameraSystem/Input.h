@@ -41,4 +41,6 @@ namespace IGCS::Input
 	void resetMouseState();
 	bool isActionActivated(ActionType type);
 	bool isActionActivated(ActionType type, bool altCtrlShiftOptional);
+	bool isMouseButtonDown(int button);
+	short getMouseWheelDelta();
 }

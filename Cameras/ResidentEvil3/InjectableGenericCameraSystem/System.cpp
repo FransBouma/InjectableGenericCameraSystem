@@ -110,8 +110,8 @@ namespace IGCS
 			{
 				// it's going to be disabled, make sure things are alright when we give it back to the host
 				CameraManipulator::restoreOriginalValuesAfterCameraDisable();
-				toggleCameraMovementLockState(false);
-				InterceptorHelper::toggleSharpening(_aobBlocks[SHARPENING_DISABLE_ADDRESS_KEY], true);		// toggle sharpening back on
+				Globals::instance().cameraMovementLocked(false);
+				InterceptorHelper::toggleSharpening(_aobBlocks, true);		// toggle sharpening back on
 				InterceptorHelper::toggleInGameDoFOff(_aobBlocks, false);		// switch dof back on
 			}
 			else
@@ -119,7 +119,7 @@ namespace IGCS
 				// it's going to be enabled, so cache the original values before we enable it so we can restore it afterwards
 				CameraManipulator::cacheOriginalValuesBeforeCameraEnable();
 				_camera.resetAngles();
-				InterceptorHelper::toggleSharpening(_aobBlocks[SHARPENING_DISABLE_ADDRESS_KEY], false);		// toggle sharpening off if required.
+				InterceptorHelper::toggleSharpening(_aobBlocks, false);		// toggle sharpening off if required.
 				InterceptorHelper::toggleInGameDoFOff(_aobBlocks, true);		// switch dof off
 			}
 			g_cameraEnabled = g_cameraEnabled == 0 ? (uint8_t)1 : (uint8_t)0;
@@ -140,15 +140,17 @@ namespace IGCS
 		}
 		if(Input::isActionActivated(ActionType::Timestop))
 		{
-			bool newValue = Globals::instance().toggleGamePaused();
-			CameraManipulator::setTimeStopValue(newValue);
-			MessageHandler::addNotification(newValue ? "Game paused" : "Game unpaused");
+			toggleGamePause();
 			_applyHammerPrevention = true;
 		}
 		if (Input::isActionActivated(ActionType::HudToggle))
 		{
-			bool newValue = Globals::instance().toggleHudVisible();
-			InterceptorHelper::toggleHud(_aobBlocks, newValue);
+			toggleHud();
+			_applyHammerPrevention = true;
+		}
+		if (Input::isActionActivated(ActionType::SkipFrames))
+		{
+			skipFrames();
 			_applyHammerPrevention = true;
 		}
 
@@ -159,25 +161,23 @@ namespace IGCS
 		}
 		if (Input::isActionActivated(ActionType::BlockInput))
 		{
-			toggleInputBlockState(!Globals::instance().inputBlocked());
+			toggleInputBlockState();
 			_applyHammerPrevention = true;
 		}
 		_camera.resetMovement();
 		Settings& settings = Globals::instance().settings();
 		if (Input::isActionActivated(ActionType::CameraLock)) 
 		{
-			toggleCameraMovementLockState(!_cameraMovementLocked);
+			toggleCameraMovementLockState();
 			_applyHammerPrevention = true;
 		}
-		if (_cameraMovementLocked)
+		if (Globals::instance().cameraMovementLocked())
 		{
 			// no movement allowed, simply return
 			return;
 		}
 
-		bool altPressed = Utils::altPressed();
-		bool controlPressed = Utils::ctrlPressed();
-		float multiplier = altPressed ? settings.fastMovementMultiplier : controlPressed ? settings.slowMovementMultiplier : 1.0f;
+		float multiplier = Utils::altPressed() ? settings.fastMovementMultiplier : Utils::ctrlPressed() ? settings.slowMovementMultiplier : 1.0f;
 		// Calculates a multiplier based on the current fov. We have a baseline of DEFAULT_FOV. If the fov is > than that, use 1.0
 		// otherwise calculate a factor by using the currentfov / DEFAULT_FOV. Cap the minimum at 0.1 so some movement is still possible :)
 		multiplier *= Utils::clamp(abs(CameraManipulator::getCurrentFoV()) / DEFAULT_FOV, 0.01f, 1.0f);
@@ -242,13 +242,55 @@ namespace IGCS
 		}
 		long mouseDeltaX = Input::getMouseDeltaX();
 		long mouseDeltaY = Input::getMouseDeltaY();
+		bool leftButtonPressed = Input::isMouseButtonDown(0);
+		bool rightButtonPressed = Input::isMouseButtonDown(1);
+		bool noButtonPressed = !(leftButtonPressed || rightButtonPressed);
 		if (abs(mouseDeltaY) > 1)
 		{
-			_camera.pitch(-(static_cast<float>(mouseDeltaY) * MOUSE_SPEED_CORRECTION * multiplier));
+			float yValue = (static_cast<float>(mouseDeltaY)* MOUSE_SPEED_CORRECTION* multiplier);
+			if (noButtonPressed)
+			{
+				_camera.pitch(-yValue);
+			}
+			else
+			{
+				if(leftButtonPressed)
+				{
+					// move up / down
+					_camera.moveUp(-yValue);
+				}
+				else
+				{
+					// forward/backwards
+					_camera.moveForward(-yValue);
+				}
+			}
 		}
 		if (abs(mouseDeltaX) > 1)
 		{
-			_camera.yaw(static_cast<float>(mouseDeltaX) * MOUSE_SPEED_CORRECTION * multiplier);
+			float xValue = static_cast<float>(mouseDeltaX)* MOUSE_SPEED_CORRECTION* multiplier;
+			if (noButtonPressed)
+			{
+				_camera.yaw(xValue);
+			}
+			else
+			{
+				// if both buttons are pressed: do tilt
+				if(leftButtonPressed&&rightButtonPressed)
+				{
+					_camera.roll(-xValue);
+				}
+				else
+				{
+					// always left/right
+					_camera.moveRight(xValue);
+				}
+			}
+		}
+		short mouseWheelDelta = Input::getMouseWheelDelta();
+		if(abs(mouseWheelDelta) > 0)
+		{
+			CameraManipulator::changeFoV(-(static_cast<float>(mouseWheelDelta) * Globals::instance().settings().fovChangeSpeed));
 		}
 		Input::resetMouseDeltas();
 	}
@@ -352,29 +394,51 @@ namespace IGCS
 	}
 		
 
-	void System::toggleCameraMovementLockState(bool newValue)
+	void System::toggleCameraMovementLockState()
 	{
-		if (_cameraMovementLocked == newValue)
-		{
-			// already in this state. Ignore
-			return;
-		}
-		_cameraMovementLocked = newValue;
-		MessageHandler::addNotification(_cameraMovementLocked ? "Camera movement is locked" : "Camera movement is unlocked");
+		MessageHandler::addNotification(Globals::instance().toggleCameraMovementLocked() ? "Camera movement is locked" : "Camera movement is unlocked");
 	}
 
 
-	void System::toggleInputBlockState(bool newValue)
+	void System::toggleInputBlockState()
 	{
-		if (Globals::instance().inputBlocked() == newValue)
-		{
-			// already in this state. Ignore
-			return;
-		}
-		Globals::instance().inputBlocked(newValue);
-		MessageHandler::addNotification(newValue ? "Input to game blocked" : "Input to game enabled");
+		MessageHandler::addNotification(Globals::instance().toggleInputBlocked() ? "Input to game blocked" : "Input to game enabled");
 	}
 
+
+	void System::toggleHud()
+	{
+		bool hudVisible = Globals::instance().toggleHudVisible();
+		InterceptorHelper::toggleHud(_aobBlocks, hudVisible);
+		MessageHandler::addNotification(hudVisible ? "HUD visible" : "HUD hidden");
+	}
+
+
+	void System::skipFrames()
+	{
+		if(!Globals::instance().gamePaused())
+		{
+			// game not paused, don't skip frames
+			return;
+		}
+		// first unpause
+		toggleGamePause(false);
+		Sleep(100);
+		toggleGamePause(false);
+	}
+
+
+
+	void System::toggleGamePause(bool displayNotification)
+	{
+		bool gamePaused = Globals::instance().toggleGamePaused();
+		CameraManipulator::setTimeStopValue(gamePaused);
+		if (displayNotification)
+		{
+			MessageHandler::addNotification(gamePaused ? "Game paused" : "Game unpaused");
+		}
+		
+	}
 
 	void System::displayCameraState()
 	{
