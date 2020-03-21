@@ -46,6 +46,7 @@ namespace IGCS
 		void mainLoop();
 		void initialize();
 		void updateFrame();
+		bool checkIfGamehasFocus();
 		void handleUserInput();
 		void displayCameraState();
 		void toggleCameraMovementLockState();
@@ -56,7 +57,7 @@ namespace IGCS
 		void toggleInputBlockState();
 		void toggleHud();
 		void toggleGamePause(bool displayNotification = true);
-		void skipFrames();
+		void handleSkipFrames();
 
 		Camera _camera;
 		LPBYTE _hostImageAddress;

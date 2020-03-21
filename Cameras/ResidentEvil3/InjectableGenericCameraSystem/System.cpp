@@ -88,9 +88,22 @@ namespace IGCS
 		CameraManipulator::enableHotsampling();
 	}
 
+	
+	bool System::checkIfGamehasFocus()
+	{
+		HWND currentForegroundWindow = GetForegroundWindow();
+		return (currentForegroundWindow == Globals::instance().mainWindowHandle());
+	}
+
 
 	void System::handleUserInput()
 	{
+		if(!checkIfGamehasFocus())
+		{
+			// our window isn't focused, exit
+			return;
+		}
+		
 		Globals::instance().gamePad().update();
 		if (_applyHammerPrevention)
 		{
@@ -150,7 +163,7 @@ namespace IGCS
 		}
 		if (Input::isActionActivated(ActionType::SkipFrames))
 		{
-			skipFrames();
+			handleSkipFrames();
 			_applyHammerPrevention = true;
 		}
 
@@ -414,7 +427,7 @@ namespace IGCS
 	}
 
 
-	void System::skipFrames()
+	void System::handleSkipFrames()
 	{
 		if(!Globals::instance().gamePaused())
 		{
@@ -423,7 +436,7 @@ namespace IGCS
 		}
 		// first unpause
 		toggleGamePause(false);
-		Sleep(100);
+		Sleep(32);
 		toggleGamePause(false);
 	}
 
