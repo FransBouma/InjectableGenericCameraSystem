@@ -60,6 +60,7 @@ ask, and I might re-upload it.
 * Metro Exodus: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/MetroExodus
 * Prey (2017): https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Prey
 * Resident Evil 2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/ResidentEvil2
+* Resident Evil 3: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/ResidentEvil3
 * Ryse: Son of Rome: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/RyseSonOfRome
 * Shadow of the Tomb Raider: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/SOTTR
 * Star Wars Jedi: Fallen Order: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/SWFO
