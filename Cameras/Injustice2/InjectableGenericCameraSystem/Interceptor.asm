@@ -71,8 +71,6 @@ cameraStructInterceptor PROC
 ;000000014ACF1AD8 | 41:8940 08                    | mov dword ptr ds:[r8+8],eax          
 ;000000014ACF1ADC | C3                            | ret										<< CONTINUE HERE
 	mov [g_cameraStructAddress], rcx
-	cmp byte ptr [g_cameraEnabled], 1
-	je exit
 originalCode:
 	movsd xmm0,qword ptr [rcx+584h]
 	movsd qword ptr [rdx],xmm0    

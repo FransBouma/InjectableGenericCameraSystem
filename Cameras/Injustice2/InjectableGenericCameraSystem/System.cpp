@@ -142,10 +142,12 @@ namespace IGCS
 		if(Input::keyDown(IGCS_KEY_TOGGLE_HUD))
 		{
 			toggleHud();
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
 		if(Input::keyDown(IGCS_KEY_TIMESTOP))
 		{
 			toggleTimestop();
+			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
 		if (!g_cameraEnabled)
 		{
@@ -368,6 +370,7 @@ namespace IGCS
 	{
 		_gamespeedStopped = !_gamespeedStopped;
 		CameraManipulator::toggleGamespeed(_gamespeedStopped);
+		Console::WriteLine(_gamespeedStopped ? "Game paused" : "Game unpaused");
 	}
 
 	

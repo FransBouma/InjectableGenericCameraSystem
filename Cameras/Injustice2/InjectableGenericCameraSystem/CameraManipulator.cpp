@@ -71,6 +71,9 @@ namespace IGCS::GameSpecific::CameraManipulator
 		{
 			return;
 		}
+#ifdef _DEBUG
+		cout << "Time dilation struct address: " << hex << (void*)(g_timeDilationAddress + TIME_DILATION_STRUCT_OFFSET) << endl;
+#endif
 		float* timeDilationInMemory = reinterpret_cast<float*>(g_timeDilationAddress + TIME_DILATION_STRUCT_OFFSET);
 		*timeDilationInMemory = gamePaused ? 0.0f : 1.0f;
 	}
