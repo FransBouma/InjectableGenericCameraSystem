@@ -1,0 +1,103 @@
+AR fix:
+AOB: F3 0F 5C C3 0F 5A C0 0F 54 05 ?? ?? ?? ?? 66 0F 5A C0 0F 5A C8 66 0F 2F 0D 00
+000000014AB4DE48 | F3:0F1015 8CD6D1F9            | movss xmm2,dword ptr [14486B4DC]    
+000000014AB4DE50 | 0F28C2                        | movaps xmm0,xmm2                       
+000000014AB4DE53 | F3:0F101D 892B60F9            | movss xmm3,dword ptr [1441509E4]    
+000000014AB4DE5B | F3:0F5CC3                     | subss xmm0,xmm3                        		<< REPLACE WITH xorps xmm0, xmm0	<< AOB start
+000000014AB4DE5F | 0F5AC0                        | cvtps2pd xmm0,xmm0                     
+000000014AB4DE62 | 0F5405 673B54F8               | andps xmm0,xmmword ptr [1430919D0]  
+000000014AB4DE69 | 66:0F5AC0                     | cvtpd2ps xmm0,xmm0                     
+000000014AB4DE6D | 0F5AC8                        | cvtps2pd xmm1,xmm0                     
+000000014AB4DE70 | 66:0F2F0D 007A8FF8            | comisd xmm1,qword ptr [143445878]   
+000000014AB4DE78 | 0F86 96030000                 | jbe injustice2_dump.14AB4E214          
+000000014AB4DE7E | 0F2FD3                        | comiss xmm2,xmm3                       
+000000014AB4DE81 | 76 19                         | jbe injustice2_dump.14AB4DE9C          
+000000014AB4DE83 | E8 180238FB                   | call injustice2_dump.145ECE0A0         
+000000014AB4DE88 | 85C0                          | test eax,eax                           
+000000014AB4DE8A | 75 19                         | jne injustice2_dump.14AB4DEA5          
+
+Camera intercept:
+AOB: F2 0F 10 81 84 05 00 00
+000000014ACF1AB0 | F2:0F1081 84050000            | movsd xmm0,qword ptr [rcx+584]    <<< Camera in RCX			<< AOB start
+000000014ACF1AB8 | F2:0F1102                     | movsd qword ptr [rdx],xmm0        
+000000014ACF1ABC | 8B81 8C050000                 | mov eax,dword ptr [rcx+58C]       
+000000014ACF1AC2 | 8942 08                       | mov dword ptr [rdx+8],eax         
+000000014ACF1AC5 | F2:0F1081 90050000            | movsd xmm0,qword ptr [rcx+590]    
+000000014ACF1ACD | F241:0F1100                   | movsd qword ptr [r8],xmm0         
+000000014ACF1AD2 | 8B81 98050000                 | mov eax,dword ptr [rcx+598]       
+000000014ACF1AD8 | 41:8940 08                    | mov dword ptr [r8+8],eax          
+000000014ACF1ADC | C3                            | ret                                  
+
+// Camera write: 
+AOB: 0F 11 87 84 05 00 00
+000000014AD1C585 | F2:0F114C24 40                | movsd qword ptr ss:[rsp+40],xmm1       
+000000014AD1C58B | 8B88 94000000                 | mov ecx,dword ptr [rax+94]          
+000000014AD1C591 | 8B87 C8050000                 | mov eax,dword ptr [rdi+5C8]         
+000000014AD1C597 | 0F1187 84050000               | movups xmmword ptr [rdi+584],xmm0   	<< WRITE coords, pitch		<< AOB start
+000000014AD1C59E | 898F 80050000                 | mov dword ptr [rdi+580],ecx         
+000000014AD1C5A4 | 48:89F9                       | mov rcx,rdi                            
+000000014AD1C5A7 | F2:0F118F 94050000            | movsd qword ptr [rdi+594],xmm1        << WRITE yaw,roll
+000000014AD1C5AF | 8987 9C050000                 | mov dword ptr [rdi+59C],eax           << WRITE Fov
+000000014AD1C5B5 | E8 864A1800                   | call injustice2_dump.14AEA1040         
+// Supermove camera write
+0000000146C59AA8 | 0F28CE                        | movaps xmm1,xmm6                          
+0000000146C59AAB | 48:89D9                       | mov rcx,rbx                               
+0000000146C59AAE | E8 1DC25A01                   | call injustice2_dump.148205CD0           << NOP if camera active
+0000000146C59AB3 | 48:8B05 DE5367FD              | mov rax,qword ptr [1442CEE98]          
+0000000146C59ABA | 48:8B48 30                    | mov rcx,qword ptr [rax+30]             
+0000000146C59ABE | 48:85C9                       | test rcx,rcx                              
+0000000146C59AC1 | 74 11                         | je injustice2_dump.146C59AD4              
+0000000146C59AC3 | 48:8B89 D0D10000              | mov rcx,qword ptr [rcx+D1D0]           
+0000000146C59ACA | 48:85C9                       | test rcx,rcx                              
+
+Game speed: 
+read:
+AOB: F3 0F 10 80 88 00 00 00 48 83 C4 28
+0000000145EB66F0 | 48:83EC 28                    | sub rsp,28                        
+0000000145EB66F4 | E8 478A0BFC                   | call injustice2_dump.141F6F140    
+0000000145EB66F9 | 48:85C0                       | test rax,rax                      
+0000000145EB66FC | 74 12                         | je injustice2_dump.145EB6710      
+0000000145EB66FE | E8 3D8A0BFC                   | call injustice2_dump.141F6F140    
+0000000145EB6703 | F3:0F1080 88000000            | movss xmm0,dword ptr [rax+88]  		<< read of time dilation
+0000000145EB670B | 48:83C4 28                    | add rsp,28                        
+0000000145EB670F | C3                            | ret                               
+write:
+AOB: F3 0F 11 B1 88 00 00 00
+000000014ABDAAFC | F3:0F11B1 88000000            | movss dword ptr [rcx+88],xmm6      	<< write of time dilation			<< AOB start
+000000014ABDAB04 | 0F287424 30                   | movaps xmm6,xmmword ptr ss:[rsp+30]   
+000000014ABDAB09 | 48:83C4 40                    | add rsp,40                            
+000000014ABDAB0D | 5B                            | pop rbx                               
+000000014ABDAB0E | C3                            | ret                                   
+
+HUD toggle:
+AOB: 41 0F 28 00 48 89 D0 41 0F 28 48 10 0F 29 02 0F
+// set xmm0 and xmm1 to 0
+Injustice2.exe+9973E90 - 41 0F28 00            - movaps xmm0,[r8]		>> replace with xorps xmm0, xmm0 (0F57 C0) and a nop (90)		<< AOB start
+Injustice2.exe+9973E94 - 48 89 D0              - mov rax,rdx
+Injustice2.exe+9973E97 - 41 0F28 48 10         - movaps xmm1,[r8+10]	>> replace with xorpx xmm1, xmm1 (0F57 C9) and 2 nops (90)
+Injustice2.exe+9973E9C - 0F29 02               - movaps [rdx],xmm0
+Injustice2.exe+9973E9F - 0F29 4A 10            - movaps [rdx+10],xmm1
+Injustice2.exe+9973EA3 - C3                    - ret 
+Injustice2.exe+9973EA4 - 48 8D A4 24 F8FFFFFF  - lea rsp,[rsp-00000008]
+Injustice2.exe+9973EAC - 48 89 1C 24           - mov [rsp],rbx
+
+DOF on/off:
+AOB: 88 43 68 41 8B 46 6C
+000000014AB68D53 | 3143 4C                       | xor dword ptr [rbx+4C],eax    
+000000014AB68D56 | 41:0FB646 68                  | movzx eax,byte ptr [r14+68]   
+000000014AB68D5B | 8843 68                       | mov byte ptr [rbx+68],al     	<< If 0, dof is OFF, 2 is ON		<< AOB start
+000000014AB68D5E | 41:8B46 6C                    | mov eax,dword ptr [r14+6C]    
+000000014AB68D62 | 8943 6C                       | mov dword ptr [rbx+6C],eax    
+000000014AB68D65 | 41:8B46 70                    | mov eax,dword ptr [r14+70]    
+000000014AB68D69 | 8943 70                       | mov dword ptr [rbx+70],eax    
+000000014AB68D6C | 41:8B46 74                    | mov eax,dword ptr [r14+74]    
+000000014AB68D70 | 8943 74                       | mov dword ptr [rbx+74],eax    
+000000014AB68D73 | 41:8B46 78                    | mov eax,dword ptr [r14+78]    
+000000014AB68D77 | 8943 78                       | mov dword ptr [rbx+78],eax    
+000000014AB68D7A | 41:8B46 7C                    | mov eax,dword ptr [r14+7C]    
+000000014AB68D7E | 8943 7C                       | mov dword ptr [rbx+7C],eax    
+000000014AB68D81 | 41:8B86 80000000              | mov eax,dword ptr [r14+80]    
+000000014AB68D88 | 8983 80000000                 | mov dword ptr [rbx+80],eax    
+000000014AB68D8E | 41:8B86 84000000              | mov eax,dword ptr [r14+84]    
+000000014AB68D95 | 8983 84000000                 | mov dword ptr [rbx+84],eax    
+000000014AB68D9B | 41:8B86 88000000              | mov eax,dword ptr [r14+88]    
