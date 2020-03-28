@@ -39,7 +39,8 @@ using namespace std;
 extern "C" {
 	void cameraStructInterceptor();
 	void cameraWrite1Interceptor();
-	void timeDilationInterceptor();
+	void timeDilation1Interceptor();
+	void timeDilation2Interceptor();
 	void dofEnableInterceptor();
 }
 
@@ -47,7 +48,8 @@ extern "C" {
 extern "C" {
 	LPBYTE _cameraStructInterceptionContinue = nullptr;
 	LPBYTE _cameraWrite1InterceptionContinue = nullptr;
-	LPBYTE _timeDilationInterceptionContinue = nullptr;
+	LPBYTE _timeDilation1InterceptionContinue = nullptr;
+	LPBYTE _timeDilation2InterceptionContinue = nullptr;
 	LPBYTE _dofEnableInterceptionContinue = nullptr;
 }
 
@@ -60,9 +62,11 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[AR_FIX_KEY] = new AOBBlock(AR_FIX_KEY, "F3 0F 5C C3 0F 5A C0 0F 54 05 ?? ?? ?? ?? 66 0F 5A C0 0F 5A C8 66 0F 2F 0D 00", 1);
 		aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE1_INTERCEPT_KEY, "0F 11 87 84 05 00 00 89 8F 80 05 00 00 48 89 F9 F2 0F 11 8F 94 05 00 00", 1);
 		aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE2_INTERCEPT_KEY, "E8 ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 8B 48 30 48 85 C9 74 11", 1);
-		aobBlocks[TIME_DILATION_INTERCEPT_KEY] = new AOBBlock(TIME_DILATION_INTERCEPT_KEY, "F3 0F 11 B1 88 00 00 00 0F 28 74 24 30 48 83 C4 40", 1);
+		aobBlocks[TIME_DILATION1_INTERCEPT_KEY] = new AOBBlock(TIME_DILATION1_INTERCEPT_KEY, "F3 0F 11 B1 88 00 00 00 0F 28 74 24 30 48 83 C4 40", 1);
+		aobBlocks[TIME_DILATION2_INTERCEPT_KEY] = new AOBBlock(TIME_DILATION2_INTERCEPT_KEY, "F3 0F 10 81 C0 00 00 00 F3 0F 59 80 8C 00 00 00 75 08 F3", 1);
 		aobBlocks[HUD_TOGGLE_ADDRESS_INTERCEPT_KEY] = new AOBBlock(HUD_TOGGLE_ADDRESS_INTERCEPT_KEY, "41 0F 28 00 48 89 D0 41 0F 28 48 10 0F 29 02 0F", 1);
 		aobBlocks[DOF_ENABLE_ADDRESS_INTERCEPT_KEY] = new AOBBlock(DOF_ENABLE_ADDRESS_INTERCEPT_KEY, "88 43 68 41 8B 46 6C 89 43 6C 41 8B 46 70 89 43 70 41 8B 46 74 89 43 74", 1);
+		aobBlocks[MATCH_TIMER_DECREASE_KEY] = new AOBBlock(MATCH_TIMER_DECREASE_KEY, "8D 8A FF FF FF FF 48 8B 05 ?? ?? ?? ?? 89 88 DC 0F 00 00", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -96,23 +100,30 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void setPostCameraStructHooks(map<string, AOBBlock*> &aobBlocks)
 	{
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY], 0x1E, &_cameraWrite1InterceptionContinue, &cameraWrite1Interceptor);
-		GameImageHooker::setHook(aobBlocks[TIME_DILATION_INTERCEPT_KEY], 0x11, &_timeDilationInterceptionContinue, &timeDilationInterceptor);
+		GameImageHooker::setHook(aobBlocks[TIME_DILATION1_INTERCEPT_KEY], 0x11, &_timeDilation1InterceptionContinue, &timeDilation1Interceptor);
+		GameImageHooker::setHook(aobBlocks[TIME_DILATION2_INTERCEPT_KEY], 0x1A, &_timeDilation2InterceptionContinue, &timeDilation2Interceptor);
 		GameImageHooker::setHook(aobBlocks[DOF_ENABLE_ADDRESS_INTERCEPT_KEY], 0x0E, &_dofEnableInterceptionContinue, &dofEnableInterceptor);
 	}
 
 	
-	void toggleSuperMoveCamera(map<string, AOBBlock*>& aobBlocks, bool cameraEnabled)
+	void toggleCameraElements(map<string, AOBBlock*>& aobBlocks, bool cameraEnabled)
 	{
 		if(cameraEnabled)
 		{
 			// camera is enabled, disable supermove camera writes
 			GameImageHooker::nopRange(aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY], 5);	//0000000146C59AAE | E8 1DC25A01 | call injustice2_dump.148205CD0    << NOP if camera active
+			// disable match counter decrease. Replace FF FF FF FF with 00 00 00 00
+			BYTE decreaseBytes[4] = { 0x00, 0x00, 0x00, 0x00 };
+			GameImageHooker::writeRange(aobBlocks[MATCH_TIMER_DECREASE_KEY], decreaseBytes, 4);
 		}
 		else
 		{
 			// camera is disabled, enable supermove camera writes
 			BYTE callBytes[5] = { 0xE8, 0x1D, 0xC2, 0x5A, 0x01 };
 			GameImageHooker::writeRange(aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY], callBytes, 5);
+			// enable match counter decrease
+			BYTE decreaseBytes[4] = { 0xFF, 0xFF, 0xFF, 0xFF };
+			GameImageHooker::writeRange(aobBlocks[MATCH_TIMER_DECREASE_KEY], decreaseBytes, 4);
 		}
 	}
 

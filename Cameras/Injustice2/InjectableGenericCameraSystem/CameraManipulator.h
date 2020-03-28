@@ -39,5 +39,5 @@ namespace IGCS::GameSpecific::CameraManipulator
 	XMFLOAT3 getCurrentCameraCoords();
 	void resetFoV();
 	void changeFoV(float amount);
-	void toggleGamespeed(bool gamePaused);
+	void toggleGamespeed();
 }

@@ -45,7 +45,7 @@ namespace IGCS
 		void mainLoop();
 		void initialize();
 		void updateFrame();
-		void toggleTimestop();
+		void handleFrameSkip();
 		void handleUserInput();
 		void writeNewCameraValuesToCameraStructs();
 		void displayHelp();

@@ -125,14 +125,14 @@ namespace IGCS
 			{
 				// it's going to be disabled, make sure things are alright when we give it back to the host
 				CameraManipulator::restoreOriginalCameraValues();
-				InterceptorHelper::toggleSuperMoveCamera(_aobBlocks, false);
+				InterceptorHelper::toggleCameraElements(_aobBlocks, false);
 				toggleCameraMovementLockState(false);
 			}
 			else
 			{
 				// it's going to be enabled, so cache the original values before we enable it so we can restore it afterwards
 				CameraManipulator::cacheOriginalCameraValues();
-				InterceptorHelper::toggleSuperMoveCamera(_aobBlocks, true);
+				InterceptorHelper::toggleCameraElements(_aobBlocks, true);
 				_camera.resetAngles();
 			}
 			g_cameraEnabled = g_cameraEnabled == 0 ? (BYTE)1 : (BYTE)0;
@@ -146,8 +146,13 @@ namespace IGCS
 		}
 		if(Input::keyDown(IGCS_KEY_TIMESTOP))
 		{
-			toggleTimestop();
+			CameraManipulator::toggleGamespeed();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
+		}
+		if(Input::keyDown(IGCS_KEY_FRAMESKIP))
+		{
+			handleFrameSkip();
+			Sleep(200);
 		}
 		if (!g_cameraEnabled)
 		{
@@ -366,11 +371,16 @@ namespace IGCS
 	}
 
 
-	void System::toggleTimestop()
+	void System::handleFrameSkip()
 	{
-		_gamespeedStopped = !_gamespeedStopped;
-		CameraManipulator::toggleGamespeed(_gamespeedStopped);
-		Console::WriteLine(_gamespeedStopped ? "Game paused" : "Game unpaused");
+		if(g_gamePaused!=1)
+		{
+			// not paused
+			return;
+		}
+		CameraManipulator::toggleGamespeed();
+		Sleep(33);
+		CameraManipulator::toggleGamespeed();
 	}
 
 	
@@ -397,6 +407,7 @@ namespace IGCS
 		Console::WriteLine("Numpad /                              : Toggle Y look direction");
 		Console::WriteLine("Numpad . or controller Right Bumper   : Toggle input to game");
 		Console::WriteLine("Numpad 0                              : Toggle game pause");
+		Console::WriteLine("Page Up                               : Skip a couple of frames");
 		Console::WriteLine("ALT+H                                 : This help");
 		Console::WriteLine("-------------------------------------------------------------------------------", CONSOLE_WHITE);
 		Console::WriteLine(" Please read the enclosed readme.txt for the answers to your questions :)");

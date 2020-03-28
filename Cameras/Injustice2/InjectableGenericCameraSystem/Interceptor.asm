@@ -33,7 +33,8 @@
 ; Public definitions so the linker knows which names are present in this file
 PUBLIC cameraStructInterceptor
 PUBLIC cameraWrite1Interceptor
-PUBLIC timeDilationInterceptor
+PUBLIC timeDilation1Interceptor
+PUBLIC timeDilation2Interceptor
 PUBLIC dofEnableInterceptor 
 ;---------------------------------------------------------------
 
@@ -41,17 +42,20 @@ PUBLIC dofEnableInterceptor
 ; Externs which are used and set by the system. Read / write these
 ; values in asm to communicate with the system
 EXTERN g_cameraEnabled: BYTE
+EXTERN g_gamePaused: BYTE
 EXTERN g_cameraStructAddress: qword
-EXTERN g_dofStructAddress : qword
-EXTERN g_timeDilationAddress : qword;
+EXTERN g_dofStructAddress: qword
+EXTERN g_timeDilationAddress: qword
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
 ; Own externs, defined in InterceptorHelper.cpp
 EXTERN _cameraStructInterceptionContinue: qword
 EXTERN _cameraWrite1InterceptionContinue: qword
-EXTERN _timeDilationInterceptionContinue: qword
+EXTERN _timeDilation1InterceptionContinue: qword
+EXTERN _timeDilation2InterceptionContinue: qword
 EXTERN _dofEnableInterceptionContinue: qword
+
 .data
 
 ;---------------------------------------------------------------
@@ -108,20 +112,41 @@ exit:
 cameraWrite1Interceptor ENDP
 
 
-timeDilationInterceptor PROC
+timeDilation1Interceptor PROC
 ;000000014ABDAAFC | F3:0F11B1 88000000 | movss dword ptr [rcx+88],xmm6      	<< write of time dilation		<< INTERCEPT HERE
 ;000000014ABDAB04 | 0F287424 30        | movaps xmm6,xmmword ptr ss:[rsp+30]   
 ;000000014ABDAB09 | 48:83C4 40         | add rsp,40                            
 ;000000014ABDAB0D | 5B                 | pop rbx								<< CONTINUE HERE                   
 ;000000014ABDAB0E | C3                 | ret                                   
-	mov [g_timeDilationAddress], rcx
+	cmp byte ptr [g_gamePaused], 1
+	jne originalCode
+	xorps xmm6, xmm6
 originalCode:
 	movss dword ptr [rcx+88h],xmm6      
 	movaps xmm6,xmmword ptr [rsp+30h]
 	add rsp,40h
 exit:
-	jmp qword ptr [_timeDilationInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
-timeDilationInterceptor ENDP
+	jmp qword ptr [_timeDilation1InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+timeDilation1Interceptor ENDP
+
+
+timeDilation2Interceptor PROC
+;Injustice2.exe+8EB2850 - F7 81 B8000000 00000800 - test [rcx+000000B8],00080000 
+;Injustice2.exe+8EB285A - 48 8B 81 88010000     - mov rax,[rcx+00000188]
+;Injustice2.exe+8EB2861 - F3 0F10 81 C0000000   - movss xmm0,[rcx+000000C0]				<< INTERCEPT HERE
+;Injustice2.exe+8EB2869 - F3 0F59 80 8C000000   - mulss xmm0,[rax+0000008C]				>> Grab RAX, which is time dilation value.
+;Injustice2.exe+8EB2871 - 75 08                 - jne Injustice2.exe+8EB287B
+;Injustice2.exe+8EB2873 - F3 0F59 80 88000000   - mulss xmm0,[rax+00000088]
+;Injustice2.exe+8EB287B - C3                    - ret									<< CONTINUE HERE
+	mov [g_timeDilationAddress], rax
+originalCode:
+	movss xmm0, dword ptr [rcx+000000C0h]
+	mulss xmm0, dword ptr [rax+0000008Ch]		
+	jne exit
+	mulss xmm0, dword ptr [rax+00000088h]
+exit:
+	jmp qword ptr [_timeDilation2InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+timeDilation2Interceptor ENDP
 
 
 dofEnableInterceptor PROC
@@ -134,6 +159,9 @@ dofEnableInterceptor PROC
 ;000000014AB68D70 | 8943 74       | mov dword ptr [rbx+74],eax    
 ;000000014AB68D73 | 41:8B46 78    | mov eax,dword ptr [r14+78]    
 	mov [g_dofStructAddress], rbx
+	cmp byte ptr [g_cameraEnabled], 1
+	jne originalCode
+	xor al, al			; 0 means dof is off
 originalCode:
 	mov byte ptr [rbx+68h],al   
 	mov eax,dword ptr [r14+6Ch] 

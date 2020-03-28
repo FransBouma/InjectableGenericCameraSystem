@@ -1,9 +1,10 @@
-Injectable camera for Bulletstorm Full Clip Edition
+Injectable camera for Injustice 2
 ============================
 
-Current supported game version: v1.1+
-Camera version: 1.0.2  
-Credits: Otis_Inf. 
+Current supported game version: v1.0+
+Camera version: 1.0.0  
+Binaries: 
+Credits: IDK31 and Otis_Inf. 
 
 ### Acknowledgements
 This camera uses [MinHook](https://github.com/TsudaKageyu/minhook) by Tsuda Kageyu.

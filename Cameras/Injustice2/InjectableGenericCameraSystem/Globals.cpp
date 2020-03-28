@@ -34,7 +34,7 @@
 // MASM is rather tedious. 
 extern "C" {
 	BYTE g_cameraEnabled = 0;
-	float g_fovValue = DEFAULT_FOV_DEGREES;
+	BYTE g_gamePaused = 0;
 }
 
 

@@ -51,8 +51,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void resetFoV()
 	{
 		float* fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_CAMERA_STRUCT_OFFSET);
-		*fovInMemory = DEFAULT_FOV_DEGREES;
-		g_fovValue = DEFAULT_FOV_DEGREES;
+		*fovInMemory = _originalFoV;
 	}
 
 
@@ -61,11 +60,10 @@ namespace IGCS::GameSpecific::CameraManipulator
 	{
 		float* fovInMemory = reinterpret_cast<float*>(g_cameraStructAddress + FOV_IN_CAMERA_STRUCT_OFFSET);
 		*fovInMemory += amount;
-		g_fovValue += amount;
 	}
 
 	
-	void toggleGamespeed(bool gamePaused)
+	void toggleGamespeed()
 	{
 		if(nullptr==g_timeDilationAddress)
 		{
@@ -74,8 +72,9 @@ namespace IGCS::GameSpecific::CameraManipulator
 #ifdef _DEBUG
 		cout << "Time dilation struct address: " << hex << (void*)(g_timeDilationAddress + TIME_DILATION_STRUCT_OFFSET) << endl;
 #endif
+		g_gamePaused = g_gamePaused == 1 ? (BYTE)0 : (BYTE)1;
 		float* timeDilationInMemory = reinterpret_cast<float*>(g_timeDilationAddress + TIME_DILATION_STRUCT_OFFSET);
-		*timeDilationInMemory = gamePaused ? 0.0f : 1.0f;
+		*timeDilationInMemory = g_gamePaused==1 ? 0.00001f : 1.0f;
 	}
 
 

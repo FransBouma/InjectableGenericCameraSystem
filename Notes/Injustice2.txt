@@ -68,6 +68,26 @@ AOB: F3 0F 11 B1 88 00 00 00
 000000014ABDAB09 | 48:83C4 40                    | add rsp,40                            
 000000014ABDAB0D | 5B                            | pop rbx                               
 000000014ABDAB0E | C3                            | ret                                   
+// Better location
+Injustice2.exe+8EB2850 - F7 81 B8000000 00000800 - test [rcx+000000B8],00080000 
+Injustice2.exe+8EB285A - 48 8B 81 88010000     - mov rax,[rcx+00000188]
+Injustice2.exe+8EB2861 - F3 0F10 81 C0000000   - movss xmm0,[rcx+000000C0]				<< AOB start
+Injustice2.exe+8EB2869 - F3 0F59 80 8C000000   - mulss xmm0,[rax+0000008C]				>> Grab RAX, which is time dilation value.
+Injustice2.exe+8EB2871 - 75 08                 - jne Injustice2.exe+8EB287B
+Injustice2.exe+8EB2873 - F3 0F59 80 88000000   - mulss xmm0,[rax+00000088]
+Injustice2.exe+8EB287B - C3                    - ret 
+
+// Match timer, which has to be paused when the camera is active: 
+0000000145E9B55E | 8D8A FFFFFFFF                 | lea ecx,qword ptr ds:[rdx-1]      	<< Replace FF FF FF FF with 00 00 00 00 to pause.
+0000000145E9B564 | 48:8B05 6D1127FE              | mov rax,qword ptr ds:[14410C6D8]  
+0000000145E9B56B | 8988 DC0F0000                 | mov dword ptr ds:[rax+FDC],ecx    
+0000000145E9B571 | 83FA 0A                       | cmp edx,A                         
+0000000145E9B574 | 0F8F 84000000                 | jg injustice2_dump.145E9B5FE      
+0000000145E9B57A | 75 16                         | jne injustice2_dump.145E9B592     
+0000000145E9B57C | 45:31C9                       | xor r9d,r9d                       
+0000000145E9B57F | 45:31C0                       | xor r8d,r8d                       
+0000000145E9B582 | 41:8D51 0A                    | lea edx,qword ptr ds:[r9+A]       
+
 
 HUD toggle:
 AOB: 41 0F 28 00 48 89 D0 41 0F 28 48 10 0F 29 02 0F
