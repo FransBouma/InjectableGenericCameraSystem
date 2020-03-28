@@ -66,7 +66,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[TIME_DILATION2_INTERCEPT_KEY] = new AOBBlock(TIME_DILATION2_INTERCEPT_KEY, "F3 0F 10 81 C0 00 00 00 F3 0F 59 80 8C 00 00 00 75 08 F3", 1);
 		aobBlocks[HUD_TOGGLE_ADDRESS_INTERCEPT_KEY] = new AOBBlock(HUD_TOGGLE_ADDRESS_INTERCEPT_KEY, "41 0F 28 00 48 89 D0 41 0F 28 48 10 0F 29 02 0F", 1);
 		aobBlocks[DOF_ENABLE_ADDRESS_INTERCEPT_KEY] = new AOBBlock(DOF_ENABLE_ADDRESS_INTERCEPT_KEY, "88 43 68 41 8B 46 6C 89 43 6C 41 8B 46 70 89 43 70 41 8B 46 74 89 43 74", 1);
-		aobBlocks[MATCH_TIMER_DECREASE_KEY] = new AOBBlock(MATCH_TIMER_DECREASE_KEY, "8D 8A FF FF FF FF 48 8B 05 ?? ?? ?? ?? 89 88 DC 0F 00 00", 1);
+		aobBlocks[MATCH_TIMER_DECREASE_KEY] = new AOBBlock(MATCH_TIMER_DECREASE_KEY, "8D 8A | FF FF FF FF 48 8B 05 ?? ?? ?? ?? 89 88 DC 0F 00 00", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -114,7 +114,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 			GameImageHooker::nopRange(aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY], 5);	//0000000146C59AAE | E8 1DC25A01 | call injustice2_dump.148205CD0    << NOP if camera active
 			// disable match counter decrease. Replace FF FF FF FF with 00 00 00 00
 			BYTE decreaseBytes[4] = { 0x00, 0x00, 0x00, 0x00 };
-			GameImageHooker::writeRange(aobBlocks[MATCH_TIMER_DECREASE_KEY], decreaseBytes, 4);
+			// match timer decrease address is the start of the FF FF FF FF part.
+			GameImageHooker::writeRange(aobBlocks[MATCH_TIMER_DECREASE_KEY], decreaseBytes, 4); // 0000000145E9B55E | 8D8A FFFFFFFF  | lea ecx,qword ptr ds:[rdx-1]      	<< Replace FF FF FF FF with 00 00 00 00 to pause.
 		}
 		else
 		{

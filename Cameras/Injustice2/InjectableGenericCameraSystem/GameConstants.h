@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Injustice 2"
-	#define CAMERA_VERSION								"1.0.0"
+	#define CAMERA_VERSION								"1.0.1"
 	#define CAMERA_CREDITS								"IDK31 And Otis_Inf."
 	#define GAME_WINDOW_TITLE							"Injustice™ 2"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
