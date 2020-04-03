@@ -239,7 +239,7 @@ cameraWrite5Interceptor PROC
 	cmp byte ptr [g_cameraEnabled], 1
 	je exit
 originalCode:
-	movups [rdi+000000A0h],xmm0
+	movups xmmword ptr [rdi+000000A0h],xmm0
 exit:
 	jmp qword ptr [_cameraWrite5InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite5Interceptor ENDP
