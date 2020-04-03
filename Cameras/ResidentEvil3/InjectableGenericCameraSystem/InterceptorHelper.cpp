@@ -246,22 +246,6 @@ namespace IGCS::GameSpecific::InterceptorHelper
 			//re3demo.exe+1AEF8D24 - 89 41 74              - mov [rcx+74],eax
 			//re3demo.exe+1AEF8D27 - 48 8D 44 24 10        - lea rax,[rsp+10]
 			//re3demo.exe+1AEF8D2C - 48 8D 4C 24 08        - lea rcx,[rsp+08]
-			
-			//re2.exe+102BCEDC - 48 0F46 C1            - cmovbe rax,rcx
-			//re2.exe+102BCEE0 - F3 0F11 4C 24 10      - movss [rsp+10],xmm1
-			//re2.exe+102BCEE6 - 49 8B 48 38           - mov rcx,[r8+38]
-			//re2.exe+102BCEEA - C7 44 24 08 17B7D138  - mov [rsp+08],38D1B717 { (-11776) }
-			//re2.exe+102BCEF2 - 8B 00                 - mov eax,[rax]							<<< replace with XOR eax, eax
-			//re2.exe+102BCEF4 - 89 81 8C000000        - mov [rcx+0000008C],eax					<< FAR BLUR WRITE. Set to 0 to make sure there's no dof
-			//re2.exe+102BCEFA - 48 8D 44 24 10        - lea rax,[rsp+10]
-			//re2.exe+102BCEFF - 48 8D 4C 24 08        - lea rcx,[rsp+08]
-			//re2.exe+102BCF04 - F3 0F11 4C 24 10      - movss [rsp+10],xmm1
-			//re2.exe+102BCF0A - 48 0F46 C1            - cmovbe rax,rcx
-			//re2.exe+102BCF0E - C7 44 24 08 17B7D138  - mov [rsp+08],38D1B717 { (-11776) }
-			//re2.exe+102BCF16 - 49 8B 48 40           - mov rcx,[r8+40]
-			//re2.exe+102BCF1A - 8B 00                 - mov eax,[rax]
-			//re2.exe+102BCF1C - 89 81 B4000000        - mov [rcx+000000B4],eax
-			//re2.exe+102BCF22 - C3                    - ret 
 			BYTE statementBytes[2] = { 0x31, 0xC0 };			//re3demo.exe+1AEF8CFF - 8B 00                 - mov eax,[rax]							<<< replace with XOR eax, eax
 			GameImageHooker::writeRange(aobBlocks[DOF_FAR_BLUR_STRENGTH_WRITE_KEY], statementBytes, 2);
 		}

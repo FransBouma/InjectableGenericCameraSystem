@@ -262,14 +262,18 @@ cameraWrite6Interceptor PROC
 ;re3demo.exe+160A78A1 - 48 8B 43 50             - mov rax,[rbx+50]					<< CONTINUE HERE
 ;re3demo.exe+160A78A5 - 48 83 78 18 00          - cmp qword ptr [rax+18],00 { 0 }
 ;re3demo.exe+160A78AA - 0F85 9E060000           - jne re3demo.exe+160A7F4E
+	cmp byte ptr [g_cameraEnabled], 1
+	jne originalCode
+noWrites:
 	movaps xmmword ptr [rsp+000000F0h],xmm11
 	movss xmm11, dword ptr [rsp+4Ch]
-	cmp byte ptr [g_cameraEnabled], 1
-	je exit
+	jmp exit
 originalCode:
 	movss dword ptr [rdi+000000A0h],xmm6		
 	movss dword ptr [rdi+000000A4h],xmm8		
 	movss dword ptr [rdi+000000A8h],xmm10	
+	movaps xmmword ptr [rsp+000000F0h],xmm11
+	movss xmm11, dword ptr [rsp+4Ch]
 	movss dword ptr [rdi+000000ACh],xmm11	
 exit:
 	jmp qword ptr [_cameraWrite6InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
