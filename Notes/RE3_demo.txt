@@ -1,3 +1,39 @@
+// Anti-tamper code:
+re3.exe+9D3250 - 8B 02                 - mov eax,[rdx]				<< rdx is our code address. After this is ran: interactivity is broken.
+re3.exe+9D3252 - 48 8D 52 04           - lea rdx,[rdx+04]
+re3.exe+9D3256 - 48 33 D8              - xor rbx,rax
+re3.exe+9D3259 - 49 FF C0              - inc r8
+re3.exe+9D325C - 48 8B CB              - mov rcx,rbx
+re3.exe+9D325F - 48 F7 DB              - neg rbx
+re3.exe+9D3262 - 48 C1 E3 3F           - shl rbx,3F { 63 }
+re3.exe+9D3266 - 48 D1 E9              - shr rcx,1
+re3.exe+9D3269 - 48 03 D9              - add rbx,rcx
+re3.exe+9D326C - 4D 3B C1              - cmp r8,r9
+re3.exe+9D326F - 72 DF                 - jb re3.exe+9D3250
+re3.exe+9D3271 - 48 85 F6              - test rsi,rsi
+re3.exe+9D3274 - 74 45                 - je re3.exe+9D32BB
+re3.exe+9D3276 - 4C 8B C6              - mov r8,rsi
+
+To circumvent this, use this AOB:
+48 ?? ?? 49 ?? ?? ?? ?? 0F 94 C1 48 ?? ?? ?? 00 0F 85 ?? ?? ?? ?? 84 C9 75
+
+This occurs 6 times in memory. It leads to:
+00000001409D3338 | 48:3BF0                       | cmp rsi,rax                          
+00000001409D333B | 49:8B4424 50                  | mov rax,qword ptr ds:[r12+50]        
+00000001409D3340 | 0F94C1                        | sete cl                              
+00000001409D3343 | 48:8378 18 00                 | cmp qword ptr ds:[rax+18],0          
+00000001409D3348 | 0F85 CC5C0000                 | jne re3_dump.1409D901A               
+00000001409D334E | 84C9                          | test cl,cl                           
+00000001409D3350 | 75 18                         | jne re3_dump.1409D336A               <<<<<<< CHANGE INTO JMP
+00000001409D3352 | 49:8BCC                       | mov rcx,r12                          
+00000001409D3355 | E8 E6230A00                   | call re3_dump.140A75740              
+00000001409D335A | 49:8B4424 50                  | mov rax,qword ptr ds:[r12+50]        
+00000001409D335F | 48:8378 18 00                 | cmp qword ptr ds:[rax+18],0          
+00000001409D3364 | 0F85 B05C0000                 | jne re3_dump.1409D901A               
+00000001409D336A | C785 08060000 1F20315E        | mov dword ptr ss:[rbp+608],5E31201F  
+
+Changing the AOB + 0x18 to EB instead of 0x75 will fix the anti tamper code. After that we can commence with hooking things. 
+
 // Hotsampling.
 re3demo.exe+18B9F894 - 45 0F57 D2            - xorps xmm10,xmm10
 re3demo.exe+18B9F898 - 44 0F2F 53 48         - comiss xmm10,[rbx+48]

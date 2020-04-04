@@ -2,8 +2,8 @@ Injectable camera for Resident Evil 3
 ============================
 
 Current supported game version: v1.0+  
-Binary download: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/RE3_101  
-Camera version: 1.0.1  
+Binary download: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/RE3_102  
+Camera version: 1.0.2  
 Credits: Otis_Inf.  
 
 ### Important

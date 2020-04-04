@@ -72,6 +72,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 {
 	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, map<string, AOBBlock*> &aobBlocks)
 	{
+		aobBlocks[ANTI_CHEAT_INTERCEPT_KEY] = new AOBBlock(ANTI_CHEAT_INTERCEPT_KEY, "48 ?? ?? 49 ?? ?? ?? ?? 0F 94 C1 48 ?? ?? ?? 00 0F 85 ?? ?? ?? ?? 84 C9 | 75", 6);
 		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "8B 40 38 89 82 B4 00 00 00 48 83 79 18 00", 1);
 		aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE1_INTERCEPT_KEY, "F3 44 0F 10 48 34 8B 40 38 89 87 B4 00 00 00 48 8B 43 50", 1);
 		aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE2_INTERCEPT_KEY, "F2 0F 5A C0 F3 0F 11 87 B4 00 00 00 48 8B 43 50", 1);
@@ -107,6 +108,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 
 	void setCameraStructInterceptorHook(map<string, AOBBlock*> &aobBlocks)
 	{
+		disableAntiCheat(aobBlocks);
+		
 		GameImageHooker::setHook(aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY], 0x0E, &_cameraStructInterceptionContinue, &cameraStructInterceptor);
 	}
 
@@ -165,6 +168,19 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	}
 
 	
+	void disableAntiCheat(std::map<std::string, AOBBlock*>& aobBlocks)
+	{
+		// traverse all occurrences and replace the byte at the address with 0xEB
+		AOBBlock* antiCheatAob = aobBlocks[ANTI_CHEAT_INTERCEPT_KEY];
+		BYTE statementByte[1] = { 0xEB };		// jmp
+		for(int i=0;i<antiCheatAob->occurrence();i++)
+		{
+			GameImageHooker::writeRange(antiCheatAob->absoluteAddress(i), statementByte, 1);
+		}
+		MessageHandler::addNotification("Anti-cheat disabled");
+	}
+
+
 	void toggleSharpening(map<string, AOBBlock*>& aobBlocks, bool enableSharpening)
 	{
 		//re3demo.exe+1AEB6B4E - 0F84 BC010000         - je re3demo.exe+1AEB6D10

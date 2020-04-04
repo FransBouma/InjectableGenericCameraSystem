@@ -38,5 +38,6 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void toggleHud(std::map<std::string, AOBBlock*>& aobBlocks, bool hudVisible);
 	void toggleInGameDoFOff(std::map<std::string, AOBBlock*>& aobBlocks, bool switchOff);
 	void toggleVignetteOff(std::map<std::string, AOBBlock*>& aobBlocks);
+	void disableAntiCheat(std::map<std::string, AOBBlock*>& aobBlocks);
 	void toggleSharpening(std::map<std::string, AOBBlock*>& aobBlocks, bool enableSharpening);
 }

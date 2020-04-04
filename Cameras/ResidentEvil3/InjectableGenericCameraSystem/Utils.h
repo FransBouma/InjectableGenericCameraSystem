@@ -59,7 +59,7 @@ namespace IGCS::Utils
 	HWND findMainWindow(unsigned long process_id);
 	MODULEINFO getModuleInfoOfContainingProcess();
 	MODULEINFO getModuleInfoOfDll(LPCWSTR libraryName);
-	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, AOBBlock* const toScanFor);
+	bool findAOBPattern(LPBYTE imageAddress, DWORD imageSize, AOBBlock* const toScanFor);
 	uint8_t CharToByte(char c);
 	LPBYTE calculateAbsoluteAddress(AOBBlock* locationData, int nextOpCodeOffset);
 	std::string formatString(const char* fmt, ...);

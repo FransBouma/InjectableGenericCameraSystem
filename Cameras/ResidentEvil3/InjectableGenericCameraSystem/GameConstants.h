@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Resident Evil 3 v1.0+"
-	#define CAMERA_VERSION								"1.0.0"
+	#define CAMERA_VERSION								"1.0.2"
 	#define CAMERA_CREDITS								"Otis_Inf."
 	#define GAME_WINDOW_TITLE							"RESIDENT EVIL 3"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
@@ -53,6 +53,7 @@ namespace IGCS::GameSpecific
 	// End Mandatory constants
 
 	// AOB Keys for interceptor's AOB scanner
+	#define ANTI_CHEAT_INTERCEPT_KEY					"AOB_ANTI_CHEAT_INTERCEPT"
 	#define CAMERA_ADDRESS_INTERCEPT_KEY				"AOB_CAMERA_ADDRESS_INTERCEPT"
 	#define CAMERA_WRITE1_INTERCEPT_KEY					"AOB_CAMERA_WRITE1_INTERCEPT"
 	#define CAMERA_WRITE2_INTERCEPT_KEY					"AOB_CAMERA_WRITE2_INTERCEPT"

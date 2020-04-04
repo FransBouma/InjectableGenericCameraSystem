@@ -182,17 +182,17 @@ namespace IGCS::Utils
 	}
 
 
-	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, AOBBlock* const toScanFor)
+	// returns false if not found, true otherwise
+	bool findAOBPattern(LPBYTE imageAddress, DWORD imageSize, AOBBlock* const toScanFor)
 	{
 		uint8_t firstByte = *(toScanFor->bytePattern());
 		__int64 length = (__int64)imageAddress + imageSize - toScanFor->patternSize();
 
-		LPBYTE toReturn = nullptr;
 		LPBYTE startOfScan = imageAddress;
 		for (int occurrence = 0; occurrence < toScanFor->occurrence(); occurrence++)
 		{
 			// reset the pointer found, as we're not interested in this occurrence, we need a following occurrence.
-			toReturn = nullptr;
+			LPBYTE currentAddress = nullptr;
 			for (__int64 i = (__int64)startOfScan; i < length; i += 4)
 			{
 				unsigned x = *(unsigned*)(i);
@@ -201,7 +201,7 @@ namespace IGCS::Utils
 				{
 					if (DataCompare(reinterpret_cast<uint8_t*>(i), toScanFor->bytePattern(), toScanFor->patternMask()))
 					{
-						toReturn = reinterpret_cast<uint8_t*>(i);
+						currentAddress = reinterpret_cast<uint8_t*>(i);
 						break;
 					}
 				}
@@ -209,7 +209,7 @@ namespace IGCS::Utils
 				{
 					if (DataCompare(reinterpret_cast<uint8_t*>(i + 1), toScanFor->bytePattern(), toScanFor->patternMask()))
 					{
-						toReturn = reinterpret_cast<uint8_t*>(i + 1);
+						currentAddress = reinterpret_cast<uint8_t*>(i + 1);
 						break;
 					}
 				}
@@ -217,7 +217,7 @@ namespace IGCS::Utils
 				{
 					if (DataCompare(reinterpret_cast<uint8_t*>(i + 2), toScanFor->bytePattern(), toScanFor->patternMask()))
 					{
-						toReturn = reinterpret_cast<uint8_t*>(i + 2);
+						currentAddress = reinterpret_cast<uint8_t*>(i + 2);
 						break;
 					}
 				}
@@ -225,19 +225,21 @@ namespace IGCS::Utils
 				{
 					if (DataCompare(reinterpret_cast<uint8_t*>(i + 3), toScanFor->bytePattern(), toScanFor->patternMask()))
 					{
-						toReturn = reinterpret_cast<uint8_t*>(i + 3);
+						currentAddress = reinterpret_cast<uint8_t*>(i + 3);
 						break;
 					}
 				}
 			}
-			if (nullptr == toReturn)
+			if (nullptr == currentAddress)
 			{
 				// not found, give up
-				return toReturn;
+				return false;
 			}
-			startOfScan = toReturn + 1;	// otherwise we'll match ourselves. 
+			// found an occurrence, store it
+			toScanFor->storeFoundLocation(currentAddress);
+			startOfScan = currentAddress + 1;	// otherwise we'll match ourselves. 
 		}
-		return toReturn;
+		return true;
 	}
 
 

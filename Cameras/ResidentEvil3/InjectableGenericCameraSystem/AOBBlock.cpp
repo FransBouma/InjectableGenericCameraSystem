@@ -30,12 +30,15 @@
 #include "AOBBlock.h"
 #include "Utils.h"
 #include "MessageHandler.h"
+#include <string>
+
+using namespace std;
 
 namespace IGCS
 {
 	AOBBlock::AOBBlock(string blockName, string bytePatternAsString, int occurrence)
 									: _blockName{ blockName }, _bytePatternAsString{ bytePatternAsString }, _customOffset{ 0 }, _occurrence{ occurrence },
-									  _bytePattern{ nullptr }, _patternMask{ nullptr }, _locationInImage{ nullptr }
+									  _bytePattern{ nullptr }, _patternMask{ nullptr }
 	{
 	}
 
@@ -48,20 +51,47 @@ namespace IGCS
 	bool AOBBlock::scan(LPBYTE imageAddress, DWORD imageSize)
 	{
 		createAOBPatternFromStringPattern(_bytePatternAsString);
-		LPBYTE aobPatternLocation = Utils::findAOBPattern(imageAddress, imageSize, this);
-		if (nullptr == aobPatternLocation)
+		bool result = Utils::findAOBPattern(imageAddress, imageSize, this);
+		if (result)
 		{
-			MessageHandler::logError("Can't find pattern for block '%s'! Hook not set.", _blockName.c_str());
-			return false;
+			MessageHandler::logDebug("Pattern for block '%s' found %d time(s):", _blockName.c_str(), _locationsInImage.size());
+			for (int i = 1; i <= _occurrence; i++)
+			{
+				MessageHandler::logDebug("%d: at address: %p", i, (void*)_locationsInImage[i-1]);
+			}
 		}
 		else
 		{
-			MessageHandler::logDebug("Pattern for block '%s' found at address: %p", _blockName.c_str(), (void*)aobPatternLocation);
+			MessageHandler::logError("Can't find pattern for block '%s'! Hook not set.", _blockName.c_str());
 		}
-		_locationInImage = aobPatternLocation;
-		return true;
+		return result;
+	}
+
+
+	LPBYTE AOBBlock::absoluteAddress()
+	{
+		return this->absoluteAddress(_occurrence-1);		// occurrence starts with 1
 	}
 	
+
+	LPBYTE AOBBlock::absoluteAddress(int number)
+	{
+		if(_locationsInImage.size()<(number+1))
+		{
+			return nullptr;
+		}
+		return _locationsInImage[number] + (DWORD)customOffset();
+	}
+
+	void AOBBlock::storeFoundLocation(LPBYTE location)
+	{
+		if(nullptr==location)
+		{
+			return;
+		}
+		_locationsInImage.push_back(location);
+	}
+
 
 	// Creates an aob_pattern struct which is usable with an aob scan. The pattern given is in the form of "aa bb ??" where '??' is a byte
 	// which has to be skipped in the comparison, and 'aa' and 'bb' are hexadecimal bytes which have to have that value at that position.
