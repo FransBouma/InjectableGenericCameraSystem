@@ -9,6 +9,9 @@ its FoV and the camera's look vector. Some camera implementations have additiona
 It's written in C++ with some x86/x64 assembler to be able to intercept the location of the 3D camera in the game. 
 The system is initially designed for 64bit hosts as all games are 64bit nowadays, but has been reworked to be used for 32bit games too. 
 
+## Re-hosting binaries
+All binaries of my tools are hosted here. You're not allowed to re-host the binaries on other modsites, like Nexus Mods. 
+
 ## Folder structure description
 
 In the folder `Cameras` you'll several implementations of the system, adapted for specific games. 
