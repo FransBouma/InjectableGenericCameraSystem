@@ -213,7 +213,7 @@ namespace IGCSInjectorUI
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(155, 13);
 			this.label1.TabIndex = 0;
-			this.label1.Text = "IGCS Injector is ©2019 Otis_Inf";
+			this.label1.Text = "IGCS Injector is ©2020 Otis_Inf";
 			// 
 			// label2
 			// 

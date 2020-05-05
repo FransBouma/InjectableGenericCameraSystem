@@ -61,7 +61,14 @@ namespace IGCSInjectorUI
 					{
 						row = _boundProcessList.NewRow();
 						row[0] = process.Id;
-						row[1] = System.Drawing.Icon.ExtractAssociatedIcon(process.MainModule.FileName).ToBitmap();
+						try
+						{
+							row[1] = System.Drawing.Icon.ExtractAssociatedIcon(process.MainModule.FileName).ToBitmap();
+						}
+						catch
+						{
+							// icon couldn't be retrieved. Ignore icon
+						}
 						row[2] = process.MainModule.ModuleName;
 						row[3] = process.MainWindowTitle;
 						row[4] = process.MainModule.FileName;
@@ -76,12 +83,9 @@ namespace IGCSInjectorUI
 						}
 					}
 				}
-				catch (Win32Exception ex)
+				catch
                 {
-                    if ((uint)ex.ErrorCode != 0x80004005)
-					{
-						throw;
-					}
+					// any exception caught is considered fatal for that process so it's ignored.
                 }
 			}
 			if (_processGrid.RowCount > 0)
