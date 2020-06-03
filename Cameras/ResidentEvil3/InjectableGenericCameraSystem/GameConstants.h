@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Resident Evil 3 v1.0+"
-	#define CAMERA_VERSION								"1.0.2"
+	#define CAMERA_VERSION								"1.0.3"
 	#define CAMERA_CREDITS								"Otis_Inf."
 	#define GAME_WINDOW_TITLE							"RESIDENT EVIL 3"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)

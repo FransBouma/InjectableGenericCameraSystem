@@ -33,7 +33,7 @@ namespace IGCSClient.GameSpecific.Classes
 	internal static class GameSpecificConstants
 	{
 		public const string ClientWindowTitle = "Resident Evil 3 tools";
-		public const string CameraVersion = "1.0.2";
+		public const string CameraVersion = "1.0.3";
 		public const string CameraCredits = "Otis_Inf";
 		public const bool HotsamplingRequiresEXITSIZEMOVE = false;
 	}
