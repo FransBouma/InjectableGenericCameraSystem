@@ -209,5 +209,10 @@ MetroExodus.exe+3D2059B - 75 05           - jne MetroExodus.exe+3D205A2
 MetroExodus.exe+3D2059D - 45 30 C0        - xor r8l,r8l
 MetroExodus.exe+3D205A0 - EB 03           - jmp MetroExodus.exe+3D205A5
 
-
-
+1.0.1.7:
+00007FF6B6080F5D | 3805 B1D17101 | cmp byte ptr ds:[7FF6B779E114],al 
+00007FF6B6080F63 | 74 0D         | je metroexodus_dump.7FF6B6080F72  
+00007FF6B6080F65 | 3805 AAD17101 | cmp byte ptr ds:[7FF6B779E115],al 
+00007FF6B6080F6B | 75 05         | jne metroexodus_dump.7FF6B6080F72 
+00007FF6B6080F6D | 45:32C0       | xor r8b,r8b                       
+00007FF6B6080F70 | EB 03         | jmp metroexodus_dump.7FF6B6080F75 
