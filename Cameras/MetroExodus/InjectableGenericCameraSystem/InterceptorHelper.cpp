@@ -68,6 +68,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[CAMERA_WRITE7_KEY] = new AOBBlock(CAMERA_WRITE7_KEY, "0F 29 05 ?? ?? ?? ?? 0F 28 45 B0 0F 29 0D ?? ?? ?? ?? 0F 28 4D A0", 1);
 		aobBlocks[GAME_PAUSE_ADDRESS_KEY] = new AOBBlock(GAME_PAUSE_ADDRESS_KEY, "38 05 | ?? ?? ?? ?? 74 0D 38 05 ?? ?? ?? ?? 75 05 45 ?? C0", 1);
 		aobBlocks[TIME_DILATION_ADDRESS_KEY] = new AOBBlock(TIME_DILATION_ADDRESS_KEY, "F3 0F 11 05 | ?? ?? ?? ?? F3 0F 11 0D ?? ?? ?? ?? 74 06 ", 1);
+		aobBlocks[GAME_PAUSED_TEXT_DISABLE_KEY] = new AOBBlock(GAME_PAUSED_TEXT_DISABLE_KEY, "E8 ?? ?? ?? ?? 81 8B ?? 04 00 00 00 00 10 00 EB ?? F7 81 ?? 04 00 00 00 00 10 00 ", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -88,6 +89,12 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		if(aobBlocks[GAME_PAUSE_ADDRESS_KEY]->found())
 		{
 			_gamePauseAddress = Utils::calculateAbsoluteAddress(aobBlocks[GAME_PAUSE_ADDRESS_KEY], 4);
+		}
+		if(aobBlocks[GAME_PAUSED_TEXT_DISABLE_KEY]->found())
+		{
+			// nop the call, we're not going to need it
+			// MetroExodus.exe + 4C3535 - E8 667B6500 - call MetroExodus.exe + B1B0A0 << < NOP->No 'GAME PAUSED' text :)
+			GameImageHooker::nopRange(aobBlocks[GAME_PAUSED_TEXT_DISABLE_KEY]->absoluteAddress(), 5);
 		}
 		
 		if (result)

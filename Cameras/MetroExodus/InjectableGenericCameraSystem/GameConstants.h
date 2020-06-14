@@ -31,7 +31,7 @@ namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
 	#define GAME_NAME									"Metro Exodus (v1.0.1.6+)"
-	#define CAMERA_VERSION								"1.0.1"
+	#define CAMERA_VERSION								"1.0.2"
 	#define CAMERA_CREDITS								"Otis_Inf"
 	#define GAME_WINDOW_TITLE							"4A Engine"
 	#define INITIAL_PITCH_RADIANS						0.0f
@@ -62,6 +62,7 @@ namespace IGCS::GameSpecific
 	#define FOV_READ_KEY						"AOB_FOV_READ_KEY"
 	#define GAME_PAUSE_ADDRESS_KEY				"AOB_GAME_PAUSE_ADDRESS_KEY"
 	#define TIME_DILATION_ADDRESS_KEY			"AOB_TIME_DILATION_ADDRESS_KEY"
+	#define GAME_PAUSED_TEXT_DISABLE_KEY		"AOB_GAME_PAUSED_TEXT_DISABLE_KEY"
 
 	// StartSession jump offsets to nop, relative from start of function
 	//MetroExodus.exe+7B82C2B - BB 01000000           - mov ebx,00000001 { 1 }

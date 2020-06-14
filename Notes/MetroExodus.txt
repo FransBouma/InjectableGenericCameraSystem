@@ -234,3 +234,30 @@ MetroExodus.exe+ACF86A - F3 0F10 15 A6E8CA00   - movss xmm2,[MetroExodus.exe+177
 MetroExodus.exe+ACF872 - F3 0F59 D0            - mulss xmm2,xmm0
 MetroExodus.exe+ACF876 - 41 0F28 C5            - movaps xmm0,xmm13
 It uses a doubleword int as calculation (which is the float without the decimal point). 
+
+// GAME PAUSED text removal
+// set bit 0 on 2nd byte in dword here:
+MetroExodus.exe+DD312B - 4C 89 6C 91 14        - mov [rcx+rdx*4+14],r13
+MetroExodus.exe+DD3130 - 4C 89 6C 91 1C        - mov [rcx+rdx*4+1C],r13
+MetroExodus.exe+DD3135 - 4C 89 6C 91 24        - mov [rcx+rdx*4+24],r13
+MetroExodus.exe+DD313A - C7 86 24150000 01000000 - mov [rsi+00001524],00000001 { 1 }
+MetroExodus.exe+DD3144 - F7 05 128B8600 00001000 - test [MetroExodus.exe+163BC60],00100000          <<<<<<<<< if bit set no 'GAME PAUSED'.
+MetroExodus.exe+DD314E - 0F85 16010000         - jne MetroExodus.exe+DD326A
+MetroExodus.exe+DD3154 - 48 8B 06              - mov rax,[rsi]
+MetroExodus.exe+DD3157 - 48 8D 0D F2FD6F00     - lea rcx,[MetroExodus.exe+14D2F50]
+MetroExodus.exe+DD315E - 48 3B C1              - cmp rax,rcx
+MetroExodus.exe+DD3161 - 0F85 2F020000         - jne MetroExodus.exe+DD3396
+MetroExodus.exe+DD3167 - F6 05 CA759100 01     - test byte ptr [MetroExodus.exe+16EA738],01
+
+// which leads to:
+MetroExodus.exe+4C351C - 48 89 44 24 30        - mov [rsp+30],rax
+MetroExodus.exe+4C3521 - 8B 41 3C              - mov eax,[rcx+3C]
+MetroExodus.exe+4C3524 - 48 8D 0D EDB12B01     - lea rcx,[MetroExodus.exe+177E718] { (302001800) }
+MetroExodus.exe+4C352B - 89 44 24 28           - mov [rsp+28],eax
+MetroExodus.exe+4C352F - F3 0F11 44 24 20      - movss [rsp+20],xmm0
+MetroExodus.exe+4C3535 - E8 667B6500           - call MetroExodus.exe+B1B0A0        <<< NOP -> No 'GAME PAUSED' text :) 
+MetroExodus.exe+4C353A - 81 8B F0040000 00001000 - or [rbx+000004F0],00100000 { 1048576 }
+MetroExodus.exe+4C3544 - EB 26                 - jmp MetroExodus.exe+4C356C
+MetroExodus.exe+4C3546 - F7 81 F0040000 00001000 - test [rcx+000004F0],00100000 { 1048576 }
+MetroExodus.exe+4C3550 - 74 1A                 - je MetroExodus.exe+4C356C
+MetroExodus.exe+4C3552 - 48 8D 51 44           - lea rdx,[rcx+44]
