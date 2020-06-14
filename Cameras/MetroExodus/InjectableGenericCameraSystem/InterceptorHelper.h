@@ -35,5 +35,6 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void fixAnsel(std::map<std::string, AOBBlock*>& aobBlocks);
 	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, std::map<std::string, AOBBlock*>& aobBlocks);
 	void enableDisableCamera(bool enable, std::map<std::string, AOBBlock*>& aobBlocks);
-	void toggleGamePause();
+	void toggleGamePause(std::map<std::string, AOBBlock*>& aobBlocks);
+	void toggleTimeDilationPause(std::map<std::string, AOBBlock*>& aobBlocks, bool pauseGame);
 }

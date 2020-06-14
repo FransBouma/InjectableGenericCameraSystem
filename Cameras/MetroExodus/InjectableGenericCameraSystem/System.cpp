@@ -116,7 +116,7 @@ namespace IGCS
 		}
 		if (Input::keyDown(IGCS_KEY_TOGGLE_PAUSE))
 		{
-			InterceptorHelper::toggleGamePause();
+			InterceptorHelper::toggleGamePause(_aobBlocks);
 			Sleep(350);		// wait for 350ms to avoid fast keyboard hammering
 		}
 		if (Input::keyDown(IGCS_KEY_CAMERA_ENABLE))

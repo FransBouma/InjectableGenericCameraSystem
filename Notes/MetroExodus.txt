@@ -210,9 +210,27 @@ MetroExodus.exe+3D2059D - 45 30 C0        - xor r8l,r8l
 MetroExodus.exe+3D205A0 - EB 03           - jmp MetroExodus.exe+3D205A5
 
 1.0.1.7:
-00007FF6B6080F5D | 3805 B1D17101 | cmp byte ptr ds:[7FF6B779E114],al 
-00007FF6B6080F63 | 74 0D         | je metroexodus_dump.7FF6B6080F72  
-00007FF6B6080F65 | 3805 AAD17101 | cmp byte ptr ds:[7FF6B779E115],al 
-00007FF6B6080F6B | 75 05         | jne metroexodus_dump.7FF6B6080F72 
-00007FF6B6080F6D | 45:32C0       | xor r8b,r8b                       
-00007FF6B6080F70 | EB 03         | jmp metroexodus_dump.7FF6B6080F75 
+MetroExodus.exe+60F59 - 85 C0                 - test eax,eax
+MetroExodus.exe+60F5B - 75 18                 - jne MetroExodus.exe+60F75
+MetroExodus.exe+60F5D - 38 05 B1D17101        - cmp [MetroExodus.exe+177E114],al { (0.01) }
+MetroExodus.exe+60F63 - 74 0D                 - je MetroExodus.exe+60F72
+MetroExodus.exe+60F65 - 38 05 AAD17101        - cmp [MetroExodus.exe+177E115],al { (0) }
+MetroExodus.exe+60F6B - 75 05                 - jne MetroExodus.exe+60F72
+MetroExodus.exe+60F6D - 45 32 C0              - xor r8l,r8l
+MetroExodus.exe+60F70 - EB 03                 - jmp MetroExodus.exe+60F75
+
+// Time dilation:
+MetroExodus.exe+ACF836 - EB 04                 - jmp MetroExodus.exe+ACF83C
+MetroExodus.exe+ACF838 - 41 0F28 CE            - movaps xmm1,xmm14
+MetroExodus.exe+ACF83C - 80 3D D5A5CA00 00     - cmp byte ptr [MetroExodus.exe+1779E18],00 { (0),0 }
+MetroExodus.exe+ACF843 - F3 0F10 44 24 64      - movss xmm0,[rsp+64]
+MetroExodus.exe+ACF849 - 44 0F28 B4 24 20020000  - movaps xmm14,[rsp+00000220]
+MetroExodus.exe+ACF852 - F3 0F11 05 C2E8CA00   - movss [MetroExodus.exe+177E11C],xmm0 { (1.00) }			<< Store default value always. 
+MetroExodus.exe+ACF85A - F3 0F11 0D 82EECA00   - movss [MetroExodus.exe+177E6E4],xmm1 { (0.00) }
+MetroExodus.exe+ACF862 - 74 06                 - je MetroExodus.exe+ACF86A
+MetroExodus.exe+ACF864 - 41 0F28 D5            - movaps xmm2,xmm13
+MetroExodus.exe+ACF868 - EB 34                 - jmp MetroExodus.exe+ACF89E
+MetroExodus.exe+ACF86A - F3 0F10 15 A6E8CA00   - movss xmm2,[MetroExodus.exe+177E118] { (1.00) }
+MetroExodus.exe+ACF872 - F3 0F59 D0            - mulss xmm2,xmm0
+MetroExodus.exe+ACF876 - 41 0F28 C5            - movaps xmm0,xmm13
+It uses a doubleword int as calculation (which is the float without the decimal point). 

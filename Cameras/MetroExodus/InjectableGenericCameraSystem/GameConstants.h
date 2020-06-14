@@ -61,6 +61,7 @@ namespace IGCS::GameSpecific
 	#define CAMERA_WRITE7_KEY					"AOB_CAMERA_WRITE7_KEY"
 	#define FOV_READ_KEY						"AOB_FOV_READ_KEY"
 	#define GAME_PAUSE_ADDRESS_KEY				"AOB_GAME_PAUSE_ADDRESS_KEY"
+	#define TIME_DILATION_ADDRESS_KEY			"AOB_TIME_DILATION_ADDRESS_KEY"
 
 	// StartSession jump offsets to nop, relative from start of function
 	//MetroExodus.exe+7B82C2B - BB 01000000           - mov ebx,00000001 { 1 }
