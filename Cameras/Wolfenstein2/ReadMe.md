@@ -1,7 +1,7 @@
 Injectable camera for Wolfenstein II: The New Colossus Demo / Full game
 ============================
 
-Works in the demo of the game and also in the full game.
+Works in the demo of the game and also in the full game.  
 Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/Wolfenstein2_v100  
 Current supported game version: v6.5.0+.  
 Credits: Otis_Inf
