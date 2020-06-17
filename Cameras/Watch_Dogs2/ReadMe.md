@@ -3,8 +3,9 @@ Injectable camera for Watch_Dogs 2
 
 Current supported game version: v1.016+
 Camera version: 1.0.5  
-Camera release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/WD2_105    
 Credits: Otis_Inf. Hotsample code by DeadEndThrills
+
+   For updates and support: https://www.patreon.com/Otis_Inf
 
 ### HUD toggle
 A ubisoft game without a hud toggle is hard to take shots of, so I made a HUD toggle with 3D Migoto. 

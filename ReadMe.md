@@ -10,10 +10,9 @@ It's written in C++ with some x86/x64 assembler to be able to intercept the loca
 The system is initially designed for 64bit hosts as all games are 64bit nowadays, but has been reworked to be used for 32bit games too. 
 
 ## Re-hosting binaries
-All binaries of my tools are hosted here. You're not allowed to re-host the binaries on other modsites, like Nexus Mods. 
+All binaries of my tools are available through my [Patreon](https://www.patreon.com/Otis_Inf). You're not allowed to re-host the binaries on other modsites, like Nexus Mods. 
 
 ## Folder structure description
-
 In the folder `Cameras` you'll several implementations of the system, adapted for specific games. 
 
 The cameras don't use a shared piece of code as in general cameras have to be adapted to a game pretty deeply and I didn't want to make a big
@@ -31,15 +30,10 @@ automatically when you clone the repo. The camera uses DirectXMath for the 3D ma
 
 ### Commercial usage 
 These cameras and its system are made by volunteers in their spare time. If you use these camera for commercial activities 
-(e.g. you make money with the shots or videos you produce with this camera), consider a donation. 
+(e.g. you make money with the shots or videos you produce with this camera), consider a donation or joining my [Patreon](https://www.patreon.com/Otis_Inf)
 
 ### Support
-There's no support. If a camera breaks because of a game update, you're encouraged to send in a pull request with a fix. Cameras get updated from time to time
-but the older the camera gets, the more likely it's not going to be updated. 
-
-### Binaries with the releases
-Some cameras have binaries with their release, most don't. Only the most recent cameras have binary distributions. If you need a binary for an older game,
-ask, and I might re-upload it. 
+If you want support for a camera, please join my [Patreon](https://www.patreon.com/Otis_Inf) where I have a tier available for support on cameras. 
 
 ## Camera's released: 
 * Assassin's Creed 3: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/AssassinsCreed3
@@ -67,7 +61,6 @@ ask, and I might re-upload it.
 * Resident Evil 3: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/ResidentEvil3
 * Ryse: Son of Rome: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/RyseSonOfRome
 * Shadow of the Tomb Raider: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/SOTTR
-* Star Wars Jedi: Fallen Order: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/SWFO
 * The Evil Within 2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/TEW2
 * Titanfall 2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Titanfall2
 * Tomb Raider 2013: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Tombraider
@@ -81,10 +74,7 @@ I've written a long, in-depth article about how to create camera tools and how I
 ## Acknowledgements
 Some camera code uses [MinHook](https://github.com/TsudaKageyu/minhook) by Tsuda Kageyu.
 
-## Donations
-I do this for fun, not profit, but can't create cameras for games I don't own. If you want me to make cameras for new games, please donate
-to https://www.paypal.me/FransBouma. Additionally, after I've finished a game I usually uninstall it and it might be a camera gets broken after that date. 
-For that I'm sorry.
-
+## Patreon
+I do this for fun, not profit, but can't create cameras for games I don't own. I've therefore setup a [Patreon](https://www.patreon.com/Otis_Inf) page which allows you to safely support my work now and in the future and in return you get access to binary releases, early access to newer cameras and if you opt for that, support. 
 
 

@@ -2,16 +2,10 @@ Injectable camera for Greedfall
 ============================
 
 Current supported game version: v1.0.0+  
-Binary download: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/GF_101  
 Camera version: 1.0.2  
-Credits: Jim2Point0. Additional coding by Otis_Inf.  
+Credits: Otis_Inf.  
 
-### Important
-This camera and its system is made by volunteers in their spare time. If you use this camera for commercial activities 
-(e.g. you make money with the shots or videos you produce with this camera), consider a donation. 
-
-There's no support. If the camera breaks because of a game update, you're encouraged to send in a pull request with a fix.
-Read the enclosed readme for details how to use it. 
+For updates and support: https://www.patreon.com/Otis_Inf
 
 ### Features
 

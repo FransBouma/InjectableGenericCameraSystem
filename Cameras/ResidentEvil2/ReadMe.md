@@ -2,20 +2,10 @@ Injectable camera for Resident Evil 2
 ============================
 
 Current supported game version: v1.0+  
-Binary download: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/RE2_102  
 Camera version: 1.0.2  
 Credits: Otis_Inf and Jim2Point0.
 
-### Important
-This camera and its system is made by volunteers in their spare time. If you use this camera for commercial activities 
-(e.g. you make money with the shots or videos you produce with this camera), consider a donation. 
-
-There's no support. If the camera breaks because of a game update, you're encouraged to send in a pull request with a fix.
-Read the enclosed readme for details how to use it. 
-
-Brought to you by [FRAMED. Screenshotting community](https://framedsc.github.io). 
-
-![](https://framedsc.github.io/Images/FRAMED_LogoBigDarkTransparent800px.png)
+For updates and support: https://www.patreon.com/Otis_Inf
 
 ### Features
 
