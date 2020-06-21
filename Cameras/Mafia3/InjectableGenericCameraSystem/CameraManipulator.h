@@ -36,10 +36,10 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void waitForCameraStructAddresses(LPBYTE hostImageAddress);
 	void restoreOriginalCameraValues();
 	void cacheOriginalCameraValues();
-	void setTimeStopValue(byte newValue);
+	void setTimeStopValue(uint8_t newValue);
 	void setTimestopAddress(LPBYTE timestopAddress);
 	void toggleHud();
-	void toggleHud(byte newValue);
+	void toggleHud(uint8_t newValue);
 	XMFLOAT3 getCurrentCameraCoords();
 	void resetFoV();
 	void changeFoV(float amount);

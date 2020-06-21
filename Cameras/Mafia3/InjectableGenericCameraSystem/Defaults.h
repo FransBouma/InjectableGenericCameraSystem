@@ -68,7 +68,7 @@ namespace IGCS
 	#define IGCS_BUTTON_SLOWER						Gamepad::button_t::X
 	#define IGCS_BUTTON_CYCLE_DEVICE				Gamepad::button_t::RB
 
-	static const byte jmpFarInstructionBytes[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction bytes for jmp qword ptr [0000]
+	static const uint8_t jmpFarInstructionuint8_ts[6] = { 0xff, 0x25, 0, 0, 0, 0 };	// instruction uint8_ts for jmp qword ptr [0000]
 
 	enum CameraControlDevice
 	{

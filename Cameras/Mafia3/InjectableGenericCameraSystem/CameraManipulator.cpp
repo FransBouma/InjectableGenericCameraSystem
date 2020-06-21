@@ -49,7 +49,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 
 
 	// newValue: 1 == time should be frozen, 0 == normal gameplay
-	void setTimeStopValue(byte newValue)
+	void setTimeStopValue(uint8_t newValue)
 	{
 		if (nullptr != _timestopAddress)
 		{
@@ -70,17 +70,17 @@ namespace IGCS::GameSpecific::CameraManipulator
 	
 	void toggleHud()
 	{
-		byte currentValue = *(g_hudToggleAddress);
-		toggleHud(currentValue == 0 ? (byte)1 : (byte)0);
+		uint8_t currentValue = *(g_hudToggleAddress);
+		toggleHud(currentValue == 0 ? (uint8_t)1 : (uint8_t)0);
 	}
 
-	void toggleHud(byte newValue)
+	void toggleHud(uint8_t newValue)
 	{
 		if (nullptr == g_hudToggleAddress)
 		{
 			return;
 		}
-		// g_hudToggleAddress is a byte array with bit flags (1 per byte). It hides hud parts. We have to set each element individually. 
+		// g_hudToggleAddress is a uint8_t array with bit flags (1 per uint8_t). It hides hud parts. We have to set each element individually. 
 		g_hudToggleAddress[0] = newValue;
 		g_hudToggleAddress[1] = newValue;
 		g_hudToggleAddress[3] = newValue;

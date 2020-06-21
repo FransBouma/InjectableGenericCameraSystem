@@ -126,7 +126,7 @@ namespace IGCS
 				// it's going to be disabled, make sure things are alright when we give it back to the host
 				CameraManipulator::restoreOriginalCameraValues();
 				toggleCameraMovementLockState(false);
-				CameraManipulator::toggleHud((byte)1);		// hud should be ON, so pass 1
+				CameraManipulator::toggleHud((uint8_t)1);		// hud should be ON, so pass 1
 			}
 			else
 			{
@@ -134,9 +134,9 @@ namespace IGCS
 				CameraManipulator::cacheOriginalCameraValues();
 				_camera.resetAngles();
 				displayControlDeviceName();
-				CameraManipulator::toggleHud((byte)0);		// hud should be OFF so pass 0
+				CameraManipulator::toggleHud((uint8_t)0);		// hud should be OFF so pass 0
 			}
-			g_cameraEnabled = g_cameraEnabled == 0 ? (byte)1 : (byte)0;
+			g_cameraEnabled = g_cameraEnabled == 0 ? (uint8_t)1 : (uint8_t)0;
 			displayCameraState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
@@ -364,7 +364,7 @@ namespace IGCS
 
 	void System::toggleTimestopState()
 	{
-		_timeStopped = _timeStopped == 0 ? (byte)1 : (byte)0;
+		_timeStopped = _timeStopped == 0 ? (uint8_t)1 : (uint8_t)0;
 		Console::WriteLine(_timeStopped ? "Game paused" : "Game unpaused");
 		CameraManipulator::setTimeStopValue(_timeStopped);
 	}

@@ -118,19 +118,19 @@ namespace IGCS::Utils
 	}
 
 
-	BYTE CharToByte(char c)
+	uint8_t CharTouint8_t(char c)
 	{
-		BYTE b;
+		uint8_t b;
 		sscanf_s(&c, "%hhx", &b);
 		return b;
 	}
 
 
-	bool DataCompare(LPBYTE image, LPBYTE bytePattern, char* patternMask)
+	bool DataCompare(LPBYTE image, LPBYTE uint8_tPattern, char* patternMask)
 	{
-		for (; *patternMask; ++patternMask, ++image, ++bytePattern)
+		for (; *patternMask; ++patternMask, ++image, ++uint8_tPattern)
 		{
-			if (*patternMask == 'x' && *image != *bytePattern)
+			if (*patternMask == 'x' && *image != *uint8_tPattern)
 			{
 				return false;
 			}
@@ -141,7 +141,7 @@ namespace IGCS::Utils
 
 	LPBYTE findAOBPattern(LPBYTE imageAddress, DWORD imageSize, AOBBlock* const toScanFor)
 	{
-		register BYTE firstByte = *(toScanFor->bytePattern());
+		register uint8_t firstuint8_t = *(toScanFor->uint8_tPattern());
 		__int64 length = (__int64)imageAddress + imageSize - toScanFor->patternSize();
 
 		LPBYTE toReturn = nullptr;
@@ -154,35 +154,35 @@ namespace IGCS::Utils
 			{
 				unsigned x = *(unsigned*)(i);
 
-				if ((x & 0xFF) == firstByte)
+				if ((x & 0xFF) == firstuint8_t)
 				{
-					if (DataCompare(reinterpret_cast<BYTE*>(i), toScanFor->bytePattern(), toScanFor->patternMask()))
+					if (DataCompare(reinterpret_cast<uint8_t*>(i), toScanFor->uint8_tPattern(), toScanFor->patternMask()))
 					{
-						toReturn = reinterpret_cast<BYTE*>(i);
+						toReturn = reinterpret_cast<uint8_t*>(i);
 						break;
 					}
 				}
-				if ((x & 0xFF00) >> 8 == firstByte)
+				if ((x & 0xFF00) >> 8 == firstuint8_t)
 				{
-					if (DataCompare(reinterpret_cast<BYTE*>(i + 1), toScanFor->bytePattern(), toScanFor->patternMask()))
+					if (DataCompare(reinterpret_cast<uint8_t*>(i + 1), toScanFor->uint8_tPattern(), toScanFor->patternMask()))
 					{
-						toReturn = reinterpret_cast<BYTE*>(i + 1);
+						toReturn = reinterpret_cast<uint8_t*>(i + 1);
 						break;
 					}
 				}
-				if ((x & 0xFF0000) >> 16 == firstByte)
+				if ((x & 0xFF0000) >> 16 == firstuint8_t)
 				{
-					if (DataCompare(reinterpret_cast<BYTE*>(i + 2), toScanFor->bytePattern(), toScanFor->patternMask()))
+					if (DataCompare(reinterpret_cast<uint8_t*>(i + 2), toScanFor->uint8_tPattern(), toScanFor->patternMask()))
 					{
-						toReturn = reinterpret_cast<BYTE*>(i + 2);
+						toReturn = reinterpret_cast<uint8_t*>(i + 2);
 						break;
 					}
 				}
-				if ((x & 0xFF000000) >> 24 == firstByte)
+				if ((x & 0xFF000000) >> 24 == firstuint8_t)
 				{
-					if (DataCompare(reinterpret_cast<BYTE*>(i + 3), toScanFor->bytePattern(), toScanFor->patternMask()))
+					if (DataCompare(reinterpret_cast<uint8_t*>(i + 3), toScanFor->uint8_tPattern(), toScanFor->patternMask()))
 					{
-						toReturn = reinterpret_cast<BYTE*>(i + 3);
+						toReturn = reinterpret_cast<uint8_t*>(i + 3);
 						break;
 					}
 				}
@@ -200,7 +200,7 @@ namespace IGCS::Utils
 
 	// locationData is the AOB block with the address of the rip relative value to read for the calculation.
 	// nextOpCodeOffset is used to calculate the address of the next instruction as that's the address the rip relative value is relative off. In general
-	// this is 4 (the size of the int32 for the rip relative value), but sometimes the rip relative value is inside an instruction following one or more bytes before the 
+	// this is 4 (the size of the int32 for the rip relative value), but sometimes the rip relative value is inside an instruction following one or more uint8_ts before the 
 	// next instruction starts.
 	LPBYTE calculateAbsoluteAddress(AOBBlock* locationData, int nextOpCodeOffset)
 	{

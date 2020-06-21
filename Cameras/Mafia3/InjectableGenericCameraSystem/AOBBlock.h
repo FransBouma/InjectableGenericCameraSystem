@@ -36,12 +36,12 @@ namespace IGCS
 	class AOBBlock
 	{
 	public:
-		AOBBlock(string blockName, string bytePatternAsString, int occurrence);
+		AOBBlock(string blockName, string uint8_tPatternAsString, int occurrence);
 		~AOBBlock();
 
 		bool scan(LPBYTE imageAddress, DWORD imageSize);
 		LPBYTE locationInImage() { return _locationInImage; }
-		LPBYTE bytePattern() { return _bytePattern; }
+		LPBYTE uint8_tPattern() { return _uint8_tPattern; }
 		int occurrence() { return _occurrence; }
 		int patternSize() { return _patternSize; }
 		char* patternMask() { return _patternMask; }
@@ -51,8 +51,8 @@ namespace IGCS
 		void createAOBPatternFromStringPattern(string pattern);
 
 		string _blockName;
-		string _bytePatternAsString;
-		LPBYTE _bytePattern;
+		string _uint8_tPatternAsString;
+		LPBYTE _uint8_tPattern;
 		char* _patternMask;
 		int _patternSize;
 		int _customOffset;

@@ -31,7 +31,7 @@
 #include "Gamepad.h"
 #include "Defaults.h"
 
-extern "C" byte g_cameraEnabled;
+extern "C" uint8_t g_cameraEnabled;
 
 namespace IGCS
 {
