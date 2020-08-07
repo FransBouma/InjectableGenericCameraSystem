@@ -39,6 +39,7 @@
 
 // Windows Header Files:
 #include <windows.h>
+#include <minwindef.h>
 #include <iostream>
 #include <string>
 #include <tchar.h>

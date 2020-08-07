@@ -50,6 +50,20 @@ engine_x64_rwdi.dll+11F583 - 0F28 C6               - movaps xmm0,xmm6
 engine_x64_rwdi.dll+11F586 - E8 DB606900           - call engine_x64_rwdi.dll+7B5666
 engine_x64_rwdi.dll+11F58B - 48 8B 05 76A69000     - mov rax,[engine_x64_rwdi.dll+A29C08]
 engine_x64_rwdi.dll+11F592 - F3 0F59 C7            - mulss xmm0,xmm7
+// v1.28:
+engine_x64_rwdi.dll+11EE9C - FF 50 28              - call qword ptr [rax+28]
+engine_x64_rwdi.dll+11EE9F - 84 C0                 - test al,al
+engine_x64_rwdi.dll+11EEA1 - 74 10                 - je engine_x64_rwdi.dll+11EEB3
+engine_x64_rwdi.dll+11EEA3 - 48 8B 0D DE069100     - mov rcx,[engine_x64_rwdi.dll+A2F588] { (09367A10) }
+engine_x64_rwdi.dll+11EEAA - 48 8B 01              - mov rax,[rcx]
+engine_x64_rwdi.dll+11EEAD - FF 50 48              - call qword ptr [rax+48]
+engine_x64_rwdi.dll+11EEB0 - 0F28 F0               - movaps xmm6,xmm0
+engine_x64_rwdi.dll+11EEB3 - F3 0F11 B3 D4020000   - movss [rbx+000002D4],xmm6					<< WRITE FOV
+engine_x64_rwdi.dll+11EEBB - F3 0F59 35 01CB6C00   - mulss xmm6,[engine_x64_rwdi.dll+7EB9C4]
+engine_x64_rwdi.dll+11EEC3 - 0F28 C6               - movaps xmm0,xmm6
+engine_x64_rwdi.dll+11EEC6 - E8 8B7B6900           - call engine_x64_rwdi.dll+7B6A56
+engine_x64_rwdi.dll+11EECB - 48 8B 05 A6DD9000     - mov rax,[engine_x64_rwdi.dll+A2CC78]
+engine_x64_rwdi.dll+11EED2 - F3 0F59 C7            - mulss xmm0,xmm7
 
 Generic matrix write code:. Test if RCX points to our camera struct. If so, skip, otherwise proceed.
 engine_x64_rwdi.dll+676510 - 48 83 EC 48           - sub rsp,48 { 72 }
@@ -246,5 +260,35 @@ engine_x64_rwdi.dll+254437 - 0F28 74 24 20         - movaps xmm6,[rsp+20]
 engine_x64_rwdi.dll+25443C - 48 83 C4 30           - add rsp,30 { 48 }
 engine_x64_rwdi.dll+254440 - 5B                    - pop rbx
 engine_x64_rwdi.dll+254441 - F3 C3                 - repe ret 
+// v1.28:
+engine_x64_rwdi.dll+255309 - 0F29 74 24 20         - movaps [rsp+20],xmm6
+engine_x64_rwdi.dll+25530E - 0F28 F2               - movaps xmm6,xmm2
+engine_x64_rwdi.dll+255311 - E8 9A244F00           - call engine_x64_rwdi.dll+7477B0
+engine_x64_rwdi.dll+255316 - 48 85 C0              - test rax,rax
+engine_x64_rwdi.dll+255319 - 74 1C                 - je engine_x64_rwdi.dll+255337
+engine_x64_rwdi.dll+25531B - F3 0F11 30            - movss [rax],xmm6			<< WRITE TOD. Used for *many* objects. Filter out our address!
+engine_x64_rwdi.dll+25531F - 8B 43 08              - mov eax,[rbx+08]
+engine_x64_rwdi.dll+255322 - 83 F8 FE              - cmp eax,-02
+engine_x64_rwdi.dll+255325 - 72 10                 - jb engine_x64_rwdi.dll+255337
+engine_x64_rwdi.dll+255327 - E8 449ADDFF           - call engine_x64_rwdi.dll+2ED70
+engine_x64_rwdi.dll+25532C - 48 8B D3              - mov rdx,rbx
+engine_x64_rwdi.dll+25532F - 48 8B C8              - mov rcx,rax
+engine_x64_rwdi.dll+255332 - E8 B998DDFF           - call engine_x64_rwdi.dll+2EBF0
+engine_x64_rwdi.dll+255337 - 0F28 74 24 20         - movaps xmm6,[rsp+20]
+engine_x64_rwdi.dll+25533C - 48 83 C4 30           - add rsp,30 { 48 }
 
+Hotsampling:
+- change window
+- set resolution to the resolution of the window, then go back to the game, the game resizes the viewport to the set resolution.
 
+To obtain the resolution address:
+GetScreenWidth:
+engine_x64_rwdi.dll+232D80 - 48 8B 41 08           - mov rax,[rcx+08]
+engine_x64_rwdi.dll+232D84 - 48 8B 88 C0000000     - mov rcx,[rax+000000C0]
+engine_x64_rwdi.dll+232D8B - 8B 01                 - mov eax,[rcx]
+engine_x64_rwdi.dll+232D8D - C3                    - ret 
+engine_x64_rwdi.dll+232D8E - CC                    - int 3 
+engine_x64_rwdi.dll+232D8F - CC                    - int 3 
+
+This is the render resolution. To set the window resolution, set it at: rcx+14 & rcx+18.
+We know the new resolution when ResizeBuffers is called, as the game itself does set the viewport to the new resolution. 

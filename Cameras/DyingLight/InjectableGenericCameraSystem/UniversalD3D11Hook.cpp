@@ -14,6 +14,10 @@
 
 #pragma comment(lib, "d3d11.lib")
 
+extern "C" {
+	LPBYTE g_resolutionStructAddress = nullptr;
+}
+
 namespace IGCS::DX11Hooker
 {
 	#define DXGI_PRESENT_INDEX			8
@@ -47,6 +51,16 @@ namespace IGCS::DX11Hooker
 
 	HRESULT __stdcall detourD3D11ResizeBuffers(IDXGISwapChain* pSwapChain, UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags)
 	{
+		OverlayConsole::instance().logDebug("Resize called with new size: %d x %d", width, height);
+		// tell the engine to resize the internal resolution too
+		if (nullptr != g_resolutionStructAddress)
+		{
+			UINT* resolutionInMemory = reinterpret_cast<UINT*>(g_resolutionStructAddress);
+			// window resolution
+			resolutionInMemory[(WINDOW_RESOLUTION_STRUCT_OFFSET / 4)] = width;
+			resolutionInMemory[(WINDOW_RESOLUTION_STRUCT_OFFSET / 4) + 1] = height;
+		}
+
 		_imGuiInitializing = true;
 		ImGui_ImplDX11_InvalidateDeviceObjects();
 		cleanupRenderTarget();
@@ -54,6 +68,7 @@ namespace IGCS::DX11Hooker
 		createRenderTarget(pSwapChain);
 		ImGui_ImplDX11_CreateDeviceObjects();
 		_imGuiInitializing = false;
+
 		return toReturn;
 	}
 

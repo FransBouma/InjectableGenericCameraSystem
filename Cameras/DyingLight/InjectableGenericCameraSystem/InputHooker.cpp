@@ -127,6 +127,14 @@ namespace IGCS::InputHooker
 	// Our own version of PeekMessageA
 	BOOL WINAPI detourPeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg)
 	{
+		static DWORD newWidth = 0;
+		static DWORD newHeight = 0;
+
+		if (lpMsg->message == WM_WINDOWPOSCHANGED)
+		{
+			newWidth = 1;
+		}
+
 		// first call the original function
 		if (!hookedPeekMessageA(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg))
 		{
@@ -139,6 +147,14 @@ namespace IGCS::InputHooker
 	// Our own version of PeekMessageW
 	BOOL WINAPI detourPeekMessageW(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg)
 	{
+		static DWORD newWidth = 0;
+		static DWORD newHeight = 0;
+
+		if (lpMsg->message == WM_WINDOWPOSCHANGED)
+		{
+			newWidth = 1;
+		}
+
 		// first call the original function
 		if (!hookedPeekMessageW(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg))
 		{
@@ -170,7 +186,7 @@ namespace IGCS::InputHooker
 	{
 		InitializeCriticalSectionAndSpinCount(&_messageProcessCriticalSection, 0x400);
 
-		if (MH_CreateHookApiEx(L"xinput1_3", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
+		if (MH_CreateHookApiEx(L"XINPUT1_3", "XInputGetState", &detourXInputGetState, &hookedXInputGetState) != MH_OK)
 		{
 			OverlayConsole::instance().logError("Hooking XInput1_3 failed!");
 		}

@@ -137,13 +137,28 @@ cameraWrite1Interceptor PROC
 ; 000000014065A268 | 0F85 6A080000        | jne re3_dump.14065AAD8            
 ; 000000014065A26E | F3:0F1083 A0000000   | movss xmm0,dword ptr [rbx+A0]  
 ; 000000014065A276 | F3:0F108B A4000000   | movss xmm1,dword ptr [rbx+A4]  
-	movss xmm7, dword ptr [rax+34h]		
-	mov eax,[rax+38h]   		
+; Update August 2020, change intercept block so we avoid the xmm* loads which change with every build.
+; 000000014066D499 | 48:8B86 B8000000    | mov rax,qword ptr ds:[rsi+B8]      
+; 000000014066D4A0 | 48:85C0             | test rax,rax                       
+; 000000014066D4A3 | 0F84 DE020000       | je re3_dump.14066D787              
+; 000000014066D4A9 | F3:0F1078 30        | movss xmm7,dword ptr ds:[rax+30]   
+; 000000014066D4AE | F344:0F1048 34      | movss xmm9,dword ptr ds:[rax+34]
+; 000000014066D4B4 | 8B40 38             | mov eax,dword ptr ds:[rax+38]	   	<< INTERCEPT HERE   	
+; 000000014066D4B7 | 8987 B4000000       | mov dword ptr ds:[rdi+B4],eax 	  	<< WRITE FOV
+; 000000014066D4BD | 48:8B43 50          | mov rax,qword ptr ds:[rbx+50]      	 
+; 000000014066D4C1 | 48:8378 18 00       | cmp qword ptr ds:[rax+18],0        
+; 000000014066D4C6 | 0F85 A4080000       | jne re3_dump.14066DD70               << CONTINUE HERE 
+; 000000014066D4CC | F3:0F1086 A0000000  | movss xmm0,dword ptr ds:[rsi+A0]   
+; 000000014066D4D4 | F3:0F108E A4000000  | movss xmm1,dword ptr ds:[rsi+A4]   
+; 000000014066D4DC | F3:0F1096 A8000000  | movss xmm2,dword ptr ds:[rsi+A8]   
+	mov eax,dword ptr [rax+38h]
 	cmp byte ptr [g_cameraEnabled], 1
 	je exit
 originalCode:
-	mov [rsi+000000B4h],eax	
+	mov dword ptr [rdi+0B4h],eax 
 exit:
+	mov rax,qword ptr [rbx+50h] 
+	cmp qword ptr [rax+18h],0   
 	jmp qword ptr [_cameraWrite1InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite1Interceptor ENDP
 
@@ -174,14 +189,26 @@ cameraWrite2Interceptor PROC
 ;000000014065A5FC | 48 8B48 18           | mov rcx,qword ptr [rax+18]        		<< CONTINUE HERE
 ;000000014065A600 | 48 85C9              | test rcx,rcx                         
 ;000000014065A603 | 0F85 90040000        | jne re3_dump.14065AA99               
-;000000014065A609 | 48:85C9              | test rcx,rcx                         
+;000000014065A609 | 48:85C9              | test rcx,rcx               
+; Update August 2020
+;000000014066D82F | E8 E0C61D04           | call re3_dump.144849F14              
+;000000014066D834 | F3:0F5905 78FE2504    | mulss xmm0,dword ptr ds:[1448CD6B4]  
+;000000014066D83C | F3:0F5AC0             | cvtss2sd xmm0,xmm0                   
+;000000014066D840 | F2:0F5905 F836B104    | mulsd xmm0,qword ptr ds:[145180F40]  
+;000000014066D848 | F2:0F5AC0             | cvtsd2ss xmm0,xmm0                     	<< INTERCEPT HERE
+;000000014066D84C | F3:0F1187 B4000000    | movss dword ptr ds:[rdi+B4],xmm0     	<< WRITE FOV
+;000000014066D854 | 48:8B43 50            | mov rax,qword ptr ds:[rbx+50]        
+;000000014066D858 | 48:8B48 18            | mov rcx,qword ptr ds:[rax+18]        	<< CONTINUE HERE
+;000000014066D85C | 48:85C9               | test rcx,rcx                         
+;000000014066D85F | 0F85 D5040000         | jne re3_dump.14066DD3A               
+;000000014066D865 | 48:85C9               | test rcx,rcx                         
 	cvtsd2ss xmm0,xmm0		
 	cmp byte ptr [g_cameraEnabled], 1
 	je exit
 originalCode:
-	movss dword ptr [rsi+000000B4h],xmm0
+	movss dword ptr [rdi+000000B4h],xmm0
 exit:
-	mov rax,[rdi+50h]
+	mov rax,[rbx+50h]
 	jmp qword ptr [_cameraWrite2InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite2Interceptor ENDP
 
@@ -212,13 +239,29 @@ cameraWrite3Interceptor PROC
 ;000000014065A3BC | F3:0F1196 88000000  | movss dword ptr [rsi+88],xmm2  	<<< Write z
 ;000000014065A3C4 | 48:8B47 50          | mov rax,qword ptr [rdi+50]     	<< CONTINUE HERE
 ;000000014065A3C8 | 48:8378 18 00       | cmp qword ptr [rax+18],0       
-;000000014065A3CD | 0F85 E1060000       | jne re3_dump.14065AAB4            
+;000000014065A3CD | 0F85 E1060000       | jne re3_dump.14065AAB4     
+;// Update August 2020
+;000000014066D5E4 | E8 B7180000         | call re3_dump.14066EEA0          
+;000000014066D5E9 | 48:8B43 50          | mov rax,qword ptr ds:[rbx+50]    
+;000000014066D5ED | 48:8378 18 00       | cmp qword ptr ds:[rax+18],0      
+;000000014066D5F2 | 0F85 54070000       | jne re3_dump.14066DD4C           
+;000000014066D5F8 | F3:0F104424 50      | movss xmm0,dword ptr ss:[rsp+50] 
+;000000014066D5FE | F3:0F104C24 54      | movss xmm1,dword ptr ss:[rsp+54] 
+;000000014066D604 | F3:0F105424 58      | movss xmm2,dword ptr ss:[rsp+58] 
+;000000014066D60A | F3:0F1187 80000000  | movss dword ptr ds:[rdi+80],xmm0	<< INTERCEPT HERE <<< Write x
+;000000014066D612 | F3:0F118F 84000000  | movss dword ptr ds:[rdi+84],xmm1	<<< Write y
+;000000014066D61A | F3:0F1197 88000000  | movss dword ptr ds:[rdi+88],xmm2	<<< Write z
+;000000014066D622 | 48:8B43 50          | mov rax,qword ptr ds:[rbx+50]		<< CONTINUE HERE
+;000000014066D626 | 48:8378 18 00       | cmp qword ptr ds:[rax+18],0      
+;000000014066D62B | 0F85 1B070000       | jne re3_dump.14066DD4C           
+;000000014066D631 | F3:0F107424 40      | movss xmm6,dword ptr ss:[rsp+40] 
+;000000014066D637 | F344:0F104424 44    | movss xmm8,dword ptr ss:[rsp+44] 
 	cmp byte ptr [g_cameraEnabled], 1
 	je exit
 originalCode:
-	movss dword ptr [rsi+00000080h],xmm0
-	movss dword ptr [rsi+00000084h],xmm1
-	movss dword ptr [rsi+00000088h],xmm2
+	movss dword ptr [rdi+00000080h],xmm0
+	movss dword ptr [rdi+00000084h],xmm1
+	movss dword ptr [rdi+00000088h],xmm2
 exit:
 	jmp qword ptr [_cameraWrite3InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite3Interceptor ENDP
@@ -253,12 +296,29 @@ cameraWrite4Interceptor PROC
 ;re3.exe+65A210 - 48 8B 47 50           - mov rax,[rdi+50]					<< CONTINUE HERE
 ;re3.exe+65A214 - 48 83 78 18 00        - cmp qword ptr [rax+18],00 { 0 }
 ;re3.exe+65A219 - 0F85 B9080000         - jne re3.exe+65AAD8
+;// Update August 2020
+;000000014066D426 | 0F1046 70           | movups xmm0,xmmword ptr ds:[rsi+70]    
+;000000014066D42A | 0F1147 70           | movups xmmword ptr ds:[rdi+70],xmm0    
+;000000014066D42E | 48:8B43 50          | mov rax,qword ptr ds:[rbx+50]          
+;000000014066D432 | 48:8378 18 00       | cmp qword ptr ds:[rax+18],0            
+;000000014066D437 | 0F85 33090000       | jne re3_dump.14066DD70                 
+;000000014066D43D | F3:0F1086 80000000  | movss xmm0,dword ptr ds:[rsi+80]       
+;000000014066D445 | F3:0F108E 84000000  | movss xmm1,dword ptr ds:[rsi+84]       
+;000000014066D44D | F3:0F1096 88000000  | movss xmm2,dword ptr ds:[rsi+88]       
+;000000014066D455 | F3:0F1187 80000000  | movss dword ptr ds:[rdi+80],xmm0   	<< INTERCEPT HERE	<< X    
+;000000014066D45D | F3:0F118F 84000000  | movss dword ptr ds:[rdi+84],xmm1   		<< Y    
+;000000014066D465 | F3:0F1197 88000000  | movss dword ptr ds:[rdi+88],xmm2   		<< Z    
+;000000014066D46D | 48:8B43 50          | mov rax,qword ptr ds:[rbx+50]      	<< CONTINUE HERE    
+;000000014066D471 | 48:8378 18 00       | cmp qword ptr ds:[rax+18],0            
+;000000014066D476 | 0F85 F4080000       | jne re3_dump.14066DD70                 
+;000000014066D47C | 0F1086 90000000     | movups xmm0,xmmword ptr ds:[rsi+90]    
+;000000014066D483 | 0F1187 A0000000     | movups xmmword ptr ds:[rdi+A0],xmm0    
 	cmp byte ptr [g_cameraEnabled], 1
 	je exit
 originalCode:
-	movss dword ptr [rsi+00000080h],xmm0
-	movss dword ptr [rsi+00000084h],xmm1
-	movss dword ptr [rsi+00000088h],xmm2
+	movss dword ptr [rdi+00000080h],xmm0
+	movss dword ptr [rdi+00000084h],xmm1
+	movss dword ptr [rdi+00000088h],xmm2
 exit:
 	jmp qword ptr [_cameraWrite4InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite4Interceptor ENDP
@@ -295,11 +355,24 @@ cameraWrite5Interceptor PROC
 ;000000014065A24C | F3:0F1070 30      | movss xmm6,dword ptr [rax+30]     
 ;000000014065A251 | F3:0F1078 34      | movss xmm7,dword ptr [rax+34]     
 ;000000014065A256 | 8B40 38           | mov eax,dword ptr [rax+38]        
-	movups xmm0, xmmword ptr [rbx+00000090h]
+;// Update august 2020
+;000000014066D46D | 48:8B43 50        | mov rax,qword ptr ds:[rbx+50]        
+;000000014066D471 | 48:8378 18 00     | cmp qword ptr ds:[rax+18],0          
+;000000014066D476 | 0F85 F4080000     | jne re3_dump.14066DD70               
+;000000014066D47C | 0F1086 90000000   | movups xmm0,xmmword ptr ds:[rsi+90]  	<< INTERCEPT HERE
+;000000014066D483 | 0F1187 A0000000   | movups xmmword ptr ds:[rdi+A0],xmm0  	<< WRITE Quaternion
+;000000014066D48A | 48:8B43 50        | mov rax,qword ptr ds:[rbx+50]        	<< CONTINUE HERE
+;000000014066D48E | 48:8378 18 00     | cmp qword ptr ds:[rax+18],0          
+;000000014066D493 | 0F85 D7080000     | jne re3_dump.14066DD70               
+;000000014066D499 | 48:8B86 B8000000  | mov rax,qword ptr ds:[rsi+B8]        
+;000000014066D4A0 | 48:85C0           | test rax,rax                         
+;000000014066D4A3 | 0F84 DE020000     | je re3_dump.14066D787                
+;000000014066D4A9 | F3:0F1078 30      | movss xmm7,dword ptr ds:[rax+30]     
+	movups xmm0, xmmword ptr [rsi+00000090h]
 	cmp byte ptr [g_cameraEnabled], 1
 	je exit
 originalCode:
-	movups xmmword ptr [rsi+000000A0h],xmm0
+	movups xmmword ptr [rdi+000000A0h],xmm0
 exit:
 	jmp qword ptr [_cameraWrite5InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite5Interceptor ENDP
@@ -340,7 +413,26 @@ cameraWrite6Interceptor PROC
 ;000000014065A42E | 48:8B47 50              | mov rax,qword ptr [rdi+50]           	<< CONTINUE HERE
 ;000000014065A432 | 48:8378 18 00           | cmp qword ptr [rax+18],0             
 ;000000014065A437 | 0F85 5C060000           | jne re3_dump.14065AA99                  
-;000000014065A43D | 4C:8D4D 80              | lea r9,qword ptr [rbp-80]            
+;000000014065A43D | 4C:8D4D 80              | lea r9,qword ptr [rbp-80]         
+;// update august 2020
+;000000014066D622 | 48:8B43 50              | mov rax,qword ptr ds:[rbx+50]           
+;000000014066D626 | 48:8378 18 00           | cmp qword ptr ds:[rax+18],0             
+;000000014066D62B | 0F85 1B070000           | jne re3_dump.14066DD4C                  
+;000000014066D631 | F3:0F107424 40          | movss xmm6,dword ptr ss:[rsp+40]        
+;000000014066D637 | F344:0F104424 44        | movss xmm8,dword ptr ss:[rsp+44]        
+;000000014066D63E | 44:0F299424 00010000    | movaps xmmword ptr ss:[rsp+100],xmm10   
+;000000014066D647 | F344:0F105424 48        | movss xmm10,dword ptr ss:[rsp+48]       
+;000000014066D64E | F3:0F11B7 A0000000      | movss dword ptr ds:[rdi+A0],xmm6        << INTERCEPT HERE << Write Qx
+;000000014066D656 | F344:0F1187 A4000000    | movss dword ptr ds:[rdi+A4],xmm8        << Write Qy
+;000000014066D65F | F344:0F1197 A8000000    | movss dword ptr ds:[rdi+A8],xmm10       << Write Qz
+;000000014066D668 | 44:0F299C24 F0000000    | movaps xmmword ptr ss:[rsp+F0],xmm11    
+;000000014066D671 | F344:0F105C24 4C        | movss xmm11,dword ptr ss:[rsp+4C]       
+;000000014066D678 | F344:0F119F AC000000    | movss dword ptr ds:[rdi+AC],xmm11       << Write Qw
+;000000014066D681 | 48:8B43 50              | mov rax,qword ptr ds:[rbx+50]           << CONTINUE HERE
+;000000014066D685 | 48:8378 18 00           | cmp qword ptr ds:[rax+18],0             
+;000000014066D68A | 0F85 AA060000           | jne re3_dump.14066DD3A                  
+;000000014066D690 | 4C:8D4D 80              | lea r9,qword ptr ss:[rbp-80]            
+;000000014066D694 | F3:0F1145 90            | movss dword ptr ss:[rbp-70],xmm0        
 	cmp byte ptr [g_cameraEnabled], 1
 	jne originalCode
 noWrites:
@@ -348,12 +440,12 @@ noWrites:
 	movss xmm11,dword ptr [rsp+4Ch]   
 	jmp exit
 originalCode:
-	movss dword ptr [rsi+0A0h],xmm8    
-	movss dword ptr [rsi+0A4h],xmm9    
-	movss dword ptr [rsi+0A8h],xmm10   
+	movss dword ptr [rdi+0A0h],xmm6    
+	movss dword ptr [rdi+0A4h],xmm8    
+	movss dword ptr [rdi+0A8h],xmm10   
 	movaps xmmword ptr [rsp+0F0h],xmm11
 	movss xmm11,dword ptr [rsp+4Ch]   
-	movss dword ptr [rsi+0ACh],xmm11   
+	movss dword ptr [rdi+0ACh],xmm11   
 exit:
 	jmp qword ptr [_cameraWrite6InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite6Interceptor ENDP

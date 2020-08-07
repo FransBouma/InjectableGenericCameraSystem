@@ -301,7 +301,6 @@ namespace IGCS::Input
 				// say we handled it, so the host won't see it
 				toReturn = true;
 				break;
-			break;
 		}
 
 		if (!g_cameraEnabled && !OverlayControl::isMainMenuVisible())

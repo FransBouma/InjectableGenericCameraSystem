@@ -30,6 +30,7 @@
 #include "GameConstants.h"
 #include "GameImageHooker.h"
 #include <map>
+
 #include "OverlayConsole.h"
 #include "CameraManipulator.h"
 
@@ -44,6 +45,7 @@ extern "C" {
 	void timestopReadInterceptor();
 	void todWriteInterceptor();
 	void todReadInterceptor();
+	void getScreenWidthInterceptor();
 }
 
 // external addresses used in asm.
@@ -54,6 +56,7 @@ extern "C" {
 	LPBYTE _timestopReadInterceptionContinue = nullptr;
 	LPBYTE _todWriteInterceptionContinue = nullptr;
 	LPBYTE _todReadInterceptionContinue = nullptr;
+	LPBYTE _getScreenWidthInterceptionContinue = nullptr;
 }
 
 
@@ -63,11 +66,12 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	{
 		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "48 8B 41 08 48 85 C0 74 05 48 83 C0 10 C3 48 8D 05", 1);	
 		aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE1_INTERCEPT_KEY, "48 83 EC 48 0F 29 74 24 30 F3 41 0F 10 70 08 0F 29 7C 24 20 F3 41 0F 10 38 44 0F 29 44 24 10", 1);
-		aobBlocks[FOV_WRITE_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE_INTERCEPT_KEY, "F3 0F 11 B3 D4 02 00 00 F3 0F 59 35 B1 A2 6C 00 0F 28 C6", 1);
+		aobBlocks[FOV_WRITE_INTERCEPT_KEY] = new AOBBlock(FOV_WRITE_INTERCEPT_KEY, "F3 0F11 B3 D4 02 00 00 F3 0F 59 35 ?? ?? ?? ?? 0F 28 C6", 1);
 		aobBlocks[LOD_READ_INTERCEPT_KEY] = new AOBBlock(LOD_READ_INTERCEPT_KEY, "F3 0F 10 88 30 02 00 00 F3 0F 59 4A 28 F3 0F 59 C9 F3 0F 5E C1 F3 41 0F 11 86 84 01 00 00", 1);
-		aobBlocks[TOD_WRITE_INTERCEPT_KEY] = new AOBBlock(TOD_WRITE_INTERCEPT_KEY, "48 85 C0 74 1C F3 0F 11 30 8B 43 08 83 F8 FE 72 10 E8 14 AA DD FF 48 8B D3", 1);
+		aobBlocks[TOD_WRITE_INTERCEPT_KEY] = new AOBBlock(TOD_WRITE_INTERCEPT_KEY, "48 85 C0 74 1C F3 0F 11 30 8B 43 08 83 F8 FE 72 10 E8 ?? ?? ?? ?? 48 8B D3", 1);
 		aobBlocks[TIMESTOP_READ_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_READ_INTERCEPT_KEY, "48 8B 41 08 48 05 28 0F 00 00 80 78 30 00 74 09 80 78 48 00", 1);
 		aobBlocks[HUD_RENDER_INTERCEPT_KEY] = new AOBBlock(HUD_RENDER_INTERCEPT_KEY, "40 53 48 83 EC 40 0F 29 74 24 30 0F 29 7C 24 20 48 8B D9 0F 28 FB", 1);
+		aobBlocks[GETSCREENWIDTH_INTERCEPT_KEY] = new AOBBlock(GETSCREENWIDTH_INTERCEPT_KEY, "48 8B 41 08 48 8B 88 C0 00 00 00 8B 01 C3", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -103,6 +107,9 @@ namespace IGCS::GameSpecific::InterceptorHelper
 
 	void setCameraStructInterceptorHook(map<string, AOBBlock*> &aobBlocks)
 	{
+		// screen width interceptor is always ok
+		GameImageHooker::setHook(aobBlocks[GETSCREENWIDTH_INTERCEPT_KEY], 0x0E, &_getScreenWidthInterceptionContinue, &getScreenWidthInterceptor);
+		// then wait for the camera
 		GameImageHooker::setHook(aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY], 0x0E, &_cameraStructInterceptionContinue, &cameraStructInterceptor);
 	}
 
@@ -155,17 +162,16 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void toggleFoVWriteState(map<string, AOBBlock*> &aobBlocks, bool enabled)
 	{
 		// fov write 
-		//engine_x64_rwdi.dll+11F573 - F3 0F11 B3 D4020000   - movss [rbx+000002D4],xmm6						<< WRITE FOV
-		//engine_x64_rwdi.dll+11F57B - F3 0F59 35 B1A26C00   - mulss xmm6,[engine_x64_rwdi.dll+7E9834]
-		//engine_x64_rwdi.dll+11F583 - 0F28 C6               - movaps xmm0,xmm6
-		//engine_x64_rwdi.dll+11F586 - E8 DB606900           - call engine_x64_rwdi.dll+7B5666
-		//engine_x64_rwdi.dll+11F58B - 48 8B 05 76A69000     - mov rax,[engine_x64_rwdi.dll+A29C08]
-		//engine_x64_rwdi.dll+11F592 - F3 0F59 C7            - mulss xmm0,xmm7
-
+		//engine_x64_rwdi.dll+11EEAD - FF 50 48              - call qword ptr [rax+48]
+		//engine_x64_rwdi.dll+11EEB0 - 0F28 F0               - movaps xmm6,xmm0
+		//engine_x64_rwdi.dll+11EEB3 - F3 0F11 B3 D4020000   - movss [rbx+000002D4],xmm6					<< WRITE FOV
+		//engine_x64_rwdi.dll+11EEBB - F3 0F59 35 01CB6C00   - mulss xmm6,[engine_x64_rwdi.dll+7EB9C4]
+		//engine_x64_rwdi.dll+11EEC3 - 0F28 C6               - movaps xmm0,xmm6
+		//engine_x64_rwdi.dll+11EEC6 - E8 8B7B6900           - call engine_x64_rwdi.dll+7B6A56
 		if (enabled)
 		{
 			// enable writes
-			BYTE originalStatementBytes[8] = { 0xF3, 0x0F, 0x11, 0xB3, 0xD4, 0x02, 0x00, 0x00 };			// engine_x64_rwdi.dll+11F573 - F3 0F11 B3 D4020000   - movss [rbx+000002D4],xmm6
+			BYTE originalStatementBytes[8] = { 0xF3, 0x0F, 0x11, 0xB3, 0xD4, 0x02, 0x00, 0x00 };			// engine_x64_rwdi.dll+11EEB3 - F3 0F11 B3 D4020000   - movss [rbx+000002D4],xmm6
 			GameImageHooker::writeRange(aobBlocks[FOV_WRITE_INTERCEPT_KEY], originalStatementBytes, 8);
 		}
 		else

@@ -37,6 +37,7 @@ PUBLIC lodReadInterceptor
 PUBLIC timestopReadInterceptor
 PUBLIC todWriteInterceptor
 PUBLIC todReadInterceptor
+PUBLIC getScreenWidthInterceptor
 
 ;---------------------------------------------------------------
 
@@ -48,6 +49,7 @@ EXTERN g_cameraStructAddress: qword
 EXTERN g_lodStructAddress: qword
 EXTERN g_timestopStructAddress: qword
 EXTERN g_todStructAddress: qword
+EXTERN g_resolutionStructAddress: qword			; defined in UniversalD3D11Hooker.cpp
 ;---------------------------------------------------------------
 
 ;---------------------------------------------------------------
@@ -58,6 +60,7 @@ EXTERN _lodReadInterceptionContinue: qword
 EXTERN _timestopReadInterceptionContinue: qword
 EXTERN _todWriteInterceptionContinue: qword
 EXTERN _todReadInterceptionContinue: qword
+EXTERN _getScreenWidthInterceptionContinue: qword
 
 .data
 
@@ -235,5 +238,18 @@ exit:
 timestopReadInterceptor ENDP
 
 
-
+getScreenWidthInterceptor PROC
+;engine_x64_rwdi.dll+232D80 - 48 8B 41 08           - mov rax,[rcx+08]				<< INTERCEPT HERE
+;engine_x64_rwdi.dll+232D84 - 48 8B 88 C0000000     - mov rcx,[rax+000000C0]
+;engine_x64_rwdi.dll+232D8B - 8B 01                 - mov eax,[rcx]
+;engine_x64_rwdi.dll+232D8D - C3                    - ret							
+;engine_x64_rwdi.dll+232D8E - CC                    - int 3							<< CONTINUE HERE. That's fine, the 'ret' is included in our code which will return to the caller.
+;engine_x64_rwdi.dll+232D8F - CC                    - int 3 
+	mov rax,[rcx+08h]		
+	mov rcx,[rax+000000C0h]
+	mov [g_resolutionStructAddress], rcx
+	mov eax,[rcx]
+	ret		
+	; no jump back as that's not needed.
+getScreenWidthInterceptor ENDP
 END
