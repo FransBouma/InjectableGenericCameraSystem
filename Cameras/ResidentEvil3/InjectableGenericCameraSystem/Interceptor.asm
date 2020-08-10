@@ -436,7 +436,6 @@ cameraWrite6Interceptor PROC
 	cmp byte ptr [g_cameraEnabled], 1
 	jne originalCode
 noWrites:
-	movaps xmmword ptr [rsp+0F0h],xmm11
 	movss xmm11,dword ptr [rsp+4Ch]   
 	jmp exit
 originalCode:
