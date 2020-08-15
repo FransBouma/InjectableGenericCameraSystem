@@ -74,7 +74,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	{
 		aobBlocks[ANTI_CHEAT_INTERCEPT_KEY] = new AOBBlock(ANTI_CHEAT_INTERCEPT_KEY, "48 ?? ?? 49 ?? ?? ?? ?? 0F 94 C1 48 ?? ?? ?? 00 0F 85 ?? ?? ?? ?? 84 C9 | 75", 6);
 		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "8B 40 38 89 82 B4 00 00 00 48 83 79 18 00", 1);
-		aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE1_INTERCEPT_KEY, "F3 44 0F 10 48 34 | 8B 40 38 89 87 B4 00 00 00 48 8B 43 50", 1);
+		aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE1_INTERCEPT_KEY, "F3 44 0F 10 48 34 8B 40 38 89 87 B4 00 00 00", 1);
 		aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE2_INTERCEPT_KEY, "F2 0F 5A C0 F3 0F 11 87 B4 00 00 00 48 8B 43 50 48 8B 48 18", 1);
 		aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE3_INTERCEPT_KEY, "F3 0F 10 44 24 50 F3 0F 10 4C 24 54 F3 0F 10 54 24 58 | F3 0F 11 87 80 00 00 00", 1); 
 		aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE4_INTERCEPT_KEY, "48 83 78 18 00 0F 85 33 09 00 00 F3 0F 10 86 80 00 00 00  F3 0F 10 8E 84 00 00 00 F3 0F 10 96 88 00 00 00 | F3 0F 11 87 80 00 00 00", 1); // broken
@@ -116,12 +116,12 @@ namespace IGCS::GameSpecific::InterceptorHelper
 
 	void setPostCameraStructHooks(map<string, AOBBlock*> &aobBlocks)
 	{
-		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY], 0x12, &_cameraWrite1InterceptionContinue, &cameraWrite1Interceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY], 0x0F, &_cameraWrite1InterceptionContinue, &cameraWrite1Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE2_INTERCEPT_KEY], 0x10, &_cameraWrite2InterceptionContinue, &cameraWrite2Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE3_INTERCEPT_KEY], 0x18, &_cameraWrite3InterceptionContinue, &cameraWrite3Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE4_INTERCEPT_KEY], 0x18, &_cameraWrite4InterceptionContinue, &cameraWrite4Interceptor);
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE5_INTERCEPT_KEY], 0x0E, &_cameraWrite5InterceptionContinue, &cameraWrite5Interceptor);
-		//GameImageHooker::setHook(aobBlocks[CAMERA_WRITE6_INTERCEPT_KEY], 0x33, &_cameraWrite6InterceptionContinue, &cameraWrite6Interceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE6_INTERCEPT_KEY], 0x33, &_cameraWrite6InterceptionContinue, &cameraWrite6Interceptor);
 		GameImageHooker::setHook(aobBlocks[TIMESTOP_READ_INTERCEPT_KEY], 0x13, &_timestopReadInterceptionContinue, &timestopReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[RESOLUTION_SCALE_INTERCEPT_KEY], 0x16, &_resolutionScaleReadInterceptionContinue, &resolutionScaleReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[DISPLAYTYPE_INTERCEPT_KEY], 0x11, &_displayTypeInterceptionContinue, &displayTypeInterceptor);

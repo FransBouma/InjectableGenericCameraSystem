@@ -137,28 +137,28 @@ cameraWrite1Interceptor PROC
 ; 000000014065A268 | 0F85 6A080000        | jne re3_dump.14065AAD8            
 ; 000000014065A26E | F3:0F1083 A0000000   | movss xmm0,dword ptr [rbx+A0]  
 ; 000000014065A276 | F3:0F108B A4000000   | movss xmm1,dword ptr [rbx+A4]  
-; Update August 2020, change intercept block so we avoid the xmm* loads which change with every build.
+; Update August 2020, it's tempting to change the block to avoid teh xmm* reads, but a jmp lands below the fov write. 
+; so we can't use that. 
 ; 000000014066D499 | 48:8B86 B8000000    | mov rax,qword ptr ds:[rsi+B8]      
 ; 000000014066D4A0 | 48:85C0             | test rax,rax                       
 ; 000000014066D4A3 | 0F84 DE020000       | je re3_dump.14066D787              
-; 000000014066D4A9 | F3:0F1078 30        | movss xmm7,dword ptr ds:[rax+30]   
-; 000000014066D4AE | F344:0F1048 34      | movss xmm9,dword ptr ds:[rax+34]
-; 000000014066D4B4 | 8B40 38             | mov eax,dword ptr ds:[rax+38]	   	<< INTERCEPT HERE   	
+; 000000014066D4A9 | F3:0F1078 30        | movss xmm7,dword ptr ds:[rax+30]      
+; 000000014066D4AE | F344:0F1048 34      | movss xmm9,dword ptr ds:[rax+34]		<< INTERCEPT HERE
+; 000000014066D4B4 | 8B40 38             | mov eax,dword ptr ds:[rax+38]	   	  	
 ; 000000014066D4B7 | 8987 B4000000       | mov dword ptr ds:[rdi+B4],eax 	  	<< WRITE FOV
-; 000000014066D4BD | 48:8B43 50          | mov rax,qword ptr ds:[rbx+50]      	 
+; 000000014066D4BD | 48:8B43 50          | mov rax,qword ptr ds:[rbx+50]      	<< CONTINUE HERE << JMP LANDS HERE, can't use this. 
 ; 000000014066D4C1 | 48:8378 18 00       | cmp qword ptr ds:[rax+18],0        
-; 000000014066D4C6 | 0F85 A4080000       | jne re3_dump.14066DD70               << CONTINUE HERE 
+; 000000014066D4C6 | 0F85 A4080000       | jne re3_dump.14066DD70               
 ; 000000014066D4CC | F3:0F1086 A0000000  | movss xmm0,dword ptr ds:[rsi+A0]   
 ; 000000014066D4D4 | F3:0F108E A4000000  | movss xmm1,dword ptr ds:[rsi+A4]   
 ; 000000014066D4DC | F3:0F1096 A8000000  | movss xmm2,dword ptr ds:[rsi+A8]   
+	movss xmm9,dword ptr [rax+34h]
 	mov eax,dword ptr [rax+38h]
 	cmp byte ptr [g_cameraEnabled], 1
 	je exit
 originalCode:
 	mov dword ptr [rdi+0B4h],eax 
 exit:
-	mov rax,qword ptr [rbx+50h] 
-	cmp qword ptr [rax+18h],0   
 	jmp qword ptr [_cameraWrite1InterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 cameraWrite1Interceptor ENDP
 
