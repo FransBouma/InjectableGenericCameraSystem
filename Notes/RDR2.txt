@@ -114,7 +114,7 @@ RDR2.exe+2E1AAAB - F3 0F59 15 3D294500   - mulss xmm2,[RDR2.exe+326D3F0] { (0.02
 RDR2.exe+2E1AAB3 - 0F5B C9               - cvtdq2ps xmm1,xmm1
 
 // Pause
-// Use AOB: 8A 05 ?? ?? ?? ?? 88 05 ?? ?? ?? ?? 0F 85 ?? 02 00 00 40 38 3D
+// Use AOB: 8A 05 ?? ?? ?? ?? 88 05 ?? ?? ?? ?? 0F 85 ?? ?? 00 00 40 38 3D ?? ?? ?? ?? 74
 RDR2.exe+2C89A5 - 44 0F29 40 C8         - movaps [rax-38],xmm8
 RDR2.exe+2C89AA - 44 0F29 48 B8         - movaps [rax-48],xmm9
 RDR2.exe+2C89AF - 8A 05 83C4A803        - mov al,[RDR2.exe+3D54E38] { (0) }
@@ -133,6 +133,25 @@ RDR2.exe+2C89F9 - 66 44 39 0D 87F85403  - cmp [RDR2.exe+3818288],r9w { (0) }
 RDR2.exe+2C8A01 - 8A 05 91F85403        - mov al,[RDR2.exe+3818298] { (0) }
 RDR2.exe+2C8A07 - 8A 15 5BF85403        - mov dl,[RDR2.exe+3818268] { (0) }
 RDR2.exe+2C8A0D - 40 88 3D 24C4A803     - mov [RDR2.exe+3D54E38],dil { (0) }
+// patch aug 2020
+00007FF798E21B7C | 8A05 1EBDB403         | mov     al,byte ptr ds:[7FF79C96D8A0]   
+00007FF798E21B82 | 8805 19BDB403         | mov     byte ptr ds:[7FF79C96D8A1],al   
+00007FF798E21B88 | 0F85 26040000         | jne     rdr2_dump.7FF798E21FB4          
+00007FF798E21B8E | 40:383D 28816105      | cmp     byte ptr ds:[7FF79E439CBD],dil  		<< If 1, game pauses. Photomode uses the BE value next to it tho so we'll use that one in the table
+00007FF798E21B95 | 74 0D                 | je      rdr2_dump.7FF798E21BA4          
+00007FF798E21B97 | 40:383D 27816105      | cmp     byte ptr ds:[7FF79E439CC5],dil  
+00007FF798E21B9E | 0F84 10040000         | je      rdr2_dump.7FF798E21FB4          
+00007FF798E21BA4 | 40:383D 14816105      | cmp     byte ptr ds:[7FF79E439CBF],dil  
+00007FF798E21BAB | 0F85 03040000         | jne     rdr2_dump.7FF798E21FB4          
+00007FF798E21BB1 | 40:383D 09816105      | cmp     byte ptr ds:[7FF79E439CC1],dil  
+00007FF798E21BB8 | 0F85 F6030000         | jne     rdr2_dump.7FF798E21FB4          
+00007FF798E21BBE | 44:0FB715 B21F6003    | movzx   r10d,word ptr ds:[7FF79C423B78] 
+00007FF798E21BC6 | 6644:3915 CA1F6003    | cmp     word ptr ds:[7FF79C423B98],r10w 
+00007FF798E21BCE | F3:0F1015 AA1F6003    | movss   xmm2,dword ptr ds:[7FF79C423B80]
+00007FF798E21BD6 | F3:0F100D 9E1F6003    | movss   xmm1,dword ptr ds:[7FF79C423B7C]
+00007FF798E21BDE | 40:883D BBBCB403      | mov     byte ptr ds:[7FF79C96D8A0],dil  
+00007FF798E21BE5 | 74 1C                 | je      rdr2_dump.7FF798E21C03          
+
 
 // Res & AR
 RDR2.exe+2638499 - 8B 05 11A14E01        - mov eax,[RDR2.exe+3B225B0] { (1920) }		<< Current Width
