@@ -1,3 +1,353 @@
+// Script to obtain object info about an object that has a vtable at the start. Also prints inheritance hierarchy
+function DisplayFullClassName(address, currentName)
+  if input==0 then
+     return
+  end
+  local currentAddress = address
+  local className = readString( readQword( currentAddress + 0x18))
+  currentAddress = readQword(address+0x40)
+  if string.len(currentName) > 0 then
+    className = currentName .. "->" .. className
+  end
+  if currentAddress==0 then
+     -- display full name
+     print( string.format( "Class name:\t\t%s", className ) )
+     return
+  end
+  DisplayFullClassName(currentAddress, className)
+end
+
+function GetName( address )
+  local currentAddress = readQword(address)
+  currentAddress = currentAddress + 0x38
+  currentAddress = readQword( currentAddress )
+  if readBytes( currentAddress, 1 ) == 0xE9 then
+    currentAddress = currentAddress + readInteger( currentAddress + 0x1, true ) + 0x5
+  end
+  currentAddress = currentAddress + readInteger( currentAddress + 0x3, true ) + 0x7
+  currentAddress = readQword( currentAddress )
+  print( string.format("Struct address:\t\t0x%X", address))
+  DisplayFullClassName(currentAddress, "")
+  print( string.format("RTTIDataCompound:\t\t0x%X", currentAddress))
+  print( string.format( "Object Hash:\t\t0x%X", readInteger(currentAddress + 0x24)))
+  print("-----------------------------------")
+end
+
+GetName( 0x00001B0152AC340)
+----------------
+
+// WorldGraphicData
+0x40: 		ClimateSettings
+0x2B8:		VolumetricCloudSettings
+0x430:		CloudSettings
+0x550:		SunLight
+0x740:		LightCommonShadowSettings
+	0x20:	Sunlight color + alpha on sky
+	0x30:	Sunlight strength
+	0x100:	Sunlight color on ground
+0x930: 		PostEffects
+	0x10:	SSAOSettings
+	0x30:	SSBCSettings
+	0x58:	DOAOSettings
+	0x78:	HDRSettings
+	0x108:	ColorGradingSettings
+	0x140:	EagleSenseSettings
+	0x290:	AssassinFilterSettings
+	0x2D0:	DeconstructionSettings
+	0x310:	BlurredMaskSettings
+	0x480:	RadialBlurSettings
+	0x4d0:	SelfOverlaySettings
+	0x500:	FadeEffectSettings
+	0x540:	GlitcherSettings
+	0x5e0:	DistortionSettings
+0xE68:	World pointer
+0xFA0:	TextureSelector
+0x1010:	MirageSettings
+0x10C0:	WaterDistortionSettings
+0x1210:	DepthOfFieldSettings
+0x1280:	BloomSettings
+0x12C0:	ScreenshotOverlaySettings
+0x1310:	MotionSmoothSettings
+0x1328:	ChromaticAbberationSettings
+0x1358:	AAFilterSettings
+0x1390:	MotionBlurSettings
+0x13b0:	TemporalBlurSettings
+0x13D0:	DistrictOverlaySettings
+0x1410:	PhotoFilterSettings
+0x1438:	WatermarkSettings
+0x1448:	LensFlareSettings
+0x1470:	OutlineSettings
+0x14b0:	ShadowSettings
+	0x1678:	Shadow resolution self shadow?
+	0x1688:	A blur strength on shadow
+	0x18c8: Another blur strength on all shadows
+0x18D0:	FarShadowSettings
+0x1980:	VolumetricFogSettings
+	0x08:	DenseFogSettings
+0x1A38: GlobalWindSettings
+0x1A40:	GlobalLightingScaleCurve
+0x1A58:	World pointer
+0x1a60:	VisualAmbienceBlendables
+0x1A70:	VisualAmbienceControllables
+0x1A80:	ClimateControllables
+0x1Ab0:	LayeredSkyControllables
+0x1ba0:	ShadowsControllables
+0x1BB8:		Pointer to list of WorldTransitionPortal instances
+0x1BC0:	PostEffectsControllables
+0x1BD0:	ColorGradingControllables
+0x1cc8:	LensFlareControllables
+0x1ce0:	VolumetricFogControllables
+0x1CF0:	FogDefaultPresetParams
+0x1D70:	FogPresetParams
+0x1dd0:	DenseFogControllables
+0x1E68:	PhotoMode
+0x1F08:	CollectionSettings
+0x1F60:	GrassForceSettings
+0x20a0: ShadowsSettings
+
+World
+0x90:	Entity pointer
+0xB0:	Pointer to list of WorldTransitionPortal objects
+0xB8:	Pointer to list of what looks like most engine objects. 3 qwords per entry, first is the pointer See dump lua script below.
+	
+0xC8:	WorldGraphicData pointer
+0xD0:	FXManager pointer
+0xD8:	ContactManager pointer
+0xE0:	EventListener instance
+0x108:	RegionLayoutManager pointer
+0x128:	Table of pointers entries in a larger table, the pointers point to a 3 qword struct in that table, the first being the pointer to the managed object. Mostly Entity instances. 
+
+Entity
+0x9B:	Pointer to list of objects related to Entity
+0x120:	Pointer to texture structures
+
+
+
+// Dumping all objects in list in World 
+function DisplayFullClassName(address, currentName)
+  if input==0 then
+     return
+  end
+  local currentAddress = address
+  local className = readString( readQword( currentAddress + 0x18))
+  currentAddress = readQword(address+0x40)
+  if string.len(currentName) > 0 then
+    className = currentName .. "->" .. className
+  end
+  if currentAddress==nil or currentAddress==0 then
+     return className
+  end
+  return DisplayFullClassName(currentAddress, className)
+end
+
+function GetName( address, offset )
+  if address==nil or address==0 then
+     return
+  end
+  local currentAddress = readQword(address)
+  if currentAddress==nil or currentAddress==0 then
+     return
+  end
+  currentAddress = currentAddress + 0x38
+  currentAddress = readQword( currentAddress )
+  if currentAddress==nil or currentAddress==0 then
+     return
+  end
+  if readBytes( currentAddress, 1 ) == 0xE9 then
+    currentAddress = currentAddress + readInteger( currentAddress + 0x1, true ) + 0x5
+  end
+  currentAddress = currentAddress + readInteger( currentAddress + 0x3, true ) + 0x7
+  if currentAddress==nil or currentAddress==0 then
+     return
+  end
+  currentAddress = readQword( currentAddress )
+  if currentAddress==nil or currentAddress==0 then
+     return
+  end
+  local className = DisplayFullClassName(currentAddress, "")
+  return string.format("%07d\t| 0x%X\t| 0x%X\t| 0x%010X\t| %s", offset, address, currentAddress, readInteger(currentAddress + 0x24), className)
+end
+
+local tableStart = 0x233A8EB0000
+local index = 0
+local lines = createStringList()
+lines.add("Offset  | Struct addr\t| RTTI address\t\t| Object Hash\t| Name")
+lines.add("--------------------------------------------------------------------------------------")
+print("starting...")
+repeat
+      currentStruct = readQword(tableStart + (index * 0x18))
+      if currentStruct~=0 and currentStruct ~= nil then
+         lines.add(GetName(currentStruct, index))
+      end
+      index=index+1
+      if index % 100 == 0 then
+         print(index)
+      end
+until (tableStart + (index * 0x18)) > 0x233A8F10000
+lines.saveToFile("c:\\temp\\testdump.txt")
+print("done")
+
+--- 
+Dump a table of pointers to pointer structs in a bigger table:
+
+function DisplayFullClassName(address, currentName)
+  if input==0 then
+     return
+  end
+  local currentAddress = address
+  local className = readString( readQword( currentAddress + 0x18))
+  currentAddress = readQword(address+0x40)
+  if string.len(currentName) > 0 then
+    className = currentName .. "->" .. className
+  end
+  if currentAddress==nil or currentAddress==0 then
+     return className
+  end
+  return DisplayFullClassName(currentAddress, className)
+end
+
+function GetName( address, offset )
+  if address==nil or address==0 then
+     return
+  end
+  local currentAddress = readQword(address)
+  if currentAddress==nil or currentAddress==0 then
+     return
+  end
+  currentAddress = currentAddress + 0x38
+  currentAddress = readQword( currentAddress )
+  if currentAddress==nil or currentAddress==0 then
+     return
+  end
+  if readBytes( currentAddress, 1 ) == 0xE9 then
+    currentAddress = currentAddress + readInteger( currentAddress + 0x1, true ) + 0x5
+  end
+  currentAddress = currentAddress + readInteger( currentAddress + 0x3, true ) + 0x7
+  if currentAddress==nil or currentAddress==0 then
+     return
+  end
+  currentAddress = readQword( currentAddress )
+  if currentAddress==nil or currentAddress==0 then
+     return
+  end
+  local className = DisplayFullClassName(currentAddress, "")
+  return string.format("%07d\t| 0x%X\t| 0x%X\t| 0x%010X\t| %s", offset, address, currentAddress, readInteger(currentAddress + 0x24), className)
+end
+
+local tableStart = 0x234789D0000
+local index = 0
+local lines = createStringList()
+lines.add("Offset  | Struct addr\t| RTTI address\t\t| Object Hash\t| Name")
+lines.add("--------------------------------------------------------------------------------------")
+print("starting...")
+repeat
+      currentStruct = readQword(tableStart + (index * 0x8))
+      if currentStruct~=0 and currentStruct ~= nil then
+         lines.add(GetName(readQword(currentStruct), index))
+      end
+      index=index+1
+      if index % 100 == 0 then
+         print(index)
+      end
+until currentStruct == 0
+lines.saveToFile("c:\\temp\\acodyssey_table3.txt")
+print("done")
+
+----
+
+
+ACOdyssey.exe+A4F8087 - 48 8B AC 24 80000000  - mov rbp,[rsp+00000080]
+ACOdyssey.exe+A4F808F - 48 85 C0              - test rax,rax
+ACOdyssey.exe+A4F8092 - 74 09                 - je ACOdyssey.exe+A4F809D
+ACOdyssey.exe+A4F8094 - 80 B8 4C200000 00     - cmp byte ptr [rax+0000204C],00 { 0 }				<< RAX points to WorldGraphicData
+ACOdyssey.exe+A4F809B - 75 25                 - jne ACOdyssey.exe+A4F80C2
+ACOdyssey.exe+A4F809D - 48 8B 05 849D4AFB     - mov rax,[ACOdyssey.exe+59A1E28] { (17D55122DE0) }
+ACOdyssey.exe+A4F80A4 - 8B 88 90000000        - mov ecx,[rax+00000090]
+ACOdyssey.exe+A4F80AA - C1 E9 08              - shr ecx,08 { 8 }
+
+// LOD stuf
+ACOdyssey.exe+FF11EC2 - 66 66 66 66 66 2E 0F1F 84 00 00000000  - nop word ptr cs:[rax+rax+00000000]
+ACOdyssey.exe+FF11ED0 - 48 83 EC 38           - sub rsp,38 { 56 }
+ACOdyssey.exe+FF11ED4 - 0F29 74 24 20         - movaps [rsp+20],xmm6
+ACOdyssey.exe+FF11ED9 - 0F28 F0               - movaps xmm6,xmm0
+ACOdyssey.exe+FF11EDC - 84 D2                 - test dl,dl
+ACOdyssey.exe+FF11EDE - 74 25                 - je ACOdyssey.exe+FF11F05
+ACOdyssey.exe+FF11EE0 - 4D 85 C0              - test r8,r8
+ACOdyssey.exe+FF11EE3 - 74 20                 - je ACOdyssey.exe+FF11F05
+ACOdyssey.exe+FF11EE5 - E8 7696D2F0           - call ACOdyssey.exe+C3B560
+ACOdyssey.exe+FF11EEA - F3 0F10 88 08010000   - movss xmm1,[rax+00000108]				>> LOAD char lod multiplier. Set to 0 for no scaling.
+ACOdyssey.exe+FF11EF2 - F3 0F59 C9            - mulss xmm1,xmm1
+ACOdyssey.exe+FF11EF6 - F3 0F59 CE            - mulss xmm1,xmm6
+ACOdyssey.exe+FF11EFA - 0F28 F1               - movaps xmm6,xmm1
+ACOdyssey.exe+FF11EFD - F3 0F5F 35 4BC914F4   - maxss xmm6,[ACOdyssey.exe+405E850] { (0,09) }
+ACOdyssey.exe+FF11F05 - F3 0F10 15 A3AE12F4   - movss xmm2,[ACOdyssey.exe+403CDB0] { (Nan) }
+ACOdyssey.exe+FF11F0D - 48 8D 15 3C4C03F5     - lea rdx,[ACOdyssey.exe+4F46B50] { (2139095039) }
+ACOdyssey.exe+FF11F14 - F3 0F10 1D B86F13F4   - movss xmm3,[ACOdyssey.exe+4048ED4] { (0,00) }
+ACOdyssey.exe+FF11F1C - B1 05                 - mov cl,05 { 5 }
+ACOdyssey.exe+FF11F1E - 66 90                 - nop 2
+ACOdyssey.exe+FF11F20 - 48 0FBE C1            - movsx rax,cl
+ACOdyssey.exe+FF11F24 - F3 0F10 0C 82         - movss xmm1,[rdx+rax*4]
+ACOdyssey.exe+FF11F29 - 0F2F F1               - comiss xmm6,xmm1
+ACOdyssey.exe+FF11F2C - 72 25                 - jb ACOdyssey.exe+FF11F53
+ACOdyssey.exe+FF11F2E - 0F28 C6               - movaps xmm0,xmm6
+ACOdyssey.exe+FF11F31 - F3 0F5C C1            - subss xmm0,xmm1
+ACOdyssey.exe+FF11F35 - 0F54 C2               - andps xmm0,xmm2
+ACOdyssey.exe+FF11F38 - 0F2F C3               - comiss xmm0,xmm3
+ACOdyssey.exe+FF11F3B - 76 16                 - jna ACOdyssey.exe+FF11F53
+ACOdyssey.exe+FF11F3D - FE C9                 - dec cl
+ACOdyssey.exe+FF11F3F - 80 F9 01              - cmp cl,01 { 1 }
+ACOdyssey.exe+FF11F42 - 7F DC                 - jg ACOdyssey.exe+FF11F20
+ACOdyssey.exe+FF11F44 - B8 01000000           - mov eax,00000001 { 1 }
+ACOdyssey.exe+FF11F49 - 0F28 74 24 20         - movaps xmm6,[rsp+20]
+ACOdyssey.exe+FF11F4E - 48 83 C4 38           - add rsp,38 { 56 }
+ACOdyssey.exe+FF11F52 - C3                    - ret 
+
+Interesting globals:
+Terrain quality bit 1: 7FF7CD05DD08
+Terrain quality bit 2: 7FF7CD05DC28
+Environment quality val1: 7FF7CD05DCE8
+Environment quality val2: 7FF7CD05DCEC
+
+// rdx at pointed instruction is renderconfig
+ACOdyssey.exe+BDE2EFA - 48 8B 42 30           - mov rax,[rdx+30]
+ACOdyssey.exe+BDE2EFE - 48 8B 50 60           - mov rdx,[rax+60]
+ACOdyssey.exe+BDE2F02 - 8B 05 48A08FF9        - mov eax,[ACOdyssey.exe+56DCF50] { (40) }
+ACOdyssey.exe+BDE2F08 - 80 7A 49 00           - cmp byte ptr [rdx+49],00 { 0 }				>> Check if grass has to be rendered. 1 is render grass
+ACOdyssey.exe+BDE2F0C - 8D 0C C5 00000000     - lea ecx,[rax*8+00000000]
+ACOdyssey.exe+BDE2F13 - 48 8B 82 80090000     - mov rax,[rdx+00000980]
+ACOdyssey.exe+BDE2F1A - 0F84 48030000         - je ACOdyssey.exe+BDE3268
+ACOdyssey.exe+BDE2F20 - 48 89 9C 24 50010000  - mov [rsp+00000150],rbx
+ACOdyssey.exe+BDE2F28 - 41 83 F8 03           - cmp r8d,03 { 3 }
+ACOdyssey.exe+BDE2F2C - 75 1A                 - jne ACOdyssey.exe+BDE2F48
+ACOdyssey.exe+BDE2F2E - 48 8B 0C 01           - mov rcx,[rcx+rax]
+ACOdyssey.exe+BDE2F32 - 8B 9F 64060000        - mov ebx,[rdi+00000664]
+ACOdyssey.exe+BDE2F38 - E8 93A2D0F4           - call ACOdyssey.exe+AED1D0
+
+ACOdyssey.exe+A4F8092 - 74 09                 - je ACOdyssey.exe+A4F809D
+ACOdyssey.exe+A4F8094 - 80 B8 4C200000 00     - cmp byte ptr [rax+0000204C],00 { 0 }
+ACOdyssey.exe+A4F809B - 75 25                 - jne ACOdyssey.exe+A4F80C2
+ACOdyssey.exe+A4F809D - 48 8B 05 849D4AFB     - mov rax,[ACOdyssey.exe+59A1E28] { (1FE004A2E20) }
+ACOdyssey.exe+A4F80A4 - 8B 88 90000000        - mov ecx,[rax+00000090]
+ACOdyssey.exe+A4F80AA - C1 E9 08              - shr ecx,08 { 8 }
+ACOdyssey.exe+A4F80AD - F6 C1 01              - test cl,01 { 1 }
+ACOdyssey.exe+A4F80B0 - 75 10                 - jne ACOdyssey.exe+A4F80C2
+ACOdyssey.exe+A4F80B2 - F3 0F11 83 24180000   - movss [rbx+00001824],xmm0				
+ACOdyssey.exe+A4F80BA - F3 0F11 B3 20180000   - movss [rbx+00001820],xmm6				<< Write TREE Lod multiplier
+ACOdyssey.exe+A4F80C2 - 8B 05 0C981DFB        - mov eax,[ACOdyssey.exe+56D18D4] { (36) }
+ACOdyssey.exe+A4F80C8 - 0F57 C9               - xorps xmm1,xmm1
+ACOdyssey.exe+A4F80CB - 0F28 05 AE49B4F9      - movaps xmm0,[ACOdyssey.exe+403CA80] { (0) }
+ACOdyssey.exe+A4F80D2 - 0F28 93 80000000      - movaps xmm2,[rbx+00000080]
+ACOdyssey.exe+A4F80D9 - 66 0F3814 D1          - blendvps xmm2,xmm1,xmm0
+ACOdyssey.exe+A4F80DE - 8D 0C C5 00000000     - lea ecx,[rax*8+00000000]
+ACOdyssey.exe+A4F80E5 - 48 8B 86 80090000     - mov rax,[rsi+00000980]
+ACOdyssey.exe+A4F80EC - 48 8B 14 01           - mov rdx,[rcx+rax]
+ACOdyssey.exe+A4F80F0 - 0F29 93 40190000      - movaps [rbx+00001940],xmm2
+ACOdyssey.exe+A4F80F7 - 8B 42 18              - mov eax,[rdx+18]
+ACOdyssey.exe+A4F80FA - 89 83 50190000        - mov [rbx+00001950],eax
+
+
+
+
 // Found info that's usable:
 // Photomode limiter removal
 ACOdyssey.exe+2A406B5 - 66 0F3814 D9          - blendvps xmm3,xmm1,xmm0

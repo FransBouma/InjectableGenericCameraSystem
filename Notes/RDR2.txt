@@ -1,6 +1,58 @@
 RDR2
 =============
 
+Address of camera struct that's active:
+RDR2.exe+14AE5D - 8B 0D D598CD03        - mov ecx,[RDR2.exe+3E24738] { (26B47F49C80) }
+RDR2.exe+14AE63 - B2 01                 - mov dl,01 { 1 }
+RDR2.exe+14AE65 - E9 36142D00           - jmp RDR2.exe+41C2A0
+RDR2.exe+14AE6A - CC                    - int 3 
+RDR2.exe+14AE6B - 3B 40 53              - cmp eax,[rax+53]
+RDR2.exe+14AE6E - 48 83 EC 20           - sub rsp,20 { 32 }
+RDR2.exe+14AE72 - 4C 8B 05 278FCF03     - mov r8,[RDR2.exe+3E43DA0] <<<<<<<<<<<   Read camera address. This is the central address of which camera is active.
+RDR2.exe+14AE79 - 33 DB                 - xor ebx,ebx
+RDR2.exe+14AE7B - 84 C9                 - test cl,cl
+RDR2.exe+14AE7D - 74 1F                 - je RDR2.exe+14AE9E
+RDR2.exe+14AE7F - 48 8B 05 D299CD03     - mov rax,[RDR2.exe+3E24858] { (26B432B9DD0) }
+RDR2.exe+14AE86 - 38 98 110F0000        - cmp [rax+00000F11],bl
+RDR2.exe+14AE8C - 74 04                 - je RDR2.exe+14AE92
+RDR2.exe+14AE8E - B0 01                 - mov al,01 { 1 }
+RDR2.exe+14AE90 - EB 31                 - jmp RDR2.exe+14AEC3
+RDR2.exe+14AE92 - 38 98 120F0000        - cmp [rax+00000F12],bl
+RDR2.exe+14AE98 - 74 04                 - je RDR2.exe+14AE9E
+RDR2.exe+14AE9A - 32 C0                 - xor al,al
+RDR2.exe+14AE9C - EB 25                 - jmp RDR2.exe+14AEC3
+RDR2.exe+14AE9E - 4D 85 C0              - test r8,r8
+RDR2.exe+14AEA1 - 74 1E                 - je RDR2.exe+14AEC1
+RDR2.exe+14AEA3 - 8B 05 C7A17B03        - mov eax,[RDR2.exe+3905070] { (1561855164) }
+RDR2.exe+14AEA9 - 48 8D 54 24 30        - lea rdx,[rsp+30]
+
+// just one write:
+RDR2.exe+14EF3E - 0F10 43 20            - movups xmm0,[rbx+20]
+RDR2.exe+14EF42 - 0F11 47 20            - movups [rdi+20],xmm0
+RDR2.exe+14EF46 - EB 2C                 - jmp RDR2.exe+14EF74
+RDR2.exe+14EF48 - 0F55 53 30            - andnps xmm2,[rbx+30]
+RDR2.exe+14EF4C - 0FC2 D3 01            - cmpps xmm2,xmm3,01 { 1 }
+RDR2.exe+14EF50 - 0F50 C2               - movmskps eax,xmm2
+RDR2.exe+14EF53 - 23 C1                 - and eax,ecx
+RDR2.exe+14EF55 - 3A C1                 - cmp al,cl
+RDR2.exe+14EF57 - 75 1B                 - jne RDR2.exe+14EF74
+RDR2.exe+14EF59 - 0F11 07               - movups [rdi],xmm0				>> Write of matrix
+RDR2.exe+14EF5C - 0F10 4B 10            - movups xmm1,[rbx+10]
+RDR2.exe+14EF60 - 0F11 4F 10            - movups [rdi+10],xmm1
+RDR2.exe+14EF64 - 0F10 43 20            - movups xmm0,[rbx+20]
+RDR2.exe+14EF68 - 0F11 47 20            - movups [rdi+20],xmm0
+RDR2.exe+14EF6C - 0F10 4B 30            - movups xmm1,[rbx+30]
+RDR2.exe+14EF70 - 0F11 4F 30            - movups [rdi+30],xmm1
+RDR2.exe+14EF74 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
+RDR2.exe+14EF79 - 48 8B 74 24 38        - mov rsi,[rsp+38]
+RDR2.exe+14EF7E - 48 83 C4 20           - add rsp,20 { 32 }
+RDR2.exe+14EF82 - 5F                    - pop rdi
+
+// this function has more writes, tho not for this block.
+
+
+
+----------------------------------------------------------------------------------------------------
 // latest patch Dec 15th
 // No black bars in photomode:
 RDR2.exe+523E87 - 0F5B FF               - cvtdq2ps xmm7,xmm7
@@ -558,6 +610,13 @@ RDR2.exe+1230C1 - 0F95 C0               - setne al
 RDR2.exe+1230C4 - C3                    - ret 
 RDR2.exe+1230C5 - 30 C0                 - xor al,al
 RDR2.exe+1230C7 - C3                    - ret 
+
+85 C0 74 15 48 3B 05 ?? ?? ?? ?? 75 0C 48 83 B8 ?? 05 00 00 00 
+0F95 C0              
+C3                   
+30 C0                
+C3                   
+
 
 
 
