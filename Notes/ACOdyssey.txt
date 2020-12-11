@@ -255,6 +255,97 @@ print("done")
 
 ----
 
+Dump a struct's pointers and names:
+function DisplayFullClassName(address, currentName)
+  if address==0 then
+     return ""
+  end
+  local currentAddress = address
+  local className = readString( readQword( currentAddress + 0x18))
+  currentAddress = readQword(address+0x40)
+  if string.len(currentName) > 0 then
+    className = currentName .. "->" .. className
+  end
+  if currentAddress==nil or currentAddress==0 then
+     return className
+  end
+  return DisplayFullClassName(currentAddress, className)
+end
+
+function GetName( address )
+  local currentAddress = address
+  if currentAddress==nil then
+     return ""
+  end
+  currentAddress = currentAddress + 0x38
+  currentAddress = readQword( currentAddress )
+  if currentAddress==nil then
+    return ""
+  end
+  if readBytes( currentAddress, 1 ) == 0xE9 then
+    currentAddress = currentAddress + readInteger( currentAddress + 0x1, true ) + 0x5
+  end
+  local intOffset = readInteger( currentAddress + 0x3, true )
+  if intOffset==nil then
+    return ""
+  end
+  currentAddress = currentAddress + intOffset + 0x7
+  if currentAddress==nil then
+     return ""
+  end
+  currentAddress = readQword( currentAddress )
+  if currentAddress==nil then
+     return ""
+  end
+  return string.format("Struct address: 0x%X | Type name: %s", address, DisplayFullClassName(currentAddress, ""))
+end
+
+function GetNames(startAddress, length)
+  local offset=0
+  while offset < length do
+    local currentValue = readQword(startAddress + offset)
+    local className = "Unknown"
+    if currentValue > 0x7FF60000000 then
+       className = GetName(currentValue)
+       if string.len(className) > 0 then
+         print(string.format("Offset: %06x: Reference type:\t%s", offset, className))
+       end
+    else
+       if currentValue > (startAddress - 0x100000) and currentValue < (startAddress+0x100000) then
+          local pointerAddress = currentValue
+          currentValue = readQword(currentValue)
+          className = GetName(currentValue)
+          if string.len(className) > 0 then
+            print(string.format("Offset: %06x: Pointer to 0x%X of type\t%s", offset, pointerAddress, className))
+          end
+       else
+          -- nothing
+          --print(string.format("Offset: %d: nothing of interest", offset))
+       end
+    end
+    offset=offset+8
+  end
+end
+
+GetNames(0x1DC8C2AC910, 0x1000)
+----
+
+lod: acodyssey.exe+AC1D5D0
+00007FF6DD52D5D0 | 48:83EC 28                    | sub     rsp,28                                                           |
+00007FF6DD52D5D4 | 48:85C9                       | test    rcx,rcx                                                          |
+00007FF6DD52D5D7 | 74 16                         | je      acodyssey_dump.7FF6DD52D5EF                                      |
+00007FF6DD52D5D9 | 83B9 68020000 01              | cmp     dword ptr ds:[rcx+268],1                                         |
+00007FF6DD52D5E0 | 75 0D                         | jne     acodyssey_dump.7FF6DD52D5EF         <<<<<<<<< NOP no lod transition
+00007FF6DD52D5E2 | F3:0F1005 02F541F9            | movss   xmm0,dword ptr ds:[7FF6D694CAEC]                                 |
+00007FF6DD52D5EA | 48:83C4 28                    | add     rsp,28                                                           |
+00007FF6DD52D5EE | C3                            | ret                                                                      |
+00007FF6DD52D5EF | F3:0F590D 15F541F9            | mulss   xmm1,dword ptr ds:[7FF6D694CB0C]                                 |
+00007FF6DD52D5F7 | 0F28C1                        | movaps  xmm0,xmm1                                                        |
+00007FF6DD52D5FA | E8 41061AF9                   | call    acodyssey_dump.7FF6D66CDC40                                      |
+00007FF6DD52D5FF | F3:0F5905 B5A646F9            | mulss   xmm0,dword ptr ds:[7FF6D6997CBC]                                 |
+00007FF6DD52D607 | F3:0F5F05 DDF441F9            | maxss   xmm0,dword ptr ds:[7FF6D694CAEC]                                 |
+00007FF6DD52D60F | 48:83C4 28                    | add     rsp,28                                                           |
+00007FF6DD52D613 | C3                            | ret                                                                      |
 
 ACOdyssey.exe+A4F8087 - 48 8B AC 24 80000000  - mov rbp,[rsp+00000080]
 ACOdyssey.exe+A4F808F - 48 85 C0              - test rax,rax
