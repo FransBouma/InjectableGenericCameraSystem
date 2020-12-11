@@ -10,7 +10,8 @@ It's written in C++ with some x86/x64 assembler to be able to intercept the loca
 The system is initially designed for 64bit hosts as all games are 64bit nowadays, but has been reworked to be used for 32bit games too. 
 
 ## Re-hosting binaries
-All binaries of my tools are available through my [Patreon](https://www.patreon.com/Otis_Inf). You're not allowed to re-host the binaries on other modsites, like Nexus Mods. 
+All binaries of my tools are available through my [Patreon](https://www.patreon.com/Otis_Inf), unless stated otherwise. 
+You're not allowed to re-host the binaries on other modsites, like Nexus Mods. 
 
 ## Folder structure description
 In the folder `Cameras` you'll several implementations of the system, adapted for specific games. 
@@ -41,6 +42,7 @@ If you want support for a camera, please join my [Patreon](https://www.patreon.c
 * Assassin's Creed Origins: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/AssassinsCreedOrigins
 * Batman Arkham Knight: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/BatmanArkhamKnight
 * Bulletstorm Full Clip Edition: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/BulletstormFCE
+* Cyberpunk 2077: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Cyberpunk2077
 * Deus Ex: Mankind Divided: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/DXMD
 * Devil May Cry 5: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/DMC5
 * Dishonored 2: https://github.com/FransBouma/InjectableGenericCameraSystem/tree/master/Cameras/Dishonored2
