@@ -33,7 +33,7 @@ namespace IGCSClient.GameSpecific.Classes
 	internal static class GameSpecificConstants
 	{
 		public const string ClientWindowTitle = "Cyberpunk 2077 tools";
-		public const string CameraVersion = "1.0.0";
+		public const string CameraVersion = "1.0.1";
 		public const string CameraCredits = "Otis_Inf / Jim2Point0";
 		public const bool HotsamplingRequiresEXITSIZEMOVE = false;
 	}
@@ -77,8 +77,8 @@ namespace IGCSClient.GameSpecific.Classes
 		public const int PauseUnpauseGameDefault = (int)Keys.NumPad0;
 		public const int SkipFramesDefault = (int)Keys.PageDown;
 		public const int ResetTiltDefault = (int)Keys.NumPad2;
-		public const int TimeOfDayLaterDefault = (int)Keys.Oemcomma;
-		public const int TimeOfDayEarlierDefault = (int)Keys.OemPeriod;
+		public const int TimeOfDayLaterDefault = (int)Keys.OemPeriod;
+		public const int TimeOfDayEarlierDefault = (int)Keys.Oemcomma;
 	}
 
 

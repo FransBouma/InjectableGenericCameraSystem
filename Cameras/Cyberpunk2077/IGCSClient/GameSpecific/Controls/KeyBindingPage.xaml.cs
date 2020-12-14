@@ -112,6 +112,9 @@ namespace IGCSClient.GameSpecific.Controls
 					case GameSpecificKeyBindingType.TimeOfDayLater:
 						binding.Setup(_timeOfDayLaterInput);
 						break;
+					case KeyBindingType.ToggleHUD:
+						binding.Setup(_toggleHUDInput);
+						break;
 				}
 			}
 		}

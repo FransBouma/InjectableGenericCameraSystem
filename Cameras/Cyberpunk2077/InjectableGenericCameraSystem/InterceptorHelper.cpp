@@ -43,6 +43,10 @@ extern "C" {
 	void activeCamAddressInterceptor();
 	void activeCamWrite1Interceptor();
 	void resolutionStructAddressInterceptor();
+	void todStructAddressInterceptor();
+	void playHudWidgetReadInterceptor();
+	void pmHudWidgetReadInterceptor();
+	void fovPlayWriteInterceptor();
 }
 
 // external addresses used in asm.
@@ -51,6 +55,10 @@ extern "C" {
 	LPBYTE _activeCamAddressInterceptionContinue = nullptr;
 	LPBYTE _activeCamWrite1InterceptionContinue = nullptr;
 	LPBYTE _resolutionStructAddressInterceptionContinue = nullptr;
+	LPBYTE _todStructAddressInterceptionContinue = nullptr;
+	LPBYTE _playHudWidgetReadInterceptionContinue = nullptr;
+	LPBYTE _pmHudWidgetReadInterceptionContinue = nullptr;
+	LPBYTE _fovPlayWriteInterceptionContinue = nullptr;
 }
 
 
@@ -63,6 +71,10 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[PMSTRUCT_ADDRESS_INTERCEPT_KEY] = new AOBBlock(PMSTRUCT_ADDRESS_INTERCEPT_KEY, "0F 11 BE C0 01 00 00 F3 44 0F11 9E D0 01 00 00 F3 44 0F 11 96 D4 01 00 00", 1);
 		aobBlocks[COORD_FACTOR_ADDRESS_KEY] = new AOBBlock(COORD_FACTOR_ADDRESS_KEY, "F3 44 0F 10 1D | ?? ?? ?? ?? 48 85 C0 74 38", 1);
 		aobBlocks[RESOLUTION_STRUCT_ADDRESS_INTERCEPT_KEY] = new AOBBlock(RESOLUTION_STRUCT_ADDRESS_INTERCEPT_KEY, "8B 81 84 00 00 00 89 41 44 8B 81 88 00 00 00 89 41 40", 1);
+		aobBlocks[TOD_READ_INTERCEPT_KEY] = new AOBBlock(TOD_READ_INTERCEPT_KEY, "48 8B DA 48 8B 01 FF 90 F8 00 00 00 48 8B C3", 1);
+		aobBlocks[PLAY_WIDGETBUCKET_READ_INTERCEPT_KEY] = new AOBBlock(PLAY_WIDGETBUCKET_READ_INTERCEPT_KEY, "88 81 B1 00 00 00 48 89 BC 24 98 00 00 00 48 8B 7C 24 20", 1);
+		aobBlocks[PM_WIDGETBUCKET_READ_INTERCEPT_KEY] = new AOBBlock(PM_WIDGETBUCKET_READ_INTERCEPT_KEY, "74 0A 80 7A 40 00 74 04 B3 01 EB 02 32 DB 48 8B 49 40 0F B6 D3", 1);
+		aobBlocks[FOV_PLAY_WRITE_INTERCEPT_KEY] = new AOBBlock(FOV_PLAY_WRITE_INTERCEPT_KEY, "F3 0F 11 9F 5C 02 00 00 48 8B 8F B0 01 00 00", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -93,6 +105,10 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[ACTIVECAM_CAMERA_WRITE1_INTERCEPT_KEY], 0x1A, &_activeCamWrite1InterceptionContinue, &activeCamWrite1Interceptor);
 		GameImageHooker::setHook(aobBlocks[PMSTRUCT_ADDRESS_INTERCEPT_KEY], 0x10, &_pmStructAddressInterceptionContinue, &pmStructAddressInterceptor);
 		GameImageHooker::setHook(aobBlocks[RESOLUTION_STRUCT_ADDRESS_INTERCEPT_KEY], 0x12, &_resolutionStructAddressInterceptionContinue, &resolutionStructAddressInterceptor);
+		GameImageHooker::setHook(aobBlocks[TOD_READ_INTERCEPT_KEY], (0x17461EC-0x17461DD), &_todStructAddressInterceptionContinue, &todStructAddressInterceptor);
+		GameImageHooker::setHook(aobBlocks[PLAY_WIDGETBUCKET_READ_INTERCEPT_KEY], (0x867BAA - 0x867B97), &_playHudWidgetReadInterceptionContinue, &playHudWidgetReadInterceptor);
+		GameImageHooker::setHook(aobBlocks[PM_WIDGETBUCKET_READ_INTERCEPT_KEY], (0x8BA926 - 0x8BA914), &_pmHudWidgetReadInterceptionContinue, &pmHudWidgetReadInterceptor);
+		GameImageHooker::setHook(aobBlocks[FOV_PLAY_WRITE_INTERCEPT_KEY], (0x16D4D62 - 0x16D4D53), &_fovPlayWriteInterceptionContinue, &fovPlayWriteInterceptor);
 
 		// Grab the factor from static memory.
 		LPBYTE factorAddress = Utils::calculateAbsoluteAddress(aobBlocks[COORD_FACTOR_ADDRESS_KEY], 4);

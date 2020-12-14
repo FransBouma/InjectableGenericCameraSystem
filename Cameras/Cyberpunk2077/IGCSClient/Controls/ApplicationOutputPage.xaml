@@ -12,6 +12,10 @@
 		<GroupBox Header="Application log" Margin="0,0,0,37">
 			<TextBox Name="_outputTextBox" IsReadOnly="True" Margin="0,0,0,-12" VerticalScrollBarVisibility="Visible"/>
 		</GroupBox>
-		<Button HorizontalAlignment="Left" VerticalAlignment="Bottom" Click="ButtonBase_OnClick" >Clear</Button>
+		<ui:SimpleStackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+			<Button Click="_clearButton_OnClick" Name="_clearButton">Clear</Button>
+			<CheckBox Checked="_displayNotificationsCheckBox_CheckedChanged" Unchecked="_displayNotificationsCheckBox_CheckedChanged" Margin="20, 0, 0, 0" Name="_displayNotificationsCheckBox" 
+					  IsChecked="True">Display notifications</CheckBox>
+		</ui:SimpleStackPanel>
 	</Grid>
 </UserControl>

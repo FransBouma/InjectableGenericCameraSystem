@@ -37,6 +37,9 @@ extern "C" {
 	LPBYTE g_pmStructAddress = nullptr;
 	LPBYTE g_activeCamStructAddress = nullptr;
 	LPBYTE g_resolutionStructAddress = nullptr;
+	LPBYTE g_todStructAddress = nullptr;
+	LPBYTE g_playHudWidgetAddress = nullptr;
+	LPBYTE g_pmHudWidgetAddress = nullptr;
 }
 
 namespace IGCS
@@ -119,13 +122,13 @@ namespace IGCS
 		_keyBindingPerActionType[ActionType::TiltLeft] = new ActionData("TiltLeft", IGCS_KEY_TILT_LEFT, false, false, false);
 		_keyBindingPerActionType[ActionType::TiltRight] = new ActionData("TiltRight", IGCS_KEY_TILT_RIGHT, false, false, false);
 		_keyBindingPerActionType[ActionType::ResetTilt] = new ActionData("ResetTilt", IGCS_KEY_RESET_TILT, false, false, false);
+		_keyBindingPerActionType[ActionType::HudToggle] = new ActionData("HudToggle", IGCS_KEY_HUD_TOGGLE, false, false, false);
 
 		_keyBindingPerActionType[ActionType::TimeOfDayEarlier] = new ActionData("TimeOfDayEarlier", IGCS_KEY_TOD_EARLIER, false, false, false);
 		_keyBindingPerActionType[ActionType::TimeOfDayLater] = new ActionData("TimeOfDayLater", IGCS_KEY_TOD_EARLIER, false, false, false);
 
 		// Bindings which are often optional. Specify 'false' for available to disable it if the binding should be hidden.
 		// To enable the commands, remove the last 'false' in the calls below to make them available for code. (they're currently not available)
-		_keyBindingPerActionType[ActionType::HudToggle] = new ActionData("HudToggle", IGCS_KEY_HUD_TOGGLE, false, false, false, false);
 		_keyBindingPerActionType[ActionType::Timestop] = new ActionData("Timestop", IGCS_KEY_TIMESTOP, false, false, false, false);
 		_keyBindingPerActionType[ActionType::SkipFrames] = new ActionData("SkipFrames", IGCS_KEY_SKIP_FRAMES, false, false, false, false);
 	}

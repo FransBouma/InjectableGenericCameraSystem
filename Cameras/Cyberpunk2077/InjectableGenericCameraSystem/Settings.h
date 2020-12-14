@@ -51,12 +51,6 @@ namespace IGCS
 
 		// flags to check for applying settings
 		bool timeOfDayChanged = false;
-
-		void changeTimeOfDay(float amount)
-		{
-			timeOfDay = Utils::clamp(timeOfDay + amount, 0.0f, (24.0f), timeOfDay);
-			timeOfDayChanged = true;
-		}
 		
 		void setValueFromMessage(uint8_t payload[], DWORD payloadLength)
 		{

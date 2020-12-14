@@ -57,6 +57,7 @@ namespace IGCS
 		void handleGamePadMovement(float multiplierBase);
 		void waitForCameraStructAddresses();
 		void toggleInputBlockState(bool newValue);
+		void toggleHud();
 
 		Camera _camera;
 		LPBYTE _hostImageAddress;

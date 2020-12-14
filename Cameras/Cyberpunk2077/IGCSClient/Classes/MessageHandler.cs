@@ -60,6 +60,7 @@ namespace IGCSClient.Classes
 
 		internal MessageHandler()
 		{
+			this.DisplayNotifications = true;
 			_pipeServer = new NamedPipeServer(ConstantsEnums.DllToClientNamedPipeName);			// for connection from dll to this client. We create and own the pipe
 			_pipeClient = new NamedPipeClient(ConstantsEnums.ClientToDllNamedPipeName);			// for connection from this client to dll. Dll creates and owns the pipe
 			_pipeServer.MessageReceived += _pipeServer_MessageReceived;
@@ -132,7 +133,10 @@ namespace IGCSClient.Classes
 				case MessageType.Notification:
 					var notificationText = asciiEncoding.GetString(e.Value, 1, e.Value.Length-1);
 					LogHandlerSingleton.Instance().LogLine(notificationText, string.Empty);
-					this.NotificationLogFunc?.Invoke(notificationText);
+					if(this.DisplayNotifications)
+					{
+						this.NotificationLogFunc?.Invoke(notificationText);
+					}
 					break;
 				case MessageType.NormalTextMessage:
 					LogHandlerSingleton.Instance().LogLine(asciiEncoding.GetString(e.Value, 1, e.Value.Length-1), string.Empty);
@@ -167,6 +171,10 @@ namespace IGCSClient.Classes
 
 
 		#region Properties
+		/// <summary>
+		/// If true (default) pop up notifications are shown when a notification message arrives
+		/// </summary>
+		public bool DisplayNotifications { get; set; }
 		/// <summary>
 		/// Func which is called when a connection from the dll to our named pipe has been established
 		/// </summary>

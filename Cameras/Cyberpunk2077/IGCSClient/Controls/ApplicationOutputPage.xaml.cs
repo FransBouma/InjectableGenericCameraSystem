@@ -28,6 +28,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using IGCSClient.Classes;
 
 namespace IGCSClient.Controls
 {
@@ -117,9 +118,15 @@ namespace IGCSClient.Controls
 		}
 
 
-		private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+		private void _clearButton_OnClick(object sender, RoutedEventArgs e)
 		{
 			_outputTextBox.Text = string.Empty;
+		}
+
+
+		private void _displayNotificationsCheckBox_CheckedChanged(object sender, RoutedEventArgs e)
+		{
+			MessageHandlerSingleton.Instance().DisplayNotifications = _displayNotificationsCheckBox.IsChecked ?? false;
 		}
 	}
 }

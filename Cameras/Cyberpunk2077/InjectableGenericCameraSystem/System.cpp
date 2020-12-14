@@ -158,11 +158,11 @@ namespace IGCS
 
 		if (Input::isActionActivated(ActionType::TimeOfDayEarlier, true))
 		{
-			Globals::instance().settings().changeTimeOfDay(-DEFAULT_TOD_CHANGE * (Utils::altPressed() ? 0.1f : 1.0f));
+			CameraManipulator::changeTimeOfDayUsingAmount(-DEFAULT_TOD_CHANGE * (Utils::altPressed() ? 0.1f : 1.0f));
 		}
 		if (Input::isActionActivated(ActionType::TimeOfDayLater, true))
 		{
-			Globals::instance().settings().changeTimeOfDay(DEFAULT_TOD_CHANGE * (Utils::altPressed() ? 0.1f : 1.0f));
+			CameraManipulator::changeTimeOfDayUsingAmount(DEFAULT_TOD_CHANGE * (Utils::altPressed() ? 0.1f : 1.0f));
 		}
 		if (Input::isActionActivated(ActionType::FovReset) && Globals::instance().keyboardMouseControlCamera())
 		{
@@ -176,7 +176,11 @@ namespace IGCS
 		{
 			CameraManipulator::changeFoV(Globals::instance().settings().fovChangeSpeed);
 		}
-
+		if (Input::isActionActivated(ActionType::HudToggle))
+		{
+			toggleHud();
+			_applyHammerPrevention = true;
+		}
 		if (!g_cameraEnabled)
 		{
 			// camera is disabled. We simply disable all input to the camera movement, by returning now.
@@ -463,6 +467,13 @@ namespace IGCS
 		}
 		Globals::instance().inputBlocked(newValue);
 		MessageHandler::addNotification(newValue ? "Input to game blocked" : "Input to game enabled");
+	}
+
+	void System::toggleHud()
+	{
+		bool hudVisible = Globals::instance().toggleHudVisible();
+		CameraManipulator::toggleHud(hudVisible);
+		MessageHandler::addNotification(hudVisible ? "HUD visible" : "HUD hidden");
 	}
 
 

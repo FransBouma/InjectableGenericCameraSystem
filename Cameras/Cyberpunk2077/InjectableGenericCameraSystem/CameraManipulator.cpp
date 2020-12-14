@@ -42,17 +42,22 @@ namespace IGCS::GameSpecific::CameraManipulator
 	static GameCameraData _originalCameraData;
 	static float _coordMultiplierFactor = 0.0f;
 
-	void displayDebugInfo()
+
+	bool isPhotomodeActivated()
 	{
-		MessageHandler::logDebug("Debug info");
-		MessageHandler::logDebug("---------------------------------");
-		MessageHandler::logDebug("PM struct address: %p", (void*)g_pmStructAddress);
-		MessageHandler::logDebug("Active cam struct address: %p", (void*)g_activeCamStructAddress);
-		MessageHandler::logDebug("Resolution struct address: %p", (void*)g_resolutionStructAddress);
-		MessageHandler::logDebug("Camera enabled: %d", g_cameraEnabled);
-		MessageHandler::logDebug("---------------------------------");
+		if(nullptr==g_pmStructAddress)
+		{
+			return false;
+		}
+		return *(g_pmStructAddress + PM_ACTIVATED_BIT_IN_STRUCT_OFFSET) == (uint8_t)1;
 	}
 
+
+	int getFovOffsetInActiveCameraStruct()
+	{
+		return isPhotomodeActivated() ? FOV_IN_FREECAMSTRUCT_OFFSET : FOV_IN_PLAYCAMSTRUCT_OFFSET;
+	}
+	
 
 	float convertPackedInt32ToFloat(int toConvert)
 	{
@@ -68,7 +73,23 @@ namespace IGCS::GameSpecific::CameraManipulator
 		}
 		return static_cast<int>(toConvert / _coordMultiplierFactor);
 	}
+
 	
+	void displayDebugInfo()
+	{
+		MessageHandler::logDebug("Debug info");
+		MessageHandler::logDebug("---------------------------------");
+		MessageHandler::logDebug("PM struct address: %p", (void*)g_pmStructAddress);
+		MessageHandler::logDebug("Active cam struct address: %p", (void*)g_activeCamStructAddress);
+		MessageHandler::logDebug("Resolution struct address: %p", (void*)g_resolutionStructAddress);
+		MessageHandler::logDebug("Time of Day struct address: %p", (void*)g_todStructAddress);
+		MessageHandler::logDebug("Play Hud Widget Bucket address: %p", (void*)g_playHudWidgetAddress);
+		MessageHandler::logDebug("Photomode Hud Widget Bucket address: %p", (void*)g_pmHudWidgetAddress);
+		MessageHandler::logDebug("Current fov offset: %x", getFovOffsetInActiveCameraStruct());
+		MessageHandler::logDebug("Camera enabled: %d", g_cameraEnabled);
+		MessageHandler::logDebug("---------------------------------");
+	}
+
 	
 	void setCoordMultiplierFactor(float factor)
 	{
@@ -105,29 +126,50 @@ namespace IGCS::GameSpecific::CameraManipulator
 			writeNewCameraValuesToGameData(newCoords, newLookQuaternion);
 		}
 	}
+
+
+	void changeTimeOfDayUsingAmount(float amount)
+	{
+		if(nullptr==g_todStructAddress)
+		{
+			return;
+		}
+		// calculate current time of day, then apply the amount to that, then add the # of days again, so we stay within the same day.
+		int* todAddress = reinterpret_cast<int*>(g_todStructAddress + TOD_IN_STRUCT_OFFSET);
+		const int currentToDInSeconds = *todAddress;
+		// strip off time in the current day. this will lose the time in the current day, which is fine, as we'll set those with the specified tod
+		const int todWithoutDays = currentToDInSeconds % 86400;
+		const int todInDays = currentToDInSeconds - todWithoutDays;
+		int newTimeOfDay = Utils::clamp(todWithoutDays + (int)(amount * 3600.0f), 0, (24 * 3600), 0);
+		*todAddress = (todInDays + newTimeOfDay);
+	}
+
 	
+	void toggleHud(bool showHud)
+	{
+		uint8_t newValue = showHud ? (uint8_t)1 : (uint8_t)0;
+		if(nullptr!=g_playHudWidgetAddress)
+		{
+			*(g_playHudWidgetAddress + HUD_TOGGLE_SWITCH_IN_BUCKETS_OFFSET) = newValue;
+		}
+		if(nullptr!=g_pmHudWidgetAddress && isPhotomodeActivated())
+		{
+			*(g_pmHudWidgetAddress + HUD_TOGGLE_SWITCH_IN_BUCKETS_OFFSET) = newValue;
+		}
+	}
+
 
 	void applySettingsToGameState()
 	{
 		Settings& currentSettings = Globals::instance().settings();
-		/*
 		if (currentSettings.timeOfDayChanged && nullptr != g_todStructAddress)
 		{
-			*(reinterpret_cast<float*>(g_todStructAddress)) = currentSettings.timeOfDay;
+			int* todAddress = reinterpret_cast<int*>(g_todStructAddress + TOD_IN_STRUCT_OFFSET);
+			const int currentToDInSeconds = *todAddress;
+			// strip off time in the current day. this will lose the time in the current day, which is fine, as we'll set those with the specified tod
+			const int todWithoutDays = currentToDInSeconds % 86400;	
+			*todAddress = (todWithoutDays + (int)(currentSettings.timeOfDay * 3600.0f));
 		}
-		if(currentSettings.resolutionScaleChanged && nullptr!=g_resolutionScaleAddress)
-		{
-			*(reinterpret_cast<float*>(g_resolutionScaleAddress + RESOLUTION_SCALE_IN_STRUCT_OFFSET)) = currentSettings.resolutionScale;
-		}
-		if(currentSettings.fogSettingsChanged && (nullptr != getWorldGraphicData()))
-		{
-			applyFogSettings(currentSettings);
-		}
-		if(currentSettings.invulnerableChanged && nullptr!=g_playerHealthStructAddress)
-		{
-			*(g_playerHealthStructAddress + INVULNERABLE_IN_STRUCT_OFFSET) = currentSettings.invulnerable ? (uint8_t)1 : (uint8_t)0;
-		}
-		*/
 		currentSettings.resetFlags();
 	}
 
@@ -139,7 +181,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 		{
 			return;
 		}
-		float* fovAddress = reinterpret_cast<float*>(g_activeCamStructAddress + FOV_IN_FREECAMSTRUCT_OFFSET);
+		float* fovAddress = reinterpret_cast<float*>(g_activeCamStructAddress + getFovOffsetInActiveCameraStruct());
 		*fovAddress = _originalCameraData._fov;
 	}
 
@@ -151,7 +193,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 		{
 			return;
 		}
-		float* fovAddress = reinterpret_cast<float*>(g_activeCamStructAddress + FOV_IN_FREECAMSTRUCT_OFFSET);
+		float* fovAddress = reinterpret_cast<float*>(g_activeCamStructAddress + getFovOffsetInActiveCameraStruct());
 		float newValue = *fovAddress + amount;
 		if (newValue < 0.001f)
 		{
@@ -167,7 +209,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 		{
 			return DEFAULT_FOV_DEGREES;
 		}
-		float* fovAddress = reinterpret_cast<float*>(g_activeCamStructAddress + FOV_IN_FREECAMSTRUCT_OFFSET);
+		float* fovAddress = reinterpret_cast<float*>(g_activeCamStructAddress + getFovOffsetInActiveCameraStruct());
 		return *fovAddress;
 	}
 	
@@ -222,7 +264,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 			return;
 		}
 		source.RestoreData(reinterpret_cast<float*>(g_activeCamStructAddress + QUATERNION_IN_CAMSTRUCT_OFFSET), reinterpret_cast<int*>(g_activeCamStructAddress + COORDS_IN_CAMSTRUCT_OFFSET),
-						   reinterpret_cast<float*>(g_activeCamStructAddress + FOV_IN_FREECAMSTRUCT_OFFSET));
+						   reinterpret_cast<float*>(g_activeCamStructAddress + getFovOffsetInActiveCameraStruct()));
 	}
 
 
@@ -233,7 +275,7 @@ namespace IGCS::GameSpecific::CameraManipulator
 			return;
 		}
 		destination.CacheData(reinterpret_cast<float*>(g_activeCamStructAddress + QUATERNION_IN_CAMSTRUCT_OFFSET), reinterpret_cast<int*>(g_activeCamStructAddress + COORDS_IN_CAMSTRUCT_OFFSET),
-							  reinterpret_cast<float*>(g_activeCamStructAddress + FOV_IN_FREECAMSTRUCT_OFFSET));
+							  reinterpret_cast<float*>(g_activeCamStructAddress + getFovOffsetInActiveCameraStruct()));
 	}
 
 

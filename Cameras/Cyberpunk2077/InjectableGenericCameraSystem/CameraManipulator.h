@@ -48,4 +48,6 @@ namespace IGCS::GameSpecific::CameraManipulator
 	void displayDebugInfo();
 	void setCoordMultiplierFactor(float factor);
 	void resizeViewPort(int newWidth, int newHeight);
+	void changeTimeOfDayUsingAmount(float amount);
+	void toggleHud(bool showHud);
 }

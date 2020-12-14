@@ -36,6 +36,10 @@ PUBLIC pmStructAddressInterceptor
 PUBLIC activeCamAddressInterceptor
 PUBLIC activeCamWrite1Interceptor
 PUBLIC resolutionStructAddressInterceptor
+PUBLIC todStructAddressInterceptor
+PUBLIC playHudWidgetReadInterceptor
+PUBLIC pmHudWidgetReadInterceptor
+PUBLIC fovPlayWriteInterceptor
 
 ;---------------------------------------------------------------
 
@@ -46,6 +50,9 @@ EXTERN g_cameraEnabled: byte
 EXTERN g_pmStructAddress: qword
 EXTERN g_activeCamStructAddress: qword
 EXTERN g_resolutionStructAddress: qword
+EXTERN g_todStructAddress: qword
+EXTERN g_playHudWidgetAddress: qword
+EXTERN g_pmHudWidgetAddress: qword
 
 ;---------------------------------------------------------------
 
@@ -55,11 +62,15 @@ EXTERN _pmStructAddressInterceptionContinue: qword
 EXTERN _activeCamAddressInterceptionContinue: qword
 EXTERN _activeCamWrite1InterceptionContinue: qword
 EXTERN _resolutionStructAddressInterceptionContinue: qword
+EXTERN _todStructAddressInterceptionContinue:qword
+EXTERN _playHudWidgetReadInterceptionContinue:qword
+EXTERN _pmHudWidgetReadInterceptionContinue:qword
+EXTERN _fovPlayWriteInterceptionContinue:qword
+
 
 .data
 
 .code
-
 
 activeCamAddressInterceptor PROC
 ;Cyberpunk2077.exe+FED742 - 8B 41 C8              - mov eax,[rcx-38]
@@ -225,5 +236,135 @@ resolutionStructAddressInterceptor PROC
 exit:
 	jmp qword ptr [_resolutionStructAddressInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 resolutionStructAddressInterceptor ENDP
+
+todStructAddressInterceptor PROC
+;Cyberpunk2077.exe+17461D0 - 40 53                 - push rbx
+;Cyberpunk2077.exe+17461D2 - 48 83 EC 20           - sub rsp,20 { 32 }
+;Cyberpunk2077.exe+17461D6 - 48 8B 89 E8000000     - mov rcx,[rcx+000000E8]
+;Cyberpunk2077.exe+17461DD - 48 8B DA              - mov rbx,rdx						<< INTERCEPT HERE
+;Cyberpunk2077.exe+17461E0 - 48 8B 01              - mov rax,[rcx]
+;Cyberpunk2077.exe+17461E3 - FF 90 F8000000        - call qword ptr [rax+000000F8]		>> Call tod read, we need the rcx
+;Cyberpunk2077.exe+17461E9 - 48 8B C3              - mov rax,rbx
+;Cyberpunk2077.exe+17461EC - 48 83 C4 20           - add rsp,20 { 32 }					<< CONTINUE HERE
+;Cyberpunk2077.exe+17461F0 - 5B                    - pop rbx
+;Cyberpunk2077.exe+17461F1 - C3                    - ret 
+	mov rbx,rdx					
+	mov rax,[rcx]
+	mov [g_todStructAddress], rcx
+	call qword ptr [rax+000000F8h]
+	mov rax,rbx
+exit:
+	jmp qword ptr [_todStructAddressInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+todStructAddressInterceptor ENDP
+
+playHudWidgetReadInterceptor PROC
+;Cyberpunk2077.exe+867B81 - 48 89 4C 24 20        - mov [rsp+20],rcx
+;Cyberpunk2077.exe+867B86 - 48 89 44 24 28        - mov [rsp+28],rax
+;Cyberpunk2077.exe+867B8B - 48 85 C9              - test rcx,rcx
+;Cyberpunk2077.exe+867B8E - 74 54                 - je Cyberpunk2077.exe+867BE4
+;Cyberpunk2077.exe+867B90 - 0FB6 81 B0000000      - movzx eax,byte ptr [rcx+000000B0]	
+;Cyberpunk2077.exe+867B97 - 88 81 B1000000        - mov [rcx+000000B1],al				<< INTERCEPT HERE
+;Cyberpunk2077.exe+867B9D - 48 89 BC 24 98000000  - mov [rsp+00000098],rdi
+;Cyberpunk2077.exe+867BA5 - 48 8B 7C 24 20        - mov rdi,[rsp+20]
+;Cyberpunk2077.exe+867BAA - 48 83 7F 40 00        - cmp qword ptr [rdi+40],00			<< CONTINUE HERE << PLAY Bucket read.
+;Cyberpunk2077.exe+867BAF - 74 2B                 - je Cyberpunk2077.exe+867BDC
+;Cyberpunk2077.exe+867BB1 - 48 8B D6              - mov rdx,rsi
+;Cyberpunk2077.exe+867BB4 - 48 8D 4C 24 40        - lea rcx,[rsp+40]
+;Cyberpunk2077.exe+867BB9 - E8 52392802           - call Cyberpunk2077.exe+2AEB510
+;Cyberpunk2077.exe+867BBE - 48 8B 4F 40           - mov rcx,[rdi+40]
+;Cyberpunk2077.exe+867BC2 - 48 8D 54 24 40        - lea rdx,[rsp+40]
+;Cyberpunk2077.exe+867BC7 - 45 33 C9              - xor r9d,r9d
+;Cyberpunk2077.exe+867BCA - 45 33 C0              - xor r8d,r8d
+;Cyberpunk2077.exe+867BCD - E8 6E2A1000           - call Cyberpunk2077.exe+96A640
+;Cyberpunk2077.exe+867BD2 - 48 8D 4C 24 40        - lea rcx,[rsp+40]
+;Cyberpunk2077.exe+867BD7 - E8 D43A2802           - call Cyberpunk2077.exe+2AEB6B0
+;Cyberpunk2077.exe+867BDC - 48 8B BC 24 98000000  - mov rdi,[rsp+00000098]
+;Cyberpunk2077.exe+867BE4 - 48 8B 4C 24 28        - mov rcx,[rsp+28]
+;Cyberpunk2077.exe+867BE9 - 48 85 C9              - test rcx,rcx
+;Cyberpunk2077.exe+867BEC - 74 30                 - je Cyberpunk2077.exe+867C1E
+	mov [rcx+000000B1h],al	
+	mov [rsp+00000098h],rdi
+	mov rdi,[rsp+20h]
+	push rbx
+	mov rbx, [rdi+40h]
+	mov [g_playHudWidgetAddress], rbx
+	pop rbx
+exit:
+	jmp qword ptr [_playHudWidgetReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+playHudWidgetReadInterceptor ENDP
+
+pmHudWidgetReadInterceptor PROC
+;Cyberpunk2077.exe+8BA900 - 48 89 5C 24 10        - mov [rsp+10],rbx
+;Cyberpunk2077.exe+8BA905 - 57                    - push rdi
+;Cyberpunk2077.exe+8BA906 - 48 83 EC 20           - sub rsp,20 { 32 }
+;Cyberpunk2077.exe+8BA90A - 80 B9 B0000000 00     - cmp byte ptr [rcx+000000B0],00
+;Cyberpunk2077.exe+8BA911 - 48 8B F9              - mov rdi,rcx
+;Cyberpunk2077.exe+8BA914 - 74 0A                 - je Cyberpunk2077.exe+8BA920				<< INTERCEPT HERE
+;Cyberpunk2077.exe+8BA916 - 80 7A 40 00           - cmp byte ptr [rdx+40],00
+;Cyberpunk2077.exe+8BA91A - 74 04                 - je Cyberpunk2077.exe+8BA920
+;Cyberpunk2077.exe+8BA91C - B3 01                 - mov bl,01 { 1 }
+;Cyberpunk2077.exe+8BA91E - EB 02                 - jmp Cyberpunk2077.exe+8BA922
+;Cyberpunk2077.exe+8BA920 - 32 DB                 - xor bl,bl
+;Cyberpunk2077.exe+8BA922 - 48 8B 49 40           - mov rcx,[rcx+40]						<< PM Buchet read.
+;Cyberpunk2077.exe+8BA926 - 0FB6 D3               - movzx edx,bl							<< CONTINUE HERE
+;Cyberpunk2077.exe+8BA929 - E8 D21C0B00           - call Cyberpunk2077.exe+96C600
+;Cyberpunk2077.exe+8BA92E - 84 DB                 - test bl,bl
+;Cyberpunk2077.exe+8BA930 - 75 45                 - jne Cyberpunk2077.exe+8BA977
+;Cyberpunk2077.exe+8BA932 - 48 8B 4F 40           - mov rcx,[rdi+40]
+;Cyberpunk2077.exe+8BA936 - 48 8D 54 24 40        - lea rdx,[rsp+40]
+;Cyberpunk2077.exe+8BA93B - 48 8B 01              - mov rax,[rcx]
+;Cyberpunk2077.exe+8BA93E - FF 90 28020000        - call qword ptr [rax+00000228]
+;Cyberpunk2077.exe+8BA944 - 48 8B 4F 40           - mov rcx,[rdi+40]
+;Cyberpunk2077.exe+8BA948 - 48 8D 54 24 30        - lea rdx,[rsp+30]
+;Cyberpunk2077.exe+8BA94D - F3 0F10 10            - movss xmm2,[rax]
+;Cyberpunk2077.exe+8BA951 - F3 0F10 48 04         - movss xmm1,[rax+04]
+;Cyberpunk2077.exe+8BA956 - F3 0F59 15 2A356702   - mulss xmm2,[Cyberpunk2077.exe+2F2DE88]
+;Cyberpunk2077.exe+8BA95E - F3 0F59 0D 22356702   - mulss xmm1,[Cyberpunk2077.exe+2F2DE88]
+	je resetBl	
+	cmp byte ptr [rdx+40h],00
+	je resetBl
+	mov bl,01h
+	jmp readPmWidgetBucket
+resetBl:
+	xor bl,bl
+readPmWidgetBucket:
+	mov rcx,[rcx+40h]
+	mov [g_pmHudWidgetAddress], rcx
+exit:
+	jmp qword ptr [_pmHudWidgetReadInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+pmHudWidgetReadInterceptor ENDP
+
+
+fovPlayWriteInterceptor PROC
+;Cyberpunk2077.exe+16D4D32 - F3 0F5C C8            - subss xmm1,xmm0
+;Cyberpunk2077.exe+16D4D36 - F3 0F59 C8            - mulss xmm1,xmm0
+;Cyberpunk2077.exe+16D4D3A - F3 0F5C D9            - subss xmm3,xmm1
+;Cyberpunk2077.exe+16D4D3E - F3 0F59 CC            - mulss xmm1,xmm4
+;Cyberpunk2077.exe+16D4D42 - F3 0F59 9F 68020000   - mulss xmm3,[rdi+00000268]
+;Cyberpunk2077.exe+16D4D4A - F3 0F58 D9            - addss xmm3,xmm1
+;Cyberpunk2077.exe+16D4D4E - EB 03                 - jmp Cyberpunk2077.exe+16D4D53
+;Cyberpunk2077.exe+16D4D50 - 0F28 DC               - movaps xmm3,xmm4							
+;Cyberpunk2077.exe+16D4D53 - F3 0F11 9F 5C020000   - movss [rdi+0000025C],xmm3					<< INTERCEPT HERE << WRITE Gameplay fov.
+;Cyberpunk2077.exe+16D4D5B - 48 8B 8F B0010000     - mov rcx,[rdi+000001B0]
+;Cyberpunk2077.exe+16D4D62 - 0F2E 59 40            - ucomiss xmm3,[rcx+40]						<< CONTINUE HERE
+;Cyberpunk2077.exe+16D4D66 - 74 10                 - je Cyberpunk2077.exe+16D4D78
+;Cyberpunk2077.exe+16D4D68 - 8B 87 5C020000        - mov eax,[rdi+0000025C]
+;Cyberpunk2077.exe+16D4D6E - 89 41 40              - mov [rcx+40],eax
+;Cyberpunk2077.exe+16D4D71 - C6 87 55020000 01     - mov byte ptr [rdi+00000255],01 { 1 }
+;Cyberpunk2077.exe+16D4D78 - 0F28 CF               - movaps xmm1,xmm7
+;Cyberpunk2077.exe+16D4D7B - 48 8B CE              - mov rcx,rsi
+;Cyberpunk2077.exe+16D4D7E - E8 6DA3FFFF           - call Cyberpunk2077.exe+16CF0F0
+;Cyberpunk2077.exe+16D4D83 - 0F28 05 C6F0B401      - movaps xmm0,[Cyberpunk2077.exe+3223E50] { (999,00) }
+;Cyberpunk2077.exe+16D4D8A - 48 8D 54 24 30        - lea rdx,[rsp+30]
+;Cyberpunk2077.exe+16D4D8F - 48 8B CE              - mov rcx,rsi
+;Cyberpunk2077.exe+16D4D92 - 0F11 44 24 30         - movups [rsp+30],xmm0
+;Cyberpunk2077.exe+16D4D97 - E8 C4AAFFFF           - call Cyberpunk2077.exe+16CF860
+	cmp byte ptr [g_cameraEnabled], 1
+	je exit
+	movss dword ptr [rdi+0000025Ch],xmm3
+exit:
+	mov rcx,[rdi+000001B0h]
+	jmp qword ptr [_fovPlayWriteInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+fovPlayWriteInterceptor ENDP
 
 END

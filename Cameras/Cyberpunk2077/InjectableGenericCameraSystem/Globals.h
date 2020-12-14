@@ -39,6 +39,9 @@ extern "C" uint8_t g_cameraEnabled;
 extern "C" LPBYTE g_pmStructAddress;
 extern "C" LPBYTE g_activeCamStructAddress;
 extern "C" LPBYTE g_resolutionStructAddress;
+extern "C" LPBYTE g_todStructAddress;
+extern "C" LPBYTE g_playHudWidgetAddress;
+extern "C" LPBYTE g_pmHudWidgetAddress;
 
 namespace IGCS
 {
