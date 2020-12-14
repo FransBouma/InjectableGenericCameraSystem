@@ -168,7 +168,8 @@ namespace IGCS::GameSpecific::CameraManipulator
 			const int currentToDInSeconds = *todAddress;
 			// strip off time in the current day. this will lose the time in the current day, which is fine, as we'll set those with the specified tod
 			const int todWithoutDays = currentToDInSeconds % 86400;	
-			*todAddress = (todWithoutDays + (int)(currentSettings.timeOfDay * 3600.0f));
+			const int todInDays = currentToDInSeconds - todWithoutDays;
+			*todAddress = (todInDays + (int)(currentSettings.timeOfDay * 3600.0f));
 		}
 		currentSettings.resetFlags();
 	}
