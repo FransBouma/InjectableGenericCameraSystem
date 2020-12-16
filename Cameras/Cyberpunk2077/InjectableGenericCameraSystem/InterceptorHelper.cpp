@@ -68,7 +68,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	{
 		aobBlocks[ACTIVECAM_ADDRESS_INTERCEPT_KEY] = new AOBBlock(ACTIVECAM_ADDRESS_INTERCEPT_KEY, "0F 11 42 10 48 8B 03 | FF 90 58 02 00 00 F3 0F 11 46 20 48 8D 54 24 20 48 8B 03 48 8B CB", 1);
 		aobBlocks[ACTIVECAM_CAMERA_WRITE1_INTERCEPT_KEY] = new AOBBlock(ACTIVECAM_CAMERA_WRITE1_INTERCEPT_KEY, "F2 0F 11 83 E0 00 00 00 0F 28 44 24 30 89 8B E8 00 00 00 0F 11 83 F0 00 00 00", 2);	// 2 entries, we need the second one
-		aobBlocks[PMSTRUCT_ADDRESS_INTERCEPT_KEY] = new AOBBlock(PMSTRUCT_ADDRESS_INTERCEPT_KEY, "0F 11 BE C0 01 00 00 F3 44 0F11 9E D0 01 00 00 F3 44 0F 11 96 D4 01 00 00", 1);
+		aobBlocks[PMSTRUCT_ADDRESS_INTERCEPT_KEY] = new AOBBlock(PMSTRUCT_ADDRESS_INTERCEPT_KEY, "49 8B 4E 40 48 8D 95 90 00 00 00 41 88 9E FB 02 00 00", 1);
 		aobBlocks[COORD_FACTOR_ADDRESS_KEY] = new AOBBlock(COORD_FACTOR_ADDRESS_KEY, "F3 44 0F 10 1D | ?? ?? ?? ?? 48 85 C0 74 38", 1);
 		aobBlocks[RESOLUTION_STRUCT_ADDRESS_INTERCEPT_KEY] = new AOBBlock(RESOLUTION_STRUCT_ADDRESS_INTERCEPT_KEY, "8B 81 84 00 00 00 89 41 44 8B 81 88 00 00 00 89 41 40", 1);
 		aobBlocks[TOD_READ_INTERCEPT_KEY] = new AOBBlock(TOD_READ_INTERCEPT_KEY, "48 8B DA 48 8B 01 FF 90 F8 00 00 00 48 8B C3", 1);
@@ -103,7 +103,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void setPostCameraStructHooks(map<string, AOBBlock*>& aobBlocks)
 	{
 		GameImageHooker::setHook(aobBlocks[ACTIVECAM_CAMERA_WRITE1_INTERCEPT_KEY], 0x1A, &_activeCamWrite1InterceptionContinue, &activeCamWrite1Interceptor);
-		GameImageHooker::setHook(aobBlocks[PMSTRUCT_ADDRESS_INTERCEPT_KEY], 0x10, &_pmStructAddressInterceptionContinue, &pmStructAddressInterceptor);
+		GameImageHooker::setHook(aobBlocks[PMSTRUCT_ADDRESS_INTERCEPT_KEY], (0x25B6758-0x25B6746), &_pmStructAddressInterceptionContinue, &pmStructAddressInterceptor);
 		GameImageHooker::setHook(aobBlocks[RESOLUTION_STRUCT_ADDRESS_INTERCEPT_KEY], 0x12, &_resolutionStructAddressInterceptionContinue, &resolutionStructAddressInterceptor);
 		GameImageHooker::setHook(aobBlocks[TOD_READ_INTERCEPT_KEY], (0x17461EC-0x17461DD), &_todStructAddressInterceptionContinue, &todStructAddressInterceptor);
 		GameImageHooker::setHook(aobBlocks[PLAY_WIDGETBUCKET_READ_INTERCEPT_KEY], (0x867BAA - 0x867B97), &_playHudWidgetReadInterceptionContinue, &playHudWidgetReadInterceptor);

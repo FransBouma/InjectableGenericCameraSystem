@@ -33,7 +33,7 @@ namespace IGCSClient.GameSpecific.Classes
 	internal static class GameSpecificConstants
 	{
 		public const string ClientWindowTitle = "Cyberpunk 2077 tools";
-		public const string CameraVersion = "1.0.1a";
+		public const string CameraVersion = "1.0.2";
 		public const string CameraCredits = "Otis_Inf / Jim2Point0";
 		public const bool HotsamplingRequiresEXITSIZEMOVE = false;
 	}

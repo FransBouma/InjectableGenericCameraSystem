@@ -150,31 +150,41 @@ exit:
 activeCamWrite1Interceptor ENDP
 
 pmStructAddressInterceptor PROC
-;Cyberpunk2077.exe+25C8521 - 0F59 C4               - mulps xmm0,xmm4
-;Cyberpunk2077.exe+25C8524 - 0FC6 FF 00            - shufps xmm7,xmm7,00 { 0 }
-;Cyberpunk2077.exe+25C8528 - 0F55 F8               - andnps xmm7,xmm0
-;Cyberpunk2077.exe+25C852B - 0F11 BE C0010000        - movups [rsi+000001C0],xmm7		<< INTERCEPT HERE << Quaternion storage. RSI contains pm struct.
-;Cyberpunk2077.exe+25C8532 - F3 44 0F11 9E D0010000  - movss [rsi+000001D0],xmm11		<< X storage
-;Cyberpunk2077.exe+25C853B - F3 44 0F11 96 D4010000  - movss [rsi+000001D4],xmm10		<< CONTINUE HERE << Y
-;Cyberpunk2077.exe+25C8544 - F3 44 0F11 8E D8010000  - movss [rsi+000001D8],xmm9		<< Z
-;Cyberpunk2077.exe+25C854D - 48 89 9E DC010000     - mov [rsi+000001DC],rbx
-;Cyberpunk2077.exe+25C8554 - 0F29 BD 10010000      - movaps [rbp+00000110],xmm7
-;Cyberpunk2077.exe+25C855B - 0F28 DF               - movaps xmm3,xmm7
-;Cyberpunk2077.exe+25C855E - 89 9E E4010000        - mov [rsi+000001E4],ebx
-;Cyberpunk2077.exe+25C8564 - 0F59 DF               - mulps xmm3,xmm7
-;Cyberpunk2077.exe+25C8567 - 48 8B CE              - mov rcx,rsi
-;Cyberpunk2077.exe+25C856A - 88 9E F4010000        - mov [rsi+000001F4],bl
-;Cyberpunk2077.exe+25C8570 - 88 9E A0010000        - mov [rsi+000001A0],bl
-;Cyberpunk2077.exe+25C8576 - 89 BE 8C010000        - mov [rsi+0000018C],edi
-;Cyberpunk2077.exe+25C857C - C7 45 0C 0000803F     - mov [rbp+0C],3F800000 { 1,00 }
-;Cyberpunk2077.exe+25C8583 - 0F28 C3               - movaps xmm0,xmm3
-;Cyberpunk2077.exe+25C8586 - 0F28 D3               - movaps xmm2,xmm3
-;Cyberpunk2077.exe+25C8589 - 0FC6 C3 FF            - shufps xmm0,xmm3,-01 { 255 }
-;Cyberpunk2077.exe+25C858D - 0F28 CB               - movaps xmm1,xmm3
-;Cyberpunk2077.exe+25C8590 - 0FC6 D3 AA            - shufps xmm2,xmm3,-56 { 170 }
-	mov [g_pmStructAddress], rsi
-	movups xmmword ptr [rsi+000001C0h],xmm7
-	movss dword ptr [rsi+000001D0h],xmm11
+;Cyberpunk2077.exe+25B6719 - 74 2B                 - je Cyberpunk2077.exe+25B6746
+;Cyberpunk2077.exe+25B671B - 41 8B C7              - mov eax,r15d
+;Cyberpunk2077.exe+25B671E - F0 0FC1 01            - lock xadd [rcx],eax
+;Cyberpunk2077.exe+25B6722 - 83 F8 01              - cmp eax,01 { 1 }
+;Cyberpunk2077.exe+25B6725 - 75 1F                 - jne Cyberpunk2077.exe+25B6746
+;Cyberpunk2077.exe+25B6727 - 48 8D 4D F0           - lea rcx,[rbp-10]
+;Cyberpunk2077.exe+25B672B - E8 60B1C0FD           - call Cyberpunk2077.exe+1C1890
+;Cyberpunk2077.exe+25B6730 - 48 8D 4D F0           - lea rcx,[rbp-10]
+;Cyberpunk2077.exe+25B6734 - E8 B777C6FD           - call Cyberpunk2077.exe+21DEF0
+;Cyberpunk2077.exe+25B6739 - 84 C0                 - test al,al
+;Cyberpunk2077.exe+25B673B - 74 09                 - je Cyberpunk2077.exe+25B6746
+;Cyberpunk2077.exe+25B673D - 48 8D 4D F0           - lea rcx,[rbp-10]
+;Cyberpunk2077.exe+25B6741 - E8 4A77C6FD           - call Cyberpunk2077.exe+21DE90
+;Cyberpunk2077.exe+25B6746 - 49 8B 4E 40           - mov rcx,[r14+40]				<< INTERCEPT HERE				>> R14 contains the photomode struct we need.
+;Cyberpunk2077.exe+25B674A - 48 8D 95 90000000     - lea rdx,[rbp+00000090]
+;Cyberpunk2077.exe+25B6751 - 41 88 9E FB020000     - mov [r14+000002FB],bl
+;Cyberpunk2077.exe+25B6758 - E8 6377FFFF           - call Cyberpunk2077.exe+25ADEC0	<< CONTINUE HERE
+;Cyberpunk2077.exe+25B675D - 48 8B 55 D0           - mov rdx,[rbp-30]
+;Cyberpunk2077.exe+25B6761 - 4C 8D 05 B8410702     - lea r8,[Cyberpunk2077.exe+462A920] { (-1285889246) }
+;Cyberpunk2077.exe+25B6768 - 48 8B 8D 90000000     - mov rcx,[rbp+00000090]
+;Cyberpunk2077.exe+25B676F - 48 83 C2 48           - add rdx,48 { 72 }
+;Cyberpunk2077.exe+25B6773 - E8 E84B40FF           - call Cyberpunk2077.exe+19BB360
+;Cyberpunk2077.exe+25B6778 - 84 C0                 - test al,al
+;Cyberpunk2077.exe+25B677A - 75 35                 - jne Cyberpunk2077.exe+25B67B1
+;Cyberpunk2077.exe+25B677C - 48 8B 7D D0           - mov rdi,[rbp-30]
+;Cyberpunk2077.exe+25B6780 - 48 8D 15 1939E300     - lea rdx,[Cyberpunk2077.exe+33EA0A0] { ("GameplayRestriction.NoCameraControl") }
+;Cyberpunk2077.exe+25B6787 - 48 8B B5 90000000     - mov rsi,[rbp+00000090]
+;Cyberpunk2077.exe+25B678E - 48 8D 8D 28020000     - lea rcx,[rbp+00000228]
+;Cyberpunk2077.exe+25B6795 - E8 66235100           - call Cyberpunk2077.exe+2AC8B00
+;Cyberpunk2077.exe+25B679A - 4C 8B C0              - mov r8,rax
+;Cyberpunk2077.exe+25B679D - 48 8D 57 48           - lea rdx,[rdi+48]
+	mov [g_pmStructAddress], r14
+	mov rcx,[r14+40h]		
+	lea rdx,[rbp+00000090h]
+	mov [r14+000002FBh],bl
 exit:
 	jmp qword ptr [_pmStructAddressInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 pmStructAddressInterceptor ENDP
