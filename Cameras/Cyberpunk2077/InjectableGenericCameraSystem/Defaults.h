@@ -93,6 +93,9 @@ namespace IGCS
 		InvertYLookDirection = 6,
 		FoVZoomSpeed = 7,
 		TimeOfDay = 8,
+		Wetness_OverrideParameters = 9,
+		Wetness_StreetWetnessFactor = 10,
+		Wetness_PuddleSize = 11,
 		
 		// add more here
 	};

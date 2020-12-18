@@ -28,7 +28,6 @@
 			<GroupBox Header="Miscellaneous camera options" Margin="15, 0, 0, 0">
 				<ui:SimpleStackPanel Orientation="Vertical">
 					<controls:FloatInputSliderWPF Header="Field of View (FoV) zoom speed" x:Name="_fovSpeedInput" Margin="0, 0, 0, 10"/>
-					<controls:FloatInputSliderWPF Header="Time of day" x:Name="_timeOfDayInput" Margin="0, 0, 0, 10"/>
 				</ui:SimpleStackPanel>
 			</GroupBox>
 		</ui:SimpleStackPanel>

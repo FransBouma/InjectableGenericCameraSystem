@@ -40,6 +40,8 @@ PUBLIC todStructAddressInterceptor
 PUBLIC playHudWidgetReadInterceptor
 PUBLIC pmHudWidgetReadInterceptor
 PUBLIC fovPlayWriteInterceptor
+PUBLIC timestopStructInterceptor
+PUBLIC weatherStructInterceptor
 
 ;---------------------------------------------------------------
 
@@ -47,12 +49,16 @@ PUBLIC fovPlayWriteInterceptor
 ; Externs which are used and set by the system. Read / write these
 ; values in asm to communicate with the system
 EXTERN g_cameraEnabled: byte
+EXTERN g_wetness_StreetWetnessFactor: dword
+EXTERN g_wetness_OverrideParameters: byte
 EXTERN g_pmStructAddress: qword
 EXTERN g_activeCamStructAddress: qword
 EXTERN g_resolutionStructAddress: qword
 EXTERN g_todStructAddress: qword
 EXTERN g_playHudWidgetAddress: qword
 EXTERN g_pmHudWidgetAddress: qword
+EXTERN g_timestopStructAddress: qword
+EXTERN g_weatherStructAddress: qword
 
 ;---------------------------------------------------------------
 
@@ -66,9 +72,12 @@ EXTERN _todStructAddressInterceptionContinue:qword
 EXTERN _playHudWidgetReadInterceptionContinue:qword
 EXTERN _pmHudWidgetReadInterceptionContinue:qword
 EXTERN _fovPlayWriteInterceptionContinue:qword
-
+EXTERN _timestopStructInterceptionContinue:qword
+EXTERN _weatherStructInterceptionContinue:qword
 
 .data
+
+_moistureFactorOverrideValue REAL4 1.0f
 
 .code
 
@@ -376,5 +385,85 @@ exit:
 	mov rcx,[rdi+000001B0h]
 	jmp qword ptr [_fovPlayWriteInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
 fovPlayWriteInterceptor ENDP
+
+
+timestopStructInterceptor PROC
+;Cyberpunk2077.exe+AB73E0 - 44 8B 49 1C           - mov r9d,[rcx+1C]					 << INTERCEPT HERE << READ Timestop. 1=>paused, 0=>run
+;Cyberpunk2077.exe+AB73E4 - 48 85 D2              - test rdx,rdx
+;Cyberpunk2077.exe+AB73E7 - 75 07                 - jne Cyberpunk2077.exe+AB73F0
+;Cyberpunk2077.exe+AB73E9 - 45 85 C9              - test r9d,r9d
+;Cyberpunk2077.exe+AB73EC - 0F95 C0               - setne al
+;Cyberpunk2077.exe+AB73EF - C3                    - ret 
+;Cyberpunk2077.exe+AB73F0 - 45 33 C0              - xor r8d,r8d							<< CONTINUE HERE 
+;Cyberpunk2077.exe+AB73F3 - 45 85 C9              - test r9d,r9d
+;Cyberpunk2077.exe+AB73F6 - 74 1E                 - je Cyberpunk2077.exe+AB7416
+;Cyberpunk2077.exe+AB73F8 - 4C 8B 51 10           - mov r10,[rcx+10]
+;Cyberpunk2077.exe+AB73FC - 0F1F 40 00            - nop dword ptr [rax+00]
+;Cyberpunk2077.exe+AB7400 - 41 8B C0              - mov eax,r8d
+;Cyberpunk2077.exe+AB7403 - 48 6B C8 70           - imul rcx,rax,70
+;Cyberpunk2077.exe+AB7407 - 4A 39 54 11 08        - cmp [rcx+r10+08],rdx
+;Cyberpunk2077.exe+AB740C - 74 0B                 - je Cyberpunk2077.exe+AB7419
+;Cyberpunk2077.exe+AB740E - 41 FF C0              - inc r8d
+;Cyberpunk2077.exe+AB7411 - 45 3B C1              - cmp r8d,r9d
+;Cyberpunk2077.exe+AB7414 - 72 EA                 - jb Cyberpunk2077.exe+AB7400
+;Cyberpunk2077.exe+AB7416 - 32 C0                 - xor al,al
+;Cyberpunk2077.exe+AB7418 - C3                    - ret 
+;Cyberpunk2077.exe+AB7419 - B0 01                 - mov al,01 { 1 }
+;Cyberpunk2077.exe+AB741B - C3                    - ret 
+	mov [g_timestopStructAddress], rcx
+	mov r9d,[rcx+1Ch]			
+	test rdx,rdx
+	jne exit
+	test r9d,r9d
+	setne al
+	ret				; will ret as normal.
+exit:
+	jmp qword ptr [_timestopStructInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+timestopStructInterceptor ENDP
+
+weatherStructInterceptor PROC
+;Cyberpunk2077.exe+111A020 - 8B 85 2C0A0000        - mov eax,[rbp+00000A2C]
+;Cyberpunk2077.exe+111A026 - 89 86 E4000000        - mov [rsi+000000E4],eax
+;Cyberpunk2077.exe+111A02C - 8B 85 300A0000        - mov eax,[rbp+00000A30]
+;Cyberpunk2077.exe+111A032 - 89 86 E8000000        - mov [rsi+000000E8],eax
+;Cyberpunk2077.exe+111A038 - F3 0F10 95 380A0000   - movss xmm2,[rbp+00000A38]
+;Cyberpunk2077.exe+111A040 - F3 0F11 96 F0000000   - movss [rsi+000000F0],xmm2		<< INTERCEPT HERE << Write moisture
+;Cyberpunk2077.exe+111A048 - F3 0F5C C2            - subss xmm0,xmm2
+;Cyberpunk2077.exe+111A04C - F3 0F10 8D 3C0A0000   - movss xmm1,[rbp+00000A3C]
+;Cyberpunk2077.exe+111A054 - F3 0F11 8E F4000000   - movss [rsi+000000F4],xmm1
+;Cyberpunk2077.exe+111A05C - 8B 85 400A0000        - mov eax,[rbp+00000A40]
+;Cyberpunk2077.exe+111A062 - 89 86 F8000000        - mov [rsi+000000F8],eax			<< Write puddle strength
+;Cyberpunk2077.exe+111A068 - F3 0F59 86 D0000000   - mulss xmm0,[rsi+000000D0]		<< CONTINUE HERE
+;Cyberpunk2077.exe+111A070 - F3 0F59 CA            - mulss xmm1,xmm2
+;Cyberpunk2077.exe+111A074 - F3 0F58 C1            - addss xmm0,xmm1
+;Cyberpunk2077.exe+111A078 - F3 0F11 85 440A0000   - movss [rbp+00000A44],xmm0
+;Cyberpunk2077.exe+111A080 - F3 0F10 8E F0000000   - movss xmm1,[rsi+000000F0]
+;Cyberpunk2077.exe+111A088 - F3 0F5C D9            - subss xmm3,xmm1
+	mov [g_weatherStructAddress], rsi
+	cmp byte ptr [g_wetness_OverrideParameters], 1
+	jne originalCode
+	; write 1.0 to moisture. Use eax for that, we're going to overwrite it later anyway. Keep the value in xmm2
+	; as otherwise the wetness on the streets isn't going to show.
+	mov eax, dword ptr[_moistureFactorOverrideValue]
+	mov [rsi+000000F0h], eax
+	subss xmm0,xmm2
+	movss xmm1, dword ptr [rbp+00000A3Ch]
+	movss dword ptr [rsi+000000F4h],xmm1	; 0xF4 offset is not important
+	mov eax,[rbp+00000A40h]	
+	; no write to 0xF8
+	; write streetwetnessfactor to d0 so it stays at that value.
+	mov eax, [g_wetness_StreetWetnessFactor]
+	mov [rsi+0D0h], eax
+	jmp exit
+originalCode:
+	movss dword ptr [rsi+000000F0h],xmm2	
+	subss xmm0,xmm2
+	movss xmm1, dword ptr [rbp+00000A3Ch]
+	movss dword ptr [rsi+000000F4h],xmm1
+	mov eax,[rbp+00000A40h]
+	mov [rsi+000000F8h],eax
+exit:
+	jmp qword ptr [_weatherStructInterceptionContinue]	; jmp back into the original game code, which is the location after the original statements above.
+weatherStructInterceptor ENDP
 
 END

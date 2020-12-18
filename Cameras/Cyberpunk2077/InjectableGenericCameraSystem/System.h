@@ -58,6 +58,7 @@ namespace IGCS
 		void waitForCameraStructAddresses();
 		void toggleInputBlockState(bool newValue);
 		void toggleHud();
+		void toggleGamePause(bool displayNotification = true);
 
 		Camera _camera;
 		LPBYTE _hostImageAddress;

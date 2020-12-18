@@ -176,6 +176,9 @@
       <DependentUpon>ConfigurationPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="DesignTime\IntellisenseResources.cs" />
+    <Compile Include="GameSpecific\Controls\EnvironmentAdjustmentsPage.xaml.cs">
+      <DependentUpon>EnvironmentAdjustmentsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GameSpecific\Controls\KeyBindingPage.xaml.cs">
       <DependentUpon>KeyBindingPage.xaml</DependentUpon>
     </Compile>
@@ -299,6 +302,10 @@
     <Page Include="GameSpecific\Controls\ConfigurationPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GameSpecific\Controls\EnvironmentAdjustmentsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="GameSpecific\Controls\KeyBindingPage.xaml">
       <SubType>Designer</SubType>

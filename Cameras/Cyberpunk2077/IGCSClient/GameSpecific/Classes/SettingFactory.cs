@@ -58,6 +58,9 @@ namespace IGCSClient.GameSpecific.Classes
 			appState.AddSetting(new BoolSetting(SettingType.InvertYLookDirection, nameof(SettingType.InvertYLookDirection), GameSpecificSettingDefaults.InvertYLookDirection));
 			appState.AddSetting(new FloatSetting(SettingType.FoVZoomSpeed, nameof(SettingType.FoVZoomSpeed), 0.01, 2.0, 2, 0.01, GameSpecificSettingDefaults.FoVZoomSpeed));
 			appState.AddSetting(new FloatSetting(GameSpecificSettingType.TimeOfDay, nameof(GameSpecificSettingType.TimeOfDay), 0.00, 23.99, 2, 0.01, GameSpecificSettingDefaults.TimeOfDay) { PersistToIniFile = false});
+			appState.AddSetting(new FloatSetting(GameSpecificSettingType.Wetness_StreetWetnessFactor, nameof(GameSpecificSettingType.Wetness_StreetWetnessFactor), 0.0, 1.0f, 2, 0.01, GameSpecificSettingDefaults.Wetness_StreetWetnessFactor) { PersistToIniFile = false});
+			appState.AddSetting(new FloatSetting(GameSpecificSettingType.Wetness_PuddleSize, nameof(GameSpecificSettingType.Wetness_PuddleSize), 0.0, 1.0f, 2, 0.01, GameSpecificSettingDefaults.Wetness_PuddleSize) { PersistToIniFile = false});
+			appState.AddSetting(new BoolSetting(GameSpecificSettingType.Wetness_OverrideParameters, nameof(GameSpecificSettingType.Wetness_OverrideParameters), GameSpecificSettingDefaults.Wetness_OverrideParameters) { PersistToIniFile = false});
 		}
 
 
@@ -82,10 +85,10 @@ namespace IGCSClient.GameSpecific.Classes
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.RotateCameraRight, nameof(KeyBindingType.RotateCameraRight), new KeyCombination(GameSpecificKeyBindingDefaults.RotateCameraRightDefault)));
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.TiltCameraLeft, nameof(KeyBindingType.TiltCameraLeft), new KeyCombination(GameSpecificKeyBindingDefaults.TiltCameraLeftDefault)));
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.TiltCameraRight, nameof(KeyBindingType.TiltCameraRight), new KeyCombination(GameSpecificKeyBindingDefaults.TiltCameraRightDefault)));
-			//appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.SkipFrames, nameof(KeyBindingType.SkipFrames), new KeyCombination(GameSpecificKeyBindingDefaults.SkipFramesDefault)));
+			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.SkipFrames, nameof(KeyBindingType.SkipFrames), new KeyCombination(GameSpecificKeyBindingDefaults.SkipFramesDefault)));
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.ResetTilt, nameof(KeyBindingType.ResetTilt), new KeyCombination(GameSpecificKeyBindingDefaults.ResetTiltDefault)));
 			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.ToggleHUD, nameof(KeyBindingType.ToggleHUD), new KeyCombination(GameSpecificKeyBindingDefaults.ToggleHUDDefault)));
-			//appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.PauseUnpauseGame, nameof(KeyBindingType.PauseUnpauseGame), new KeyCombination(GameSpecificKeyBindingDefaults.PauseUnpauseGameDefault)));
+			appState.AddKeyBinding(new KeyBindingSetting(KeyBindingType.PauseUnpauseGame, nameof(KeyBindingType.PauseUnpauseGame), new KeyCombination(GameSpecificKeyBindingDefaults.PauseUnpauseGameDefault)));
 
 			appState.AddKeyBinding(new KeyBindingSetting(GameSpecificKeyBindingType.TimeOfDayEarlier, nameof(GameSpecificKeyBindingType.TimeOfDayEarlier), new KeyCombination(GameSpecificKeyBindingDefaults.TimeOfDayEarlierDefault)));
 			appState.AddKeyBinding(new KeyBindingSetting(GameSpecificKeyBindingType.TimeOfDayLater, nameof(GameSpecificKeyBindingType.TimeOfDayLater), new KeyCombination(GameSpecificKeyBindingDefaults.TimeOfDayLaterDefault)));

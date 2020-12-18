@@ -62,6 +62,7 @@ namespace IGCSClient.Forms
 			TabItemHelper.SetIcon(_logTab, new SymbolIcon(Symbol.OpenFile));
 			TabItemHelper.SetIcon(_aboutTab, new SymbolIcon(Symbol.People));
 			TabItemHelper.SetIcon(_helpTab, new SymbolIcon(Symbol.Help));
+			TabItemHelper.SetIcon(_environmentAdjustmentsTab, new SymbolIcon(Symbol.World));
 			this.MinHeight = this.Height;
 			this.MinWidth = this.Width;
 		}
@@ -94,6 +95,7 @@ namespace IGCSClient.Forms
 			// First setup the controls 
 			_configurationEditor.Setup();
 			_keyBindingsEditor.Setup();
+			_environmentAdjustmentsEditor.Setup();
 
 			// then load the values from the ini file (if any) so the controls are already there.
 			AppStateSingleton.Instance().LoadFromIni();
@@ -105,10 +107,11 @@ namespace IGCSClient.Forms
 			_hotSamplingTab.IsEnabled = false;
 			_configurationTab.IsEnabled = false;
 			_keybindingsTab.IsEnabled = false;
+			_environmentAdjustmentsTab.IsEnabled = false;
 
 			MessageHandlerSingleton.Instance().NotificationLogFunc = s => DisplayNotification(s);
 		}
-
+		
 
 		private void DisplayNotification(string notification)
 		{
@@ -122,6 +125,7 @@ namespace IGCSClient.Forms
 			_hotSamplingTab.IsEnabled = true;
 			_configurationTab.IsEnabled = true;
 			_keybindingsTab.IsEnabled = true;
+			_environmentAdjustmentsTab.IsEnabled = true;
 			// show the resolutions on the hotsampling tab
 			_hotsamplingControl.BindData();
 		}

@@ -47,6 +47,8 @@ extern "C" {
 	void playHudWidgetReadInterceptor();
 	void pmHudWidgetReadInterceptor();
 	void fovPlayWriteInterceptor();
+	void timestopStructInterceptor();
+	void weatherStructInterceptor();
 }
 
 // external addresses used in asm.
@@ -59,6 +61,8 @@ extern "C" {
 	LPBYTE _playHudWidgetReadInterceptionContinue = nullptr;
 	LPBYTE _pmHudWidgetReadInterceptionContinue = nullptr;
 	LPBYTE _fovPlayWriteInterceptionContinue = nullptr;
+	LPBYTE _timestopStructInterceptionContinue = nullptr;
+	LPBYTE _weatherStructInterceptionContinue = nullptr;
 }
 
 
@@ -75,6 +79,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		aobBlocks[PLAY_WIDGETBUCKET_READ_INTERCEPT_KEY] = new AOBBlock(PLAY_WIDGETBUCKET_READ_INTERCEPT_KEY, "88 81 B1 00 00 00 48 89 BC 24 98 00 00 00 48 8B 7C 24 20", 1);
 		aobBlocks[PM_WIDGETBUCKET_READ_INTERCEPT_KEY] = new AOBBlock(PM_WIDGETBUCKET_READ_INTERCEPT_KEY, "74 0A 80 7A 40 00 74 04 B3 01 EB 02 32 DB 48 8B 49 40 0F B6 D3", 1);
 		aobBlocks[FOV_PLAY_WRITE_INTERCEPT_KEY] = new AOBBlock(FOV_PLAY_WRITE_INTERCEPT_KEY, "F3 0F 11 9F 5C 02 00 00 48 8B 8F B0 01 00 00", 1);
+		aobBlocks[TIMESTOP_STRUCT_INTERCEPT_KEY] = new AOBBlock(TIMESTOP_STRUCT_INTERCEPT_KEY, "44 8B 49 1C 48 85 D2 75 07 45 85 C9", 1);
+		aobBlocks[WEATHER_STRUCT_INTERCEPT_KEY] = new AOBBlock(WEATHER_STRUCT_INTERCEPT_KEY, "F3 0F 11 96 F0 00 00 00 F3 0F 5C C2 F3 0F 10 8D 3C 0A 00 00", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -109,6 +115,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[PLAY_WIDGETBUCKET_READ_INTERCEPT_KEY], (0x867BAA - 0x867B97), &_playHudWidgetReadInterceptionContinue, &playHudWidgetReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[PM_WIDGETBUCKET_READ_INTERCEPT_KEY], (0x8BA926 - 0x8BA914), &_pmHudWidgetReadInterceptionContinue, &pmHudWidgetReadInterceptor);
 		GameImageHooker::setHook(aobBlocks[FOV_PLAY_WRITE_INTERCEPT_KEY], (0x16D4D62 - 0x16D4D53), &_fovPlayWriteInterceptionContinue, &fovPlayWriteInterceptor);
+		GameImageHooker::setHook(aobBlocks[TIMESTOP_STRUCT_INTERCEPT_KEY], (0xAB73F0 - 0xAB73E0), &_timestopStructInterceptionContinue, &timestopStructInterceptor);
+		GameImageHooker::setHook(aobBlocks[WEATHER_STRUCT_INTERCEPT_KEY], (0x111A068 - 0x111A040), &_weatherStructInterceptionContinue, &weatherStructInterceptor);
 
 		// Grab the factor from static memory.
 		LPBYTE factorAddress = Utils::calculateAbsoluteAddress(aobBlocks[COORD_FACTOR_ADDRESS_KEY], 4);

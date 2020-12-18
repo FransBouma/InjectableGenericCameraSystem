@@ -115,6 +115,12 @@ namespace IGCSClient.GameSpecific.Controls
 					case KeyBindingType.ToggleHUD:
 						binding.Setup(_toggleHUDInput);
 						break;
+					case KeyBindingType.SkipFrames:
+						binding.Setup(_skipFramesInput);
+						break;
+					case KeyBindingType.PauseUnpauseGame:
+						binding.Setup(_pauseUnPauseInput);
+						break;
 				}
 			}
 		}

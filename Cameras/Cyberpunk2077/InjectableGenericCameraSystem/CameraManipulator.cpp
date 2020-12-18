@@ -158,6 +158,38 @@ namespace IGCS::GameSpecific::CameraManipulator
 		}
 	}
 
+	
+	bool gameIsPaused()
+	{
+		if(nullptr==g_timestopStructAddress)
+		{
+			return false;
+		}
+		return (*(g_timestopStructAddress + TIMESTOP_BYTE_IN_STRUCT_OFFSET) == (uint8_t)1);
+	}
+
+	
+	void stepGameInPause()
+	{
+		if (gameIsPaused())
+		{
+			// game is paused
+			setTimeStopValue(false); // unpause
+			Sleep(66);	// wait a couple of frames
+			setTimeStopValue(true);	// pause again
+		}
+	}
+
+	
+	void setTimeStopValue(bool pauseGame)
+	{
+		if (nullptr == g_timestopStructAddress)
+		{
+			return;
+		}
+		*(g_timestopStructAddress + TIMESTOP_BYTE_IN_STRUCT_OFFSET) = pauseGame ? (uint8_t)1 : (uint8_t)0;
+	}
+
 
 	void applySettingsToGameState()
 	{
@@ -170,6 +202,30 @@ namespace IGCS::GameSpecific::CameraManipulator
 			const int todWithoutDays = currentToDInSeconds % 86400;	
 			const int todInDays = currentToDInSeconds - todWithoutDays;
 			*todAddress = (todInDays + (int)(currentSettings.timeOfDay * 3600.0f));
+		}
+		if(currentSettings.wetnessSettingsChanged && nullptr != g_weatherStructAddress)
+		{
+			static float moistureValueSave = 0.0f;
+			static bool cacheMoistureValue = true;
+			
+			if(currentSettings.wetness_OverrideParameters)
+			{
+				if (cacheMoistureValue)
+				{
+					moistureValueSave = *reinterpret_cast<float*>(g_weatherStructAddress + MOISTURE_IN_STRUCT_OFFSET);
+					cacheMoistureValue = false;
+				}
+				g_wetness_StreetWetnessFactor = currentSettings.wetness_StreetWetnessFactor;
+				*reinterpret_cast<float*>(g_weatherStructAddress + PUDDLE_SIZE_IN_STRUCT_OFFSET) = currentSettings.wetness_PuddleSize;
+				g_wetness_OverrideParameters = (uint8_t)1;
+			}
+			else
+			{
+				// reset the moisture value to the value it had
+				*reinterpret_cast<float*>(g_weatherStructAddress + MOISTURE_IN_STRUCT_OFFSET) = moistureValueSave;
+				g_wetness_OverrideParameters = (uint8_t)0;
+				cacheMoistureValue = true;
+			}
 		}
 		currentSettings.resetFlags();
 	}

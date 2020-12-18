@@ -36,12 +36,16 @@
 #include "Settings.h"
 
 extern "C" uint8_t g_cameraEnabled;
+extern "C" uint8_t g_wetness_OverrideParameters;
+extern "C" float g_wetness_StreetWetnessFactor;
 extern "C" LPBYTE g_pmStructAddress;
 extern "C" LPBYTE g_activeCamStructAddress;
 extern "C" LPBYTE g_resolutionStructAddress;
 extern "C" LPBYTE g_todStructAddress;
 extern "C" LPBYTE g_playHudWidgetAddress;
 extern "C" LPBYTE g_pmHudWidgetAddress;
+extern "C" LPBYTE g_timestopStructAddress;
+extern "C" LPBYTE g_weatherStructAddress;
 
 namespace IGCS
 {

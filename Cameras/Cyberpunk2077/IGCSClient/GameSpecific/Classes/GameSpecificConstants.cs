@@ -34,7 +34,7 @@ namespace IGCSClient.GameSpecific.Classes
 	{
 		public const string ClientWindowTitle = "Cyberpunk 2077 tools";
 		public const string CameraVersion = "1.0.2";
-		public const string CameraCredits = "Otis_Inf / Jim2Point0";
+		public const string CameraCredits = "Otis_Inf & Jim2Point0";
 		public const bool HotsamplingRequiresEXITSIZEMOVE = false;
 	}
 
@@ -50,6 +50,9 @@ namespace IGCSClient.GameSpecific.Classes
 		public const bool InvertYLookDirection = false;
 		public const float FoVZoomSpeed = 0.1f;
 		public const float TimeOfDay = 12.0f;
+		public const bool Wetness_OverrideParameters = false;
+		public const float Wetness_StreetWetnessFactor = 0.0f;
+		public const float Wetness_PuddleSize = 0.0f;
 	}
 
 
@@ -94,5 +97,8 @@ namespace IGCSClient.GameSpecific.Classes
 	{
 		// default settings end at 7
 		public const byte TimeOfDay = 8;
+		public const byte Wetness_OverrideParameters = 9;
+		public const byte Wetness_StreetWetnessFactor = 10;
+		public const byte Wetness_PuddleSize = 11;
 	}
 }

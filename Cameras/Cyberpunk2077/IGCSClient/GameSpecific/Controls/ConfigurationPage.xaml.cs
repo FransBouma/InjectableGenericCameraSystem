@@ -76,9 +76,6 @@ namespace IGCSClient.GameSpecific.Controls
 					case SettingType.FoVZoomSpeed:
 						setting.Setup(_fovSpeedInput);
 						break;
-					case GameSpecificSettingType.TimeOfDay:
-						setting.Setup(_timeOfDayInput);
-						break;
 				}
 			}
 		}

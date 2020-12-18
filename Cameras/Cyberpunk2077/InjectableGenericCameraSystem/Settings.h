@@ -48,9 +48,13 @@ namespace IGCS
 		int cameraControlDevice;		// 0==keyboard/mouse, 1 == gamepad, 2 == both, see Defaults.h
 		// game specific
 		float timeOfDay;
+		bool wetness_OverrideParameters;
+		float wetness_StreetWetnessFactor;
+		float wetness_PuddleSize;
 
 		// flags to check for applying settings
 		bool timeOfDayChanged = false;
+		bool wetnessSettingsChanged = false;
 		
 		void setValueFromMessage(uint8_t payload[], DWORD payloadLength)
 		{
@@ -90,6 +94,18 @@ namespace IGCS
 				timeOfDay = Utils::clamp(Utils::floatFromBytes(payload, payloadLength, 2), 0.00f, 24.00f, 12.0f);
 				timeOfDayChanged = true;
 				break;
+			case SettingType::Wetness_OverrideParameters:
+				wetness_OverrideParameters = payload[2] == (uint8_t)1;
+				wetnessSettingsChanged = true;
+				break;
+			case SettingType::Wetness_PuddleSize:
+				wetness_PuddleSize = Utils::clamp(Utils::floatFromBytes(payload, payloadLength, 2), 0.0f, 1.0f, 0.0f);
+				wetnessSettingsChanged = true;
+				break;
+			case SettingType::Wetness_StreetWetnessFactor:
+				wetness_StreetWetnessFactor = Utils::clamp(Utils::floatFromBytes(payload, payloadLength, 2), 0.0f, 1.0f, 0.0f);
+				wetnessSettingsChanged = true;
+				break;
 			default:
 				// nothing
 				break;
@@ -100,6 +116,7 @@ namespace IGCS
 		void resetFlags()
 		{
 			timeOfDayChanged = false;
+			wetnessSettingsChanged = false;
 		}
 		
 
@@ -114,6 +131,9 @@ namespace IGCS
 			fovChangeSpeed = DEFAULT_FOV_SPEED;
 			cameraControlDevice = DEVICE_ID_ALL;
 			timeOfDay = 12.0f;
+			wetness_OverrideParameters = false;
+			wetness_StreetWetnessFactor = 0.0f;
+			wetness_PuddleSize = 0.0f;
 			resetFlags();
 		}
 	};

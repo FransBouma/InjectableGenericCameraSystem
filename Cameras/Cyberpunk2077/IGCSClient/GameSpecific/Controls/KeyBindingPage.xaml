@@ -19,8 +19,7 @@
 			<controls:KeyCombinationInputWPF Header="Move camera backward" x:Name="_moveCameraBackwardInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 			<controls:KeyCombinationInputWPF Header="Move camera up" x:Name="_moveCameraUpInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 			<controls:KeyCombinationInputWPF Header="Move camera down" x:Name="_moveCameraDownInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
-			<!--<controls:KeyCombinationInputWPF Header="Pause / unpause the game" x:Name="_pauseUnPauseInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
-			<controls:KeyCombinationInputWPF Header="Skip a few frames when paused" x:Name="_skipFramesInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>-->
+			<controls:KeyCombinationInputWPF Header="Pause / unpause the game" x:Name="_pauseUnPauseInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 			<controls:KeyCombinationInputWPF Header="Reset tilt camera" x:Name="_resetTiltCameraInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 			<controls:KeyCombinationInputWPF Header="Make Time of Day earlier (With alt: slower)" x:Name="_timeOfDayEarlierInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 		</StackPanel>
@@ -34,6 +33,7 @@
 			<controls:KeyCombinationInputWPF Header="Rotate camera right" x:Name="_rotateCameraRightInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 			<controls:KeyCombinationInputWPF Header="Tilt camera left" x:Name="_tiltCameraLeftInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 			<controls:KeyCombinationInputWPF Header="Tilt camera right" x:Name="_tiltCameraRightInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
+			<controls:KeyCombinationInputWPF Header="Skip a few frames when paused" x:Name="_skipFramesInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 			<controls:KeyCombinationInputWPF Header="Toggle HUD" x:Name="_toggleHUDInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 			<controls:KeyCombinationInputWPF Header="Make Time of Day later (With alt: slower)" x:Name="_timeOfDayLaterInput" Width="300" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 		</StackPanel>

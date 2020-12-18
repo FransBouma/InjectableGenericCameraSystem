@@ -176,6 +176,16 @@ namespace IGCS
 		{
 			CameraManipulator::changeFoV(Globals::instance().settings().fovChangeSpeed);
 		}
+		if (Input::isActionActivated(ActionType::Timestop))
+		{
+			toggleGamePause();
+			_applyHammerPrevention = true;
+		}
+		if (Input::isActionActivated(ActionType::SkipFrames))
+		{
+			CameraManipulator::stepGameInPause();
+			_applyHammerPrevention = true;
+		}
 		if (Input::isActionActivated(ActionType::HudToggle))
 		{
 			toggleHud();
@@ -480,5 +490,17 @@ namespace IGCS
 	void System::displayCameraState()
 	{
 		MessageHandler::addNotification(g_cameraEnabled ? "Camera enabled" : "Camera disabled");
+	}
+	
+
+	void System::toggleGamePause(bool displayNotification)
+	{
+		bool gameIsPaused = CameraManipulator::gameIsPaused();
+		CameraManipulator::setTimeStopValue(!gameIsPaused);
+		if (displayNotification)
+		{
+			// gameIsPaused is the state before we toggled it, so we have to display the reverse text!
+			MessageHandler::addNotification(gameIsPaused ? "Game unpaused" : "Game paused");
+		}
 	}
 }

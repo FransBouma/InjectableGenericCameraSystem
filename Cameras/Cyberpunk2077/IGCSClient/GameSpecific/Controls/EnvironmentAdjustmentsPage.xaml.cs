@@ -1,6 +1,6 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Part of Injectable Generic Camera System
-// Copyright(c) 2017, Frans Bouma
+// Copyright(c) 2020, Frans Bouma
 // All rights reserved.
 // https://github.com/FransBouma/InjectableGenericCameraSystem
 //
@@ -25,32 +25,47 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma once
-#include "stdafx.h"
-#include "Camera.h"
-#include "GameCameraData.h"
+using System;
+using System.Windows;
+using System.Windows.Controls;
+using IGCSClient.Classes;
+using IGCSClient.GameSpecific.Classes;
+using IGCSClient.Interfaces;
 
-namespace IGCS::GameSpecific::CameraManipulator
+namespace IGCSClient.GameSpecific.Controls
 {
-	void updateCameraDataInGameData(Camera& camera);
-	void writeNewCameraValuesToGameData(DirectX::XMFLOAT3 newCoords, DirectX::XMVECTOR newLookQuaternion);
-	void restoreOriginalValuesAfterCameraDisable();
-	void cacheOriginalValuesBeforeCameraEnable();
-	DirectX::XMFLOAT3 getCurrentCameraCoords();
-	void resetFoV();
-	void changeFoV(float amount);
-	float getCurrentFoV();
-	bool isCameraFound();
-	void displayCameraStructAddress();
-	void applySettingsToGameState();
-	void restoreGameCameraDataWithCachedData(GameCameraData& source);
-	void cacheGameCameraDataInCache(GameCameraData& destination);
-	void displayDebugInfo();
-	void setCoordMultiplierFactor(float factor);
-	void resizeViewPort(int newWidth, int newHeight);
-	void changeTimeOfDayUsingAmount(float amount);
-	void toggleHud(bool showHud);
-	bool gameIsPaused();
-	void stepGameInPause();
-	void setTimeStopValue(bool pauseGame);
+	/// <summary>
+	/// Editor for various camera settings
+	/// </summary>
+	public partial class EnvironmentAdjustmentsPage : UserControl
+	{
+		public EnvironmentAdjustmentsPage()
+		{
+			InitializeComponent();
+		}
+
+
+		internal void Setup()
+		{
+			var settings = AppStateSingleton.Instance().Settings;
+			foreach(var setting in settings)
+			{
+				switch(setting.ID)
+				{
+					case GameSpecificSettingType.TimeOfDay:
+						setting.Setup(_timeOfDayInput);
+						break;
+					case GameSpecificSettingType.Wetness_OverrideParameters:
+						setting.Setup(_overrideWetness);
+						break;
+					case GameSpecificSettingType.Wetness_PuddleSize:
+						setting.Setup(_puddleSizeInput);
+						break;
+					case GameSpecificSettingType.Wetness_StreetWetnessFactor:
+						setting.Setup(_streetWetnessInput);
+						break;
+				}
+			}
+		}
+	}
 }

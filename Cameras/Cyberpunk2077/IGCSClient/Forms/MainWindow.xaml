@@ -41,6 +41,11 @@
 					<GameSpecificControls:ConfigurationPage Margin="15" x:Name="_configurationEditor" Width="Auto" Height="Auto"/>
 				</ScrollViewer>
 			</TabItem>
+			<TabItem Header="Environment Adjustments" Name="_environmentAdjustmentsTab">
+				<ScrollViewer>
+					<GameSpecificControls:EnvironmentAdjustmentsPage Margin="15" x:Name="_environmentAdjustmentsEditor" Width="Auto" Height="Auto"/>
+				</ScrollViewer>
+			</TabItem>
 			<TabItem Header="Key-bindings" Name="_keybindingsTab">
 				<ScrollViewer>
 					<GameSpecificControls:KeyBindingPage Margin="15" x:Name="_keyBindingsEditor" Width="Auto" Height="Auto"/>
