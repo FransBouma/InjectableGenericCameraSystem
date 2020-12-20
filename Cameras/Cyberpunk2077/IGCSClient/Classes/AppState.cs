@@ -139,7 +139,7 @@ namespace IGCSClient.Classes
 
 		public void SendKeyBindings()
 		{
-			foreach(var kb in _keyBindings)
+			foreach(var kb in _keyBindings.Where(s=>s.PersistToIniFile))
 			{
 				kb.SendValueAsMessage();
 			}
