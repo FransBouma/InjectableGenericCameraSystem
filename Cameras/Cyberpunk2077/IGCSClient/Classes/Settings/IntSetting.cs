@@ -63,7 +63,6 @@ namespace IGCSClient.Classes
 				return;
 			}
 			controlAsIntInput.Setup(_minValue, _maxValue, _increment, _defaultValue);
-			controlAsIntInput.Value = _defaultValue;
 		}
 
 

@@ -61,6 +61,7 @@ namespace IGCSClient.Controls
 			_sliderControl.SmallChange = increment;
 			_sliderControl.LargeChange = increment;
 			_onOffSwitch.Value = false;
+			_sliderControl.Value = defaultValue;
 			_suppressEvents = false;
 		}
 

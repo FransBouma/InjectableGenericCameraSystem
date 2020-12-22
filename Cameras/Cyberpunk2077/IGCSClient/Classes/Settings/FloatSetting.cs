@@ -65,7 +65,6 @@ namespace IGCSClient.Classes
 				return;
 			}
 			controlAsFloatInput.Setup(_minValue, _maxValue, _scale, _increment, _defaultValue);
-			controlAsFloatInput.Value = _defaultValue;
 		}
 
 

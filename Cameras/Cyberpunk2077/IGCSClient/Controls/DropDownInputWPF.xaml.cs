@@ -40,6 +40,8 @@ namespace IGCSClient.Controls
 	{
 		#region Members
 		public event EventHandler ValueChanged;
+
+		private bool _suppressEvents = false;
 		#endregion
 
 		public DropDownInputWPF()
@@ -48,11 +50,27 @@ namespace IGCSClient.Controls
 		}
 		
 
-		public void Setup(List<string> items)
+		public void Setup(List<string> items, int defaultIndex)
 		{
+			_suppressEvents = true;
 			_comboBoxControl.Items.Clear();
 			_comboBoxControl.ItemsSource = items.ToArray();
-			_comboBoxControl.SelectedIndex = items.Count > 0 ? 0 : -1;
+			if(items.Count > 0)
+			{
+				if(defaultIndex >= 0 && items.Count > defaultIndex)
+				{
+					_comboBoxControl.SelectedIndex = defaultIndex;
+				}
+				else
+				{
+					_comboBoxControl.SelectedIndex = 0;
+				}
+			}
+			else
+			{
+				_comboBoxControl.SelectedIndex = -1;
+			}
+			_suppressEvents = false;
 		}
 
 
@@ -65,10 +83,13 @@ namespace IGCSClient.Controls
 			this.Value = valueToSet;
 		}
 
-		
 
 		private void _comboBoxControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
+			if(_suppressEvents)
+			{
+				return;
+			}
 			this.ValueChanged.RaiseEvent(this);
 		}
 

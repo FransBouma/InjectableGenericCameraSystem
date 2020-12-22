@@ -60,6 +60,7 @@ namespace IGCSClient.Controls
 			_sliderControl.AutoToolTipPrecision = scale;
 			_sliderControl.SmallChange = increment;
 			_sliderControl.LargeChange = increment;
+			_sliderControl.Value = defaultValue;
 			_suppressEvents = false;
 		}
 

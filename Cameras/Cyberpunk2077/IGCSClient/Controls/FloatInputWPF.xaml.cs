@@ -86,6 +86,7 @@ namespace IGCSClient.Controls
 			_numberControl.SmallChange = increment;
 			_numberControl.LargeChange = increment;
 			_defaultValue = Convert.ToSingle(defaultValue);
+			_numberControl.Value = _defaultValue;
 			_suppressEvents = false;
 		}
 		

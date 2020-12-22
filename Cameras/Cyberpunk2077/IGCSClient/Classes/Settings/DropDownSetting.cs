@@ -61,8 +61,7 @@ namespace IGCSClient.Classes
 			{
 				return;
 			}
-			controlAsDropDown.Setup(_items);
-			controlAsDropDown.Value = _defaultValue;
+			controlAsDropDown.Setup(_items, _defaultValue);
 		}
 
 
