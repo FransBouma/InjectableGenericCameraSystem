@@ -15,7 +15,7 @@
 				<controls:FloatInputSliderWPF Header="Slow movement multiplier" x:Name="_slowMovementInput" Margin="0, 0, 0, 10"/>
 				<controls:FloatInputSliderWPF Header="Up movement multiplier" x:Name="_upMovementInput" Margin="0, 0, 0, 10"/>
 				<controls:FloatInputSliderWPF Header="Movement speed" x:Name="_movementSpeedInput" Margin="0, 0, 0, 10"/>
-				<controls:DropDownInputWPF Header="Game control device" x:Name="_cameraControlDeviceInput" Margin="0, 0, 0, 10"/>
+				<controls:DropDownInputWPF Header="Camera control device" x:Name="_cameraControlDeviceInput" Margin="0, 0, 0, 10"/>
 			</ui:SimpleStackPanel>
 		</GroupBox>
 		<ui:SimpleStackPanel Orientation="Vertical">
