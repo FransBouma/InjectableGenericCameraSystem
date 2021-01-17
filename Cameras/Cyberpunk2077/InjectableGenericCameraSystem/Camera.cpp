@@ -30,6 +30,7 @@
 #include "Defaults.h"
 #include "GameConstants.h"
 #include "Globals.h"
+#include "MessageHandler.h"
 
 using namespace DirectX;
 
