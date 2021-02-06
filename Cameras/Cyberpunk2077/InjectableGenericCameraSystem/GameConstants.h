@@ -30,8 +30,8 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Cyberpunk 2077 v1.0.4+"
-	#define CAMERA_VERSION								"1.0.2"
+	#define GAME_NAME									"Cyberpunk 2077 v1.0.11+"
+	#define CAMERA_VERSION								"1.0.4"
 	#define CAMERA_CREDITS								"Otis_Inf / Jim2Point0"
 	#define GAME_WINDOW_TITLE							"Cyberpunk 2077"
 	#define INITIAL_PITCH_RADIANS						0.0f	// around X axis	(right)
