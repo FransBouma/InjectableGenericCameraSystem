@@ -1,5 +1,32 @@
 Greedfall
 ==============
+A slightly higher LOD for ground further away:
+Engine.dll+D529F: 44 0F 28 CA                 - movaps xmm9,xmm2
+Engine.dll+D52A3: 48 8B F2                    - mov rsi,rdx
+Engine.dll+D52A6: 4C 8B E1                    - mov r12,rcx
+Engine.dll+D52A9: 4C 8D B9 F0 00 00 00        - lea r15,[rcx+000000F0]
+Engine.dll+D52B0: 0F 28 82 90 00 00 00        - movaps xmm0,[rdx+00000090]
+Engine.dll+D52B7: 66 0F 7F 45 A7              - movdqa [rbp-59],xmm0
+Engine.dll+D52BC: F3 44 0F 10 81 18 02 00 00  - movss xmm8,[rcx+00000218]
+Engine.dll+D52C5: F3 44 0F 5E 05 F2 9E 86 00  - divss xmm8,[Engine.Spider::danPooledAnimTreeDesc::`vftable'+748]
+Engine.dll+D52CE: 80 7A 08 00                 - cmp byte ptr [rdx+08],00
+Engine.dll+D52D2: 74 20                       - je Engine.dll+D52F4
+// ---------- INJECTING HERE ----------
+Engine.dll+D52D4: F3 0F 10 42 10              - movss xmm0,[rdx+10]			<< LOAD 0 or lower in xmm0
+// ---------- DONE INJECTING  ----------
+Engine.dll+D52D9: F3 0F 10 3D BF 9E 86 00     - movss xmm7,[Engine.Spider::danPooledAnimTreeDesc::`vftable'+728]
+Engine.dll+D52E1: F3 0F 59 C7                 - mulss xmm0,xmm7
+Engine.dll+D52E5: F3 0F 59 05 13 4B 87 00     - mulss xmm0,[Engine.PSSG::PLinkProxyBase::`vftable'+63A8]
+Engine.dll+D52ED: E8 32 E4 F2 FF              - call Engine.Spider::aedOcclusionToolbox::isObserverZonesHighlightEnabled+5F
+Engine.dll+D52F2: EB 12                       - jmp Engine.dll+D5306
+Engine.dll+D52F4: F3 0F 10 42 0C              - movss xmm0,[rdx+0C]
+Engine.dll+D52F9: F3 0F 5C 42 10              - subss xmm0,[rdx+10]
+Engine.dll+D52FE: F3 0F 10 3D D2 B6 86 00     - movss xmm7,[Engine.Spider::danPooledAnimTreeDesc::`vftable'+1F60]
+Engine.dll+D5306: F3 0F 5E F8                 - divss xmm7,xmm0
+Engine.dll+D530A: F3 0F 11 7D 7F              - movss [rbp+7F],xmm7
+
+
+
 HUD toggle is done via 3dmigoto
 
 Camera:
