@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="34">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>51</ID>
+      <Description>"Mass Effect Legendary Edition Photomode Enhancements"</Description>
+      <LastState Value="" RealAddress="00000000"/>
+      <GroupHeader>1</GroupHeader>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>57</ID>
+      <Description>"v1.0 (2021-May-15)"</Description>
+      <LastState Value="" RealAddress="00000000"/>
+      <GroupHeader>1</GroupHeader>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>42</ID>
+      <Description>"By Otis_Inf. "</Description>
+      <LastState Value="" RealAddress="00000000"/>
+      <Color>A00000</Color>
+      <GroupHeader>1</GroupHeader>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>43</ID>
+      <Description>"https://patreon.com/Otis_Inf"</Description>
+      <LastState Value="" RealAddress="00000000"/>
+      <Color>A00000</Color>
+      <GroupHeader>1</GroupHeader>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>41</ID>
+      <Description>"--------------------------------------------------------------"</Description>
+      <LastState Value="" RealAddress="00000000"/>
+      <Color>FF0000</Color>
+      <GroupHeader>1</GroupHeader>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>44</ID>
+      <Description>"Mass Effect 1"</Description>
+      <LastState Value="" RealAddress="00000000"/>
+      <GroupHeader>1</GroupHeader>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>38</ID>
+          <Description>"Remove PM range limit (leave enabled!)"</Description>
+          <LastState/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>{ Game   : Mass Effect Legendary Edition
+  Version: Mass Effect 1
+  Date   : 2021-05-15
+  Author : Otis_Inf
+
+  This script removes the range limiter of the photomode.
+}
+
+[ENABLE]
+
+aobscanmodule(MeLePMRangeLimiter, MassEffect1.exe, F2 0F 11 87 08 01 00 00 89 87 10 01 00 00)
+
+registersymbol(MeLePMRangeLimiter)
+
+MeLePMRangeLimiter:
+  nop 0E
+
+[DISABLE]
+
+MeLePMRangeLimiter:
+  movsd [rdi+00000108],xmm0
+  mov [rdi+00000110],eax
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>40</ID>
+          <Description>"Remove clip check (leave enabled!)"</Description>
+          <LastState/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>{ Game   : Mass Effect Legendary Edition
+  Version: Mass Effect 1
+  Date   : 2021-05-15
+  Author : Otis_Inf
+
+  This script removes clip check in pm
+}
+
+[ENABLE]
+
+aobscanmodule(PmNoClip,MassEffect1.exe,75 0A 48 8B 1B 48 85 DB 75 96 EB 38 0F 10 03 0F 11 06) // should be unique
+
+registersymbol(PmNoClip)
+
+PmNoClip:
+  db 90 90
+
+[DISABLE]
+
+PmNoClip:
+  db 75 0A
+
+unregistersymbol(PmNoClip)
+
+
+</AssemblerScript>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>45</ID>
+      <Description>"Mass Effect 2"</Description>
+      <LastState Value="" RealAddress="00000000"/>
+      <GroupHeader>1</GroupHeader>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>46</ID>
+          <Description>"Remove PM range limit (leave enabled!)"</Description>
+          <LastState/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>{ Game   : Mass Effect Legendary Edition
+  Version: Mass Effect 2
+  Date   : 2021-05-15
+  Author : Otis_Inf
+
+  This script removes the range limiter of the photomode.
+}
+
+[ENABLE]
+
+aobscanmodule(MeLePMRangeLimiter, MassEffect2.exe, F2 0F 11 87 18 01 00 00 89 87 20 01 00 00)
+
+registersymbol(MeLePMRangeLimiter)
+
+MeLePMRangeLimiter:
+  nop 0E
+
+[DISABLE]
+
+MeLePMRangeLimiter:
+  movsd [rdi+00000118],xmm0
+  mov [rdi+00000120],eax
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>50</ID>
+          <Description>"Remove clip check (leave enabled!)"</Description>
+          <LastState/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>{ Game   : Mass Effect Legenday Edition
+  Version: Mass Effect 2
+  Date   : 2021-05-15
+  Author : Otis_Inf
+
+  This script removes the Clip check
+}
+
+[ENABLE]
+
+aobscanmodule(PmNoClip,MassEffect2.exe,0F 84 0A 02 00 00 44 0F) // should be unique
+
+registerSymbol(PmNoClip)
+
+PmNoClip:
+  db 90 E9                    // replace the je with nop + jmp
+
+[DISABLE]
+
+PmNoClip:
+  db 0F 84
+
+unregisterSymbol(PmNoClip)
+</AssemblerScript>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>52</ID>
+      <Description>"Mass Effect 3"</Description>
+      <LastState Value="" RealAddress="00000000"/>
+      <GroupHeader>1</GroupHeader>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>53</ID>
+          <Description>"Remove PM range limit (leave enabled!)"</Description>
+          <LastState/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>{ Game   : Mass Effect Legendary Edition
+  Version: 
+  Date   : 2021-05-15
+  Author : Otis_Inf
+
+  This script removes the range limiter of the photomode.
+}
+
+[ENABLE]
+
+aobscanmodule(MeLePMRangeLimiter, MassEffect3.exe, F2 0F 11 87 08 01 00 00 89 87 10 01 00 00)
+
+registersymbol(MeLePMRangeLimiter)
+
+MeLePMRangeLimiter:
+  nop 0E
+
+[DISABLE]
+
+MeLePMRangeLimiter:
+  movsd [rdi+00000108],xmm0
+  mov [rdi+00000110],eax
+
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>56</ID>
+          <Description>"Remove clip check (leave enabled!)"</Description>
+          <LastState/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>{ Game   : Mass Effect Legenday Edition
+  Version: Mass Effect 3
+  Date   : 2021-05-15
+  Author : Otis_Inf
+
+  This script removes the Clip check
+}
+
+[ENABLE]
+
+aobscanmodule(PmNoClip,MassEffect3.exe, 0F 84 0C 02 00 00 44 0F) // should be unique
+
+registerSymbol(PmNoClip)
+
+PmNoClip:
+  db 90 E9                    // replace the je with nop + jmp
+
+[DISABLE]
+
+PmNoClip:
+  db 0F 84
+
+unregisterSymbol(PmNoClip)
+</AssemblerScript>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+  </CheatEntries>
+  <UserdefinedSymbols/>
+  <Comments>Info about this table:
+</Comments>
+</CheatTable>
