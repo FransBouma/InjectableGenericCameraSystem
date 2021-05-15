@@ -72,7 +72,7 @@ MeLePMRangeLimiter:
         </CheatEntry>
         <CheatEntry>
           <ID>40</ID>
-          <Description>"Remove clip check (leave enabled!)"</Description>
+          <Description>"Remove clip check (Disable during gameplay)"</Description>
           <LastState/>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>{ Game   : Mass Effect Legendary Edition
@@ -142,7 +142,7 @@ MeLePMRangeLimiter:
         </CheatEntry>
         <CheatEntry>
           <ID>50</ID>
-          <Description>"Remove clip check (leave enabled!)"</Description>
+          <Description>"Remove clip check (Disable during gameplay)"</Description>
           <LastState/>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>{ Game   : Mass Effect Legenday Edition
@@ -211,7 +211,7 @@ MeLePMRangeLimiter:
         </CheatEntry>
         <CheatEntry>
           <ID>56</ID>
-          <Description>"Remove clip check (leave enabled!)"</Description>
+          <Description>"Remove clip check (Disable during gameplay)"</Description>
           <LastState/>
           <VariableType>Auto Assembler Script</VariableType>
           <AssemblerScript>{ Game   : Mass Effect Legenday Edition
