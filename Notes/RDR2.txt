@@ -507,6 +507,47 @@ RDR2.exe+70D336 - 89 83 183F0000        - mov [rbx+00003F18],eax
 RDR2.exe+70D33C - 48 8D 4C 24 40        - lea rcx,[rsp+40]
 RDR2.exe+70D341 - F3 0F11 83 203F0000   - movss [rbx+00003F20],xmm0
 
+// latest patch:
+00007FF70B0B9A66 | 83BB 383F0000 FF              | cmp     dword ptr ds:[rbx+3F38],FFFFFFFF 
+00007FF70B0B9A6D | 75 43                         | jne     rdr2_dump_0724.7FF70B0B9AB2      
+00007FF70B0B9A6F | 80BB 4C3F0000 00              | cmp     byte ptr ds:[rbx+3F4C],0         
+00007FF70B0B9A76 | 75 0C                         | jne     rdr2_dump_0724.7FF70B0B9A84      
+00007FF70B0B9A78 | 48:8D8B 18420000              | lea     rcx,qword ptr ds:[rbx+4218]      
+00007FF70B0B9A7F | E8 2085FFFF                   | call    rdr2_dump_0724.7FF70B0B1FA4      
+00007FF70B0B9A84 | 8B83 DC500000                 | mov     eax,dword ptr ds:[rbx+50DC]      
+00007FF70B0B9A8A | 48:C1E0 05                    | shl     rax,5                            
+00007FF70B0B9A8E | 8B8418 18420000               | mov     eax,dword ptr ds:[rax+rbx+4218]  
+00007FF70B0B9A95 | 8983 243F0000                 | mov     dword ptr ds:[rbx+3F24],eax      
+00007FF70B0B9A9B | 8B83 E0500000                 | mov     eax,dword ptr ds:[rbx+50E0]      
+00007FF70B0B9AA1 | 48:C1E0 05                    | shl     rax,5                            
+00007FF70B0B9AA5 | 8B8418 18420000               | mov     eax,dword ptr ds:[rax+rbx+4218]  
+00007FF70B0B9AAC | 8983 283F0000                 | mov     dword ptr ds:[rbx+3F28],eax      
+00007FF70B0B9AB2 | 8B83 6C410000                 | mov     eax,dword ptr ds:[rbx+416C]      		<< Read weather value. 
+00007FF70B0B9AB8 | F3:0F1083 E4500000            | movss   xmm0,dword ptr ds:[rbx+50E4]     
+00007FF70B0B9AC0 | 85C0                          | test    eax,eax                          
+00007FF70B0B9AC2 | 78 0C                         | js      rdr2_dump_0724.7FF70B0B9AD0      
+00007FF70B0B9AC4 | 8983 283F0000                 | mov     dword ptr ds:[rbx+3F28],eax      
+00007FF70B0B9ACA | 8983 243F0000                 | mov     dword ptr ds:[rbx+3F24],eax      
+00007FF70B0B9AD0 | 48:8D4C24 40                  | lea     rcx,qword ptr ss:[rsp+40]        
+00007FF70B0B9AD5 | F3:0F1183 2C3F0000            | movss   dword ptr ds:[rbx+3F2C],xmm0     
+00007FF70B0B9ADD | E8 02C39FFF                   | call    rdr2_dump_0724.7FF70AAB5DE4      
+00007FF70B0B9AE2 | 48:8D5424 30                  | lea     rdx,qword ptr ss:[rsp+30]        
+00007FF70B0B9AE7 | 48:8BCB                       | mov     rcx,rbx                          
+00007FF70B0B9AEA | 0F1000                        | movups  xmm0,xmmword ptr ds:[rax]        
+00007FF70B0B9AED | F3:0F7F4424 30                | movdqu  xmmword ptr ss:[rsp+30],xmm0     
+00007FF70B0B9AF3 | E8 84C3FFFF                   | call    rdr2_dump_0724.7FF70B0B5E7C      
+00007FF70B0B9AF8 | 48:8BCB                       | mov     rcx,rbx                          
+00007FF70B0B9AFB | E8 8451FEFF                   | call    rdr2_dump_0724.7FF70B09EC84      
+00007FF70B0B9B00 | 48:83C4 50                    | add     rsp,50                           
+00007FF70B0B9B04 | 5B                            | pop     rbx                              
+00007FF70B0B9B05 | C3                            | ret                                      
+00007FF70B0B9B06 | CC                            | int3                                     
+00007FF70B0B9B07 | 8948 89                       | mov     dword ptr ds:[rax-77],ecx        
+00007FF70B0B9B0A | 5C                            | pop     rsp                              
+00007FF70B0B9B0B | 24 08                         | and     al,8                             
+00007FF70B0B9B0D | 57                            | push    rdi                              
+
+
 Set to one of these types:
 // Weather types:
 0	High pressure
@@ -540,6 +581,19 @@ RDR2.exe+6E16DA - 48 69 D0 E0010000     - imul rdx,rax,000001E0 { 480 }
 RDR2.exe+6E16E1 - 48 8D 41 10           - lea rax,[rcx+10]
 RDR2.exe+6E16E5 - 48 03 C2              - add rax,rdx
 RDR2.exe+6E16E8 - C3                    - ret 
+// latest patch:
+00007FF70B08CBEB | 48:8BC7           | mov     rax,rdi                      
+00007FF70B08CBEE | 48:83C4 20        | add     rsp,20                       
+00007FF70B08CBF2 | 5F                | pop     rdi                          
+00007FF70B08CBF3 | C3                | ret                                  
+00007FF70B08CBF4 | 8B81 243F0000     | mov     eax,dword ptr ds:[rcx+3F24]  		<< Read from weather.
+00007FF70B08CBFA | 48:69D0 E0010000  | imul    rdx,rax,1E0                  
+00007FF70B08CC01 | 48:8D41 10        | lea     rax,qword ptr ds:[rcx+10]    
+00007FF70B08CC05 | 48:03C2           | add     rax,rdx                      
+00007FF70B08CC08 | C3                | ret                                  
+00007FF70B08CC09 | 90                | nop                                  
+00007FF70B08CC0A | 43                | ???                                  
+
 
 // Place ret here to enable interpolation:
 RDR2.exe+70D1EC - 40 53                 - push rbx						<<<< RET
