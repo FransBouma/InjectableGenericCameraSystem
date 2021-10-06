@@ -137,8 +137,12 @@ namespace IGCSInjectorUI
 
 		private void LoadDefaultNamesFromConfigFile()
 		{
-			_defaultDllName = ConfigurationManager.AppSettings["defaultDllName"] ?? string.Empty;
-			_defaultProcessName = (ConfigurationManager.AppSettings["defaultProcessName"] ?? string.Empty).ToLowerInvariant();
+			var configFileMap = new ExeConfigurationFileMap();
+			configFileMap.ExeConfigFilename = "igcs.config";
+			var config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
+			var appSettings = config.AppSettings.Settings;
+			_defaultDllName = appSettings["defaultDllName"].Value ?? string.Empty;
+			_defaultProcessName = (appSettings["defaultProcessName"].Value ?? string.Empty).ToLowerInvariant();
 			if(string.IsNullOrWhiteSpace(_defaultDllName))
 			{
 				return;
