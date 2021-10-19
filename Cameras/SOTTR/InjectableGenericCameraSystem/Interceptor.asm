@@ -57,36 +57,30 @@ EXTERN _cameraWrite1InterceptionContinue: qword
 
 
 cameraStructInterceptor PROC
-;SOTTR.exe+853FC4E - 48 8D AC 24 B8FFFFFF  - lea rbp,[rsp-00000048]
-;SOTTR.exe+853FC56 - 48 81 EC 48010000     - sub rsp,00000148 { 328 }
-;SOTTR.exe+853FC5D - 41 B1 01              - mov r9l,01 { 1 }
-;SOTTR.exe+853FC60 - 31 DB                 - xor ebx,ebx
-;SOTTR.exe+853FC62 - 89 59 28              - mov [rcx+28],ebx							<< INTERCEPT HERE
-;SOTTR.exe+853FC65 - 45 31 C0              - xor r8d,r8d
-;SOTTR.exe+853FC68 - 0F28 82 80000000      - movaps xmm0,[rdx+00000080]					<< Camera struct address in rdx.
-;SOTTR.exe+853FC6F - 49 89 CF              - mov r15,rcx
-;SOTTR.exe+853FC72 - 41 0FB6 D1            - movzx edx,r9l								<< CONTINUE HERE
-;SOTTR.exe+853FC76 - 0F29 44 24 60         - movaps [rsp+60],xmm0
-;SOTTR.exe+853FC7B - E8 0060F1F7           - call SOTTR.exe+455C80
-;SOTTR.exe+853FC80 - 49 8B 8F E0070000     - mov rcx,[r15+000007E0]
-;SOTTR.exe+853FC87 - 49 89 C5              - mov r13,rax
-;SOTTR.exe+853FC8A - 48 89 44 24 48        - mov [rsp+48],rax
-;
-; Alternative (but on very HOT path)
-;
-;SOTTR.exe+5D3F16A - 48 85 C0              - test rax,rax
-;SOTTR.exe+5D3F16D - 0F84 74010000         - je SOTTR.exe+5D3F2E7
-;SOTTR.exe+5D3F173 - 0F28 50 30            - movaps xmm2,[rax+30]
-;SOTTR.exe+5D3F177 - 41 0F5C 94 24 80000000  - subps xmm2,[r12+00000080]					<< Camera struct address in r12
-;SOTTR.exe+5D3F180 - 49 8B 87 60060000     - mov rax,[r15+00000660]
-;SOTTR.exe+5D3F187 - 0F59 D2               - mulps xmm2,xmm2
-;SOTTR.exe+5D3F18A - 0F28 CA               - movaps xmm1,xmm2
-;SOTTR.exe+5D3F18D - 0F28 C2               - movaps xmm0,xmm2
-;SOTTR.exe+5D3F190 - 0FC6 CA 02            - shufps xmm1,xmm202 { 2 }
-;SOTTR.exe+5D3F194 - 0FC6 C2 01            - shufps xmm0,xmm201 { 1 }
-;SOTTR.exe+5D3F198 - F3 0F58 C1            - addss xmm0,xmm1
-;SOTTR.exe+5D3F19C - F3 0F10 88 D0000000   - movss xmm1,[rax+000000D0]
-;SOTTR.exe+5D3F1A4 - F3 0F59 C9            - mulss xmm1,xmm1
+;SOTTR.exe+498F0A - 41 56                 - push r14
+;SOTTR.exe+498F0C - 41 57                 - push r15
+;SOTTR.exe+498F0E - 48 8D 6C 24 A8        - lea rbp,[rsp-58]
+;SOTTR.exe+498F13 - 48 81 EC 58010000     - sub rsp,00000158 { 344 }
+;SOTTR.exe+498F1A - 41 B1 01              - mov r9l,01 { 1 }
+;SOTTR.exe+498F1D - 33 DB                 - xor ebx,ebx
+;SOTTR.exe+498F1F - 89 59 28              - mov [rcx+28],ebx							<< INTERCEPT HERE
+;SOTTR.exe+498F22 - 45 33 C0              - xor r8d,r8d
+;SOTTR.exe+498F25 - 0F28 82 80000000      - movaps xmm0,[rdx+00000080]					<< Camera struct address in rdx.
+;SOTTR.exe+498F2C - 4C 8B F9              - mov r15,rcx
+;SOTTR.exe+498F2F - 41 0FB6 D1            - movzx edx,r9l								<< CONTINUE HERE
+;SOTTR.exe+498F33 - 0F29 44 24 70         - movaps [rsp+70],xmm0
+;SOTTR.exe+498F38 - E8 73EDFCFF           - call SOTTR.exe+467CB0
+;SOTTR.exe+498F3D - 49 8B 8F E0070000     - mov rcx,[r15+000007E0]
+;SOTTR.exe+498F44 - 4C 8B E8              - mov r13,rax
+;SOTTR.exe+498F47 - 48 89 44 24 58        - mov [rsp+58],rax
+;SOTTR.exe+498F4C - 48 85 C9              - test rcx,rcx
+;SOTTR.exe+498F4F - 74 3E                 - je SOTTR.exe+498F8F
+;SOTTR.exe+498F51 - 48 8B 49 08           - mov rcx,[rcx+08]
+;SOTTR.exe+498F55 - 48 8D 35 A49D1003     - lea rsi,[SOTTR.exe+35A2D00] { (672) }
+;SOTTR.exe+498F5C - 48 89 74 24 48        - mov [rsp+48],rsi
+;SOTTR.exe+498F61 - 0FB7 91 B0000000      - movzx edx,word ptr [rcx+000000B0]
+;SOTTR.exe+498F68 - 8D 4B 20              - lea ecx,[rbx+20]
+;SOTTR.exe+498F6B - 0F1F 44 00 00         - nop dword ptr [rax+rax+00]
 	mov [rcx+28h],ebx			
 	xor r8d,r8d
 	mov [g_cameraStructAddress], rdx

@@ -52,9 +52,9 @@ namespace IGCS::GameSpecific::InterceptorHelper
 {
 	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, map<string, AOBBlock*> &aobBlocks)
 	{
-		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "89 59 28 45 31 C0 0F 28 82 80 00 00 00 49 89 CF 41 0F B6 D1", 1);	
+		aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY] = new AOBBlock(CAMERA_ADDRESS_INTERCEPT_KEY, "89 59 28 45 33 C0 0F 28 82 80 00 00 00 4C 8B F9 41 0F B6 D1", 1);	
 		aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY] = new AOBBlock(CAMERA_WRITE1_INTERCEPT_KEY, "66 0F 7F 81 80 00 00 00 0F 28 8A A0 00 00 00 0F 29 89 A0 00 00 00 8B 82", 1);
-		aobBlocks[CAMERA_AR_FIX_INTERCEPT_KEY] = new AOBBlock(CAMERA_AR_FIX_INTERCEPT_KEY, "F3 41 0F 10 86 64 01 00 00 F3 0F 11 46 14 F3 41 0F 10 86 70 01 00 00", 1);
+		aobBlocks[CAMERA_AR_FIX_INTERCEPT_KEY] = new AOBBlock(CAMERA_AR_FIX_INTERCEPT_KEY, "F3 0F 10 87 D4 01 00 00 F3 0F 11 46 24 F3 0F 10 87 E0 01 00 00 F3 0F 11 46 28", 1);
 
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -75,7 +75,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 
 	void setCameraStructInterceptorHook(map<string, AOBBlock*> &aobBlocks)
 	{
-		GameImageHooker::setHook(aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY], 0x10, &_cameraStructInterceptionContinue, &cameraStructInterceptor);
+		GameImageHooker::setHook(aobBlocks[CAMERA_ADDRESS_INTERCEPT_KEY], (0x498F2F - 0x498F1F), &_cameraStructInterceptionContinue, &cameraStructInterceptor);
 	}
 
 
@@ -84,8 +84,8 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::setHook(aobBlocks[CAMERA_WRITE1_INTERCEPT_KEY], 0x22, &_cameraWrite1InterceptionContinue, &cameraWrite1Interceptor);
 
 		// replace the movss with xorps xmm0, xmm0
-		// SOTTR.exe+1206CB19 - F3 41 0F10 86 64010000  - movss xmm0,[r14+00000164]  <<- replace with xorps xmm0, xmm0
-		BYTE statementBytes1[9] = { 0x0f, 0x57, 0xc0, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };		// xorps xmm0, xmm0
-		GameImageHooker::writeRange(aobBlocks[CAMERA_AR_FIX_INTERCEPT_KEY], statementBytes1, 9);
+		// SOTTR.exe+101884D - F3 0F10 87 D4010000   - movss xmm0,[rdi+000001D4]			<< Set to xorps xmm0, xmm0 + nops (0f 57 c0 90 90 90 90 90 )
+		BYTE statementBytes1[8] = { 0x0f, 0x57, 0xc0, 0x90, 0x90, 0x90, 0x90, 0x90 };		// xorps xmm0, xmm0
+		GameImageHooker::writeRange(aobBlocks[CAMERA_AR_FIX_INTERCEPT_KEY], statementBytes1, 8);
 	}
 }
