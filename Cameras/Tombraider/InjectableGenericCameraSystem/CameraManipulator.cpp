@@ -45,7 +45,7 @@ void SetTimeStopValue(byte newValue)
 	// set flag so camera works during menu driven timestop
 	_timeHasBeenStopped = (newValue == 1);
 	float* gamespeedAddress = reinterpret_cast<float*>(_gamespeedStructAddress + GAMESPEED_IN_STRUCT_OFFSET);
-	*gamespeedAddress = _timeHasBeenStopped ? 0.00001f : 1.0f;
+	*gamespeedAddress = _timeHasBeenStopped ? 0.000001f : 1.0f;
 }
 
 
