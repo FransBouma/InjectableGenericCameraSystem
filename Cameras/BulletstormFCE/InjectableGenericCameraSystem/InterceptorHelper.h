@@ -34,4 +34,5 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	void initializeAOBBlocks(LPBYTE hostImageAddress, DWORD hostImageSize, map<string, AOBBlock*> &aobBlocks);
 	void setCameraStructInterceptorHook(map<string, AOBBlock*> &aobBlocks);
 	void setPostCameraStructHooks(map<string, AOBBlock*> &aobBlocks);
+	void toggleDofBloomEnable(map<string, AOBBlock*> &aobBlocks, bool enable);
 }

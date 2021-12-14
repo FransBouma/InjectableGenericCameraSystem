@@ -144,17 +144,22 @@ cameraStructInterceptor ENDP
 fovWriteInterceptor PROC
 ; This one is nasty. To be able to write the fov we have to inject it into the xmm0 register. This is needed because
 ; the fov is overwritten by a memmove so we can't intercept it. This way we can inject our own fov value. 
-;StormGame-Win64-Shipping.exe+6D70873 - 4C 8B 44 24 50        - mov r8,[rsp+50]
-;StormGame-Win64-Shipping.exe+6D70878 - F3 0F10 4C 24 48      - movss xmm1,[rsp+48]
-;StormGame-Win64-Shipping.exe+6D7087E - 48 89 F1              - mov rcx,rsi
-;StormGame-Win64-Shipping.exe+6D70881 - E8 FA220CFA           - call StormGame-Win64-Shipping.exe+E32B80
-; StormGame-Win64-Shipping.exe+6D70886 - 48 8B 5C 24 40        - mov rbx,[rsp+40]					<< INTERCEPT HERE
-;StormGame-Win64-Shipping.ABSPlayerCamera::execAdjustFOVForViewport+AB - F3 0F11 07            - movss [rdi],xmm0					<< FOV WRITE. 
-;StormGame-Win64-Shipping.ABSPlayerCamera::execAdjustFOVForViewport+AF - 48 83 C4 20           - add rsp,20
-;StormGame-Win64-Shipping.ABSPlayerCamera::execAdjustFOVForViewport+B3 - 5F                    - pop rdi
-;StormGame-Win64-Shipping.exe+6D70894                                  - 5E                    - pop rsi
-;StormGame-Win64-Shipping.exe+6D70895                                  - 5D                    - pop rbp
-;StormGame-Win64-Shipping.exe+6D70896                                  - C3                    - ret								<< CONTINUE HERE
+;ABSPlayerCamera::execAdjustFOVForViewport
+;StormGame-Win64-Shipping.exe+D16CC3 - 48 8B D3              - mov rdx,rbx
+;StormGame-Win64-Shipping.exe+D16CC6 - 48 89 43 24           - mov [rbx+24],rax
+;StormGame-Win64-Shipping.exe+D16CCA - FF 15 182DB102        - call qword ptr [StormGame-Win64-Shipping.exe+38299E8] { ->StormGame-Win64-Shipping.exe+64BF0 }
+;StormGame-Win64-Shipping.exe+D16CD0 - 4C 8B 44 24 50        - mov r8,[rsp+50]
+;StormGame-Win64-Shipping.exe+D16CD5 - F3 0F10 4C 24 48      - movss xmm1,[rsp+48]
+;StormGame-Win64-Shipping.exe+D16CDB - 48 8B CE              - mov rcx,rsi
+;StormGame-Win64-Shipping.exe+D16CDE - E8 1DC01100           - call StormGame-Win64-Shipping.exe+E32D00
+;StormGame-Win64-Shipping.exe+D16CE3 - 48 8B 5C 24 40        - mov rbx,[rsp+40]						<< INTERCEPT HERE
+;StormGame-Win64-Shipping.exe+D16CE8 - F3 0F11 07            - movss [rdi],xmm0
+;StormGame-Win64-Shipping.exe+D16CEC - 48 83 C4 20           - add rsp,20 { 00000020 }
+;StormGame-Win64-Shipping.exe+D16CF0 - 5F                    - pop rdi
+;StormGame-Win64-Shipping.exe+D16CF1 - 5E                    - pop rsi
+;StormGame-Win64-Shipping.exe+D16CF2 - 5D                    - pop rbp
+;StormGame-Win64-Shipping.exe+D16CF3 - C3                    - ret									<< CONTINUE HERE
+;StormGame-Win64-Shipping.exe+D16CF4 - CC                    - int 3 
 	cmp byte ptr [g_cameraEnabled], 1					; check if the user enabled the camera. If so, just skip the write statements, otherwise just execute the original code.
 	jne originalCode									; our own camera is enabled, just skip the writes
 	; inject our fov value into the xmm0 register.
@@ -177,13 +182,28 @@ fovWriteInterceptor ENDP
 crossHairRenderInterceptor PROC
 ; The following code tests whether to render the crosshair. By simply returning 0 in eax, the crosshair is hidden. It will return 1 or 0 but returning 0 w/o
 ; going through the whole function is easier. 
-;StormGame-Win64-Shipping.exe+73250E0 - 53                    - push rbx							<< INTERCEPT HERE
-;StormGame-Win64-Shipping.exe+73250E1 - 48 83 EC 20           - sub rsp,20 { 00000020 }
-;StormGame-Win64-Shipping.exe+73250E5 - 48 89 CB              - mov rbx,rcx
-;StormGame-Win64-Shipping.exe+73250E8 - 41 B9 01000000        - mov r9d,00000001 { 1 }
-;StormGame-Win64-Shipping.exe+73250EE - 48 8D 15 93981CFA     - lea rdx,[StormGame-Win64-Shipping.exe+14EE988]		<<< CONTINUE HERE
-;StormGame-Win64-Shipping.exe+73250F5 - 48 8D 4C 24 30        - lea rcx,[rsp+30]
-;StormGame-Win64-Shipping.exe+73250FA - 45 89 C8              - mov r8d,r9d
+;ABSPawn::ShouldDrawCrosshair
+;StormGame-Win64-Shipping.exe+E1FC90 - 40 53                 - push rbx										<< INTERCEPT HERE
+;StormGame-Win64-Shipping.exe+E1FC92 - 48 83 EC 20           - sub rsp,20 { 00000020 }
+;StormGame-Win64-Shipping.exe+E1FC96 - 48 8B D9              - mov rbx,rcx
+;StormGame-Win64-Shipping.exe+E1FC99 - 41 B9 01000000        - mov r9d,00000001 { 1 }
+;StormGame-Win64-Shipping.exe+E1FC9F - 48 8D 15 62EC6C00     - lea rdx,[StormGame-Win64-Shipping.exe+14EE908] { ("WaitForReviveOrRestart") }  << CONTINUE HERE
+;StormGame-Win64-Shipping.exe+E1FCA6 - 48 8D 4C 24 30        - lea rcx,[rsp+30]
+;StormGame-Win64-Shipping.exe+E1FCAB - 45 8B C1              - mov r8d,r9d
+;StormGame-Win64-Shipping.exe+E1FCAE - E8 9D5F2AFF           - call StormGame-Win64-Shipping.exe+C5C50
+;StormGame-Win64-Shipping.exe+E1FCB3 - 48 8B 8B 28070000     - mov rcx,[rbx+00000728]
+;StormGame-Win64-Shipping.exe+E1FCBA - 48 85 C9              - test rcx,rcx
+;StormGame-Win64-Shipping.exe+E1FCBD - 74 2C                 - je StormGame-Win64-Shipping.exe+E1FCEB
+;StormGame-Win64-Shipping.exe+E1FCBF - 48 8B 54 24 30        - mov rdx,[rsp+30]
+;StormGame-Win64-Shipping.exe+E1FCC4 - 45 33 C0              - xor r8d,r8d
+;StormGame-Win64-Shipping.exe+E1FCC7 - E8 14B225FF           - call StormGame-Win64-Shipping.exe+7AEE0
+;StormGame-Win64-Shipping.exe+E1FCCC - 85 C0                 - test eax,eax
+;StormGame-Win64-Shipping.exe+E1FCCE - 75 13                 - jne StormGame-Win64-Shipping.exe+E1FCE3
+;StormGame-Win64-Shipping.exe+E1FCD0 - 48 8B 83 28070000     - mov rax,[rbx+00000728]
+;StormGame-Win64-Shipping.exe+E1FCD7 - F7 80 C4080000 00800000 - test [rax+000008C4],00008000 { 32768 }
+;StormGame-Win64-Shipping.exe+E1FCE1 - 74 08                 - je StormGame-Win64-Shipping.exe+E1FCEB
+;StormGame-Win64-Shipping.exe+E1FCE3 - 33 C0                 - xor eax,eax
+;StormGame-Win64-Shipping.exe+E1FCE5 - 48 83 C4 20           - add rsp,20 { 00000020 }
 	cmp byte ptr [g_cameraEnabled], 1						; check if the user enabled the camera. 
 	jne originalCode
 noCrossHair:

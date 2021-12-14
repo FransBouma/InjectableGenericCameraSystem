@@ -78,8 +78,8 @@ namespace IGCS::GameSpecific::CameraManipulator
 	// newCoords are the new coordinates for the camera in worldspace. Angles given are the rotation angles stored in the camera struct
 	void writeNewCameraValuesToGameData(XMFLOAT3 newCoords, float pitch, float yaw, float roll)
 	{
-		g_ownCoordinates = (byte*)(float*)_ownCoordsData;
-		g_ownAngles = (byte*)(DWORD*)_ownLookData;
+		g_ownCoordinates = (uint8_t*)(float*)_ownCoordsData;
+		g_ownAngles = (uint8_t*)(DWORD*)_ownLookData;
 
 		_ownCoordsData[0] = newCoords.x;
 		_ownCoordsData[1] = newCoords.y;
