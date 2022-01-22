@@ -90,24 +90,3 @@ SOTTR.exe+853FC80 - 49 8B 8F E0070000     - mov rcx,[r15+000007E0]
 SOTTR.exe+853FC87 - 49 89 C5              - mov r13,rax
 SOTTR.exe+853FC8A - 48 89 44 24 48        - mov [rsp+48],rax
 
-// TIMESTOP (latest)
-SOTTR.exe+4E4210 - 48 89 5C 24 08        - mov [rsp+08],rbx
-SOTTR.exe+4E4215 - 57                    - push rdi
-SOTTR.exe+4E4216 - 48 83 EC 50           - sub rsp,50 { 80 }
-SOTTR.exe+4E421A - 81 25 EC190E03 FFEFFFFF - and [SOTTR.exe+35C5C10],FFFFEFFF { (0),-4097 }
-SOTTR.exe+4E4224 - 0FB6 F9               - movzx edi,cl
-SOTTR.exe+4E4227 - B1 01                 - mov cl,01 { 1 }
-SOTTR.exe+4E4229 - C6 05 651A0E03 02     - mov byte ptr [SOTTR.exe+35C5C95],02		<< 2 is pause, 0 is continue. Alt TAB resets it
-SOTTR.exe+4E4230 - 8B DA                 - mov ebx,edx
-SOTTR.exe+4E4232 - E8 79F3F7FF           - call SOTTR.exe+4635B0
-SOTTR.exe+4E4237 - 8B CB                 - mov ecx,ebx
-SOTTR.exe+4E4239 - E8 B2FDFCFF           - call SOTTR.exe+4B3FF0
-SOTTR.exe+4E423E - E8 2D12D0FF           - call SOTTR.exe+1E5470
-SOTTR.exe+4E4243 - F3 0F10 15 FDEBB800   - movss xmm2,[SOTTR.exe+1072E48] { (1.00) }
-SOTTR.exe+4E424B - 48 8D 05 8E7FBF00     - lea rax,[SOTTR.exe+10DC1E0] { ("Gameloop::ModeStartPause") }
-SOTTR.exe+4E4252 - 81 0D B0190E03 00000010 - or [SOTTR.exe+35C5C0C],10000000 { (268435456),268435456 }
-SOTTR.exe+4E425C - 48 8D 4C 24 30        - lea rcx,[rsp+30]
-SOTTR.exe+4E4261 - 0F28 DA               - movaps xmm3,xmm2
-SOTTR.exe+4E4264 - 48 89 44 24 20        - mov [rsp+20],rax
-SOTTR.exe+4E4269 - BA 01000000           - mov edx,00000001 { 1 }
-SOTTR.exe+4E426E - E8 AD160200           - call SOTTR.exe+505920
