@@ -16,7 +16,7 @@ latter copies the code in code fence lines as well as the AOB for easy usage in 
 
 **NOTE**: The tool doesn't know if the AOB is unique, you have to test that yourself.
 
-Release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/AOBGen_100  
+Release binaries: https://github.com/FransBouma/InjectableGenericCameraSystem/releases/tag/AOBGen_101  
 Credits: Otis_Inf
 
 ### EULA
