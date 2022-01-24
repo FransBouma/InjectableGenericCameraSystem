@@ -41,6 +41,7 @@
 			this._resultSBPanel = new System.Windows.Forms.ToolStripStatusLabel();
 			this._copyrightSBLabel = new System.Windows.Forms.ToolStripStatusLabel();
 			this._linkSBPanel = new System.Windows.Forms.ToolStripStatusLabel();
+			this._markAOBLinesInAsmCheckbox = new System.Windows.Forms.CheckBox();
 			this._statusBar.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -82,7 +83,7 @@
 			this._closeButton.Location = new System.Drawing.Point(777, 585);
 			this._closeButton.Name = "_closeButton";
 			this._closeButton.Size = new System.Drawing.Size(75, 23);
-			this._closeButton.TabIndex = 5;
+			this._closeButton.TabIndex = 6;
 			this._closeButton.Text = "&Close";
 			this._closeButton.UseVisualStyleBackColor = true;
 			this._closeButton.Click += new System.EventHandler(this._closeButton_Click);
@@ -111,6 +112,7 @@
 			// 
 			// _codeTextBox
 			// 
+			this._codeTextBox.AcceptsTab = true;
 			this._codeTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -118,6 +120,7 @@
 			this._codeTextBox.HideSelection = false;
 			this._codeTextBox.Location = new System.Drawing.Point(12, 26);
 			this._codeTextBox.Name = "_codeTextBox";
+			this._codeTextBox.ShowSelectionMargin = true;
 			this._codeTextBox.Size = new System.Drawing.Size(840, 430);
 			this._codeTextBox.TabIndex = 0;
 			this._codeTextBox.Text = "";
@@ -152,7 +155,7 @@
 			// _resultSBPanel
 			// 
 			this._resultSBPanel.Name = "_resultSBPanel";
-			this._resultSBPanel.Size = new System.Drawing.Size(591, 19);
+			this._resultSBPanel.Size = new System.Drawing.Size(598, 19);
 			this._resultSBPanel.Spring = true;
 			this._resultSBPanel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
@@ -172,11 +175,24 @@
 			this._linkSBPanel.Text = "https://github.com/FransBouma";
 			this._linkSBPanel.Click += new System.EventHandler(this._linkSBPanel_Click);
 			// 
+			// _markAOBLinesInAsmCheckbox
+			// 
+			this._markAOBLinesInAsmCheckbox.AutoSize = true;
+			this._markAOBLinesInAsmCheckbox.Checked = true;
+			this._markAOBLinesInAsmCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
+			this._markAOBLinesInAsmCheckbox.Location = new System.Drawing.Point(330, 589);
+			this._markAOBLinesInAsmCheckbox.Name = "_markAOBLinesInAsmCheckbox";
+			this._markAOBLinesInAsmCheckbox.Size = new System.Drawing.Size(128, 17);
+			this._markAOBLinesInAsmCheckbox.TabIndex = 5;
+			this._markAOBLinesInAsmCheckbox.Text = "Mark aob lines in asm";
+			this._markAOBLinesInAsmCheckbox.UseVisualStyleBackColor = true;
+			// 
 			// _mainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(864, 640);
+			this.Controls.Add(this._markAOBLinesInAsmCheckbox);
 			this.Controls.Add(this._alsoWildcardOffsetsCheckBox);
 			this.Controls.Add(this._codeTextBox);
 			this.Controls.Add(this._copyAOBAndCodeAsMarkdownButton);
@@ -189,7 +205,7 @@
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "_mainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Generate AOB from assembly. v1.0.0";
+			this.Text = "Generate AOB from assembly.";
 			this._statusBar.ResumeLayout(false);
 			this._statusBar.PerformLayout();
 			this.ResumeLayout(false);
@@ -210,6 +226,7 @@
 		private System.Windows.Forms.ToolStripStatusLabel _resultSBPanel;
 		private System.Windows.Forms.ToolStripStatusLabel _copyrightSBLabel;
 		private System.Windows.Forms.ToolStripStatusLabel _linkSBPanel;
+		private System.Windows.Forms.CheckBox _markAOBLinesInAsmCheckbox;
 	}
 }
 

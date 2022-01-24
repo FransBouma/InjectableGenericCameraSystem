@@ -25,6 +25,7 @@ namespace AOBGen
 			InitializeComponent();
 
 			_aobGen = new AOBGenerator();
+			this.Text += string.Format(" v{0}", this.GetType().Assembly.GetName().Version.ToString(3));
 		}
 
 
@@ -51,11 +52,37 @@ AOB String:
 {1}
 ```
 ";
-			sb.AppendFormat(template, _codeTextBox.Text, _aobResultTextBox.Text);
+			sb.AppendFormat(template, GetCodeTextBlockForMarkdown(), _aobResultTextBox.Text);
 			Clipboard.SetDataObject(sb.ToString());
 			_resultSBPanel.Text = "AOB and asm copied a markdown!";
 		}
-		
+
+
+		private string GetCodeTextBlockForMarkdown()
+		{
+			if(_codeTextBox.SelectionLength <= 0 || !_markAOBLinesInAsmCheckbox.Checked)
+			{
+				return StripOffLastEmptyLine(_codeTextBox.Text);
+			}
+
+			var sb = new StringBuilder();
+			sb.Append(_codeTextBox.Text.Substring(0, _codeTextBox.SelectionStart));
+			sb.Append("---------------[AOB Start]--------------------");
+			sb.Append(Environment.NewLine);
+			sb.Append(_codeTextBox.Text.Substring(_codeTextBox.SelectionStart, _codeTextBox.SelectionLength));
+			sb.Append("---------------[AOB End]----------------------");
+			sb.Append(Environment.NewLine);
+			sb.Append(_codeTextBox.Text.Substring(_codeTextBox.SelectionStart + _codeTextBox.SelectionLength));
+
+			return StripOffLastEmptyLine(sb.ToString());
+		}
+
+
+		private string StripOffLastEmptyLine(string toClean)
+		{
+			return toClean.TrimEnd('\r', '\n');
+		}
+
 
 		private void GenerateAOB()
 		{
@@ -91,9 +118,12 @@ AOB String:
 		private void _codeTextBox_TextChanged(object sender, EventArgs e)
 		{
 			// pad the text with a CRLF if it's not there
-			if(!_codeTextBox.Text.EndsWith("\n") || !_codeTextBox.Text.EndsWith("\r\n"))
+			if(!_codeTextBox.Text.EndsWith("\n") && !_codeTextBox.Text.EndsWith("\r\n"))
 			{
+				var selectionStart = _codeTextBox.SelectionStart;
 				_codeTextBox.Text += Environment.NewLine;
+				_codeTextBox.SelectionStart = selectionStart;
+				_codeTextBox.SelectionLength = 0;
 			}
 			GenerateAOB();
 		}
