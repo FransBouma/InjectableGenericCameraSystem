@@ -50,13 +50,15 @@ namespace AOBGen
 		{
 			var byteFragments = secondFragment.Split(' ');
 
+			bool offsetWildcarded = false;
+
 			for(var i = 0; i < byteFragments.Length; i++)
 			{
 				var byteFragment = byteFragments[i];
 				switch(byteFragment.Length)
 				{
 					case 2:
-						if(alsoWildcardOffsets && i == byteFragments.Length - 1 && thirdFragment.Contains("+" + byteFragment))
+						if(alsoWildcardOffsets && i == byteFragments.Length - 1 && thirdFragment.Contains("+" + byteFragment) && !offsetWildcarded)
 						{
 							sb.Append("?? ");
 						}
@@ -72,8 +74,9 @@ namespace AOBGen
 					case 8:
 						// offset or RIP relative block
 						// We convert the byteFragment to a hexadecimal number. If that number is present in third fragment, it's not a RIP relative address but an offset.
-						if(CheckIfShouldBeWildcarded(byteFragment.ToLowerInvariant(), thirdFragment, alsoWildcardOffsets))
+						if(CheckIfShouldBeWildcarded(byteFragment.ToLowerInvariant(), thirdFragment, alsoWildcardOffsets, out bool performedOffsetWildcard))
 						{
+							offsetWildcarded |= performedOffsetWildcard;
 							sb.Append("?? ?? ?? ?? ");
 						}
 						else
@@ -111,12 +114,12 @@ namespace AOBGen
 					continue;
 				}
 
-				var indexFirstHyphen = l.IndexOf('-');
+				var indexFirstHyphen = l.IndexOf(" - ", StringComparison.InvariantCulture);
 				if(indexFirstHyphen < 0)
 				{
 					continue;
 				}
-				var indexOfSecondHyphen = l.IndexOf('-', indexFirstHyphen + 1);
+				var indexOfSecondHyphen = l.IndexOf(" - ", indexFirstHyphen + 1, StringComparison.InvariantCulture);
 				if(indexOfSecondHyphen < 0)
 				{
 					continue;
@@ -162,20 +165,24 @@ namespace AOBGen
 		/// <param name="byteFragment"></param>
 		/// <param name="thirdFragment"></param>
 		/// <param name="alsoWildcardOffsets"></param>
+		/// <param name="performedOffsetWildcard"></param>
 		/// <returns></returns>
-		private bool CheckIfShouldBeWildcarded(string byteFragment, string thirdFragment, bool alsoWildcardOffsets)
+		private bool CheckIfShouldBeWildcarded(string byteFragment, string thirdFragment, bool alsoWildcardOffsets, out bool performedOffsetWildcard)
 		{
+			performedOffsetWildcard = false;
 			// convert the byte fragment to a hexadecimal number. then check if that number is present in thirdfragment.
 			// aabbccdd becomes ddccbbaa
 			var numberAsLittleEndian = new string(new char[] { byteFragment[6], byteFragment[7], byteFragment[4], byteFragment[5], byteFragment[2], byteFragment[3], byteFragment[0], byteFragment[1] });
 			// strip off all 0's at the front, so convert it to an int and then back to a hex string
 			uint bytes = uint.Parse(numberAsLittleEndian, NumberStyles.HexNumber);
 			string bytesAsHex = bytes.ToString("X");
+			var fragmentIsRIPRelativeAddress = !thirdFragment.Contains(bytesAsHex) && !thirdFragment.Contains(numberAsLittleEndian);
 			if(alsoWildcardOffsets)
 			{
-				return thirdFragment.Contains(bytesAsHex) || thirdFragment.Contains(numberAsLittleEndian);
+				performedOffsetWildcard = true;
+				return fragmentIsRIPRelativeAddress || thirdFragment.Contains(bytesAsHex) || thirdFragment.Contains(numberAsLittleEndian);
 			}
-			return !thirdFragment.Contains(bytesAsHex) && !thirdFragment.Contains(numberAsLittleEndian);
+			return fragmentIsRIPRelativeAddress;
 		}
 
 	}
