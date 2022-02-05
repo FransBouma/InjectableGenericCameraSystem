@@ -51,14 +51,14 @@ namespace AOBGen
 			var byteFragments = secondFragment.Split(' ');
 
 			bool offsetWildcarded = false;
-
+			bool avxOpcode = false;
 			for(var i = 0; i < byteFragments.Length; i++)
 			{
 				var byteFragment = byteFragments[i];
 				switch(byteFragment.Length)
 				{
 					case 2:
-						if(alsoWildcardOffsets && i == byteFragments.Length - 1 && thirdFragment.Contains("+" + byteFragment) && !offsetWildcarded)
+						if((alsoWildcardOffsets && i == byteFragments.Length - 1 && thirdFragment.Contains("+" + byteFragment) && !offsetWildcarded) || (avxOpcode && i == 1))
 						{
 							sb.Append("?? ");
 						}
@@ -68,19 +68,33 @@ namespace AOBGen
 						}
 						break;
 					case 4:
-					case 6:
 						AOBGenerator.AppendByteFragment(sb, byteFragment);
+						break;
+					case 6:
+						if(avxOpcode)
+						{
+							// assume part of RIP
+							sb.Append("?? ?? ?? ");
+						}
+						else
+						{
+							AOBGenerator.AppendByteFragment(sb, byteFragment);
+						}
 						break;
 					case 8:
 						// offset or RIP relative block
 						// We convert the byteFragment to a hexadecimal number. If that number is present in third fragment, it's not a RIP relative address but an offset.
-						if(CheckIfShouldBeWildcarded(byteFragment.ToLowerInvariant(), thirdFragment, alsoWildcardOffsets, out bool performedOffsetWildcard))
+						if(i > 0 && CheckIfShouldBeWildcarded(byteFragment.ToLowerInvariant(), thirdFragment, alsoWildcardOffsets, out bool performedOffsetWildcard))
 						{
 							offsetWildcarded |= performedOffsetWildcard;
 							sb.Append("?? ?? ?? ?? ");
 						}
 						else
 						{
+							if(i == 0)
+							{
+								avxOpcode = true;
+							}
 							AOBGenerator.AppendByteFragment(sb, byteFragment);
 						}
 
@@ -124,8 +138,8 @@ namespace AOBGen
 				{
 					continue;
 				}
-				string secondFragment = l.Substring(indexFirstHyphen + 1, indexOfSecondHyphen - indexFirstHyphen - 1).Trim();
-				string thirdFragment = l.Substring(indexOfSecondHyphen + 1).Trim().ToLowerInvariant();
+				string secondFragment = l.Substring(indexFirstHyphen + 3, (indexOfSecondHyphen - indexFirstHyphen) - 2).Trim();
+				string thirdFragment = l.Substring(indexOfSecondHyphen + 3).Trim().ToLowerInvariant();
 
 				HandleByteFragments(sb, secondFragment, thirdFragment, alsoWildcardOffsets);
 			}
