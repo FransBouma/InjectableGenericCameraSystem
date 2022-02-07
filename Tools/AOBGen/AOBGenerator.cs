@@ -67,9 +67,6 @@ namespace AOBGen
 							AOBGenerator.AppendByteFragment(sb, byteFragment);
 						}
 						break;
-					case 4:
-						AOBGenerator.AppendByteFragment(sb, byteFragment);
-						break;
 					case 6:
 						if(avxOpcode)
 						{
@@ -98,11 +95,8 @@ namespace AOBGen
 							AOBGenerator.AppendByteFragment(sb, byteFragment);
 						}
 						break;
-					case 10:
-						AOBGenerator.AppendByteFragment(sb, byteFragment);
-						break;
 					default:
-						// unknown
+						AOBGenerator.AppendByteFragment(sb, byteFragment);
 						continue;
 				}
 			}
