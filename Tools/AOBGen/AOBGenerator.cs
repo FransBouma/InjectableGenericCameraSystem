@@ -58,7 +58,7 @@ namespace AOBGen
 				switch(byteFragment.Length)
 				{
 					case 2:
-						if((alsoWildcardOffsets && i == byteFragments.Length - 1 && thirdFragment.Contains("+" + byteFragment) && !offsetWildcarded) || (avxOpcode && i == 1 && i!=byteFragment.Length-1))
+						if((alsoWildcardOffsets && i == byteFragments.Length - 1 && thirdFragment.Contains("+" + byteFragment) && !offsetWildcarded) || (avxOpcode && i > 0 && i!=byteFragments.Length-1))
 						{
 							sb.Append("?? ");
 						}
