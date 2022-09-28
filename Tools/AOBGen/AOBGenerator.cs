@@ -140,7 +140,7 @@ namespace AOBGen
 				HandleByteFragments(sb, secondFragment, thirdFragment, alsoWildcardOffsets);
 			}
 
-			return sb.ToString();
+			return sb.ToString().Trim();
 		}
 
 
@@ -165,7 +165,7 @@ namespace AOBGen
 				HandleByteFragments(sb, fragments[1], fragments[2], alsoWildcardOffsets);
 			}
 
-			return sb.ToString();
+			return sb.ToString().Trim();
 		}
 
 

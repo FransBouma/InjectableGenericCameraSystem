@@ -53,7 +53,35 @@ RDR2.exe+14EF82 - 5F                    - pop rdi
 
 
 ----------------------------------------------------------------------------------------------------
-// latest patch Dec 15th
+// Patch April 2022:
+RDR2.exe+56BB3A - 66 0F6E 35 C6FC9503   - movd xmm6,[RDR2.exe+3ECB808] { (1600) }
+RDR2.exe+56BB42 - 66 0F6E 05 C2FC9503   - movd xmm0,[RDR2.exe+3ECB80C] { (1024) }
+RDR2.exe+56BB4A - F3 0F10 3D 2689D602   - movss xmm7,[RDR2.exe+32D4478] { (1.78) }
+RDR2.exe+56BB52 - 0F5B F6               - cvtdq2ps xmm6,xmm6
+RDR2.exe+56BB55 - 0F5B C0               - cvtdq2ps xmm0,xmm0
+RDR2.exe+56BB58 - F3 0F5E F0            - divss xmm6,xmm0
+RDR2.exe+56BB5C - 0F28 CE               - movaps xmm1,xmm6
+RDR2.exe+56BB5F - F3 0F5C CF            - subss xmm1,xmm7
+RDR2.exe+56BB63 - 0F54 0D 066DD602      - andps xmm1,[RDR2.exe+32D2870] { (2147483647) }
+RDR2.exe+56BB6A - 0F2F 0D 2769D602      - comiss xmm1,[RDR2.exe+32D2498] { (0.00) }
+RDR2.exe+56BB71 - 0F86 D3020000         - jbe RDR2.exe+56BE4A				<< CHANGE INTO JMP
+RDR2.exe+56BB77 - 0F2F F7               - comiss xmm6,xmm7
+RDR2.exe+56BB7A - 0F92 C0               - setb al
+RDR2.exe+56BB7D - 40 0F97 C6            - seta sil
+RDR2.exe+56BB81 - 84 C0                 - test al,al
+RDR2.exe+56BB83 - 74 09                 - je RDR2.exe+56BB8E
+RDR2.exe+56BB85 - 84 D2                 - test dl,dl
+RDR2.exe+56BB87 - 74 05                 - je RDR2.exe+56BB8E
+RDR2.exe+56BB89 - 40 B7 01              - mov dil,01 { 1 }
+RDR2.exe+56BB8C - EB 0C                 - jmp RDR2.exe+56BB9A
+RDR2.exe+56BB8E - 40 32 FF              - xor dil,dil
+RDR2.exe+56BB91 - 40 84 F6              - test sil,sil
+RDR2.exe+56BB94 - 0F84 B0020000         - je RDR2.exe+56BE4A
+RDR2.exe+56BB9A - 33 C9                 - xor ecx,ecx
+RDR2.exe+56BB9C - C6 44 24 30 00        - mov byte ptr [rsp+30],00 { 0 }
+RDR2.exe+56BBA1 - 48 85 DB              - test rbx,rbx
+
+// patch Dec 15th
 // No black bars in photomode:
 RDR2.exe+523E87 - 0F5B FF               - cvtdq2ps xmm7,xmm7
 RDR2.exe+523E8A - 0F5B C0               - cvtdq2ps xmm0,xmm0

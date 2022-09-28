@@ -177,6 +177,7 @@
 			// 
 			// _markAOBLinesInAsmCheckbox
 			// 
+			this._markAOBLinesInAsmCheckbox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this._markAOBLinesInAsmCheckbox.AutoSize = true;
 			this._markAOBLinesInAsmCheckbox.Checked = true;
 			this._markAOBLinesInAsmCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
