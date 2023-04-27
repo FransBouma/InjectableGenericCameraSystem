@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="45">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>1</ID>
+      <Description>"- Go into PM, enable the entry below, take shot, disable the entry below, exit pm -&gt; HIGH LODS"</Description>
+      <GroupHeader>1</GroupHeader>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>0</ID>
+      <Description>"ForceLOD0 in gameplay."</Description>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>{ Game   : Cyberpunk 2077 (C) 2020 by CD Projekt RED
+  Version: 
+  Date   : 2023-04-20
+  Author : frans
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+aobscanmodule(INJECT,Cyberpunk2077.exe,72 D7 B8 0E 00 00 00) // should be unique
+
+INJECT:
+  nop 2
+
+[DISABLE]
+INJECT:
+  jb Cyberpunk2077.exe+2867450
+
+
+{
+// ORIGINAL CODE - INJECTION POINT: Cyberpunk2077.exe+2867477
+
+Cyberpunk2077.exe+286745C: 48 03 FB              - add rdi,rbx
+Cyberpunk2077.exe+286745F: 48 8B CF              - mov rcx,rdi
+Cyberpunk2077.exe+2867462: 48 8B 07              - mov rax,[rdi]
+Cyberpunk2077.exe+2867465: FF 50 08              - call qword ptr [rax+08]
+Cyberpunk2077.exe+2867468: 48 8B 07              - mov rax,[rdi]
+Cyberpunk2077.exe+286746B: 33 D2                 - xor edx,edx
+Cyberpunk2077.exe+286746D: 48 8B CF              - mov rcx,rdi
+Cyberpunk2077.exe+2867470: FF 10                 - call qword ptr [rax]
+Cyberpunk2077.exe+2867472: 03 EE                 - add ebp,esi
+Cyberpunk2077.exe+2867474: 41 3B EE              - cmp ebp,r14d
+// ---------- INJECTING HERE ----------
+Cyberpunk2077.exe+2867477: 72 D7                 - jb Cyberpunk2077.exe+2867450
+// ---------- DONE INJECTING  ----------
+Cyberpunk2077.exe+2867479: B8 0E 00 00 00        - mov eax,0000000E
+Cyberpunk2077.exe+286747E: 48 8B FB              - mov rdi,rbx
+Cyberpunk2077.exe+2867481: 87 83 00 40 00 00     - xchg [rbx+00004000],eax
+Cyberpunk2077.exe+2867487: 48 8B 9B 08 40 00 00  - mov rbx,[rbx+00004008]
+Cyberpunk2077.exe+286748E: 48 85 DB              - test rbx,rbx
+Cyberpunk2077.exe+2867491: 75 9D                 - jne Cyberpunk2077.exe+2867430
+Cyberpunk2077.exe+2867493: 4C 8B 74 24 68        - mov r14,[rsp+68]
+Cyberpunk2077.exe+2867498: 48 8B 74 24 60        - mov rsi,[rsp+60]
+Cyberpunk2077.exe+286749D: 48 8B 6C 24 58        - mov rbp,[rsp+58]
+Cyberpunk2077.exe+28674A2: 49 8D 8D 60 0C 00 00  - lea rcx,[r13+00000C60]
+}
+</AssemblerScript>
+    </CheatEntry>
+  </CheatEntries>
+  <UserdefinedSymbols/>
+  <Comments>Info about this table:
+</Comments>
+</CheatTable>

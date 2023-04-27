@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="45">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>0</ID>
+      <Description>"Remove range limit photomode + photomode everywhere"</Description>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>{ Game   : Marvel's Avengers v2.8.2.0
+  Version: 
+  Date   : 2023-04-25
+  Author : Otis
+
+  This script does blah blah blah
+}
+
+define(minMaxFoV,"avengers.exe"+1A6AEF0)
+define(bytes,F3 0F 10 83 8C 02 00 00)
+
+[ENABLE]
+
+assert(minMaxFoV,bytes)
+alloc(newmem,$1000,"avengers.exe"+1A6AEF0)
+
+label(setMinMaxFoV)
+label(return1)
+label(setSpeeds)
+label(return2)
+
+newmem:
+setMinMaxFoV:
+  movss xmm0, [maxFoV]
+  movss dword ptr [rbx+0000028C], xmm0
+  movss xmm0, [minFoV]
+  movss dword ptr [rbx+00000288], xmm0
+  movss xmm0,[rbx+0000028C]
+  jmp return1
+
+setSpeeds:
+  //   movaps xmm2,xmm0
+  //   maxss xmm2,[rbx+0000027C]
+  // init speeds'
+  push rdx
+  mov rdx, [rotationSpeeds]
+  mov [rbx+244], rdx
+  mov rdx, movementSpeeds
+  movups xmm0, [rdx]
+  movups [rbx+260], xmm0
+  mov rdx, [rdx+20]
+  mov [rbx+270], rdx
+  pop rdx
+  jmp return2
+
+maxFoV:
+dd (float)10
+
+minFoV:
+dd (float)0.001
+
+rotationSpeeds:
+dd (float)0.8              // rotation speeds
+dd (float)0.2
+movementSpeeds:
+dd (float)200.0            // movement speeds
+dd (float)-200.0
+dd (float)200.0
+dd (float)200.0
+dd (float)-200.0
+dd (float)200.0
+
+avengers.exe+1A7919B:
+  jmp avengers.exe+1A791D3//jna avengers.exe+1A791D3
+
+avengers.exe+1A79200:
+  jmp setSpeeds
+  nop 6
+return2:
+
+avengers.exe+1F5155C:
+  nop 6 // je avengers.exe+1F51683
+
+avengers.exe+1F51547:
+  nop 6 // ja avengers.exe+1F51683
+
+avengers.exe+1F51553:
+  nop 6 // jbe avengers.exe+1F51683
+
+avengers.exe+1F51581:
+  nop 6 // jne avengers.exe+1F51683
+
+avengers.exe+1F51596:
+  nop 6 // jae avengers.exe+1F51683
+
+avengers.exe+1F515A3:
+  nop 6 // jne avengers.exe+1F51683
+
+minMaxFoV:
+  jmp setMinMaxFoV
+  nop 3
+return1:
+
+avengers.exe+10CFAF3:
+  xorps xmm0, xmm0   // movss xmm0,[rdi+000001FC]
+  nop 5
+
+avengers.exe+1A7921B:
+  nop 5// call avengers.exe+1A65170
+
+[DISABLE]
+
+avengers.exe+1A7919B:
+  jna avengers.exe+1A791D3
+
+avengers.exe+1A79200:
+  movaps xmm2,xmm0
+  maxss xmm2,[rbx+0000027C]
+
+avengers.exe+1F5155C:
+  je avengers.exe+1F51683
+
+avengers.exe+1F51547:
+  ja avengers.exe+1F51683
+
+minMaxFoV:
+  movss xmm0,[rbx+0000028C]
+
+avengers.exe+10CFAF3:
+  movss xmm0,[rdi+000001FC]
+
+avengers.exe+1A7921B:
+  call avengers.exe+1A65170
+
+avengers.exe+1F51553:
+  jbe avengers.exe+1F51683
+
+avengers.exe+1F51581:
+  jne avengers.exe+1F51683
+
+avengers.exe+1F51596:
+  jae avengers.exe+1F51683
+
+avengers.exe+1F515A3:
+  jne avengers.exe+1F51683
+
+</AssemblerScript>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>3</ID>
+      <Description>"Timestop  (Pause: Ctrl-numpad 0. Unpause: Ctrl-Alt-Numpad 0)"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>Byte</VariableType>
+      <Address>avengers.exe+313E0B5</Address>
+      <Hotkeys>
+        <Hotkey>
+          <Action>Set Value</Action>
+          <Keys>
+            <Key>17</Key>
+            <Key>96</Key>
+          </Keys>
+          <Value>5</Value>
+          <ID>0</ID>
+        </Hotkey>
+        <Hotkey>
+          <Action>Set Value</Action>
+          <Keys>
+            <Key>17</Key>
+            <Key>18</Key>
+            <Key>96</Key>
+          </Keys>
+          <Value>0</Value>
+          <ID>1</ID>
+        </Hotkey>
+      </Hotkeys>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>4</ID>
+      <Description>"Game speed (Numpad 1: 20%, Numpad 2: 50%, Numpad 3: 100%)"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>Float</VariableType>
+      <Address>avengers.exe+4DDC2D8</Address>
+      <Hotkeys>
+        <Hotkey>
+          <Action>Set Value</Action>
+          <Keys>
+            <Key>99</Key>
+          </Keys>
+          <Value>1.0</Value>
+          <ID>3</ID>
+        </Hotkey>
+        <Hotkey>
+          <Action>Set Value</Action>
+          <Keys>
+            <Key>97</Key>
+          </Keys>
+          <Value>0.2</Value>
+          <ID>0</ID>
+        </Hotkey>
+        <Hotkey>
+          <Action>Set Value</Action>
+          <Keys>
+            <Key>98</Key>
+          </Keys>
+          <Value>0.5</Value>
+          <ID>1</ID>
+        </Hotkey>
+      </Hotkeys>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>1</ID>
+      <Description>"By Otis_Inf. (c) 2023. FRAMED Screenshot Community https://framedsc.com. v1.03"</Description>
+      <Color>FF0000</Color>
+      <GroupHeader>1</GroupHeader>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>2</ID>
+      <Description>"-------------------------------"</Description>
+      <GroupHeader>1</GroupHeader>
+    </CheatEntry>
+  </CheatEntries>
+  <UserdefinedSymbols/>
+</CheatTable>
