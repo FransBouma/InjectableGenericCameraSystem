@@ -39,7 +39,7 @@ namespace IGCS::GameImageHooker
 		*interceptionContinue = startOfHookAddress + continueOffset;
 #ifdef _WIN64
 		// x64
-		byte instruction[14];	// 6 bytes of the jmp qword ptr [0] and 8 bytes for the real address which is stored right after the 6 bytes of jmp qword ptr [0] bytes 
+		uint8_t instruction[14];	// 6 bytes of the jmp qword ptr [0] and 8 bytes for the real address which is stored right after the 6 bytes of jmp qword ptr [0] bytes 
 								// write bytes of jmp qword ptr [address], which is jmp qword ptr 0 offset.
 		memcpy(instruction, jmpFarInstructionBytes, sizeof(jmpFarInstructionBytes));
 		// now write the address. Do this with a recast of the pointer to an __int64 pointer to avoid endianmess.
@@ -76,7 +76,7 @@ namespace IGCS::GameImageHooker
 
 
 	// Writes the bytes pointed at by bufferToWrite starting at address startAddress, for the length in 'length'.
-	void writeRange(LPBYTE startAddress, byte* bufferToWrite, int length)
+	void writeRange(LPBYTE startAddress, uint8_t* bufferToWrite, int length)
 	{
 		SIZE_T noBytesWritten;
 		WriteProcessMemory(OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_WRITE, FALSE, GetCurrentProcessId()), startAddress, bufferToWrite, length, &noBytesWritten);
@@ -84,7 +84,7 @@ namespace IGCS::GameImageHooker
 
 
 	// Writes the bytes pointed at by bufferToWrite starting at address startAddress, for the length in 'length'.
-	void writeRange(AOBBlock* hookData, byte* bufferToWrite, int length)
+	void writeRange(AOBBlock* hookData, uint8_t* bufferToWrite, int length)
 	{
 		writeRange(hookData->locationInImage() + hookData->customOffset(), bufferToWrite, length);
 	}
@@ -93,13 +93,13 @@ namespace IGCS::GameImageHooker
 	// Writes NOP opcodes to a range of memory.
 	void nopRange(LPBYTE startAddress, int length)
 	{
-		byte* nopBuffer;
+		uint8_t* nopBuffer;
 		if (length < 0 || length>1024)
 		{
 			// no can/wont do 
 			return;
 		}
-		nopBuffer = (byte*)malloc(length * sizeof(byte));
+		nopBuffer = (uint8_t*)malloc(length * sizeof(uint8_t));
 		for (int i = 0; i < length; i++)
 		{
 			nopBuffer[i] = 0x90;

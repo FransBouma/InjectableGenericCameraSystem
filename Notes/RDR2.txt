@@ -47,7 +47,7 @@ RDR2.exe+14EF74 - 48 8B 5C 24 30        - mov rbx,[rsp+30]
 RDR2.exe+14EF79 - 48 8B 74 24 38        - mov rsi,[rsp+38]
 RDR2.exe+14EF7E - 48 83 C4 20           - add rsp,20 { 32 }
 RDR2.exe+14EF82 - 5F                    - pop rdi
-
+`
 // this function has more writes, tho not for this block.
 
 

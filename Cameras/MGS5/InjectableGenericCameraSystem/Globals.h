@@ -32,8 +32,8 @@
 #include "Defaults.h"
 #include "CDataFile.h"
 
-extern "C" byte g_cameraEnabled;
-extern "C" byte g_gamePaused;
+extern "C" uint8_t g_cameraEnabled;
+extern "C" uint8_t g_gamePaused;
 
 namespace IGCS
 {
@@ -60,15 +60,15 @@ namespace IGCS
 		int todHour;					// 0-23
 		int todMinute;					// 0-59
 
-		float clampFloat(float value, float min, float default)
+		float clampFloat(float value, float min, float defaultValue)
 		{
-			return value < min ? default : value;
+			return value < min ? defaultValue : value;
 		}
 
-		int clampInt(int value, int min, int max, int default)
+		int clampInt(int value, int min, int max, int defaultValue)
 		{
-			return value < min ? default
-							   : value > max ? default: value;
+			return value < min ? defaultValue
+							   : value > max ? defaultValue: value;
 		}
 
 		void loadFromFile()

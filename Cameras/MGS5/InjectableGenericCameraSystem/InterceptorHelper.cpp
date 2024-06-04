@@ -124,9 +124,9 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		if (enabled)
 		{
 			// enable writes
-			byte originalStatementBytes1[5] = { 0xF3, 0x0F, 0x11, 0x40, 0x3C };      // 14329CEBA - F3 0F11 40 3C         - movss [rax+3C],xmm0
+			uint8_t originalStatementBytes1[5] = { 0xF3, 0x0F, 0x11, 0x40, 0x3C };      // 14329CEBA - F3 0F11 40 3C         - movss [rax+3C],xmm0
 			GameImageHooker::writeRange(aobBlocks[FOV_WRITE1_CUTSCENE_INTERCEPT_KEY], originalStatementBytes1, 5);
-			byte originalStatementBytes2[5] = { 0xF3, 0x0F, 0x11, 0x40, 0x3C };		 // 14329D7EB - F3 0F11 40 3C         - movss [rax+3C],xmm0
+			uint8_t originalStatementBytes2[5] = { 0xF3, 0x0F, 0x11, 0x40, 0x3C };		 // 14329D7EB - F3 0F11 40 3C         - movss [rax+3C],xmm0
 			GameImageHooker::writeRange(aobBlocks[FOV_WRITE2_CUTSCENE_INTERCEPT_KEY], originalStatementBytes2, 5);
 		}
 		else

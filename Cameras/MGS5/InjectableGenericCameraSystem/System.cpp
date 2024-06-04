@@ -152,7 +152,7 @@ namespace IGCS
 				CameraManipulator::cacheOriginalValuesBeforeCameraEnable();
 				_camera.resetAngles();
 			}
-			g_cameraEnabled = g_cameraEnabled == 0 ? (byte)1 : (byte)0;
+			g_cameraEnabled = g_cameraEnabled == 0 ? (uint8_t)1 : (uint8_t)0;
 			displayCameraState();
 			Sleep(350);				// wait for 350ms to avoid fast keyboard hammering
 		}
