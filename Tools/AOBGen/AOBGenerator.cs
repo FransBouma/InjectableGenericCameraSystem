@@ -52,11 +52,14 @@ namespace AOBGen
 
 			bool offsetWildcarded = false;
 			bool avxOpcode = false;
+			int numberOfValidFragmentsSeen = 0;
 			for(var i = 0; i < byteFragments.Length; i++)
 			{
 				var byteFragment = byteFragments[i];
 				switch(byteFragment.Length)
 				{
+					case 0:
+						continue;
 					case 2:
 						if((alsoWildcardOffsets && i == byteFragments.Length - 1 && thirdFragment.Contains("+" + byteFragment) && !offsetWildcarded) || (avxOpcode && i > 0 && i!=byteFragments.Length-1))
 						{
@@ -66,6 +69,8 @@ namespace AOBGen
 						{
 							AOBGenerator.AppendByteFragment(sb, byteFragment);
 						}
+
+						numberOfValidFragmentsSeen++;
 						break;
 					case 6:
 						if(avxOpcode)
@@ -77,26 +82,29 @@ namespace AOBGen
 						{
 							AOBGenerator.AppendByteFragment(sb, byteFragment);
 						}
+						numberOfValidFragmentsSeen++;
 						break;
 					case 8:
 						// offset or RIP relative block
 						// We convert the byteFragment to a hexadecimal number. If that number is present in third fragment, it's not a RIP relative address but an offset.
-						if(i > 0 && CheckIfShouldBeWildcarded(byteFragment.ToLowerInvariant(), thirdFragment, alsoWildcardOffsets, out bool performedOffsetWildcard))
+						if(numberOfValidFragmentsSeen > 0 && CheckIfShouldBeWildcarded(byteFragment.ToLowerInvariant(), thirdFragment, alsoWildcardOffsets, out bool performedOffsetWildcard))
 						{
 							offsetWildcarded |= performedOffsetWildcard;
 							sb.Append("?? ?? ?? ?? ");
 						}
 						else
 						{
-							if(i == 0)
+							if(numberOfValidFragmentsSeen == 0)
 							{
 								avxOpcode = true;
 							}
 							AOBGenerator.AppendByteFragment(sb, byteFragment);
 						}
+						numberOfValidFragmentsSeen++;
 						break;
 					default:
 						AOBGenerator.AppendByteFragment(sb, byteFragment);
+						numberOfValidFragmentsSeen++;
 						continue;
 				}
 			}
