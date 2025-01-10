@@ -30,8 +30,8 @@
 namespace IGCS::GameSpecific
 {
 	// Mandatory constants to define for a game
-	#define GAME_NAME									"Dishonored 2 (v1.77.9+) or Dishonored: Death of the Outsider (v1.145+)"
-	#define CAMERA_VERSION								"1.0.2"
+	#define GAME_NAME									"Dishonored 2 (v1.77.10+) or Dishonored: Death of the Outsider (v1.145+)"
+	#define CAMERA_VERSION								"1.0.3"
 	#define CAMERA_CREDITS								"Otis_Inf"
 	#define GAME_WINDOW_TITLE							"Dishonored"
 	#define INITIAL_PITCH_RADIANS						0.0f
@@ -56,49 +56,71 @@ namespace IGCS::GameSpecific
 	#define WIN_PAUSEONFOCUSLOSS_KEY			"AOB_WIN_PAUSEONFOCUSLOSS_KEY"
 
 	// StartSession jump offsets to nop, relative from start of function
-	// v1.77.9
-	//Dishonored2.exe+A2DD90 - 48 83 EC 28           - sub rsp,28 { 40 }
-	//Dishonored2.exe+A2DD94 - 48 8B 0D CD2FCE01     - mov rcx,[Dishonored2.exe+2710D68] 
-	//Dishonored2.exe+A2DD9B - 48 85 C9              - test rcx,rcx
-	//Dishonored2.exe+A2DD9E - 0F84 EB000000         - je Dishonored2.exe+A2DE8F				<<< NOP
-	//Dishonored2.exe+A2DDA4 - 48 8B 01              - mov rax,[rcx]
-	//Dishonored2.exe+A2DDA7 - FF 90 E8000000        - call qword ptr [rax+000000E8]
-	//Dishonored2.exe+A2DDAD - 84 C0                 - test al,al
-	//Dishonored2.exe+A2DDAF - 0F85 DA000000         - jne Dishonored2.exe+A2DE8F				<<< NOP
-	//Dishonored2.exe+A2DDB5 - 48 8B 0D AC2FCE01     - mov rcx,[Dishonored2.exe+2710D68] 
-	//Dishonored2.exe+A2DDBC - 48 8B 01              - mov rax,[rcx]
-	//Dishonored2.exe+A2DDBF - FF 90 F8000000        - call qword ptr [rax+000000F8]
-	//Dishonored2.exe+A2DDC5 - 84 C0                 - test al,al
-	//Dishonored2.exe+A2DDC7 - 0F85 C2000000         - jne Dishonored2.exe+A2DE8F				<<< NOP
-	//Dishonored2.exe+A2DDCD - 48 8B 0D 942FCE01     - mov rcx,[Dishonored2.exe+2710D68] 
-	//Dishonored2.exe+A2DDD4 - 48 8B 01              - mov rax,[rcx]
-	//Dishonored2.exe+A2DDD7 - FF 50 40              - call qword ptr [rax+40]
-	//Dishonored2.exe+A2DDDA - 84 C0                 - test al,al
-	//Dishonored2.exe+A2DDDC - 0F84 AD000000         - je Dishonored2.exe+A2DE8F				<<< NOP
-	//Dishonored2.exe+A2DDE2 - 48 8B 05 371DB702     - mov rax,[Dishonored2.exe+359FB20] 
-	//Dishonored2.exe+A2DDE9 - 48 8D 0D 301DB702     - lea rcx,[Dishonored2.exe+359FB20] 
-	//Dishonored2.exe+A2DDF0 - FF 90 10010000        - call qword ptr [rax+00000110]
-	//Dishonored2.exe+A2DDF6 - 84 C0                 - test al,al
-	//Dishonored2.exe+A2DDF8 - 0F85 91000000         - jne Dishonored2.exe+A2DE8F				<<< NOP
-	//Dishonored2.exe+A2DDFE - 48 8B 0D 632FCE01     - mov rcx,[Dishonored2.exe+2710D68] 
-	//Dishonored2.exe+A2DE05 - 48 81 C1 C86E1F00     - add rcx,001F6EC8 { 2059976 }
-	//Dishonored2.exe+A2DE0C - E8 9F4DEAFF           - call Dishonored2.exe+8D2BB0
-	//Dishonored2.exe+A2DE11 - 83 F8 05              - cmp eax,05 { 5 }
-	//Dishonored2.exe+A2DE14 - 74 79                 - je Dishonored2.exe+A2DE8F				<<< NOP
-	//Dishonored2.exe+A2DE16 - E8 A5066EFF           - call Dishonored2.exe+10E4C0
-	//Dishonored2.exe+A2DE1B - 8B 05 B7FE1A03        - mov eax,[Dishonored2.exe+3BDDCD8] 
-	//Dishonored2.exe+A2DE21 - 48 8D 0D 88FE1A03     - lea rcx,[Dishonored2.exe+3BDDCB0] 
-	//Dishonored2.exe+A2DE28 - 33 D2                 - xor edx,edx
-	//Dishonored2.exe+A2DE2A - 89 05 482FCE01        - mov [Dishonored2.exe+2710D78],eax 
-	//Dishonored2.exe+A2DE30 - E8 2B9571FF           - call Dishonored2.exe+147360
-	//Dishonored2.exe+A2DE35 - 48 8D 0D 64B1B602     - lea rcx,[Dishonored2.exe+3598FA0] 
-	//Dishonored2.exe+A2DE3C - B2 01                 - mov dl,01 { 1 }
+	// v1.77.10
+	//Dishonored2.exe+8B1380 - 48 83 EC 28           - sub rsp,28 { 40 }
+	//Dishonored2.exe+8B1384 - 48 8B 0D 053F0F03     - mov rcx,[Dishonored2.exe+39A5290] 
+	//Dishonored2.exe+8B138B - 48 85 C9              - test rcx,rcx
+	//Dishonored2.exe+8B138E - 0F84 FB000000         - je Dishonored2.exe+8B148F				<<< NOP
+	//Dishonored2.exe+8B1394 - 48 8B 01              - mov rax,[rcx]
+	//Dishonored2.exe+8B1397 - FF 90 E8000000        - call qword ptr [rax+000000E8]
+	//Dishonored2.exe+8B139D - 84 C0                 - test al,al
+	//Dishonored2.exe+8B139F - 0F85 EA000000         - jne Dishonored2.exe+8B148F				<<< NOP
+	//Dishonored2.exe+8B13A5 - 48 8B 0D E43E0F03     - mov rcx,[Dishonored2.exe+39A5290] 
+	//Dishonored2.exe+8B13AC - 48 8B 01              - mov rax,[rcx]
+	//Dishonored2.exe+8B13AF - FF 90 F8000000        - call qword ptr [rax+000000F8]
+	//Dishonored2.exe+8B13B5 - 84 C0                 - test al,al
+	//Dishonored2.exe+8B13B7 - 0F85 D2000000         - jne Dishonored2.exe+8B148F				<<< NOP
+	//Dishonored2.exe+8B13BD - 48 8B 0D CC3E0F03     - mov rcx,[Dishonored2.exe+39A5290] 
+	//Dishonored2.exe+8B13C4 - 48 8B 01              - mov rax,[rcx]
+	//Dishonored2.exe+8B13C7 - FF 50 40              - call qword ptr [rax+40]
+	//Dishonored2.exe+8B13CA - 84 C0                 - test al,al
+	//Dishonored2.exe+8B13CC - 0F84 BD000000         - je Dishonored2.exe+8B148F				<<< NOP
+	//Dishonored2.exe+8B13D2 - 48 8B 0D 97B9A401     - mov rcx,[Dishonored2.exe+22FCD70] 
+	//Dishonored2.exe+8B13D9 - 48 8B 01              - mov rax,[rcx]
+	//Dishonored2.exe+8B13DC - FF 90 10010000        - call qword ptr [rax+00000110]
+	//Dishonored2.exe+8B13E2 - 84 C0                 - test al,al
+	//Dishonored2.exe+8B13E4 - 0F85 A5000000         - jne Dishonored2.exe+8B148F				<<< NOP
+	//Dishonored2.exe+8B13EA - 48 8B 0D 9F3E0F03     - mov rcx,[Dishonored2.exe+39A5290] 
+	//Dishonored2.exe+8B13F1 - 48 81 C1 C86E1F00     - add rcx,001F6EC8 { 2059976 }
+	//Dishonored2.exe+8B13F8 - E8 3375EDFF           - call Dishonored2.exe+788930
+	//Dishonored2.exe+8B13FD - 83 F8 05              - cmp eax,05 { 5 }
+	//Dishonored2.exe+8B1400 - 0F84 89000000         - je Dishonored2.exe+8B148F				<<< NOP
+	//Dishonored2.exe+8B1406 - 48 8B 0D EB589D01     - mov rcx,[Dishonored2.exe+2286CF8] 
+	//Dishonored2.exe+8B140D - E8 BE1E82FF           - call Dishonored2.exe+D32D0
+	//Dishonored2.exe+8B1412 - 8B 05 D0AA0C03        - mov eax,[Dishonored2.exe+397BEE8] 
+	//Dishonored2.exe+8B1418 - 48 8D 0D A1AA0C03     - lea rcx,[Dishonored2.exe+397BEC0] 
+	//Dishonored2.exe+8B141F - 41 B0 01              - mov r8b,01 { 1 }
+	//Dishonored2.exe+8B1422 - 33 D2                 - xor edx,edx
+	//Dishonored2.exe+8B1424 - 89 05 7E3E0F03        - mov [Dishonored2.exe+39A52A8],eax 
+	//Dishonored2.exe+8B142A - E8 A12D85FF           - call Dishonored2.exe+1041D0
+	//Dishonored2.exe+8B142F - 41 B0 01              - mov r8b,01 { 1 }
+	//Dishonored2.exe+8B1432 - 48 8D 0D A73FA402     - lea rcx,[Dishonored2.exe+32F53E0] 
+	//Dishonored2.exe+8B1439 - 41 0FB6 D0            - movzx edx,r8b
+	//Dishonored2.exe+8B143D - E8 CE2985FF           - call Dishonored2.exe+103E10
+	//Dishonored2.exe+8B1442 - 83 3D 3F40A402 00     - cmp dword ptr [Dishonored2.exe+32F5488],00 
+	//Dishonored2.exe+8B1449 - 41 B0 01              - mov r8b,01 { 1 }
+	//Dishonored2.exe+8B144C - 48 8D 0D 0D40A402     - lea rcx,[Dishonored2.exe+32F5460]
+	//Dishonored2.exe+8B1453 - 41 0FB6 D0            - movzx edx,r8b
+	//Dishonored2.exe+8B1457 - 0F95 05 4E3E0F03      - setne byte ptr [Dishonored2.exe+39A52AC] { (0) }
+	//Dishonored2.exe+8B145E - E8 AD2985FF           - call Dishonored2.exe+103E10
+	//Dishonored2.exe+8B1463 - 48 8B 0D 76A69D01     - mov rcx,[Dishonored2.exe+228BAE0] { (7FF6B8E1BB00) }
+	//Dishonored2.exe+8B146A - 48 8D 15 2F2E3E01     - lea rdx,[Dishonored2.exe+1C942A0] { ("Ansel_PlayerVisible 0") }
+	//Dishonored2.exe+8B1471 - 48 8B 01              - mov rax,[rcx]
+	//Dishonored2.exe+8B1474 - FF 50 48              - call qword ptr [rax+48]
+	//Dishonored2.exe+8B1477 - C6 05 1E3E0F03 01     - mov byte ptr [Dishonored2.exe+39A529C],01 { (0),1 }
+	//Dishonored2.exe+8B147E - C6 05 193E0F03 01     - mov byte ptr [Dishonored2.exe+39A529E],01 { (0),1 }
+	//Dishonored2.exe+8B1485 - B8 01000000           - mov eax,00000001 { 1 }
+	//Dishonored2.exe+8B148A - 48 83 C4 28           - add rsp,28 { 40 }
+	//Dishonored2.exe+8B148E - C3                    - ret 
+	//Dishonored2.exe+8B148F - 33 C0                 - xor eax,eax
+	//Dishonored2.exe+8B1491 - 48 83 C4 28           - add rsp,28 { 40 }
+	//Dishonored2.exe+8B1495 - C3                    - ret 
 	#define STARTSESSION_JMP_OFFSET1			0xE
 	#define STARTSESSION_JMP_OFFSET2			0x1F
 	#define STARTSESSION_JMP_OFFSET3			0x37
 	#define STARTSESSION_JMP_OFFSET4			0x4C
-	#define STARTSESSION_JMP_OFFSET5			0x68
-	#define STARTSESSION_JMP_OFFSET6			0x84
+	#define STARTSESSION_JMP_OFFSET5			0x64
+	#define STARTSESSION_JMP_OFFSET6			0x80
 
 
 	// Indices in the structures read by interceptors 

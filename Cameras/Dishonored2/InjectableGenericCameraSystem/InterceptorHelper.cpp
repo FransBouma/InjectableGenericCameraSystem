@@ -48,9 +48,9 @@ namespace IGCS::GameSpecific::InterceptorHelper
 	{
 		// AOBs in hostimage
 		aobBlocks[ANSEL_START_SESSION_KEY] = new AOBBlock(ANSEL_START_SESSION_KEY, "48 83 EC 28 48 8B 0D ?? ?? ?? ?? 48 85 C9 0F 84 ?? ?? ?? ?? 48 8B 01 FF 90 ?? ?? ?? ?? 84 C0", 1);
-		aobBlocks[ANSEL_STOP_SESSION_KEY] = new AOBBlock(ANSEL_STOP_SESSION_KEY, "48 83 EC 68 48 C7 44 24 30 FE FF FF FF 8B 15 ?? ?? ?? ?? 48 8D 4C 24 38", 1);
-		aobBlocks[ANSEL_SETUP_UPDATECAMERA_KEY] = new AOBBlock(ANSEL_SETUP_UPDATECAMERA_KEY, "F3 0F 11 05 ?? ?? ?? ?? F3 0F 10 83 ?? ?? ?? ?? F3 0F 11 05 | ?? ?? ?? ?? F3 0F 10 8B ?? ?? ?? ?? F3 0F 11 0D ?? ?? ?? ?? F3 0F 10 83 ?? ?? ?? ?? F3 0F 10 4D 97", 1);
-		aobBlocks[WIN_PAUSEONFOCUSLOSS_KEY] = new AOBBlock(WIN_PAUSEONFOCUSLOSS_KEY, "84 C0 75 ?? 83 3D | ?? ?? ?? ?? 00 74 ?? 48 8B 05 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ?? FF 90", 1);
+		aobBlocks[ANSEL_STOP_SESSION_KEY] = new AOBBlock(ANSEL_STOP_SESSION_KEY, "48 83 EC 28 8B 15 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ?? 41 B0 01 E8", 1);
+		aobBlocks[ANSEL_SETUP_UPDATECAMERA_KEY] = new AOBBlock(ANSEL_SETUP_UPDATECAMERA_KEY, "F3 0F 11 05 | ?? ?? ?? ?? F3 0F 10 8F ?? 3A 00 00 F3 0F 11 0D ?? ?? ?? ?? F3 0F 10 87 ?? 3A 00 00", 1);
+		aobBlocks[WIN_PAUSEONFOCUSLOSS_KEY] = new AOBBlock(WIN_PAUSEONFOCUSLOSS_KEY, "83 3D | ?? ?? ?? ?? 00 74 4E 48 8B 0D ?? ?? ?? ?? 48 8B 01", 1);
 	
 		map<string, AOBBlock*>::iterator it;
 		bool result = true;
@@ -104,7 +104,7 @@ namespace IGCS::GameSpecific::InterceptorHelper
 		GameImageHooker::nopRange(aobBlocks[ANSEL_START_SESSION_KEY]->absoluteAddress() + STARTSESSION_JMP_OFFSET3, 6);
 		GameImageHooker::nopRange(aobBlocks[ANSEL_START_SESSION_KEY]->absoluteAddress() + STARTSESSION_JMP_OFFSET4, 6);
 		GameImageHooker::nopRange(aobBlocks[ANSEL_START_SESSION_KEY]->absoluteAddress() + STARTSESSION_JMP_OFFSET5, 6);
-		GameImageHooker::nopRange(aobBlocks[ANSEL_START_SESSION_KEY]->absoluteAddress() + STARTSESSION_JMP_OFFSET6, 2);
+		GameImageHooker::nopRange(aobBlocks[ANSEL_START_SESSION_KEY]->absoluteAddress() + STARTSESSION_JMP_OFFSET6, 6);
 
 		// switch off win_pauseOnLossOfFocus. This is needed when playing windowed and enabling ansel (for the people who want to).
 		if (aobBlocks[WIN_PAUSEONFOCUSLOSS_KEY]->found())

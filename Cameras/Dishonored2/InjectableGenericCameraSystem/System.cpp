@@ -359,6 +359,8 @@ namespace IGCS
 		Console::WriteLine("Numpad .                              : Block keyboard/mouse input to game");
 		Console::WriteLine("ALT+H                                 : This help");
 		Console::WriteLine("-----------------------------------------------------------------------------", CONSOLE_WHITE);
+		Console::WriteLine("(c) Otis_Inf. https://patreon.com/Otis_Inf");
+		Console::WriteLine("-----------------------------------------------------------------------------", CONSOLE_WHITE);
 		// wait for 350ms to avoid fast keyboard hammering
 		Sleep(350);
 	}
