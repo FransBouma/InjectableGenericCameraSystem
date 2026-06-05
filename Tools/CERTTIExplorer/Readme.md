@@ -4,6 +4,9 @@ RTTI Dumper / explorer for Cheat Engine
 This is a small utility implemented in Lua script which is used inside Cheat Engine to dump a module's RTTI types, 
 find instances of those types and reverse lookup instances in memory what RTTI type they have. 
 
+<img width="1708" height="1204" alt="image" src="https://github.com/user-attachments/assets/bb693f11-cd03-47bc-b14f-904fe5b6d9fe" />
+
+
 ### Usage
 
 To use this script, start Cheat Engine, attach it to a process and open Memory Viewer. Then press `Ctrl-L` to open the Lua Engine window.
