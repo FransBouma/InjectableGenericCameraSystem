@@ -15,5 +15,5 @@ showing the features of the tool. Its central panel logs the basic flow how to u
 
 ### Disclaimer
 
-This tool is mainly totally vibecoded using Claude by GhostInTheCamera with as starting point the [RTTI article on the Framed website](https://framedsc.com/GeneralGuides/using_rtti.htm), 
+This tool is mainly vibecoded using Claude by GhostInTheCamera with as starting point the [RTTI article on the Framed website](https://framedsc.com/GeneralGuides/using_rtti.htm), 
 after which it's manually adjusted to fix some bugs and add some features (like reverse lookup range). The code is therefore not the best, but works fine. 
